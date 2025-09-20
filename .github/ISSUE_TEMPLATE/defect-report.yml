@@ -64,6 +64,18 @@ body:
     validations:
       required: false
 
+  - type: textarea
+    id: defect-analysis
+    attributes:
+      label: Debug and Root Cause Analysis
+      description: During or after resolution, document why the defect occured
+      placeholder: |
+        ```
+        [Write the detailed analysis]
+        ```
+    validations:
+      required: false
+
   - type: input
     id: workaround
     attributes:
