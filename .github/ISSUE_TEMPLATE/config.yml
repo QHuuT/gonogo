@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: 💬 General Discussion
-    url: https://github.com/YourUsername/gonogo/discussions
+    url: https://github.com/QHuuT/gonogo/discussions
     about: For questions and general discussions about the project
   - name: 📚 Documentation
-    url: https://github.com/YourUsername/gonogo/wiki
+    url: https://github.com/QHuuT/gonogo/blob/main/docs/README.md
     about: Check project documentation and guides
   - name: 🔒 Security Issues
-    url: mailto:security@yourdomain.com
+    url: mailto:security@example.com
     about: Please report security vulnerabilities privately via email
