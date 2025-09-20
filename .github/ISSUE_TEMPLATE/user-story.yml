@@ -58,18 +58,6 @@ body:
   - type: textarea
     id: dependencies
     attributes:
-      label: Dependencies
-      description: What other user stories or technical requirements must be completed first?
-      placeholder: |
-        - [ ] US-001: View Blog Posts (foundation functionality)
-        - [ ] Search indexing infrastructure setup
-        - [ ] Database optimization for search queries
-    validations:
-      required: false
-
-  - type: textarea
-    id: dependencies
-    attributes:
       label: Dependencies (Optional)
       description: What other user stories or requirements must be completed first?
       placeholder: |

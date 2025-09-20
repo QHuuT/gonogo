@@ -12,15 +12,6 @@ body:
 
         Thanks for reporting a defect! This streamlined template captures the essential information needed for investigation.
 
-  - type: input
-    id: related-user-story
-    attributes:
-      label: Related User Story
-      description: Link to affected user story (format US-XXXXX or #issue-number)
-      placeholder: "US-00001 or #456"
-    validations:
-      required: true
-
   - type: textarea
     id: steps-to-reproduce
     attributes:
