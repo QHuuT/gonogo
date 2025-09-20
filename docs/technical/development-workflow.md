@@ -121,7 +121,8 @@ This document defines the complete development workflow for GoNoGo, integrating 
 26. **Verify Test Coverage**: `pytest --cov=src tests/ --cov-report=term-missing`
 27. **Validate RTM Links** if RTM was modified:
     ```bash
-    python tools/rtm-links-simple.py --validate
+    python tools/rtm-links.py validate
+    # Expected: Health score >70%, reports missing BDD files as expected
     ```
 
 ### **Phase 5: Integration & GitHub-First Commit**
@@ -523,6 +524,8 @@ python tools/archive_cleanup.py --configure --schedule "0 2 * * *"
 | **Missing dependencies** | Import errors in tools | Run `pip install -e ".[dev]" && pip install jinja2` |
 | **Archive permission errors** | SQLite database locked (Windows) | Known Windows issue; doesn't affect functionality |
 | **Report generation fails** | Tool crashes during report creation | Check log files exist and contain valid JSON |
+| **ModuleNotFoundError during test collection** | `pytest` fails with missing module imports | Check package structure: ensure `__init__.py` files exist for all packages. See DEF-00003 for RTM import resolution example |
+| **Unicode encoding errors (Windows)** | Emoji characters in CLI output cause crashes | Known Windows console encoding limitation; functionality works, display issue only |
 
 ### **⚙️ 8. Configuration Reference**
 
