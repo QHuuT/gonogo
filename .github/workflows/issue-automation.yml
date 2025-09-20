@@ -1,0 +1,223 @@
+name: Issue Management Automation
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+  pull_request:
+    types: [opened, edited]
+
+permissions:
+  issues: write
+  repository-projects: write
+  contents: read
+
+jobs:
+  process-issue:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened' || github.event.action == 'edited'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Parse epic relationships and automate issue management
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const issueNumber = context.issue.number;
+            const issue = context.payload.issue;
+
+            console.log(`Processing issue #${issueNumber}: ${issue.title}`);
+
+            // 1. Auto-assign to @QHuuT
+            try {
+              await github.rest.issues.addAssignees({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                assignees: ['QHuuT']
+              });
+              console.log('✅ Auto-assigned to @QHuuT');
+            } catch (error) {
+              console.log('❌ Failed to assign:', error.message);
+            }
+
+            // 2. Parse epic relationships from issue body
+            const body = issue.body || '';
+            const epicMatch = body.match(/Parent Epic[:\s]*EP-(\d{5})/i);
+
+            if (epicMatch) {
+              const epicId = `EP-${epicMatch[1]}`;
+              console.log(`🔗 Found parent epic: ${epicId}`);
+
+              // Search for the epic issue
+              try {
+                const searchResult = await github.rest.search.issuesAndPullRequests({
+                  q: `repo:${owner}/${repo} is:issue "${epicId}" in:title`,
+                  sort: 'created',
+                  order: 'desc'
+                });
+
+                if (searchResult.data.items.length > 0) {
+                  const epicIssue = searchResult.data.items[0];
+                  console.log(`📍 Found epic issue #${epicIssue.number}: ${epicIssue.title}`);
+
+                  // Add epic label based on epic type
+                  let epicLabel = '';
+                  if (epicId.includes('00001')) epicLabel = 'epic/blog-platform';
+                  else if (epicId.includes('00002')) epicLabel = 'epic/comment-system';
+                  else if (epicId.includes('00003')) epicLabel = 'epic/privacy-consent';
+                  else if (epicId.includes('00004')) epicLabel = 'epic/github-workflow';
+                  else if (epicId.includes('00005')) epicLabel = 'epic/rtm-automation';
+                  else if (epicId.includes('00006')) epicLabel = 'epic/test-logging-reporting';
+                  else if (epicId.includes('00007')) epicLabel = 'epic/enhanced-archive';
+
+                  if (epicLabel) {
+                    try {
+                      await github.rest.issues.addLabels({
+                        owner,
+                        repo,
+                        issue_number: issueNumber,
+                        labels: [epicLabel]
+                      });
+                      console.log(`🏷️ Added epic label: ${epicLabel}`);
+                    } catch (error) {
+                      console.log(`❌ Failed to add epic label: ${error.message}`);
+                    }
+                  }
+
+                  // Link to parent epic in a comment
+                  const linkComment = `🔗 **Linked to Parent Epic**: #${epicIssue.number} - ${epicIssue.title}`;
+                  try {
+                    await github.rest.issues.createComment({
+                      owner,
+                      repo,
+                      issue_number: issueNumber,
+                      body: linkComment
+                    });
+                    console.log('💬 Added epic link comment');
+                  } catch (error) {
+                    console.log('❌ Failed to add comment:', error.message);
+                  }
+                }
+              } catch (error) {
+                console.log('❌ Failed to search for epic:', error.message);
+              }
+            }
+
+            // 3. Clean up status labels (keep only status/blocked)
+            const currentLabels = issue.labels || [];
+            const statusLabelsToRemove = currentLabels
+              .filter(label =>
+                label.name.startsWith('status/') &&
+                label.name !== 'status/blocked'
+              )
+              .map(label => label.name);
+
+            if (statusLabelsToRemove.length > 0) {
+              try {
+                for (const labelName of statusLabelsToRemove) {
+                  await github.rest.issues.removeLabel({
+                    owner,
+                    repo,
+                    issue_number: issueNumber,
+                    name: labelName
+                  });
+                }
+                console.log(`🧹 Removed status labels: ${statusLabelsToRemove.join(', ')}`);
+              } catch (error) {
+                console.log('❌ Failed to remove status labels:', error.message);
+              }
+            }
+
+            // 4. Add to GoNoGo project (if project integration is available)
+            try {
+              // Note: This requires the project ID - will need to be configured
+              console.log('📋 Project integration would be added here');
+              console.log('   (Requires project ID configuration)');
+            } catch (error) {
+              console.log('❌ Project integration not yet configured');
+            }
+
+            console.log('✅ Issue automation completed');
+
+  cleanup-existing-issues:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Bulk cleanup of existing issues
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+
+            console.log('🧹 Starting bulk cleanup of existing issues...');
+
+            // Get all open issues
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: 'all',
+              per_page: 100
+            });
+
+            console.log(`📊 Found ${issues.length} issues to process`);
+
+            for (const issue of issues) {
+              if (issue.pull_request) continue; // Skip PRs
+
+              console.log(`Processing issue #${issue.number}: ${issue.title}`);
+
+              // Auto-assign if not assigned
+              if (!issue.assignees || issue.assignees.length === 0) {
+                try {
+                  await github.rest.issues.addAssignees({
+                    owner,
+                    repo,
+                    issue_number: issue.number,
+                    assignees: ['QHuuT']
+                  });
+                  console.log(`  ✅ Assigned #${issue.number} to @QHuuT`);
+                } catch (error) {
+                  console.log(`  ❌ Failed to assign #${issue.number}:`, error.message);
+                }
+              }
+
+              // Remove status labels except status/blocked
+              const statusLabelsToRemove = issue.labels
+                .filter(label =>
+                  label.name.startsWith('status/') &&
+                  label.name !== 'status/blocked'
+                )
+                .map(label => label.name);
+
+              if (statusLabelsToRemove.length > 0) {
+                try {
+                  for (const labelName of statusLabelsToRemove) {
+                    await github.rest.issues.removeLabel({
+                      owner,
+                      repo,
+                      issue_number: issue.number,
+                      name: labelName
+                    });
+                  }
+                  console.log(`  🧹 Removed status labels from #${issue.number}: ${statusLabelsToRemove.join(', ')}`);
+                } catch (error) {
+                  console.log(`  ❌ Failed to remove labels from #${issue.number}:`, error.message);
+                }
+              }
+
+              // Small delay to avoid rate limiting
+              await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            console.log('✅ Bulk cleanup completed');
