@@ -37,6 +37,12 @@ Update when **implementation details** change:
 - Security implementation updates
 - Performance architecture changes
 
+**Development and Quality Workflows (`docs/technical/`)**:
+- Testing infrastructure changes (NEW)
+- Quality gates modifications
+- Development workflow updates
+- Test reporting capabilities (NEW)
+
 **BDD Scenarios (`tests/bdd/features/`)**:
 - New feature scenarios
 - Updated acceptance criteria
@@ -256,6 +262,8 @@ The RTM maintains clickable links to all referenced artifacts:
 
 ### **Technical Implementation**
 - `docs/technical/cross-cutting-architecture/` - System architecture
+- `docs/technical/development-workflow.md` - Development process with testing (UPDATED)
+- `docs/technical/quality-assurance.md` - Code standards and test reporting (UPDATED)
 - `tests/bdd/features/` - Executable test scenarios
 - `docs/technical/api-docs/` - API documentation
 

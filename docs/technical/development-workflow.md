@@ -53,15 +53,24 @@ This document defines the complete development workflow for GoNoGo, integrating 
 16. **Verify GDPR Compliance** if personal data involved
 17. **Update CLAUDE.md** if workflow or structure changed
 
-### **Phase 4: Quality Gates (MANDATORY)**
-18. **Run Quality Checks** (must pass before commit):
+### **Phase 4: Quality Gates (MANDATORY) - Enhanced with Structured Logging**
+18. **Run Tests with Structured Logging** (generates logs automatically):
+    ```bash
+    pytest tests/ -v  # Creates quality/logs/test_execution.log
+    ```
+19. **Generate Test Report** (NEW - review for failures):
+    ```bash
+    python tools/report_generator.py --input quality/logs/
+    # Review quality/reports/test_report.html for issues
+    ```
+20. **Run Quality Checks** (must pass before commit):
     ```bash
     black src/ tests/ && isort src/ tests/ && flake8 src/ tests/ && mypy src/
     ```
-19. **Run Security Tests**: `pytest tests/security/ -v`
-20. **Run GDPR Compliance Tests**: `pytest tests/security/test_gdpr_compliance.py -v`
-21. **Verify Test Coverage**: `pytest --cov=src tests/ --cov-report=term-missing`
-22. **Validate RTM Links** if RTM was modified:
+21. **Run Security Tests**: `pytest tests/security/ -v`
+22. **Run GDPR Compliance Tests**: `pytest tests/security/test_gdpr_compliance.py -v`
+23. **Verify Test Coverage**: `pytest --cov=src tests/ --cov-report=term-missing`
+24. **Validate RTM Links** if RTM was modified:
     ```bash
     python tools/rtm-links-simple.py --validate
     ```
@@ -199,9 +208,46 @@ This document defines the complete development workflow for GoNoGo, integrating 
 - All commits linked to user stories
 - Quality gates passing before merge
 
+## 🔧 Debugging & Troubleshooting with Structured Logging
+
+### **Test Failure Investigation Process**
+1. **Check Test Report** (NEW):
+   ```bash
+   python tools/report_generator.py --input quality/logs/
+   # Open quality/reports/test_report.html in browser
+   ```
+
+2. **Analyze Structured Logs**:
+   ```bash
+   # View recent test failures
+   cat quality/logs/test_execution.log | grep "failed\|error"
+
+   # Check specific test logs
+   python tools/report_generator.py --type unit --input quality/logs/
+   ```
+
+3. **Debug with Detailed Mode**:
+   ```bash
+   # Run failing tests with maximum detail
+   pytest --mode=detailed tests/unit/test_failing.py -v
+   ```
+
+4. **Verify GDPR Sanitization**:
+   ```bash
+   # Ensure no personal data in logs
+   grep -i "email\|ip.*address" quality/logs/test_*.log  # Should show [REDACTED]
+   ```
+
+### **Common Issues and Solutions**
+- **No logs generated**: Run pytest first to create logs
+- **Empty reports**: Check that tests actually ran (look for test_*.log files)
+- **Template errors**: Verify templates exist in quality/reports/templates/
+- **Missing dependencies**: `pip install -e ".[dev]" && pip install jinja2`
+
 ---
 
 **Related Documentation**:
 - [Documentation Workflow](documentation-workflow.md) - How to maintain documentation
 - [BDD Scenarios](../../tests/bdd/features/) - Executable test specifications
 - [Requirements Matrix](../traceability/requirements-matrix.md) - Current traceability status
+- [Quality Assurance Guidelines](quality-assurance.md) - Code standards and testing
