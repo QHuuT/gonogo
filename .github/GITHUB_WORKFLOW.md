@@ -278,6 +278,14 @@ The labeling system runs automatically:
 3. Import labels from `.github/labels.yml`
 4. Configure project automation rules
 
+### ⚠️ **Important Development Note**
+**For GitHub workflow changes, always:**
+1. **Run unit tests first**: `pytest tests/unit/ -v`
+2. **Push changes before testing**: GitHub-specific features (issue templates, workflows, labels) MUST be pushed before asking users to test
+3. **Test on GitHub UI**: Issue templates, Actions, project automation only work after push
+
+**Remember: GitHub features can't be tested locally - they need to be live on GitHub!**
+
 ### Label Configuration
 ```bash
 # Using github-label-sync (optional)
