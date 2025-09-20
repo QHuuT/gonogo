@@ -146,6 +146,7 @@ gonogo/
 ### 📖 **Detailed Workflows & Guidelines**
 - **[Development Workflow](docs/technical/development-workflow.md)** - Complete BDD + RTM development process
 - **[Documentation Workflow](docs/technical/documentation-workflow.md)** - How to maintain all documentation
+- **[GitHub Issue Creation](docs/technical/github-issue-creation.md)** - Step-by-step issue creation with error solutions
 - **[Quality Assurance](docs/technical/quality-assurance.md)** - Code standards, testing, and quality gates
 
 ### 🎯 **Context & Decisions**
@@ -203,10 +204,12 @@ test: add unit tests for blog post service
 ### **🚀 Enhanced Development Session Protocol**
 1. [ ] Read CLAUDE.md (this file) completely
 2. [ ] Check [GitHub Issues](../../issues) for assigned work
-3. [ ] **PLAN**: For any new task, create GitHub issue using templates:
-   - Use `gh issue create --template epic` for new features
-   - Use `gh issue create --template user-story` for specific requirements
-   - Use `gh issue create --template defect` for bug fixes
+3. [ ] **PLAN**: For any new task, create GitHub issue using CLI:
+   - **📖 Detailed Guide**: See [GitHub Issue Creation Guide](docs/technical/github-issue-creation.md)
+   - Use `gh issue create --title "EP-XXXXX: Title" --body "Content" --label "epic,priority/high"`
+   - Use `gh issue create --title "US-XXXXX: Title" --body "Content" --label "user-story,priority/medium"`
+   - Use `gh issue create --title "DEF-XXXXX: Title" --body "Content" --label "defect,priority/high"`
+   - **Check existing IDs first**: `gh issue list --limit 50 --state all | grep -E "(EP-|US-|DEF-)"`
 4. [ ] Review [Development Workflow](docs/technical/development-workflow.md) for task-specific processes
 5. [ ] Check [Requirements Matrix](docs/traceability/requirements-matrix.md) for current status
 6. [ ] Verify [GDPR implications](docs/context/compliance/gdpr-requirements.md) if handling personal data
