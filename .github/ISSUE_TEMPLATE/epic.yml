@@ -1,0 +1,195 @@
+name: 📋 Epic
+description: Create a new epic for organizing related user stories
+title: "[EPIC] EP-XXX: "
+labels: ["epic", "needs-triage"]
+projects: ["gonogo/1"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Epic Creation
+
+        Thank you for creating an epic! This template ensures all required information is captured for proper traceability and project management.
+
+        **Reference** - See [epic template](../docs/01-business/epic-template.md) for detailed guidelines.
+
+  - type: input
+    id: epic-id
+    attributes:
+      label: Epic ID
+      description: Unique epic identifier (format EP-XXX)
+      placeholder: "EP-005"
+    validations:
+      required: true
+
+  - type: input
+    id: epic-name
+    attributes:
+      label: Epic Name
+      description: Short, descriptive name for the epic
+      placeholder: "Advanced Search Functionality"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Business priority of this epic
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+
+  - type: textarea
+    id: epic-description
+    attributes:
+      label: Epic Description
+      description: |
+        **As a** [user type]
+        **We want** [what we want to achieve]
+        **So that** [why we want to achieve it]
+      placeholder: |
+        **As a** blog visitor
+        **We want** advanced search and filtering capabilities
+        **So that** we can quickly find relevant content
+    validations:
+      required: true
+
+  - type: textarea
+    id: business-value
+    attributes:
+      label: Business Value
+      description: Why is this epic important? What value does it provide?
+      placeholder: |
+        - Improves user experience and content discovery
+        - Reduces bounce rate through better navigation
+        - Supports SEO strategy with structured content access
+    validations:
+      required: true
+
+  - type: textarea
+    id: success-criteria
+    attributes:
+      label: Success Criteria
+      description: How will we know this epic is successful?
+      placeholder: |
+        - [ ] Users can search blog posts by keyword
+        - [ ] Content filtering by category and tags works
+        - [ ] Search results load within 2 seconds
+        - [ ] Mobile search experience is optimized
+    validations:
+      required: true
+
+  - type: textarea
+    id: business-outcomes
+    attributes:
+      label: Business Outcomes
+      description: Expected outcomes and metrics
+      placeholder: |
+        - Primary - Increase content discoverability by 40%
+        - Secondary - Reduce bounce rate from content pages
+        - Metrics - Search usage, time on site, pages per session
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-stories
+    attributes:
+      label: User Stories (Planned)
+      description: List of user stories that will be part of this epic
+      placeholder: |
+        - US-XXX: Basic content search
+        - US-XXX: Advanced filtering
+        - US-XXX: Search result optimization
+    validations:
+      required: false
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: What other epics or external requirements does this depend on?
+      placeholder: |
+        - EP-001: Blog Content Management (must be completed first)
+        - Search indexing infrastructure
+        - Performance optimization framework
+    validations:
+      required: false
+
+  - type: dropdown
+    id: risk-level
+    attributes:
+      label: Risk Level
+      description: Overall risk assessment for this epic
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks-mitigation
+    attributes:
+      label: Risks and Mitigation
+      description: What are the main risks and how will they be mitigated?
+      placeholder: |
+        - Risk - Search performance may impact site speed
+        - Mitigation - Implement search indexing and caching strategy
+    validations:
+      required: false
+
+  - type: input
+    id: story-points
+    attributes:
+      label: Estimated Story Points
+      description: Total estimated story points for all user stories
+      placeholder: "25"
+    validations:
+      required: false
+
+  - type: input
+    id: iterations
+    attributes:
+      label: Estimated Duration
+      description: Expected number of iterations/sprints
+      placeholder: "3-4 iterations"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: gdpr-applicable
+    attributes:
+      label: GDPR Considerations
+      description: Does this epic involve personal data processing?
+      options:
+        - label: This epic involves personal data processing
+        - label: GDPR compliance review required
+        - label: Privacy impact assessment needed
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other relevant information, mockups, or references
+      placeholder: "Links to research, design mockups, competitor analysis, etc."
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Next Steps
+
+        1. Epic will be reviewed and assigned an epic maintainer
+        2. User stories will be created and linked to this epic
+        3. Epic will be added to the Requirements Traceability Matrix
+        4. Technical design and BDD scenarios will be developed
+
+        **Workflow** - Follow the [BDD + RTM Development Workflow](../CLAUDE.md#bdd--rtm-development-workflow) for implementation.

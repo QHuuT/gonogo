@@ -1,0 +1,207 @@
+name: 📖 User Story
+description: Create a new user story within an epic
+title: "[STORY] US-XXX: "
+labels: ["user-story", "needs-triage"]
+projects: ["gonogo/1"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## User Story Creation
+
+        Thank you for creating a user story! This template ensures all required information is captured for proper traceability and implementation.
+
+        **Reference** - See [user story template](../docs/01-business/user-story-template.md) for detailed guidelines.
+
+  - type: input
+    id: story-id
+    attributes:
+      label: User Story ID
+      description: Unique user story identifier (format US-XXX)
+      placeholder: "US-013"
+    validations:
+      required: true
+
+  - type: input
+    id: epic-link
+    attributes:
+      label: Parent Epic
+      description: Link to the parent epic (format EP-XXX or #issue-number)
+      placeholder: "EP-004 or #123"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Business priority of this user story
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Story Points
+      description: Estimated complexity in story points
+      options:
+        - "1"
+        - "2"
+        - "3"
+        - "5"
+        - "8"
+        - "13"
+        - "21"
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-story
+    attributes:
+      label: User Story
+      description: |
+        **As a** [user type]
+        **I want** [what they want]
+        **So that** [why they want it]
+      placeholder: |
+        **As a** blog visitor
+        **I want** to search for blog posts by keyword
+        **So that** I can quickly find content relevant to my interests
+    validations:
+      required: true
+
+  - type: textarea
+    id: business-value
+    attributes:
+      label: Business Value
+      description: Why is this user story important?
+      placeholder: |
+        - Improves user experience by making content discoverable
+        - Reduces bounce rate through better content access
+        - Supports content strategy and user engagement goals
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria-functional
+    attributes:
+      label: Acceptance Criteria - Functional Requirements
+      description: Specific, testable requirements using Given/When/Then format
+      placeholder: |
+        - [ ] **Given** I am on the blog homepage, **When** I enter a search term, **Then** I see relevant blog posts
+        - [ ] **Given** I search for a keyword, **When** results are displayed, **Then** they are ranked by relevance
+        - [ ] **Given** no results are found, **When** I search, **Then** I see a helpful "no results" message
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria-nonfunctional
+    attributes:
+      label: Acceptance Criteria - Non-Functional Requirements
+      description: Performance, security, usability, and other quality requirements
+      placeholder: |
+        - [ ] **Performance**: Search results return within 2 seconds
+        - [ ] **Accessibility**: Search is usable with keyboard navigation
+        - [ ] **Security**: Search input is sanitized to prevent XSS
+        - [ ] **Mobile**: Search interface works on mobile devices
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: gdpr-considerations
+    attributes:
+      label: GDPR Considerations
+      description: Does this user story involve personal data?
+      options:
+        - label: This story involves personal data processing
+        - label: Data collection requires user consent
+        - label: Privacy impact assessment needed
+        - label: Data retention policies apply
+
+  - type: textarea
+    id: gdpr-details
+    attributes:
+      label: GDPR Details (if applicable)
+      description: Specific GDPR considerations and compliance requirements
+      placeholder: |
+        - Personal Data Involved - Search terms (if logged)
+        - Legal Basis - Legitimate interest (analytics) or Consent
+        - Retention Period - 30 days for analytics, immediate deletion for search terms
+        - Data Subject Rights - Right to access search history, right to deletion
+    validations:
+      required: false
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: What other user stories or technical requirements must be completed first?
+      placeholder: |
+        - [ ] US-001: View Blog Posts (foundation functionality)
+        - [ ] Search indexing infrastructure setup
+        - [ ] Database optimization for search queries
+    validations:
+      required: false
+
+  - type: textarea
+    id: technical-notes
+    attributes:
+      label: Technical Notes
+      description: Implementation hints, architecture considerations, or technical constraints
+      placeholder: |
+        - Implement full-text search using PostgreSQL or Elasticsearch
+        - Consider search result caching for performance
+        - Ensure search queries are properly escaped
+        - Plan for search analytics and monitoring
+    validations:
+      required: false
+
+  - type: textarea
+    id: definition-of-done
+    attributes:
+      label: Definition of Done Checklist
+      description: Additional criteria specific to this story (beyond standard DoD)
+      placeholder: |
+        - [ ] Search functionality tested with various keywords
+        - [ ] Search performance meets 2-second requirement
+        - [ ] Mobile search interface validated
+        - [ ] Search analytics tracking implemented
+        - [ ] Help documentation updated with search features
+    validations:
+      required: false
+
+  - type: input
+    id: confidence-level
+    attributes:
+      label: Confidence Level
+      description: How confident are you in the story point estimate?
+      placeholder: "High / Medium / Low"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Mockups, user research, competitive analysis, or other relevant information
+      placeholder: "Links to designs, user feedback, research data, etc."
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Next Steps
+
+        1. Story will be reviewed and refined during backlog grooming
+        2. BDD scenarios will be created in technical documentation
+        3. Story will be added to the Requirements Traceability Matrix
+        4. Implementation will follow the [BDD + RTM Development Workflow](../CLAUDE.md#bdd--rtm-development-workflow)
+
+        **Traceability** - This story will be automatically linked to the parent epic and tracked in the RTM.

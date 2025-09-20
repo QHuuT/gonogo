@@ -1,0 +1,196 @@
+# GitHub Labels Configuration
+# This file defines all labels used for project management and automation
+# Use github-label-sync or manually create these labels in GitHub repository
+
+# Issue Type Labels
+- name: "epic"
+  color: "7057ff"
+  description: "Epic - collection of related user stories"
+
+- name: "user-story"
+  color: "0366d6"
+  description: "User story - specific functionality from user perspective"
+
+- name: "defect"
+  color: "d73a4a"
+  description: "Defect or bug in existing functionality"
+
+- name: "bug"
+  color: "d73a4a"
+  description: "Something isn't working"
+
+# Priority Labels
+- name: "priority/critical"
+  color: "b60205"
+  description: "Critical priority - blocks other work"
+
+- name: "priority/high"
+  color: "d93f0b"
+  description: "High priority - important for current iteration"
+
+- name: "priority/medium"
+  color: "fbca04"
+  description: "Medium priority - normal importance"
+
+- name: "priority/low"
+  color: "0e8a16"
+  description: "Low priority - nice to have"
+
+# Epic Labels
+- name: "epic/blog-content"
+  color: "c5def5"
+  description: "EP-001: Blog Content Management"
+
+- name: "epic/comment-system"
+  color: "c5def5"
+  description: "EP-002: GDPR-Compliant Comment System"
+
+- name: "epic/privacy-consent"
+  color: "c5def5"
+  description: "EP-003: Privacy and Consent Management"
+
+- name: "epic/github-workflow"
+  color: "c5def5"
+  description: "EP-004: GitHub Workflow Integration"
+
+# Status Labels
+- name: "status/backlog"
+  color: "ededed"
+  description: "In backlog, not yet started"
+
+- name: "status/ready"
+  color: "c2e0c6"
+  description: "Ready for development"
+
+- name: "status/in-progress"
+  color: "fbca04"
+  description: "Currently being worked on"
+
+- name: "status/in-review"
+  color: "d4c5f9"
+  description: "In code review"
+
+- name: "status/testing"
+  color: "bfd4f2"
+  description: "In testing phase"
+
+- name: "status/done"
+  color: "0e8a16"
+  description: "Completed and verified"
+
+- name: "status/blocked"
+  color: "d93f0b"
+  description: "Blocked by dependency or issue"
+
+# Component Labels
+- name: "component/frontend"
+  color: "f9d0c4"
+  description: "Frontend/UI related"
+
+- name: "component/backend"
+  color: "f9d0c4"
+  description: "Backend/API related"
+
+- name: "component/database"
+  color: "f9d0c4"
+  description: "Database related"
+
+- name: "component/security"
+  color: "f9d0c4"
+  description: "Security related"
+
+- name: "component/gdpr"
+  color: "f9d0c4"
+  description: "GDPR compliance related"
+
+- name: "component/documentation"
+  color: "f9d0c4"
+  description: "Documentation related"
+
+- name: "component/testing"
+  color: "f9d0c4"
+  description: "Testing related"
+
+- name: "component/ci-cd"
+  color: "f9d0c4"
+  description: "CI/CD pipeline related"
+
+# Workflow Labels
+- name: "needs-triage"
+  color: "fef2c0"
+  description: "Needs initial review and prioritization"
+
+- name: "needs-refinement"
+  color: "fef2c0"
+  description: "Needs more detail or clarification"
+
+- name: "ready-for-dev"
+  color: "c2e0c6"
+  description: "Ready for development"
+
+- name: "ready-for-review"
+  color: "d4c5f9"
+  description: "Ready for code review"
+
+- name: "ready-for-testing"
+  color: "bfd4f2"
+  description: "Ready for testing"
+
+# Special Labels
+- name: "duplicate"
+  color: "cfd3d7"
+  description: "This issue or pull request already exists"
+
+- name: "enhancement"
+  color: "a2eeef"
+  description: "New feature or request"
+
+- name: "good first issue"
+  color: "7057ff"
+  description: "Good for newcomers"
+
+- name: "help wanted"
+  color: "008672"
+  description: "Extra attention is needed"
+
+- name: "invalid"
+  color: "e4e669"
+  description: "This doesn't seem right"
+
+- name: "question"
+  color: "d876e3"
+  description: "Further information is requested"
+
+- name: "wontfix"
+  color: "ffffff"
+  description: "This will not be worked on"
+
+# Release Labels
+- name: "release/mvp"
+  color: "5319e7"
+  description: "Part of MVP release"
+
+- name: "release/v1.1"
+  color: "5319e7"
+  description: "Part of v1.1 release"
+
+- name: "release/v1.2"
+  color: "5319e7"
+  description: "Part of v1.2 release"
+
+# GDPR Specific Labels
+- name: "gdpr/personal-data"
+  color: "ff6b6b"
+  description: "Involves personal data processing"
+
+- name: "gdpr/consent-required"
+  color: "ff6b6b"
+  description: "Requires user consent"
+
+- name: "gdpr/privacy-review"
+  color: "ff6b6b"
+  description: "Needs privacy impact assessment"
+
+- name: "gdpr/data-retention"
+  color: "ff6b6b"
+  description: "Related to data retention policies"

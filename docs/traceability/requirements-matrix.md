@@ -9,17 +9,30 @@
 
 This matrix traces all requirements from business needs through implementation and testing, ensuring 100% coverage and GDPR compliance.
 
-## Traceability Matrix
+## Epic to User Story Mapping
 
-| Req ID | Requirement Description | Priority | User Story | BDD Scenario | Test Implementation | Code Implementation | Status | Notes |
-|--------|------------------------|----------|------------|--------------|-------------------|-------------------|--------|-------|
-| **BR-001** | Blog visitors can read posts without barriers | High | US-001 | blog-content.feature:view_blog_homepage | test_blog_content_steps.py | src/be/main.py:home | ✅ Basic | MVP Core |
-| **BR-002** | Blog post navigation and discovery | Medium | US-002 | blog-content.feature:navigate_between_posts | test_blog_content_steps.py | src/be/api/posts.py | 📝 Planned | Post-MVP |
-| **BR-003** | GDPR-compliant comment submission | High | US-003 | comment-system.feature:submit_comment | test_comment_system_steps.py | src/be/api/comments.py | 📝 Planned | MVP Core |
-| **BR-004** | Comment display and moderation | Medium | US-004, US-005 | comment-system.feature:view_comments | test_comment_system_steps.py | src/be/services/comments.py | 📝 Planned | MVP Core |
-| **GDPR-001** | GDPR consent banner and management | Critical | US-006 | gdpr-consent.feature:consent_banner | test_gdpr_consent_steps.py | src/security/gdpr/consent.py | 📝 Planned | MVP Critical |
-| **GDPR-002** | Data subject rights implementation | Critical | US-007 | gdpr-rights.feature:data_access | test_gdpr_rights_steps.py | src/security/gdpr/rights.py | 📝 Planned | MVP Critical |
-| **GDPR-003** | Automated data retention and cleanup | High | US-008 | gdpr-rights.feature:data_retention | test_gdpr_rights_steps.py | src/security/gdpr/retention.py | 📝 Planned | Post-MVP |
+| Epic ID | Epic Name | User Stories | Total Story Points | Priority | Status |
+|---------|-----------|--------------|-------------------|----------|--------|
+| **EP-001** | Blog Content Management | US-001, US-002 | 8 | High | 📝 Planned |
+| **EP-002** | GDPR-Compliant Comment System | US-003, US-004, US-005 | 16 | High | 📝 Planned |
+| **EP-003** | Privacy and Consent Management | US-006, US-007, US-008 | 29 | Critical | 📝 Planned |
+| **EP-004** | GitHub Workflow Integration | US-009, US-010, US-011, US-012 | 21 | High | 📝 Planned |
+
+## Requirements Traceability Matrix
+
+| Epic | Req ID | Requirement Description | Priority | User Story | BDD Scenario | Test Implementation | Code Implementation | Defects | Status | Notes |
+|------|--------|------------------------|----------|------------|--------------|-------------------|-------------------|---------|--------|-------|
+| **EP-001** | **BR-001** | Blog visitors can read posts without barriers | High | US-001 | blog-content.feature:view_blog_homepage | test_blog_content_steps.py | src/be/main.py:home | - | ✅ Basic | MVP Core |
+| **EP-001** | **BR-002** | Blog post navigation and discovery | Medium | US-002 | blog-content.feature:navigate_between_posts | test_blog_content_steps.py | src/be/api/posts.py | - | 📝 Planned | Post-MVP |
+| **EP-002** | **BR-003** | GDPR-compliant comment submission | High | US-003 | comment-system.feature:submit_comment | test_comment_system_steps.py | src/be/api/comments.py | - | 📝 Planned | MVP Core |
+| **EP-002** | **BR-004** | Comment display and moderation | Medium | US-004, US-005 | comment-system.feature:view_comments | test_comment_system_steps.py | src/be/services/comments.py | - | 📝 Planned | MVP Core |
+| **EP-003** | **GDPR-001** | GDPR consent banner and management | Critical | US-006 | gdpr-consent.feature:consent_banner | test_gdpr_consent_steps.py | src/security/gdpr/consent.py | - | 📝 Planned | MVP Critical |
+| **EP-003** | **GDPR-002** | Data subject rights implementation | Critical | US-007 | gdpr-rights.feature:data_access | test_gdpr_rights_steps.py | src/security/gdpr/rights.py | - | 📝 Planned | MVP Critical |
+| **EP-003** | **GDPR-003** | Automated data retention and cleanup | High | US-008 | gdpr-rights.feature:data_retention | test_gdpr_rights_steps.py | src/security/gdpr/retention.py | - | 📝 Planned | Post-MVP |
+| **EP-004** | **WF-001** | GitHub Issue template integration | High | US-009 | github-workflow.feature:issue_templates | test_github_workflow_steps.py | .github/ISSUE_TEMPLATE/ | - | ✅ Done | Quality of Life |
+| **EP-004** | **WF-002** | Automated RTM updates from GitHub | High | US-010 | github-workflow.feature:rtm_automation | test_github_workflow_steps.py | .github/workflows/rtm-update.yml | - | 📝 Planned | Quality of Life |
+| **EP-004** | **WF-003** | GitHub Pages documentation site | Medium | US-011 | github-workflow.feature:pages_deployment | test_github_workflow_steps.py | .github/workflows/pages.yml | - | 📝 Planned | Quality of Life |
+| **EP-004** | **WF-004** | GitHub Projects board configuration | Medium | US-012 | github-workflow.feature:projects_board | test_github_workflow_steps.py | GitHub Projects settings | - | 📝 Planned | Quality of Life |
 
 ## GDPR Compliance Mapping
 
@@ -42,14 +55,14 @@ This matrix traces all requirements from business needs through implementation a
 
 ## User Story to BDD Scenario Mapping
 
-### Epic 1: Blog Content Management
+### Epic 1: Blog Content Management (EP-001)
 
 | User Story | BDD Feature File | Key Scenarios | Test File |
 |------------|-----------------|---------------|-----------|
 | US-001: View Blog Posts | blog-content.feature | view_blog_homepage, view_individual_post | test_blog_content_steps.py |
 | US-002: Blog Navigation | blog-content.feature | navigate_between_posts, search_content | test_blog_content_steps.py |
 
-### Epic 2: Comment System with GDPR
+### Epic 2: GDPR-Compliant Comment System (EP-002)
 
 | User Story | BDD Feature File | Key Scenarios | Test File |
 |------------|-----------------|---------------|-----------|
@@ -57,7 +70,7 @@ This matrix traces all requirements from business needs through implementation a
 | US-004: View Comments | comment-system.feature | view_existing_comments | test_comment_system_steps.py |
 | US-005: Moderate Comments | comment-system.feature | admin_moderates_comments | test_comment_system_steps.py |
 
-### Epic 3: Privacy and Consent Management
+### Epic 3: Privacy and Consent Management (EP-003)
 
 | User Story | BDD Feature File | Key Scenarios | Test File |
 |------------|-----------------|---------------|-----------|
@@ -120,6 +133,22 @@ This matrix traces all requirements from business needs through implementation a
 | **French CNIL Guidelines** | Compliance certification | ✅ Researched | Low |
 | **Security Audit** | Production deployment | 📝 Planned | Medium |
 
+## Defect Tracking
+
+### Active Defects
+
+| Defect ID | Epic | User Story | Priority | Status | Assignee | Created | Description |
+|-----------|------|------------|----------|--------|----------|---------|-------------|
+| - | - | - | - | - | - | - | No active defects |
+
+### Defect Summary by Epic
+
+| Epic | Total Defects | Critical | High | Medium | Low | Resolved |
+|------|--------------|----------|------|--------|-----|----------|
+| EP-001 | 0 | 0 | 0 | 0 | 0 | 0 |
+| EP-002 | 0 | 0 | 0 | 0 | 0 | 0 |
+| EP-003 | 0 | 0 | 0 | 0 | 0 | 0 |
+
 ## Quality Gates
 
 ### MVP Release Criteria
@@ -129,6 +158,7 @@ This matrix traces all requirements from business needs through implementation a
 - [ ] Legal review completed
 - [ ] Performance benchmarks met
 - [ ] Accessibility standards met (WCAG 2.1 AA)
+- [ ] No critical or high-priority defects
 
 ### Continuous Compliance
 
@@ -136,6 +166,7 @@ This matrix traces all requirements from business needs through implementation a
 - [ ] Monthly traceability matrix updates
 - [ ] Quarterly legal review
 - [ ] Automated test execution on every commit
+- [ ] Daily defect triage and prioritization
 
 ## Tools and Automation
 
