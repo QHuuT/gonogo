@@ -137,13 +137,34 @@ jobs:
               }
             }
 
-            // 4. Add to GoNoGo project (if project integration is available)
+            // 4. Add to GoNoGo project
             try {
-              // Note: This requires the project ID - will need to be configured
-              console.log('📋 Project integration would be added here');
-              console.log('   (Requires project ID configuration)');
+              const projectId = 'PVT_kwHOBlfsAs4BDk4x'; // GoNoGo project ID
+
+              // Add issue to project using GraphQL API
+              const addToProjectMutation = `
+                mutation($projectId: ID!, $contentId: ID!) {
+                  addProjectV2ItemByContentId(input: {
+                    projectId: $projectId
+                    contentId: $contentId
+                  }) {
+                    item {
+                      id
+                    }
+                  }
+                }
+              `;
+
+              const result = await github.graphql(addToProjectMutation, {
+                projectId: projectId,
+                contentId: issue.node_id
+              });
+
+              console.log('📋 Added to GoNoGo project successfully');
+              console.log(`   Project item ID: ${result.addProjectV2ItemByContentId.item.id}`);
             } catch (error) {
-              console.log('❌ Project integration not yet configured');
+              console.log('❌ Failed to add to project:', error.message);
+              // This is not critical, so we continue
             }
 
             console.log('✅ Issue automation completed');
@@ -216,8 +237,36 @@ jobs:
                 }
               }
 
+              // Add to GoNoGo project if not already there
+              try {
+                const projectId = 'PVT_kwHOBlfsAs4BDk4x';
+
+                const addToProjectMutation = `
+                  mutation($projectId: ID!, $contentId: ID!) {
+                    addProjectV2ItemByContentId(input: {
+                      projectId: $projectId
+                      contentId: $contentId
+                    }) {
+                      item {
+                        id
+                      }
+                    }
+                  }
+                `;
+
+                await github.graphql(addToProjectMutation, {
+                  projectId: projectId,
+                  contentId: issue.node_id
+                });
+
+                console.log(`  📋 Added #${issue.number} to GoNoGo project`);
+              } catch (error) {
+                // Might already be in project or other issue - not critical
+                console.log(`  ℹ️ Could not add #${issue.number} to project: ${error.message}`);
+              }
+
               // Small delay to avoid rate limiting
-              await new Promise(resolve => setTimeout(resolve, 100));
+              await new Promise(resolve => setTimeout(resolve, 200));
             }
 
             console.log('✅ Bulk cleanup completed');
