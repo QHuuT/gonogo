@@ -12,6 +12,10 @@ pytest --cov=src tests/ --cov-report=html
 # Check archive status
 python tools/archive_cleanup.py --metrics
 
+# Inspect databases (NEW!)
+python tools/db_inspector.py                    # All databases overview
+python tools/db_inspector.py --db quality/logs/test_failures.db -i  # Interactive browser
+
 # Run all demos (generates sample data)
 python tools/failure_tracking_demo.py
 python tools/log_correlation_demo.py
@@ -29,6 +33,7 @@ python tools/archive_management_demo.py
 | **Log Correlation** | `quality/reports/` | `log_correlation_report.json` |
 | **GitHub Issues** | `quality/reports/` | `github_issue_creation_report_*.md` |
 | **Archives** | `quality/archives/` | Compressed historical reports |
+| **Databases** | `quality/logs/`, `quality/archives/` | `*.db` files (SQLite) |
 
 ## 🎯 Quality Thresholds
 

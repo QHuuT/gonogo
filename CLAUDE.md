@@ -66,6 +66,12 @@ python tools/report_generator.py --input quality/logs/ --filename custom_report.
 # Quality Reports Guide - 📚 COMPREHENSIVE DOCUMENTATION
 # See quality/README.md for detailed guide to all report types
 # See quality/QUICK_REFERENCE.md for common commands and quality thresholds
+# See quality/DATABASE_INSPECTION_GUIDE.md for SQLite database examination
+
+# Database Inspection (NEW)
+python tools/db_inspector.py                                    # Overview of all SQLite databases
+python tools/db_inspector.py --db quality/logs/test_failures.db # Examine specific database
+python tools/db_inspector.py --db quality/logs/test_failures.db --interactive  # Interactive browser mode
 
 # Test Failure Tracking and Analysis (NEW)
 python tools/failure_tracking_demo.py                      # Generate failure analysis with sample data

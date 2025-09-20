@@ -80,7 +80,32 @@ pytest --cov=src tests/ --cov-report=html --cov-report=json
 
 # Check archive status
 python tools/archive_cleanup.py --metrics
+
+# Inspect SQLite databases (NEW!)
+python tools/db_inspector.py                                    # Overview of all databases
+python tools/db_inspector.py --db quality/logs/test_failures.db # Examine specific database
+python tools/db_inspector.py --db quality/logs/test_failures.db --interactive  # Interactive browser
 ```
+
+## 🗂️ Database Inspection (NEW!)
+**Purpose**: Examine SQLite databases created by testing and logging systems
+**Location**: Various locations in `quality/`
+**Tool**: `tools/db_inspector.py`
+
+The testing infrastructure creates SQLite databases to track failures, log data, and archive metadata. Use the database inspector tool to examine these databases:
+
+```bash
+# Quick overview of all databases
+python tools/db_inspector.py
+
+# Examine test failures
+python tools/db_inspector.py --db quality/logs/test_failures.db --table test_failures --data --limit 5
+
+# Interactive exploration
+python tools/db_inspector.py --db quality/logs/test_failures.db --interactive
+```
+
+**📖 Detailed Guide**: See [Database Inspection Guide](DATABASE_INSPECTION_GUIDE.md) for complete documentation.
 
 ## 📊 Report Types Overview
 
