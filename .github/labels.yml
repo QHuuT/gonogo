@@ -53,32 +53,8 @@
   color: "c5def5"
   description: "EP-004: GitHub Workflow Integration"
 
-# Status Labels
-- name: "status/backlog"
-  color: "ededed"
-  description: "In backlog, not yet started"
-
-- name: "status/ready"
-  color: "c2e0c6"
-  description: "Ready for development"
-
-- name: "status/in-progress"
-  color: "fbca04"
-  description: "Currently being worked on"
-
-- name: "status/in-review"
-  color: "d4c5f9"
-  description: "In code review"
-
-- name: "status/testing"
-  color: "bfd4f2"
-  description: "In testing phase"
-
-- name: "status/done"
-  color: "0e8a16"
-  description: "Completed and verified"
-
-- name: "status/blocked"
+# Status flag Labels
+- name: "blocked"
   color: "d93f0b"
   description: "Blocked by dependency or issue"
 

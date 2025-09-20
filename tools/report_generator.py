@@ -67,6 +67,23 @@ class TestResult:
 
 
 @dataclass
+class CoverageSummary:
+    """Coverage statistics for reporting."""
+    total_statements: int = 0
+    covered_statements: int = 0
+    coverage_percentage: float = 0.0
+    branch_coverage: float = 0.0
+    uncovered_lines: List[str] = None
+    by_file: Dict[str, Dict[str, Any]] = None
+
+    def __post_init__(self):
+        if self.uncovered_lines is None:
+            self.uncovered_lines = []
+        if self.by_file is None:
+            self.by_file = {}
+
+
+@dataclass
 class ReportData:
     """Complete data structure for report generation."""
     summary: TestSummary
@@ -74,6 +91,7 @@ class ReportData:
     test_types: Dict[str, TestSummary]
     timeline: List[Dict[str, Any]]
     failure_analysis: Dict[str, Any]
+    coverage_data: Optional[CoverageSummary]
     environment_info: Dict[str, Any]
     generation_info: Dict[str, Any]
 
@@ -189,6 +207,47 @@ class ReportGenerator:
 
         return log_entries
 
+    def load_coverage_data(self, coverage_file_path: Optional[Path] = None) -> Optional[CoverageSummary]:
+        """Load coverage data from JSON file."""
+        if coverage_file_path is None:
+            coverage_file_path = Path("quality/reports/coverage.json")
+
+        if not coverage_file_path.exists():
+            print(f"Coverage file not found: {coverage_file_path}")
+            return None
+
+        try:
+            with open(coverage_file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+
+            # Extract summary data
+            totals = data.get('totals', {})
+            coverage_summary = CoverageSummary(
+                total_statements=totals.get('num_statements', 0),
+                covered_statements=totals.get('covered_lines', 0),
+                coverage_percentage=round(float(totals.get('percent_covered', 0.0)), 2),
+                branch_coverage=round(float(totals.get('percent_covered_display', 0.0)), 2),
+                by_file={}
+            )
+
+            # Extract per-file coverage data
+            files = data.get('files', {})
+            for file_path, file_data in files.items():
+                if file_path.startswith('src/'):  # Only include source files
+                    coverage_summary.by_file[file_path] = {
+                        'statements': file_data.get('summary', {}).get('num_statements', 0),
+                        'covered': file_data.get('summary', {}).get('covered_lines', 0),
+                        'percentage': round(float(file_data.get('summary', {}).get('percent_covered', 0.0)), 2),
+                        'missing_lines': file_data.get('missing_lines', []),
+                        'excluded_lines': file_data.get('excluded_lines', [])
+                    }
+
+            return coverage_summary
+
+        except Exception as e:
+            print(f"Error loading coverage data: {e}")
+            return None
+
     def process_log_data(self, log_entries: List[LogEntry], test_type_filter: Optional[str] = None) -> ReportData:
         """Process log entries into report data structure."""
 
@@ -262,12 +321,16 @@ class ReportGenerator:
             'test_type_filter': test_type_filter
         }
 
+        # Load coverage data
+        coverage_data = self.load_coverage_data()
+
         return ReportData(
             summary=summary,
             test_results=test_results,
             test_types=type_summaries,
             timeline=sorted(timeline_events, key=lambda x: x['timestamp']),
             failure_analysis=failure_analysis,
+            coverage_data=coverage_data,
             environment_info=environment_info,
             generation_info=generation_info
         )
@@ -686,12 +749,44 @@ def _create_demo_data() -> ReportData:
         end_time=(base_time + timedelta(minutes=2)).isoformat()
     )
 
+    # Create demo coverage data
+    demo_coverage = CoverageSummary(
+        total_statements=150,
+        covered_statements=135,
+        coverage_percentage=90.0,
+        branch_coverage=88.5,
+        by_file={
+            'src/shared/logging/logger.py': {
+                'statements': 45,
+                'covered': 42,
+                'percentage': 93.3,
+                'missing_lines': [23, 67, 89],
+                'excluded_lines': []
+            },
+            'src/shared/logging/config.py': {
+                'statements': 25,
+                'covered': 25,
+                'percentage': 100.0,
+                'missing_lines': [],
+                'excluded_lines': [5, 6]
+            },
+            'src/shared/logging/sanitizer.py': {
+                'statements': 80,
+                'covered': 68,
+                'percentage': 85.0,
+                'missing_lines': [45, 46, 47, 78, 79, 80, 95, 96, 97, 98, 99, 100],
+                'excluded_lines': [10, 11]
+            }
+        }
+    )
+
     return ReportData(
         summary=summary,
         test_results=test_results,
         test_types={'unit': summary, 'integration': summary},
         timeline=[],
         failure_analysis={'total_failures': 3, 'patterns': [], 'most_common_errors': []},
+        coverage_data=demo_coverage,
         environment_info={'environments': ['test'], 'session_count': 1},
         generation_info={'generated_at': datetime.now().isoformat(), 'generator_version': '1.0.0'}
     )

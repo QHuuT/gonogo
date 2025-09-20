@@ -624,6 +624,121 @@ pytest tests/security/test_gdpr_compliance.py -v
 2. Reference relevant Epic (EP-00006 for test logging features)
 3. Include use case and acceptance criteria
 
+#### **📊 Test Stabilization Procedures**
+
+When encountering systematic test failures, follow this stabilization workflow:
+
+**1. Import Path Issues**
+- **Symptom**: `ModuleNotFoundError` during test collection
+- **Root Causes**:
+  - Inconsistent import patterns across test files
+  - **Namespace collision** between test and source directory structures
+- **Resolution**:
+  - Standardize all imports to use pytest's `pythonpath` configuration
+  - For namespace collisions: Use direct module loading with `importlib.util`
+- **Standard Pattern**: Use `from shared.module.submodule import Class` (not `from src.shared.module`)
+- **Namespace Collision Fix**: Load modules directly from source files to bypass collision
+- **Example**: Change `from src.shared.testing.failure_tracker import` to `from shared.testing.failure_tracker import`
+- **Avoid**: Manual `sys.path` manipulation in test files, mirroring source structure in test directories
+
+**2. Naming Convention Migrations**
+- **Symptom**: Tests failing after ID format changes (e.g., 3-digit → 5-digit)
+- **Resolution**: Update regex patterns, zfill() calls, and test data systematically
+- **Files to Check**: Label mappers, epic ID normalization, default mappings
+- **Tool**: Use `replace_all=true` for consistent updates across files
+
+**3. Mock Integration Issues**
+- **Symptom**: Tests using mocks but code paths not being intercepted
+- **Resolution**: Verify mock targets match actual code paths
+- **Check**: Instance creation patterns, inheritance hierarchies
+
+**4. Fixture Teardown Problems**
+- **Symptom**: SQLite permission errors on Windows during cleanup
+- **Resolution**: Known Windows limitation, does not affect test functionality
+- **Status**: Acceptable minor issue for development environment
+
+**Priority**: Always stabilize existing functionality before implementing new features per project guidelines.
+
+#### **📦 Import Standardization Best Practices**
+
+**✅ Correct Import Patterns**
+```python
+# Test files - use pytest pythonpath configuration
+from shared.utils.rtm_link_generator import RTMLinkGenerator
+from shared.testing.failure_tracker import FailureTracker
+from shared.logging.logger import StructuredLogger
+
+# Production code - use relative imports when appropriate
+from .utils import helper_function
+from ..models import DatabaseModel
+```
+
+**❌ Avoid These Patterns**
+```python
+# Don't use direct src imports in tests
+from src.shared.utils.module import Class
+
+# Don't manipulate sys.path manually in tests
+import sys
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+
+# Don't mix import styles in the same project
+```
+
+**🔧 Pytest Configuration Leverage**
+- **File**: `pyproject.toml` contains `pythonpath = ["src", "tools"]`
+- **Benefit**: Automatic path resolution for all test files
+- **Usage**: Import directly from module paths relative to `src/`
+
+#### **🔍 Namespace Collision Debugging**
+
+**When Standard Imports Fail Despite Correct Configuration**:
+
+**1. Identify Namespace Collision**
+```python
+# Add debug imports to test file
+try:
+    import shared.testing
+    print("shared.testing imported from:", shared.testing.__file__)
+except Exception as e:
+    print("Import failed:", e)
+```
+
+**2. Check for Directory Structure Conflicts**
+- Test directory: `tests/unit/shared/testing/` ❌ (can cause collision)
+- Source directory: `src/shared/testing/` ✅ (intended target)
+
+**3. Solution: Direct Module Loading**
+```python
+import importlib.util
+from pathlib import Path
+
+# Load module directly from source file
+repo_root = Path(__file__).parent.parent.parent.parent.parent
+module_path = repo_root / "src" / "shared" / "testing" / "module_name.py"
+
+spec = importlib.util.spec_from_file_location("module_name", module_path)
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+
+# Import classes from loaded module
+ClassName = module.ClassName
+```
+
+**4. Prevention**
+- Avoid mirroring source directory structure in test directories
+- Use flat test organization or different naming patterns
+- Test imports individually when issues arise
+
+**5. Relative Import Issues with Direct Loading**
+- **Symptom**: `ImportError: attempted relative import with no known parent package`
+- **Cause**: Direct module loading via `importlib.util` breaks relative imports
+- **Simple Case Solution**: Convert relative imports to absolute imports in source modules
+- **Example**: Change `from .module import Class` to `from shared.package.module import Class`
+- **Complex Case**: Cascading dependencies with multiple relative imports
+- **Assessment**: If >3 interdependent modules affected, consider deferring complex fix
+- **Alternative**: Use integration tests for functionality validation when unit tests blocked
+
 ---
 
 **Related Documentation**:

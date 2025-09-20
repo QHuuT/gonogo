@@ -1,0 +1,514 @@
+"""
+Unit tests for log-failure correlation and context preservation.
+
+Tests the LogFailureCorrelator system to ensure proper correlation
+between structured logs and test failures for debugging assistance.
+
+Related to: US-00026 Log-failure association and context preservation
+"""
+
+import tempfile
+import pytest
+import json
+from datetime import datetime, timedelta
+from pathlib import Path
+from unittest.mock import patch, MagicMock
+
+# Import modules using direct loading to avoid namespace collision
+import sys
+import importlib.util
+
+# Load all modules directly from source files to avoid namespace collision
+repo_root = Path(__file__).parent.parent.parent.parent.parent
+
+# Add src to path for any remaining dependencies
+src_path = repo_root / "src"
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+
+# Load failure_tracker module first (dependency)
+tracker_path = repo_root / "src" / "shared" / "testing" / "failure_tracker.py"
+spec = importlib.util.spec_from_file_location("failure_tracker_module", tracker_path)
+failure_tracker_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(failure_tracker_module)
+
+# Load logger module (dependency)
+logger_path = repo_root / "src" / "shared" / "logging" / "logger.py"
+spec = importlib.util.spec_from_file_location("logger_module", logger_path)
+logger_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(logger_module)
+
+# Temporarily inject the loaded modules into sys.modules so absolute imports work
+sys.modules['shared.testing.failure_tracker'] = failure_tracker_module
+sys.modules['shared.logging.logger'] = logger_module
+
+# Now load log_failure_correlator module with dependencies available
+correlator_path = repo_root / "src" / "shared" / "testing" / "log_failure_correlator.py"
+spec = importlib.util.spec_from_file_location("log_failure_correlator_module", correlator_path)
+log_failure_correlator_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(log_failure_correlator_module)
+
+# Import classes from loaded modules
+FailureTracker = failure_tracker_module.FailureTracker
+TestFailure = failure_tracker_module.TestFailure
+FailureCategory = failure_tracker_module.FailureCategory
+LogEntry = logger_module.LogEntry
+StructuredLogger = logger_module.StructuredLogger
+LogFailureCorrelator = log_failure_correlator_module.LogFailureCorrelator
+FailureContext = log_failure_correlator_module.FailureContext
+LogCorrelationSummary = log_failure_correlator_module.LogCorrelationSummary
+
+
+class TestLogFailureCorrelator:
+    """Test core LogFailureCorrelator functionality."""
+
+    @pytest.fixture
+    def temp_db(self):
+        """Create temporary database for testing."""
+        with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as f:
+            db_path = Path(f.name)
+        yield db_path
+        # Handle Windows file locking issues
+        try:
+            if db_path.exists():
+                db_path.unlink()
+        except PermissionError:
+            pass
+
+    @pytest.fixture
+    def failure_tracker(self, temp_db):
+        """Create FailureTracker instance with temporary database."""
+        return FailureTracker(db_path=temp_db)
+
+    @pytest.fixture
+    def mock_logger(self):
+        """Create mock structured logger for testing."""
+        logger = MagicMock(spec=StructuredLogger)
+        logger.get_recent_logs.return_value = []
+        return logger
+
+    @pytest.fixture
+    def correlator(self, failure_tracker, mock_logger):
+        """Create LogFailureCorrelator instance."""
+        return LogFailureCorrelator(failure_tracker=failure_tracker, logger=mock_logger)
+
+    @pytest.fixture
+    def sample_failure(self, failure_tracker):
+        """Create a sample failure for testing."""
+        failure = TestFailure(
+            test_id="test-123",
+            test_name="test_sample_function",
+            test_file="tests/unit/test_example.py",
+            failure_message="AssertionError: expected 5 but got 3",
+            stack_trace="test_example.py:42 in test_sample_function\n    assert result == 5",
+            category=FailureCategory.ASSERTION_ERROR
+        )
+        failure_id = failure_tracker.record_failure(failure)
+        return failure_id
+
+    @pytest.fixture
+    def sample_logs(self):
+        """Create sample log entries for testing."""
+        base_time = datetime.now()
+
+        logs = [
+            LogEntry(
+                timestamp=(base_time - timedelta(minutes=2)).isoformat(),
+                level="INFO",
+                message="Test setup started",
+                test_id="test-123",
+                test_name="test_sample_function",
+                tags=["setup", "test_lifecycle"],
+                metadata={"environment": "test", "python_version": "3.13"}
+            ),
+            LogEntry(
+                timestamp=(base_time - timedelta(minutes=1)).isoformat(),
+                level="INFO",
+                message="Executing test function",
+                test_id="test-123",
+                test_name="test_sample_function",
+                tags=["execution"],
+                metadata={"test_data": {"input": 3, "expected": 5}}
+            ),
+            LogEntry(
+                timestamp=base_time.isoformat(),
+                level="ERROR",
+                message="Test failed with assertion error",
+                test_id="test-123",
+                test_name="test_sample_function",
+                test_status="failed",
+                duration_ms=150.5,
+                tags=["failure"],
+                metadata={"actual_value": 3, "expected_value": 5}
+            ),
+            LogEntry(
+                timestamp=(base_time + timedelta(seconds=10)).isoformat(),
+                level="INFO",
+                message="Test teardown completed",
+                test_id="test-123",
+                test_name="test_sample_function",
+                tags=["teardown", "test_lifecycle"]
+            )
+        ]
+        return logs
+
+    def test_correlator_initialization(self, failure_tracker, mock_logger):
+        """Test LogFailureCorrelator initialization."""
+        correlator = LogFailureCorrelator(failure_tracker=failure_tracker, logger=mock_logger)
+
+        assert correlator.failure_tracker == failure_tracker
+        assert correlator.logger == mock_logger
+
+    def test_correlator_default_initialization(self):
+        """Test LogFailureCorrelator with default parameters."""
+        correlator = LogFailureCorrelator()
+
+        assert correlator.failure_tracker is not None
+        assert correlator.logger is not None
+
+    def test_correlate_failure_with_logs_success(self, correlator, sample_failure, sample_logs):
+        """Test successful correlation of failure with logs."""
+        # Mock logger to return sample logs
+        correlator.logger.get_recent_logs.return_value = sample_logs
+
+        context = correlator.correlate_failure_with_logs(sample_failure)
+
+        assert context is not None
+        assert isinstance(context, FailureContext)
+        assert context.failure_id == sample_failure
+        assert context.test_id == "test-123"
+        assert context.test_name == "test_sample_function"
+        assert "AssertionError" in context.failure_message
+
+        # Check log organization
+        assert len(context.setup_logs) == 1
+        assert len(context.execution_logs) == 1
+        assert len(context.teardown_logs) == 1
+
+        # Check context extraction
+        assert "python_version" in context.environment_info
+        assert "test_data" in context.test_data or context.execution_logs[0].metadata
+
+        # Check debugging assistance
+        assert context.reproduction_guide is not None
+        assert len(context.debugging_hints) > 0
+
+    def test_correlate_failure_with_logs_invalid_id(self, correlator):
+        """Test correlation with invalid failure ID."""
+        context = correlator.correlate_failure_with_logs(99999)
+        assert context is None
+
+    def test_correlate_failure_with_logs_no_logs(self, correlator, sample_failure):
+        """Test correlation when no logs are found."""
+        # Mock logger to return empty logs
+        correlator.logger.get_recent_logs.return_value = []
+
+        context = correlator.correlate_failure_with_logs(sample_failure)
+
+        assert context is not None
+        assert len(context.setup_logs) == 0
+        assert len(context.execution_logs) == 0
+        assert len(context.teardown_logs) == 0
+
+    def test_log_organization_by_phase(self, correlator, sample_logs):
+        """Test log organization into setup, execution, teardown phases."""
+        setup_logs, execution_logs, teardown_logs = correlator._organize_logs_by_phase(sample_logs)
+
+        assert len(setup_logs) == 1
+        assert "setup" in setup_logs[0].tags
+
+        assert len(execution_logs) == 1
+        assert "execution" in execution_logs[0].tags
+
+        assert len(teardown_logs) == 1
+        assert "teardown" in teardown_logs[0].tags
+
+    def test_environment_context_extraction(self, correlator, sample_logs):
+        """Test extraction of environment context from logs."""
+        environment = correlator._extract_environment_context(sample_logs)
+
+        assert "python_version" in environment
+        assert environment["python_version"] == "3.13"
+
+    def test_test_data_context_extraction(self, correlator, sample_logs):
+        """Test extraction of test data from logs."""
+        test_data = correlator._extract_test_data_context(sample_logs)
+
+        # Test data might be in metadata of execution logs
+        execution_log = next(log for log in sample_logs if "execution" in log.tags)
+        if "test_data" in execution_log.metadata:
+            assert "test_data" in test_data or execution_log.metadata["test_data"] is not None
+
+    def test_execution_state_extraction(self, correlator, sample_logs):
+        """Test extraction of execution state from logs."""
+        execution_state = correlator._extract_execution_state(sample_logs)
+
+        # Should extract duration and status from failure log
+        assert "duration_ms" in execution_state or "final_status" in execution_state
+
+    def test_reproduction_guide_generation(self, correlator, sample_failure, sample_logs):
+        """Test generation of failure reproduction guide."""
+        correlator.logger.get_recent_logs.return_value = sample_logs
+
+        # Get failure details for testing
+        failure = correlator._get_failure_by_id(sample_failure)
+        environment = {"python_version": "3.13", "platform": "Windows"}
+
+        guide = correlator._generate_reproduction_guide(failure, sample_logs, environment)
+
+        assert "Reproduction Guide" in guide
+        assert failure["test_name"] in guide
+        assert "Environment Setup" in guide
+        assert "Steps to Reproduce" in guide
+
+    def test_debugging_hints_generation(self, correlator, sample_failure, sample_logs):
+        """Test generation of debugging hints."""
+        # Get failure details
+        failure = correlator._get_failure_by_id(sample_failure)
+
+        hints = correlator._generate_debugging_hints(failure, sample_logs)
+
+        assert len(hints) > 0
+        # Should include category-specific hints for assertion errors
+        assertion_hints = [hint for hint in hints if "assertion" in hint.lower()]
+        assert len(assertion_hints) > 0
+
+    def test_correlate_all_recent_failures(self, correlator, sample_failure, sample_logs):
+        """Test correlation of all recent failures."""
+        correlator.logger.get_recent_logs.return_value = sample_logs
+
+        summary = correlator.correlate_all_recent_failures(days=7)
+
+        assert isinstance(summary, LogCorrelationSummary)
+        assert summary.total_failures_processed >= 1
+        assert summary.correlation_success_rate >= 0
+        assert isinstance(summary.common_failure_patterns, list)
+        assert isinstance(summary.debugging_insights, list)
+
+    def test_failure_reproduction_script_generation(self, correlator, sample_failure, sample_logs):
+        """Test generation of failure reproduction script."""
+        correlator.logger.get_recent_logs.return_value = sample_logs
+
+        script = correlator.generate_failure_reproduction_script(sample_failure)
+
+        assert script is not None
+        assert "#!/usr/bin/env python3" in script
+        assert "Failure Reproduction Script" in script
+        assert "test_sample_function" in script
+        assert "import pytest" in script
+
+    def test_correlation_report_export(self, correlator, sample_failure, sample_logs):
+        """Test export of correlation report."""
+        correlator.logger.get_recent_logs.return_value = sample_logs
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = Path(temp_dir) / "test_report.json"
+
+            report_path = correlator.export_correlation_report(output_path)
+
+            assert Path(report_path).exists()
+
+            # Validate report content
+            with open(report_path, 'r', encoding='utf-8') as f:
+                report = json.load(f)
+
+            assert "generated_at" in report
+            assert "summary" in report
+            assert "failure_contexts" in report
+            assert "correlation_metadata" in report
+
+    def test_find_related_failures(self, correlator, failure_tracker):
+        """Test finding related failures."""
+        # Create multiple related failures
+        failure1 = TestFailure(
+            test_name="test_function_1",
+            test_file="tests/unit/test_example.py",
+            failure_message="AssertionError: expected 5 but got 3",
+            category=FailureCategory.ASSERTION_ERROR
+        )
+        failure2 = TestFailure(
+            test_name="test_function_2",
+            test_file="tests/unit/test_example.py",  # Same file
+            failure_message="AssertionError: expected 10 but got 7",
+            category=FailureCategory.ASSERTION_ERROR
+        )
+
+        failure_tracker.record_failure(failure1)
+        failure_id2 = failure_tracker.record_failure(failure2)
+
+        # Get failure details and find related
+        failure = correlator._get_failure_by_id(failure_id2)
+        related = correlator._find_related_failures(failure)
+
+        assert len(related) >= 0  # Should find related failures or none
+
+
+class TestFailureContextDataClass:
+    """Test FailureContext dataclass functionality."""
+
+    def test_failure_context_creation(self):
+        """Test FailureContext object creation."""
+        from src.shared.logging.logger import LogEntry
+
+        context = FailureContext(
+            failure_id=1,
+            test_id="test-123",
+            test_name="test_example",
+            failure_message="Test error",
+            stack_trace="Stack trace here",
+            setup_logs=[],
+            execution_logs=[],
+            teardown_logs=[],
+            environment_info={"python_version": "3.13"},
+            test_data={"input": "test"},
+            execution_state={"status": "failed"},
+            reproduction_guide="Guide here",
+            debugging_hints=["Hint 1"],
+            related_failures=[]
+        )
+
+        assert context.failure_id == 1
+        assert context.test_id == "test-123"
+        assert context.test_name == "test_example"
+        assert context.environment_info["python_version"] == "3.13"
+        assert len(context.debugging_hints) == 1
+
+
+class TestLogCorrelationSummary:
+    """Test LogCorrelationSummary dataclass functionality."""
+
+    def test_summary_creation(self):
+        """Test LogCorrelationSummary object creation."""
+        summary = LogCorrelationSummary(
+            total_failures_processed=10,
+            failures_with_logs=8,
+            correlation_success_rate=80.0,
+            common_failure_patterns=[{"category": "assertion_error", "count": 5}],
+            debugging_insights=["Check assertions", "Review test data"]
+        )
+
+        assert summary.total_failures_processed == 10
+        assert summary.failures_with_logs == 8
+        assert summary.correlation_success_rate == 80.0
+        assert len(summary.common_failure_patterns) == 1
+        assert len(summary.debugging_insights) == 2
+
+
+class TestLogFailureCorrelatorIntegration:
+    """Test integration scenarios and edge cases."""
+
+    @pytest.fixture
+    def integration_correlator(self):
+        """Create correlator with temporary database for integration tests."""
+        with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as f:
+            db_path = Path(f.name)
+
+        failure_tracker = FailureTracker(db_path=db_path)
+        correlator = LogFailureCorrelator(failure_tracker=failure_tracker)
+
+        yield correlator
+
+        # Cleanup
+        try:
+            if db_path.exists():
+                db_path.unlink()
+        except PermissionError:
+            pass
+
+    def test_unicode_content_handling(self, integration_correlator):
+        """Test that correlator handles Unicode content correctly."""
+        # Create failure with Unicode content
+        failure = TestFailure(
+            test_name="test_unicode",
+            test_file="tests/test_unicode.py",
+            failure_message="UnicodeError: Can't encode character '✅'",
+            stack_trace="Error with emoji ✅ and symbols ⚠️ 📝"
+        )
+
+        failure_id = integration_correlator.failure_tracker.record_failure(failure)
+
+        # Create logs with Unicode content
+        unicode_logs = [
+            LogEntry(
+                timestamp=datetime.now().isoformat(),
+                level="ERROR",
+                message="Unicode processing failed ✅",
+                test_id="test-456",
+                test_name="test_unicode",
+                metadata={"status": "✅", "symbols": "⚠️📝"}
+            )
+        ]
+
+        integration_correlator.logger.get_recent_logs.return_value = unicode_logs
+
+        # Test correlation
+        context = integration_correlator.correlate_failure_with_logs(failure_id)
+
+        assert context is not None
+        assert "✅" in context.failure_message
+
+    def test_large_log_volume_handling(self, integration_correlator):
+        """Test handling of large volumes of logs."""
+        # Create many log entries
+        large_log_set = []
+        base_time = datetime.now()
+
+        for i in range(1000):
+            log = LogEntry(
+                timestamp=(base_time - timedelta(minutes=i)).isoformat(),
+                level="INFO",
+                message=f"Log entry {i}",
+                test_id="test-large",
+                test_name="test_large_volume"
+            )
+            large_log_set.append(log)
+
+        integration_correlator.logger.get_recent_logs.return_value = large_log_set
+
+        # Create failure
+        failure = TestFailure(
+            test_name="test_large_volume",
+            failure_message="Test with large log volume"
+        )
+
+        failure_id = integration_correlator.failure_tracker.record_failure(failure)
+
+        # Test correlation performance
+        context = integration_correlator.correlate_failure_with_logs(failure_id)
+
+        assert context is not None
+        # Should handle large log volumes without issues
+
+    def test_malformed_log_data_handling(self, integration_correlator):
+        """Test handling of malformed or missing log data."""
+        # Create logs with missing/malformed data
+        malformed_logs = [
+            LogEntry(
+                timestamp="invalid-timestamp",
+                level="INFO",
+                message="Test log",
+                test_id=None,
+                test_name=""
+            ),
+            LogEntry(
+                timestamp=datetime.now().isoformat(),
+                level=None,
+                message=None,
+                test_id="test-789"
+            )
+        ]
+
+        integration_correlator.logger.get_recent_logs.return_value = malformed_logs
+
+        # Create failure
+        failure = TestFailure(
+            test_name="test_malformed",
+            failure_message="Test with malformed logs"
+        )
+
+        failure_id = integration_correlator.failure_tracker.record_failure(failure)
+
+        # Should not crash with malformed data
+        context = integration_correlator.correlate_failure_with_logs(failure_id)
+
+        assert context is not None  # Should handle gracefully

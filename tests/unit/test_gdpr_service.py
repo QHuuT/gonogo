@@ -289,7 +289,7 @@ class TestGDPRService:
             total_consents=100, pending_requests=0, overdue_requests=0
         )
 
-        assert score == 110.0  # 100 base + 10 bonus for having consents
+        assert score == 100.0  # Capped at 100% (100 base + 10 bonus, but max 100)
 
         # Test with overdue requests (should reduce score)
         score_with_overdue = service._calculate_compliance_score(

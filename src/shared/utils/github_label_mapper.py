@@ -65,11 +65,11 @@ class TraceabilityMatrixParser:
 
             # Extract epic mappings from matrix content
             # This is a simplified parser - in production, you'd want more robust parsing
-            epic_pattern = r"\*\*EP-(\d+)\*\*.*?([^\|]+)\|"
+            epic_pattern = r"\*\*EP-(\d+)\*\*[^|]*\|\s*([^|]+?)\s*\|"
             matches = re.findall(epic_pattern, content, re.MULTILINE)
 
             for epic_num, description in matches:
-                epic_id = f"EP-{epic_num.zfill(3)}"
+                epic_id = f"EP-{epic_num.zfill(5)}"
                 mappings[epic_id] = self._determine_component_from_description(
                     description
                 )
@@ -88,10 +88,10 @@ class TraceabilityMatrixParser:
     def _get_default_mappings(self) -> Dict[str, Dict[str, str]]:
         """Default epic mappings as fallback."""
         return {
-            "EP-001": {"component": "frontend", "epic_label": "blog-content"},
-            "EP-002": {"component": "backend", "epic_label": "comment-system"},
-            "EP-003": {"component": "gdpr", "epic_label": "privacy-consent"},
-            "EP-004": {"component": "ci-cd", "epic_label": "github-workflow"},
+            "EP-00001": {"component": "frontend", "epic_label": "blog-content"},
+            "EP-00002": {"component": "backend", "epic_label": "comment-system"},
+            "EP-00003": {"component": "gdpr", "epic_label": "privacy-consent"},
+            "EP-00004": {"component": "ci-cd", "epic_label": "github-workflow"},
         }
 
     def _determine_component_from_description(self, description: str) -> Dict[str, str]:
@@ -194,7 +194,7 @@ class GitHubIssueLabelMapper:
 
         # Normalize epic ID format
         epic_num = int(epic_match.group(1))
-        normalized_epic_id = f"EP-{epic_num:03d}"
+        normalized_epic_id = f"EP-{epic_num:05d}"
 
         # Get mappings from traceability matrix
         epic_mappings = self.matrix_parser.get_epic_mappings()

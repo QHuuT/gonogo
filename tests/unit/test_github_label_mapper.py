@@ -39,10 +39,10 @@ class TestTraceabilityMatrixParser:
         mappings = parser._get_default_mappings()
 
         expected = {
-            "EP-001": {"component": "frontend", "epic_label": "blog-content"},
-            "EP-002": {"component": "backend", "epic_label": "comment-system"},
-            "EP-003": {"component": "gdpr", "epic_label": "privacy-consent"},
-            "EP-004": {"component": "ci-cd", "epic_label": "github-workflow"},
+            "EP-00001": {"component": "frontend", "epic_label": "blog-content"},
+            "EP-00002": {"component": "backend", "epic_label": "comment-system"},
+            "EP-00003": {"component": "gdpr", "epic_label": "privacy-consent"},
+            "EP-00004": {"component": "ci-cd", "epic_label": "github-workflow"},
         }
 
         assert mappings == expected
@@ -81,17 +81,17 @@ class TestTraceabilityMatrixParser:
         """Test parsing epic mappings from matrix file."""
         mock_exists.return_value = True
         mock_read_text.return_value = """
-        | **EP-001** | Blog Content Management | US-001, US-002 | 8 | High | 📝 Planned |
-        | **EP-002** | GDPR-Compliant Comment System | US-003, US-004 | 16 | High | 📝 Planned |
+        | **EP-00001** | Blog Content Management | US-00001, US-00002 | 8 | High | 📝 Planned |
+        | **EP-00002** | GDPR-Compliant Comment System | US-00003, US-00004 | 16 | High | 📝 Planned |
         """
 
         parser = TraceabilityMatrixParser(Path("test.md"))
         mappings = parser.get_epic_mappings()
 
-        assert "EP-001" in mappings
-        assert mappings["EP-001"]["epic_label"] == "blog-content"
-        assert "EP-002" in mappings
-        assert mappings["EP-002"]["epic_label"] == "comment-system"
+        assert "EP-00001" in mappings
+        assert mappings["EP-00001"]["epic_label"] == "blog-content"
+        assert "EP-00002" in mappings
+        assert mappings["EP-00002"]["epic_label"] == "comment-system"
 
     @patch("pathlib.Path.exists")
     def test_get_epic_mappings_file_not_found(self, mock_exists):
@@ -103,7 +103,7 @@ class TestTraceabilityMatrixParser:
 
         # Should return default mappings
         assert len(mappings) == 4
-        assert "EP-001" in mappings
+        assert "EP-00001" in mappings
 
 
 class TestGitHubIssueLabelMapper:
@@ -120,7 +120,7 @@ class TestGitHubIssueLabelMapper:
         """Create sample issue data for testing."""
         return IssueData(
             title="Test Issue",
-            body="### Priority\n\nHigh\n\n### Epic ID\n\nEP-001\n\n",
+            body="### Priority\n\nHigh\n\n### Epic ID\n\nEP-00001\n\n",
             existing_labels=["needs-triage"],
             issue_number=123,
         )
@@ -134,11 +134,11 @@ class TestGitHubIssueLabelMapper:
 
         ### Epic ID
 
-        EP-001
+        EP-00001
         """
 
         assert mapper.extract_form_value(issue_body, "Priority") == "High"
-        assert mapper.extract_form_value(issue_body, "Epic ID") == "EP-001"
+        assert mapper.extract_form_value(issue_body, "Epic ID") == "EP-00001"
         assert mapper.extract_form_value(issue_body, "Nonexistent") is None
 
     def test_extract_form_value_no_response(self, mapper):
@@ -183,19 +183,17 @@ class TestGitHubIssueLabelMapper:
             result = mapper.map_priority_labels(issue_data)
             assert result == expected
 
-    @patch(
-        "src.shared.utils.github_label_mapper.TraceabilityMatrixParser.get_epic_mappings"
-    )
-    def test_map_epic_labels(self, mock_get_mappings, mapper):
+    def test_map_epic_labels(self, mapper):
         """Test epic-to-component label mapping."""
-        mock_get_mappings.return_value = {
-            "EP-001": {"component": "frontend", "epic_label": "blog-content"},
-            "EP-002": {"component": "backend", "epic_label": "comment-system"},
+        # Mock the instance method instead of the class method
+        mapper.matrix_parser.get_epic_mappings.return_value = {
+            "EP-00001": {"component": "frontend", "epic_label": "blog-content"},
+            "EP-00002": {"component": "backend", "epic_label": "comment-system"},
         }
 
         test_cases = [
-            ("EP-001", {"component/frontend", "epic/blog-content"}),
-            ("EP-002", {"component/backend", "epic/comment-system"}),
+            ("EP-00001", {"component/frontend", "epic/blog-content"}),
+            ("EP-00002", {"component/backend", "epic/comment-system"}),
             ("EP-999", set()),  # Unknown epic
             ("Invalid", set()),  # Invalid format
         ]
@@ -235,16 +233,16 @@ class TestGitHubIssueLabelMapper:
         """Test release label mapping logic."""
         test_cases = [
             # Critical priority -> MVP
-            ("Critical", "EP-001", {"release/mvp"}),
+            ("Critical", "EP-00001", {"release/mvp"}),
             # GDPR epic -> MVP
-            ("High", "EP-003", {"release/mvp"}),
+            ("High", "EP-00003", {"release/mvp"}),
             # Comment epic -> MVP
-            ("Medium", "EP-002", {"release/mvp"}),
+            ("Medium", "EP-00002", {"release/mvp"}),
             # High priority, non-critical epic -> v1.1
-            ("High", "EP-001", {"release/v1.1"}),
+            ("High", "EP-00001", {"release/v1.1"}),
             # Medium/Low priority -> v1.2
-            ("Medium", "EP-001", {"release/v1.2"}),
-            ("Low", "EP-004", {"release/v1.2"}),
+            ("Medium", "EP-00001", {"release/v1.2"}),
+            ("Low", "EP-00004", {"release/v1.2"}),
         ]
 
         for priority, epic_id, expected in test_cases:
@@ -284,13 +282,11 @@ class TestGitHubIssueLabelMapper:
         result = mapper.map_status_labels(issue_data)
         assert result == set()  # Should not add new status labels
 
-    @patch(
-        "src.shared.utils.github_label_mapper.TraceabilityMatrixParser.get_epic_mappings"
-    )
-    def test_generate_labels_integration(self, mock_get_mappings, mapper):
+    def test_generate_labels_integration(self, mapper):
         """Test full label generation integration."""
-        mock_get_mappings.return_value = {
-            "EP-003": {"component": "gdpr", "epic_label": "privacy-consent"}
+        # Mock the instance method instead of the class method
+        mapper.matrix_parser.get_epic_mappings.return_value = {
+            "EP-00003": {"component": "gdpr", "epic_label": "privacy-consent"}
         }
 
         issue_data = IssueData(
@@ -302,7 +298,7 @@ class TestGitHubIssueLabelMapper:
 
             ### Parent Epic
 
-            EP-003
+            EP-00003
 
             This story involves personal data processing and requires user consent.
             """,
@@ -381,7 +377,7 @@ class TestLabelMapping:
         """Test LabelMapping creation with custom priority."""
         mapping = LabelMapping(
             source_field="Epic",
-            source_value="EP-001",
+            source_value="EP-00001",
             target_label="epic/blog-content",
             priority=10,
         )
@@ -401,10 +397,10 @@ class TestLabelMapperIntegration:
 
         | Epic | Req ID | Requirement Description | Priority | User Story |
         |------|--------|------------------------|----------|------------|
-        | **EP-001** | **BR-001** | Blog Content Management | High | US-001 |
-        | **EP-002** | **BR-002** | GDPR-Compliant Comment System | High | US-003 |
-        | **EP-003** | **GDPR-001** | Privacy and Consent Management | Critical | US-006 |
-        | **EP-004** | **WF-001** | GitHub Workflow Integration | High | US-009 |
+        | **EP-00001** | **BR-001** | Blog Content Management | High | US-001 |
+        | **EP-00002** | **BR-002** | GDPR-Compliant Comment System | High | US-003 |
+        | **EP-00003** | **GDPR-001** | Privacy and Consent Management | Critical | US-006 |
+        | **EP-00004** | **WF-001** | GitHub Workflow Integration | High | US-009 |
         """
 
         matrix_file = tmp_path / "requirements-matrix.md"
@@ -419,7 +415,7 @@ class TestLabelMapperIntegration:
             body="""
             ### Epic ID
 
-            EP-003
+            EP-00003
 
             ### Priority
 
@@ -466,7 +462,7 @@ class TestLabelMapperIntegration:
 
             ### Parent Epic
 
-            EP-003
+            EP-00003
 
             ### Priority
 
@@ -491,8 +487,8 @@ class TestLabelMapperIntegration:
 
         labels = integration_mapper.generate_labels(user_story_issue)
 
-        # Should inherit component/epic from parent EP-003
-        # High priority + EP-003 should go to MVP
+        # Should inherit component/epic from parent EP-00003
+        # High priority + EP-00003 should go to MVP
         expected_labels = {
             "user-story",
             "priority/high",

@@ -15,11 +15,22 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 # Import the module under test
+# Use direct module loading to avoid namespace collision in full test suite context
 import sys
-src_path = Path(__file__).parent.parent.parent.parent / "src"
-sys.path.insert(0, str(src_path))
+import importlib.util
 
-from shared.utils.rtm_link_generator import RTMLinkGenerator, RTMLink, RTMValidationResult
+# Load the module directly from the source file to avoid namespace collision
+repo_root = Path(__file__).parent.parent.parent.parent.parent
+rtm_module_path = repo_root / "src" / "shared" / "utils" / "rtm_link_generator.py"
+
+spec = importlib.util.spec_from_file_location("rtm_link_generator", rtm_module_path)
+rtm_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(rtm_module)
+
+# Import the classes from the loaded module
+RTMLinkGenerator = rtm_module.RTMLinkGenerator
+RTMLink = rtm_module.RTMLink
+RTMValidationResult = rtm_module.RTMValidationResult
 
 
 class TestRTMLinkGenerator:
