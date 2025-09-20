@@ -1,0 +1,90 @@
+# Staging environment configuration
+# For testing before production deployment
+
+name: gonogo-blog-staging
+region: fra  # Frankfurt - EU region for GDPR compliance
+
+services:
+- name: web-staging
+  source_dir: /
+  github:
+    repo: your-username/gonogo  # Update with your GitHub repo
+    branch: develop  # Deploy from develop branch
+    deploy_on_push: true
+
+  run_command: python -m uvicorn src.be.main:app --host 0.0.0.0 --port $PORT
+  environment_slug: python
+  instance_count: 1
+  instance_size_slug: basic-xxs
+
+  # Health check
+  health_check:
+    http_path: /health
+    initial_delay_seconds: 10
+    period_seconds: 10
+    timeout_seconds: 5
+    success_threshold: 1
+    failure_threshold: 3
+
+  # Staging environment variables
+  envs:
+  - key: ENVIRONMENT
+    value: staging
+  - key: DEBUG
+    value: "true"
+  - key: SECRET_KEY
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+  - key: DATABASE_URL
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+  - key: GDPR_TEST_MODE
+    value: "true"  # Enable test mode for staging
+  - key: DATA_RETENTION_DAYS
+    value: "30"   # Shorter retention for staging
+  - key: ANONYMIZE_IPS_AFTER_DAYS
+    value: "1"    # Quick anonymization for testing
+  - key: REQUIRE_CONSENT
+    value: "true"
+
+  # HTTP configuration
+  http_port: 8000
+
+  # Routes
+  routes:
+  - path: /
+
+# Staging database
+databases:
+- name: gonogo-staging-db
+  engine: PG
+  version: "15"
+  size: basic
+  num_nodes: 1
+
+# Jobs for staging maintenance
+jobs:
+- name: staging-gdpr-cleanup
+  source_dir: /
+  github:
+    repo: your-username/gonogo
+    branch: develop
+
+  run_command: python -c "from src.security.gdpr.service import GDPRService; from sqlalchemy import create_engine; from sqlalchemy.orm import sessionmaker; import os; engine = create_engine(os.getenv('DATABASE_URL')); Session = sessionmaker(bind=engine); session = Session(); service = GDPRService(session); service.anonymize_expired_data(); session.close()"
+  environment_slug: python
+
+  # Run every 6 hours for more frequent testing
+  kind: CRON
+  schedule: "0 */6 * * *"
+
+  envs:
+  - key: DATABASE_URL
+    scope: RUN_TIME
+    type: SECRET
+
+# Staging alerts (less strict)
+alerts:
+- rule: CPU_UTILIZATION
+  value: 90
+- rule: MEM_UTILIZATION
+  value: 90

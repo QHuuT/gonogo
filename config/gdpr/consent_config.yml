@@ -1,0 +1,192 @@
+# GDPR Consent Configuration
+# Implements GDPR Article 7 requirements for consent
+
+consent_banner:
+  enabled: true
+  position: "bottom"
+  dismissible: false  # Must explicitly choose
+  style: "minimal"
+
+  text:
+    fr: |
+      Nous utilisons des cookies et collectons des données pour améliorer votre expérience.
+      Vous pouvez choisir quelles données nous pouvons traiter.
+    en: |
+      We use cookies and collect data to improve your experience.
+      You can choose what data we can process.
+
+  buttons:
+    accept_all:
+      text:
+        fr: "Tout accepter"
+        en: "Accept All"
+      class: "btn-primary"
+
+    accept_essential:
+      text:
+        fr: "Essentiel uniquement"
+        en: "Essential Only"
+      class: "btn-secondary"
+
+    customize:
+      text:
+        fr: "Personnaliser"
+        en: "Customize"
+      class: "btn-outline"
+
+# Consent Categories
+consent_categories:
+  essential:
+    required: true
+    default_enabled: true
+    user_controllable: false
+
+    description:
+      fr: "Cookies nécessaires au fonctionnement du site"
+      en: "Cookies necessary for website functionality"
+
+    purpose:
+      fr: "Gestion des sessions, sécurité, et fonctionnement de base"
+      en: "Session management, security, and basic functionality"
+
+    legal_basis: "legitimate_interest"
+
+    cookies:
+      - "session_id"
+      - "csrf_token"
+      - "consent_preferences"
+
+  functional:
+    required: false
+    default_enabled: false
+    user_controllable: true
+
+    description:
+      fr: "Amélioration de l'expérience utilisateur"
+      en: "Enhanced user experience"
+
+    purpose:
+      fr: "Préférences, thème, et paramètres personnalisés"
+      en: "Preferences, theme, and custom settings"
+
+    legal_basis: "consent"
+    retention_days: 365
+
+    cookies:
+      - "theme_preference"
+      - "language_preference"
+
+  analytics:
+    required: false
+    default_enabled: false
+    user_controllable: true
+
+    description:
+      fr: "Mesure d'audience anonyme"
+      en: "Anonymous audience measurement"
+
+    purpose:
+      fr: "Comprendre l'utilisation du site sans vous identifier"
+      en: "Understand site usage without identifying you"
+
+    legal_basis: "consent"
+    retention_days: 90
+
+    data_collected:
+      - "page_views_count"
+      - "session_duration"
+      - "referrer_domain"
+      - "anonymized_location"  # Country level only
+
+  marketing:
+    required: false
+    default_enabled: false
+    user_controllable: true
+
+    description:
+      fr: "Communication sur les nouveaux articles"
+      en: "Communication about new articles"
+
+    purpose:
+      fr: "Notifications optionnelles par email"
+      en: "Optional email notifications"
+
+    legal_basis: "consent"
+    retention_days: 1095  # 3 years
+
+    data_collected:
+      - "email_address"
+      - "subscription_preferences"
+
+# Comment System Consent
+comment_consent:
+  required_fields:
+    - name
+    - comment_content
+
+  optional_fields:
+    - email
+
+  consent_text:
+    fr: |
+      En soumettant ce commentaire, j'accepte que mes données soient stockées
+      pour affichage public. Mon email ne sera jamais affiché ni partagé.
+    en: |
+      By submitting this comment, I agree that my data be stored for public display.
+      My email will never be displayed or shared.
+
+  email_consent:
+    fr: |
+      J'accepte de recevoir une notification par email si quelqu'un répond à mon commentaire.
+    en: |
+      I agree to receive email notifications if someone replies to my comment.
+
+  data_processing:
+    purpose: "Display comment and optional reply notifications"
+    legal_basis: "consent"
+    retention_period: "3 years or until withdrawal"
+
+    processing_activities:
+      - "Store and display comment content"
+      - "Store name for comment attribution"
+      - "Optionally store email for reply notifications"
+      - "Moderate content for spam and abuse"
+
+# Consent Management
+consent_management:
+  storage_method: "cookie"  # Store consent in cookie
+  cookie_name: "gdpr_consent"
+  cookie_duration_days: 365
+
+  # Consent versioning for policy changes
+  consent_version: "1.0"
+  version_tracking: true
+
+  # Re-consent when policy changes
+  require_reconsent_on_policy_change: true
+
+  # Consent withdrawal
+  withdrawal:
+    easy_access: true
+    confirmation_required: true
+    immediate_effect: true
+
+    url: "/consent-preferences"
+
+    notification:
+      fr: "Vos préférences de consentement ont été mises à jour."
+      en: "Your consent preferences have been updated."
+
+# Privacy Policy Integration
+privacy_policy:
+  url: "/privacy-policy"
+  last_updated: "2025-01-01"
+
+  required_sections:
+    - data_controller_info
+    - data_processing_purposes
+    - legal_basis
+    - data_retention
+    - user_rights
+    - contact_information
+    - complaint_procedure

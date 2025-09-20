@@ -1,0 +1,264 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  # Testing Pipeline following pyramid principle
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-type: [unit, integration, security]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run ${{ matrix.test-type }} tests
+      run: |
+        case "${{ matrix.test-type }}" in
+          "unit")
+            pytest tests/unit/ -v --cov=src --cov-report=xml --cov-report=term-missing
+            ;;
+          "integration")
+            pytest tests/integration/ -v
+            ;;
+          "security")
+            pytest tests/security/ -v
+            ;;
+        esac
+
+    - name: Upload coverage to Codecov (unit tests only)
+      if: matrix.test-type == 'unit'
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: true
+
+  # Code Quality Checks
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install black isort flake8 mypy
+
+    - name: Check code formatting with Black
+      run: black --check src/ tests/
+
+    - name: Check import sorting with isort
+      run: isort --check-only src/ tests/
+
+    - name: Lint with flake8
+      run: flake8 src/ tests/
+
+    - name: Type check with mypy
+      run: mypy src/
+
+  # Security Scanning
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install security tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit safety
+
+    - name: Run Bandit security scan
+      run: bandit -r src/ -f json -o bandit-report.json || true
+
+    - name: Run Safety check for vulnerabilities
+      run: safety check --json --output safety-report.json || true
+
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          safety-report.json
+
+  # GDPR Compliance Check
+  gdpr-compliance:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run GDPR compliance tests
+      run: pytest tests/security/test_gdpr_compliance.py -v
+
+    - name: Check for sensitive data patterns
+      run: |
+        # Check for potential sensitive data leaks in code
+        echo "Checking for sensitive data patterns..."
+
+        # Check for hardcoded secrets (basic patterns)
+        if grep -r -i "password\s*=" src/ && grep -r -i "secret\s*=" src/ && grep -r -i "api_key\s*=" src/; then
+          echo "Warning: Potential hardcoded secrets found"
+          exit 1
+        fi
+
+        # Check for email patterns in logs/code (should be hashed)
+        if grep -r -E "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" src/; then
+          echo "Warning: Potential email addresses in code"
+          # Don't fail, as these might be examples
+        fi
+
+  # E2E Tests (minimal, only critical flows)
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [test, quality]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run E2E tests
+      run: pytest tests/e2e/ -v
+
+  # Build and Test Docker Image
+  docker:
+    runs-on: ubuntu-latest
+    needs: [test, quality, security]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build Docker image
+      run: docker build -t gonogo:test .
+
+    - name: Test Docker image
+      run: |
+        # Start container
+        docker run -d --name gonogo-test -p 8000:8000 gonogo:test
+        sleep 10
+
+        # Test health endpoint
+        curl -f http://localhost:8000/health || exit 1
+
+        # Cleanup
+        docker stop gonogo-test
+        docker rm gonogo-test
+
+  # Deploy to Staging (develop branch only)
+  deploy-staging:
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs: [test, quality, security, e2e, docker]
+    environment: staging
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Deploy to DigitalOcean App Platform (Staging)
+      uses: digitalocean/app_action@v1.1.5
+      with:
+        app_name: gonogo-staging
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+  # Deploy to Production (main branch only, manual approval)
+  deploy-production:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs: [test, quality, security, e2e, docker]
+    environment: production
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Deploy to DigitalOcean App Platform (Production)
+      uses: digitalocean/app_action@v1.1.5
+      with:
+        app_name: gonogo-production
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+    - name: Notify deployment success
+      run: |
+        echo "✅ Production deployment successful!"
+        echo "🔗 URL: https://yourdomain.com"
+        echo "📊 Monitor: https://cloud.digitalocean.com/apps"
+
+  # Cleanup and Notification
+  notify:
+    if: always()
+    runs-on: ubuntu-latest
+    needs: [test, quality, security, gdpr-compliance, e2e]
+
+    steps:
+    - name: Notify on success
+      if: ${{ success() }}
+      run: |
+        echo "✅ All CI/CD checks passed!"
+        echo "📈 Coverage uploaded to Codecov"
+        echo "🛡️ Security scans completed"
+        echo "🔒 GDPR compliance verified"
+
+    - name: Notify on failure
+      if: ${{ failure() }}
+      run: |
+        echo "❌ CI/CD pipeline failed!"
+        echo "Please check the logs for details."
+        echo "🔍 Review failed jobs above"

@@ -1,0 +1,41 @@
+name: development
+debug: true
+host: "0.0.0.0"
+port: 8000
+reload: true
+
+database:
+  url: "sqlite:///./gonogo_dev.db"
+  echo: true  # Log SQL queries in development
+  pool_size: 5
+
+security:
+  secret_key: "dev-secret-key-change-in-production"
+  algorithm: "HS256"
+  access_token_expire_minutes: 30
+  cors_origins:
+    - "http://localhost:3000"
+    - "http://localhost:8000"
+    - "http://127.0.0.1:8000"
+
+gdpr:
+  data_retention_days: 30  # Shorter for development
+  anonymize_ips_after_days: 1
+  require_consent: true
+  test_mode: true
+
+logging:
+  level: "DEBUG"
+  file: "quality/monitoring/logs/dev.log"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+content:
+  posts_per_page: 5  # Smaller for testing
+  cache_timeout: 60  # 1 minute for development
+
+email:
+  enabled: false  # Disable email in development
+  smtp_host: ""
+  smtp_port: 587
+  smtp_user: ""
+  smtp_password: ""

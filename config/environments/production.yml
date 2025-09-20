@@ -1,0 +1,78 @@
+name: production
+debug: false
+host: "0.0.0.0"
+port: 8000
+reload: false
+
+database:
+  url: "${DATABASE_URL}"
+  echo: false
+  pool_size: 20
+  max_overflow: 40
+  pool_timeout: 30
+  pool_recycle: 3600
+
+security:
+  secret_key: "${SECRET_KEY}"
+  algorithm: "HS256"
+  access_token_expire_minutes: 30
+  cors_origins:
+    - "https://yourdomain.com"
+    - "https://www.yourdomain.com"
+
+  # Security headers
+  security_headers:
+    x_content_type_options: "nosniff"
+    x_frame_options: "DENY"
+    x_xss_protection: "1; mode=block"
+    strict_transport_security: "max-age=31536000; includeSubDomains"
+    content_security_policy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+
+gdpr:
+  data_retention_days: 1095  # 3 years (legally required minimum in France)
+  anonymize_ips_after_days: 30
+  require_consent: true
+  test_mode: false
+
+  # GDPR compliance settings
+  cookie_consent_required: true
+  data_processor_contact: "${ADMIN_EMAIL}"
+  privacy_policy_url: "/privacy-policy"
+  terms_of_service_url: "/terms-of-service"
+
+logging:
+  level: "WARNING"
+  file: "quality/monitoring/logs/production.log"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
+
+  # Security: Never log sensitive data
+  sanitize_logs: true
+  max_log_size_mb: 100
+  backup_count: 5
+
+content:
+  posts_per_page: 10
+  cache_timeout: 86400  # 24 hours
+  static_cache_timeout: 2592000  # 30 days
+
+email:
+  enabled: true
+  smtp_host: "${SMTP_HOST}"
+  smtp_port: 587
+  smtp_user: "${SMTP_USER}"
+  smtp_password: "${SMTP_PASSWORD}"
+  admin_email: "${ADMIN_EMAIL}"
+  rate_limit: 100  # Max 100 emails per hour
+
+monitoring:
+  health_check_interval: 60
+  metrics_enabled: true
+  error_reporting: true
+  performance_monitoring: true
+
+# Production-specific features
+features:
+  rate_limiting: true
+  ddos_protection: true
+  automated_backups: true
+  ssl_required: true
