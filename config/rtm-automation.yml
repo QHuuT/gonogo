@@ -1,0 +1,125 @@
+# RTM Automation Configuration
+# Related Issue: US-00015 - Automated RTM link generation and validation
+# Epic: EP-00005 - RTM Automation
+
+# GitHub Configuration
+github:
+  owner: "QHuuT"
+  repo: "gonogo"
+  base_url: "https://github.com"
+
+# Link Patterns for Different Types
+link_patterns:
+  # GitHub issue search patterns
+  epic: "https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}"
+  user_story: "https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}"
+  defect: "https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}"
+
+  # GitHub direct issue patterns (alternative)
+  epic_direct: "https://github.com/{owner}/{repo}/issues/{issue_number}"
+  user_story_direct: "https://github.com/{owner}/{repo}/issues/{issue_number}"
+  defect_direct: "https://github.com/{owner}/{repo}/issues/{issue_number}"
+
+# RTM File Locations
+rtm_files:
+  primary: "docs/traceability/requirements-matrix.md"
+  template: "docs/traceability/requirements-matrix-template.md"
+  backup_dir: "docs/traceability/backups"
+
+# Validation Settings
+validation:
+  # Enable GitHub API validation (requires token)
+  github_api_enabled: false
+  github_token_env: "GITHUB_TOKEN"
+
+  # File existence validation
+  check_file_links: true
+  check_bdd_scenarios: true
+
+  # Link format validation
+  strict_format_checking: true
+
+  # Timeouts and retries
+  api_timeout: 30
+  max_retries: 3
+
+# Plugin Configuration (for future extensibility)
+plugins:
+  link_generators:
+    - name: "github_issues"
+      class: "GitHubIssueLinkGenerator"
+      enabled: true
+    - name: "bdd_scenarios"
+      class: "BDDScenarioLinkGenerator"
+      enabled: true
+
+  validators:
+    - name: "standard_validation"
+      class: "StandardValidator"
+      enabled: true
+    - name: "format_validation"
+      class: "FormatValidator"
+      enabled: true
+
+  parsers:
+    - name: "standard_markdown"
+      class: "StandardMarkdownParser"
+      enabled: true
+      priority: 1
+
+# Output Configuration
+output:
+  # Validation report settings
+  report_format: "markdown"  # markdown, json, html
+  include_warnings: true
+  include_statistics: true
+
+  # Update settings
+  backup_before_update: true
+  dry_run_by_default: true
+
+# BDD Integration
+bdd:
+  features_directory: "tests/bdd/features"
+  step_definitions_directory: "tests/bdd/step_definitions"
+
+  # Scenario naming patterns
+  scenario_link_format: "{feature_file}:{scenario_name}"
+
+# GDPR Compliance Links
+gdpr:
+  requirements_file: "docs/context/compliance/gdpr-requirements.md"
+  compliance_map: "docs/traceability/gdpr-compliance-map.md"
+
+# Automation Settings
+automation:
+  # GitHub Action integration
+  github_action_enabled: true
+  action_trigger_events:
+    - "pull_request"
+    - "push"
+    - "schedule"  # Weekly validation
+
+  # Auto-update settings
+  auto_update_enabled: false  # Require manual approval
+  create_pr_for_updates: true
+
+  # Notification settings
+  notify_on_validation_failure: true
+  slack_webhook_env: "SLACK_WEBHOOK_URL"
+
+# Advanced Settings
+advanced:
+  # Performance optimization
+  enable_caching: true
+  cache_duration: 3600  # 1 hour
+  parallel_validation: true
+  max_workers: 5
+
+  # Error handling
+  continue_on_error: true
+  max_errors_before_abort: 10
+
+  # Logging
+  log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_file: "logs/rtm-automation.log"
