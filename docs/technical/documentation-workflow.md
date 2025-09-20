@@ -57,6 +57,7 @@ Update **continuously** during development:
 - Track completion status
 - Update test coverage
 - Document defect relationships
+- Maintain clickable links to all referenced artifacts
 
 **GDPR Compliance Map (`docs/traceability/gdpr-compliance-map.md`)**:
 - Map features to GDPR requirements
@@ -131,6 +132,7 @@ See [Requirements Matrix](../traceability/requirements-matrix.md) for current st
 - [ ] Cross-references updated (GitHub Issues ↔ Documentation)
 - [ ] GDPR implications documented if personal data involved
 - [ ] Technical docs updated if architecture changed
+- [ ] RTM links validated if traceability matrix changed
 
 ### **Weekly Documentation Review**
 - [ ] Review RTM for broken links
@@ -144,9 +146,90 @@ See [Requirements Matrix](../traceability/requirements-matrix.md) for current st
 - [ ] Verify GDPR compliance documentation is current
 - [ ] Update documentation structure if needed
 
-## 🤖 Future Documentation Automation
+## 🔗 Requirements Traceability Matrix Link Management
 
-**Planned automation** will:
+### **RTM Link Types and Standards**
+
+The RTM maintains clickable links to all referenced artifacts:
+
+**Epic Links**:
+- **Format**: `[**EP-XXXXX**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-XXXXX)`
+- **Purpose**: Direct navigation to GitHub epic issues
+- **Example**: `[**EP-00001**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00001)`
+
+**User Story Links**:
+- **Format**: `[US-XXXXX](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-XXXXX)`
+- **Purpose**: Direct navigation to GitHub user story issues
+- **Example**: `[US-00014](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00014)`
+
+**BDD Scenario Links**:
+- **Format**: `[feature-name.feature:scenario](../../tests/bdd/features/feature-name.feature)`
+- **Purpose**: Direct navigation to BDD feature files in repository
+- **Example**: `[rtm-automation.feature:link_generation](../../tests/bdd/features/rtm-automation.feature)`
+
+**Test Implementation Links**:
+- **Format**: `[test_steps.py](../../tests/bdd/step_definitions/test_steps.py)`
+- **Purpose**: Direct navigation to test step definitions
+- **Example**: `[test_rtm_link_generator_steps.py](../../tests/bdd/step_definitions/test_rtm_link_generator_steps.py)`
+
+**GDPR Requirement Links**:
+- **Format**: `[**GDPR-XXXXX**](../context/compliance/gdpr-requirements.md)`
+- **Purpose**: Direct navigation to GDPR requirements documentation
+- **Example**: `[**GDPR-00001**](../context/compliance/gdpr-requirements.md)`
+
+### **Manual RTM Link Maintenance Process**
+
+**When creating new GitHub issues**:
+1. Create epic/user story using GitHub issue templates
+2. Note the issue number GitHub assigns
+3. Update RTM epic-to-user-story mapping table
+4. Add detailed requirement row to main RTM table
+5. Add user story to BDD scenario mapping section
+6. Use proper link formats for all references
+
+**When creating new BDD scenarios**:
+1. Create feature file in `tests/bdd/features/`
+2. Update RTM BDD Scenario column with correct feature:scenario format
+3. Create corresponding step definition file
+4. Update Test Implementation column with step definition link
+
+**When files are moved or renamed**:
+1. Update all RTM relative path links
+2. Verify all links still resolve correctly
+3. Test link navigation in GitHub and local markdown viewers
+
+### **RTM Link Validation Checklist**
+
+**Before every commit involving RTM changes**:
+- [ ] All epic links use GitHub issue search format
+- [ ] All user story links use GitHub issue search format
+- [ ] All BDD scenario links point to existing feature files
+- [ ] All test implementation links point to existing step definition files
+- [ ] All GDPR requirement links point to correct documentation
+- [ ] Relative paths are calculated correctly from RTM file location
+- [ ] No broken links when viewed in GitHub web interface
+
+**Weekly RTM link health check**:
+- [ ] All GitHub issue links resolve to actual issues
+- [ ] All file links point to existing files in repository
+- [ ] All relative paths are accurate after any file moves
+- [ ] BDD scenario names match actual scenario titles in feature files
+
+## 🤖 RTM Automation (Future)
+
+### **Planned RTM Automation** (EP-00005):
+- **US-00015**: Automated RTM link generation and validation
+- **US-00016**: GitHub Action for automated RTM validation
+- **US-00017**: Comprehensive testing and extensibility framework
+
+**Automation will**:
+- Auto-generate all RTM links based on issue numbers and file paths
+- Validate that all referenced files exist in repository
+- Check that all GitHub issues are valid and accessible
+- Create PRs with link updates when files are moved
+- Report broken links as GitHub issues for manual resolution
+
+### **Current Documentation Automation**:
 - Auto-update RTM from GitHub Issues
 - Generate progress reports from GitHub data
 - Validate cross-references between docs and GitHub

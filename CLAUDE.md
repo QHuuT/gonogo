@@ -72,6 +72,7 @@ docker-compose up -d                # Local production test
 - [ ] Run type checking: `mypy src/`
 - [ ] Update documentation if needed
 - [ ] Update CLAUDE.md if project structure changed
+- [ ] Validate RTM links if traceability matrix modified
 
 ## Project Structure
 
@@ -194,6 +195,7 @@ test: add unit tests for blog post service
 3. [ ] Review [Development Workflow](docs/technical/development-workflow.md) if needed
 4. [ ] Check [Requirements Matrix](docs/traceability/requirements-matrix.md) status
 5. [ ] Verify [GDPR implications](docs/context/compliance/gdpr-requirements.md) if handling personal data
+6. [ ] Review [RTM Link Management](docs/technical/documentation-workflow.md#requirements-traceability-matrix-link-management) if updating traceability
 
 ### **✅ Before Every Commit**
 1. [ ] Follow [Development Workflow](docs/technical/development-workflow.md) phases
