@@ -17,6 +17,7 @@ This matrix traces all requirements from business needs through implementation a
 | **EP-00002** | GDPR-Compliant Comment System | US-00003, US-00004, US-00005 | 16 | High | 📝 Planned |
 | **EP-00003** | Privacy and Consent Management | US-00006, US-00007, US-00008 | 29 | Critical | 📝 Planned |
 | **EP-00004** | GitHub Workflow Integration | US-00009, US-00010, US-00011, US-00012, US-00013 | 21 | High | ⏳ In Progress |
+| **EP-00005** | Requirements Traceability Matrix Automation | US-00014, US-00015, US-00016, US-00017 | 20 | Medium | 📝 Planned |
 
 ## Requirements Traceability Matrix
 
@@ -34,6 +35,10 @@ This matrix traces all requirements from business needs through implementation a
 | [**EP-00004**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00004) | **WF-00003** | GitHub Pages documentation site | Medium | [US-00011](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00011) | [github-workflow.feature:pages_deployment](../../tests/bdd/features/github-workflow.feature) | [test_github_workflow_steps.py](../../tests/bdd/step_definitions/test_github_workflow_steps.py) | .github/workflows/pages.yml | - | 📝 Planned | Quality of Life |
 | [**EP-00004**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00004) | **WF-00004** | GitHub Projects board configuration | Medium | [US-00012](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00012) | [github-workflow.feature:projects_board](../../tests/bdd/features/github-workflow.feature) | [test_github_workflow_steps.py](../../tests/bdd/step_definitions/test_github_workflow_steps.py) | GitHub Projects settings | - | 📝 Planned | Quality of Life |
 | [**EP-00004**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00004) | **WF-00005** | Auto-detect environment information for defect reports | Medium | [US-00013](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00013) | [github-integration.feature:environment_detection](../../tests/bdd/features/github-integration.feature) | [test_github_environment_steps.py](../../tests/bdd/step_definitions/test_github_environment_steps.py) | .github/ISSUE_TEMPLATE/defect-report.yml, static/js/environment-detector.js | - | 📝 Planned | Quality of Life |
+| [**EP-00005**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00005) | **RTM-00001** | Document RTM link management process | Medium | [US-00014](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00014) | [rtm-automation.feature:documentation](../../tests/bdd/features/rtm-automation.feature) | [test_rtm_documentation_steps.py](../../tests/bdd/step_definitions/test_rtm_documentation_steps.py) | docs/technical/documentation-workflow.md, docs/technical/rtm-automation-evolution.md | - | 📝 Planned | Quality of Life |
+| [**EP-00005**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00005) | **RTM-00002** | Automated RTM link generation and validation | High | [US-00015](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00015) | [rtm-automation.feature:link_generation](../../tests/bdd/features/rtm-automation.feature) | [test_rtm_link_generator_steps.py](../../tests/bdd/step_definitions/test_rtm_link_generator_steps.py) | src/shared/utils/rtm_link_generator.py, tools/rtm-links.py | - | 📝 Planned | Quality of Life |
+| [**EP-00005**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00005) | **RTM-00003** | GitHub Action for automated RTM validation | High | [US-00016](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00016) | [rtm-automation.feature:github_action](../../tests/bdd/features/rtm-automation.feature) | [test_rtm_github_action_steps.py](../../tests/bdd/step_definitions/test_rtm_github_action_steps.py) | .github/workflows/rtm-link-update.yml | - | 📝 Planned | Quality of Life |
+| [**EP-00005**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00005) | **RTM-00004** | Comprehensive testing and extensibility framework | Medium | [US-00017](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00017) | [rtm-automation.feature:testing_framework](../../tests/bdd/features/rtm-automation.feature) | [test_rtm_extensibility_steps.py](../../tests/bdd/step_definitions/test_rtm_extensibility_steps.py) | tests/unit/test_rtm_link_generator.py, config/rtm-automation.yml, src/shared/utils/rtm_plugins/ | - | 📝 Planned | Quality of Life |
 
 ## GDPR Compliance Mapping
 
@@ -88,6 +93,15 @@ This matrix traces all requirements from business needs through implementation a
 | [US-00011: GitHub Pages Documentation](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00011) | [github-workflow.feature](../../tests/bdd/features/github-workflow.feature) | pages_deployment | [test_github_workflow_steps.py](../../tests/bdd/step_definitions/test_github_workflow_steps.py) |
 | [US-00012: GitHub Projects Board](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00012) | [github-workflow.feature](../../tests/bdd/features/github-workflow.feature) | projects_board | [test_github_workflow_steps.py](../../tests/bdd/step_definitions/test_github_workflow_steps.py) |
 | [US-00013: Environment Auto-Detection](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00013) | [github-integration.feature](../../tests/bdd/features/github-integration.feature) | environment_detection | [test_github_environment_steps.py](../../tests/bdd/step_definitions/test_github_environment_steps.py) |
+
+### Epic 5: Requirements Traceability Matrix Automation (EP-00005)
+
+| User Story | BDD Feature File | Key Scenarios | Test File |
+|------------|-----------------|---------------|-----------|
+| [US-00014: Document RTM Link Management](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00014) | [rtm-automation.feature](../../tests/bdd/features/rtm-automation.feature) | documentation_workflow_updated, evolution_guide_created | [test_rtm_documentation_steps.py](../../tests/bdd/step_definitions/test_rtm_documentation_steps.py) |
+| [US-00015: Automated RTM Link Generation](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00015) | [rtm-automation.feature](../../tests/bdd/features/rtm-automation.feature) | link_generation, validation, cli_tool | [test_rtm_link_generator_steps.py](../../tests/bdd/step_definitions/test_rtm_link_generator_steps.py) |
+| [US-00016: GitHub Action RTM Validation](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00016) | [rtm-automation.feature](../../tests/bdd/features/rtm-automation.feature) | github_action_triggers, pr_creation, error_reporting | [test_rtm_github_action_steps.py](../../tests/bdd/step_definitions/test_rtm_github_action_steps.py) |
+| [US-00017: Testing and Extensibility Framework](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00017) | [rtm-automation.feature](../../tests/bdd/features/rtm-automation.feature) | testing_framework, plugin_architecture, configuration_system | [test_rtm_extensibility_steps.py](../../tests/bdd/step_definitions/test_rtm_extensibility_steps.py) |
 
 ## Implementation Status
 
