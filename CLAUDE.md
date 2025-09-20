@@ -63,6 +63,10 @@ python tools/report_generator.py --input quality/logs/test_execution.log  # Gene
 python tools/report_generator.py --type unit --output quality/reports/    # Filtered reports
 python tools/report_generator.py --input quality/logs/ --filename custom_report.html  # Custom output
 
+# Quality Reports Guide - 📚 COMPREHENSIVE DOCUMENTATION
+# See quality/README.md for detailed guide to all report types
+# See quality/QUICK_REFERENCE.md for common commands and quality thresholds
+
 # Test Failure Tracking and Analysis (NEW)
 python tools/failure_tracking_demo.py                      # Generate failure analysis with sample data
 # View: quality/reports/failure_analysis_report.html (interactive failure dashboard)
