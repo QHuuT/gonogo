@@ -11,10 +11,10 @@ Epic: EP-00005 - RTM Automation
 import re
 import os
 import yaml
-from typing import Dict, List, Optional, Tuple
+from dataclasses import dataclass, field
+from typing import List, Dict, Tuple, Optional, Any
 from pathlib import Path
-from dataclasses import dataclass
-from urllib.parse import quote
+from urllib.parse import urlparse
 
 
 @dataclass
@@ -22,7 +22,7 @@ class RTMLink:
     """Represents a link in the RTM."""
     text: str
     url: str
-    type: str
+    type: str  # 'epic', 'user_story', 'defect', 'bdd_scenario', 'file', 'gdpr'
     valid: bool = True
     error_message: Optional[str] = None
 
@@ -32,190 +32,222 @@ class RTMValidationResult:
     """Results of RTM validation."""
     total_links: int
     valid_links: int
-    invalid_links: List[RTMLink]
-    errors: List[str]
-    warnings: List[str]
+    invalid_links: List[RTMLink] = field(default_factory=list)
+    errors: List[str] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
 
 
 class RTMLinkGenerator:
     """Core RTM link generator with plugin support."""
 
     def __init__(self, config_path: Optional[str] = None):
-        """Initialize the RTM link generator."""
+        """Initialize RTM link generator with configuration."""
         self.config = self._load_config(config_path)
         self.github_owner = self.config.get('github', {}).get('owner', 'QHuuT')
         self.github_repo = self.config.get('github', {}).get('repo', 'gonogo')
+        self.link_patterns = self.config.get('link_patterns', {})
 
-    def _load_config(self, config_path: Optional[str]) -> Dict:
-        """Load configuration from YAML file."""
-        if config_path is None:
-            config_path = "config/rtm-automation.yml"
-
-        if not os.path.exists(config_path):
-            # Return default configuration
-            return {
-                'github': {
-                    'owner': 'QHuuT',
-                    'repo': 'gonogo'
-                },
-                'link_patterns': {
-                    'epic': 'https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}',
-                    'user_story': 'https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}',
-                    'defect': 'https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}'
-                }
+    def _load_config(self, config_path: Optional[str] = None) -> Dict[str, Any]:
+        """Load configuration from file or use defaults."""
+        default_config = {
+            'github': {
+                'owner': 'QHuuT',
+                'repo': 'gonogo'
+            },
+            'link_patterns': {
+                'epic': 'https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}',
+                'user_story': 'https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}',
+                'defect': 'https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}',
+                'gdpr': '../context/compliance/gdpr-requirements.md#{id}',
+                'bdd_scenario': '../../{path}',
+                'file': '../../{path}'
+            },
+            'validation': {
+                'check_file_existence': True,
+                'check_github_format': True,
+                'require_https': False
             }
+        }
 
-        with open(config_path, 'r') as f:
-            return yaml.safe_load(f)
+        if not config_path or not os.path.exists(config_path):
+            return default_config
+
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                user_config = yaml.safe_load(f)
+                # Merge with defaults
+                config = default_config.copy()
+                if user_config:
+                    config.update(user_config)
+                return config
+        except Exception:
+            # Return defaults if config loading fails
+            return default_config
 
     def generate_github_issue_link(self, issue_id: str, bold: bool = False) -> str:
         """Generate GitHub issue search link."""
-        pattern = self.config['link_patterns']['epic']  # Same pattern for all issue types
+        # Determine issue type from ID
+        if issue_id.startswith('EP-'):
+            pattern = self.link_patterns.get('epic')
+        elif issue_id.startswith('US-'):
+            pattern = self.link_patterns.get('user_story')
+        elif issue_id.startswith('DEF-'):
+            pattern = self.link_patterns.get('defect')
+        else:
+            pattern = self.link_patterns.get('user_story')  # Default
+
         url = pattern.format(
             owner=self.github_owner,
             repo=self.github_repo,
-            id=quote(issue_id)
+            id=issue_id
         )
 
-        if bold:
-            return f"[**{issue_id}**]({url})"
-        else:
-            return f"[{issue_id}]({url})"
+        text = f"**{issue_id}**" if bold else issue_id
+        return f"[{text}]({url})"
 
-    def generate_file_link(self, file_path: str, rtm_file_path: str, display_text: Optional[str] = None) -> str:
+    def generate_file_link(self, target_path: str, rtm_path: str, display_text: Optional[str] = None) -> str:
         """Generate relative file link from RTM location."""
-        rtm_dir = Path(rtm_file_path).parent
-        target_path = Path(file_path)
+        # If it's an external URL, return as-is
+        if target_path.startswith(('http://', 'https://')):
+            text = display_text or target_path
+            return f"[{text}]({target_path})"
+
+        # Calculate relative path
+        rtm_dir = Path(rtm_path).parent
+        target_full_path = Path(target_path)
 
         try:
             relative_path = os.path.relpath(target_path, rtm_dir)
-            # Normalize path separators for markdown
+            # Convert Windows paths to forward slashes for URLs
             relative_path = relative_path.replace('\\', '/')
         except ValueError:
-            # Cannot create relative path, use absolute
-            relative_path = str(target_path).replace('\\', '/')
+            # If relative path calculation fails, use original path
+            relative_path = target_path.replace('\\', '/')
 
-        display = display_text or target_path.name
-        return f"[{display}]({relative_path})"
+        # Generate display text
+        if display_text:
+            text = display_text
+        else:
+            text = Path(target_path).name
 
-    def generate_bdd_scenario_link(self, feature_file: str, scenario_name: str, rtm_file_path: str) -> str:
+        return f"[{text}]({relative_path})"
+
+    def generate_bdd_scenario_link(self, feature_file: str, scenario_name: str, rtm_path: str) -> str:
         """Generate BDD scenario link."""
-        file_link = self.generate_file_link(feature_file, rtm_file_path)
-        display_text = f"{Path(feature_file).name}:{scenario_name}"
+        feature_name = Path(feature_file).stem
+        display_text = f"{feature_name}.feature:{scenario_name}"
+        return self.generate_file_link(feature_file, rtm_path, display_text)
 
-        # Extract just the relative path from the generated link
-        link_match = re.search(r'\]\(([^)]+)\)', file_link)
-        if link_match:
-            relative_path = link_match.group(1)
-            return f"[{display_text}]({relative_path})"
-
-        return f"[{display_text}]({feature_file})"
-
-    def extract_references_from_rtm(self, rtm_content: str) -> List[Tuple[str, str]]:
+    def extract_references_from_rtm(self, content: str) -> List[Tuple[str, str, str]]:
         """Extract all references from RTM content."""
         references = []
 
         # Pattern to match markdown links: [text](url)
         link_pattern = r'\[([^\]]+)\]\(([^)]+)\)'
-        matches = re.findall(link_pattern, rtm_content)
+        matches = re.findall(link_pattern, content)
 
         for text, url in matches:
-            # Determine reference type
-            if text.startswith('**EP-') and text.endswith('**'):
+            # Determine link type based on content
+            if re.match(r'^\*?\*?EP-\d{5}\*?\*?$', text):
                 ref_type = 'epic'
-            elif text.startswith('US-'):
+            elif re.match(r'^US-\d{5}$', text):
                 ref_type = 'user_story'
-            elif text.startswith('DEF-'):
+            elif re.match(r'^DEF-\d{5}$', text):
                 ref_type = 'defect'
             elif '.feature:' in text:
                 ref_type = 'bdd_scenario'
-            elif text.endswith('.py') or text.endswith('.md'):
-                ref_type = 'file'
+            elif 'gdpr' in url.lower():
+                ref_type = 'gdpr'
+            elif url.startswith(('http://', 'https://')):
+                ref_type = 'external'
             else:
-                ref_type = 'unknown'
+                ref_type = 'file'
 
             references.append((text, url, ref_type))
 
         return references
 
     def validate_github_link(self, issue_id: str) -> bool:
-        """Validate GitHub issue link (placeholder for future GitHub API integration)."""
-        # For now, just validate format
-        pattern = r'^(EP|US|DEF)-\d{5}$'
-        return bool(re.match(pattern, issue_id))
+        """Validate GitHub issue ID format."""
+        # Valid formats: EP-00001, US-12345, DEF-67890
+        patterns = [
+            r'^EP-\d{5}$',
+            r'^US-\d{5}$',
+            r'^DEF-\d{5}$'
+        ]
 
-    def validate_file_link(self, file_path: str, rtm_file_path: str) -> bool:
-        """Validate that file exists relative to RTM location."""
-        if file_path.startswith('http'):
-            return True  # External links assumed valid for now
+        return any(re.match(pattern, issue_id) for pattern in patterns)
 
-        rtm_dir = Path(rtm_file_path).parent
+    def validate_file_link(self, file_path: str, rtm_path: str) -> bool:
+        """Validate file link existence."""
+        # External URLs are considered valid
+        if file_path.startswith(('http://', 'https://')):
+            return True
 
-        # Handle relative paths
-        if not os.path.isabs(file_path):
-            full_path = rtm_dir / file_path
-        else:
-            full_path = Path(file_path)
+        # Check if file exists relative to RTM location
+        rtm_dir = Path(rtm_path).parent
+        full_path = rtm_dir / file_path
 
         return full_path.exists()
 
     def validate_rtm_links(self, rtm_file_path: str) -> RTMValidationResult:
         """Validate all links in RTM file."""
-        with open(rtm_file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
+        try:
+            with open(rtm_file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except Exception as e:
+            return RTMValidationResult(
+                total_links=0,
+                valid_links=0,
+                errors=[f"Failed to read RTM file: {e}"]
+            )
 
         references = self.extract_references_from_rtm(content)
-
-        valid_links = []
+        total_links = len(references)
+        valid_links = 0
         invalid_links = []
-        errors = []
         warnings = []
 
         for text, url, ref_type in references:
-            rtm_link = RTMLink(text=text, url=url, type=ref_type)
+            link = RTMLink(text=text, url=url, type=ref_type)
 
-            try:
-                if ref_type in ['epic', 'user_story', 'defect']:
-                    # Extract issue ID from text
-                    issue_id = text.replace('**', '').strip()
-                    if self.validate_github_link(issue_id):
-                        valid_links.append(rtm_link)
-                    else:
-                        rtm_link.valid = False
-                        rtm_link.error_message = f"Invalid GitHub issue format: {issue_id}"
-                        invalid_links.append(rtm_link)
-
-                elif ref_type == 'file' or ref_type == 'bdd_scenario':
-                    if self.validate_file_link(url, rtm_file_path):
-                        valid_links.append(rtm_link)
-                    else:
-                        rtm_link.valid = False
-                        rtm_link.error_message = f"File not found: {url}"
-                        invalid_links.append(rtm_link)
-
+            # Validate based on type
+            if ref_type in ['epic', 'user_story', 'defect']:
+                # Extract ID from text
+                clean_text = text.replace('*', '')
+                if self.validate_github_link(clean_text):
+                    valid_links += 1
                 else:
-                    # Unknown type - add warning
-                    warnings.append(f"Unknown link type for: {text}")
-                    valid_links.append(rtm_link)
+                    link.valid = False
+                    link.error_message = f"Invalid GitHub issue format: {clean_text}"
+                    invalid_links.append(link)
 
-            except Exception as e:
-                rtm_link.valid = False
-                rtm_link.error_message = str(e)
-                invalid_links.append(rtm_link)
-                errors.append(f"Error validating {text}: {e}")
+            elif ref_type == 'file' or ref_type == 'bdd_scenario':
+                if self.validate_file_link(url, rtm_file_path):
+                    valid_links += 1
+                else:
+                    link.valid = False
+                    link.error_message = f"File not found: {url}"
+                    invalid_links.append(link)
+
+            else:
+                # For other types (external, gdpr), assume valid
+                valid_links += 1
 
         return RTMValidationResult(
-            total_links=len(references),
-            valid_links=len(valid_links),
+            total_links=total_links,
+            valid_links=valid_links,
             invalid_links=invalid_links,
-            errors=errors,
             warnings=warnings
         )
 
-    def update_rtm_links(self, rtm_file_path: str, dry_run: bool = True) -> Dict[str, int]:
+    def update_rtm_links(self, rtm_file_path: str, dry_run: bool = False) -> Dict[str, int]:
         """Update RTM links to current format."""
-        with open(rtm_file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
+        try:
+            with open(rtm_file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except Exception:
+            return {'error': 'Failed to read RTM file'}
 
         original_content = content
         updates = {
@@ -225,136 +257,86 @@ class RTMLinkGenerator:
             'file_links': 0
         }
 
-        # Update epic links: [**EP-XXXXX**](old_url) -> [**EP-XXXXX**](new_url)
-        epic_pattern = r'\[\*\*(EP-\d{5})\*\*\]\([^)]+\)'
-        def update_epic_link(match):
-            issue_id = match.group(1)
-            new_link = self.generate_github_issue_link(issue_id, bold=True)
-            updates['epic_links'] += 1
-            return new_link
+        # Update GitHub issue links to current format
+        def replace_github_link(match):
+            text = match.group(1)
+            old_url = match.group(2)
 
-        content = re.sub(epic_pattern, update_epic_link, content)
+            # Extract issue ID from text
+            clean_text = text.replace('*', '')
 
-        # Update user story links: [US-XXXXX](old_url) -> [US-XXXXX](new_url)
-        us_pattern = r'\[(US-\d{5})\]\([^)]+\)'
-        def update_us_link(match):
-            issue_id = match.group(1)
-            new_link = self.generate_github_issue_link(issue_id, bold=False)
-            updates['user_story_links'] += 1
-            return new_link
+            if self.validate_github_link(clean_text):
+                new_link = self.generate_github_issue_link(clean_text, '**' in text)
 
-        content = re.sub(us_pattern, update_us_link, content)
+                # Count updates
+                if clean_text.startswith('EP-'):
+                    updates['epic_links'] += 1
+                elif clean_text.startswith('US-'):
+                    updates['user_story_links'] += 1
+                elif clean_text.startswith('DEF-'):
+                    updates['defect_links'] += 1
 
-        # Update defect links: [DEF-XXXXX](old_url) -> [DEF-XXXXX](new_url)
-        def_pattern = r'\[(DEF-\d{5})\]\([^)]+\)'
-        def update_def_link(match):
-            issue_id = match.group(1)
-            new_link = self.generate_github_issue_link(issue_id, bold=False)
-            updates['defect_links'] += 1
-            return new_link
+                # Extract just the URL from the new link
+                new_url_match = re.search(r'\(([^)]+)\)$', new_link)
+                if new_url_match:
+                    return f"[{text}]({new_url_match.group(1)})"
 
-        content = re.sub(def_pattern, update_def_link, content)
+            return match.group(0)  # Return original if no update
 
+        # Replace GitHub issue links
+        link_pattern = r'\[([^\]]+)\]\(([^)]+)\)'
+        content = re.sub(link_pattern, replace_github_link, content)
+
+        # Write back if not dry run and content changed
         if not dry_run and content != original_content:
-            with open(rtm_file_path, 'w', encoding='utf-8') as f:
-                f.write(content)
+            try:
+                with open(rtm_file_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+            except Exception:
+                updates['error'] = 'Failed to write updated RTM file'
 
         return updates
 
-    def generate_validation_report(self, validation_result: RTMValidationResult) -> str:
+    def generate_validation_report(self, result: RTMValidationResult) -> str:
         """Generate human-readable validation report."""
         report = []
-        report.append("# RTM Link Validation Report")
-        report.append("")
-        report.append(f"**Total Links**: {validation_result.total_links}")
-        report.append(f"**Valid Links**: {validation_result.valid_links}")
-        report.append(f"**Invalid Links**: {len(validation_result.invalid_links)}")
+        report.append("RTM Link Validation Report")
+        report.append("=" * 30)
         report.append("")
 
-        if validation_result.invalid_links:
-            report.append("## Invalid Links")
-            report.append("")
-            for link in validation_result.invalid_links:
-                report.append(f"- **{link.text}**: {link.error_message}")
+        # Summary
+        report.append(f"Total Links: {result.total_links}")
+        report.append(f"Valid Links: {result.valid_links}")
+        report.append(f"Invalid Links: {len(result.invalid_links)}")
+
+        if result.total_links > 0:
+            health_score = (result.valid_links / result.total_links) * 100
+            report.append(f"Health Score: {health_score:.1f}%")
+
+        report.append("")
+
+        # Invalid links
+        if result.invalid_links:
+            report.append("Invalid Links:")
+            report.append("-" * 15)
+            for link in result.invalid_links:
+                report.append(f"- {link.text}: {link.error_message}")
             report.append("")
 
-        if validation_result.warnings:
-            report.append("## Warnings")
-            report.append("")
-            for warning in validation_result.warnings:
-                report.append(f"- {warning}")
-            report.append("")
-
-        if validation_result.errors:
-            report.append("## Errors")
-            report.append("")
-            for error in validation_result.errors:
+        # Errors
+        if result.errors:
+            report.append("Errors:")
+            report.append("-" * 7)
+            for error in result.errors:
                 report.append(f"- {error}")
             report.append("")
 
-        # Health score
-        if validation_result.total_links > 0:
-            health_score = (validation_result.valid_links / validation_result.total_links) * 100
-            report.append(f"**Health Score**: {health_score:.1f}%")
+        # Warnings
+        if result.warnings:
+            report.append("Warnings:")
+            report.append("-" * 9)
+            for warning in result.warnings:
+                report.append(f"- {warning}")
+            report.append("")
 
         return "\n".join(report)
-
-
-def main():
-    """CLI entry point for RTM link generator."""
-    import argparse
-
-    parser = argparse.ArgumentParser(description='RTM Link Generator and Validator')
-    parser.add_argument('--rtm-file',
-                       default='docs/traceability/requirements-matrix.md',
-                       help='Path to RTM file')
-    parser.add_argument('--config',
-                       help='Path to configuration file')
-    parser.add_argument('--validate', action='store_true',
-                       help='Validate RTM links')
-    parser.add_argument('--update', action='store_true',
-                       help='Update RTM links to current format')
-    parser.add_argument('--dry-run', action='store_true',
-                       help='Show what would be updated without making changes')
-    parser.add_argument('--report',
-                       help='Generate validation report to file')
-
-    args = parser.parse_args()
-
-    # Initialize generator
-    generator = RTMLinkGenerator(args.config)
-
-    if args.validate:
-        print(f"Validating RTM links in {args.rtm_file}...")
-        result = generator.validate_rtm_links(args.rtm_file)
-
-        print(f"Total links: {result.total_links}")
-        print(f"Valid links: {result.valid_links}")
-        print(f"Invalid links: {len(result.invalid_links)}")
-
-        if result.invalid_links:
-            print("\nInvalid links:")
-            for link in result.invalid_links:
-                print(f"  - {link.text}: {link.error_message}")
-
-        if args.report:
-            report = generator.generate_validation_report(result)
-            with open(args.report, 'w') as f:
-                f.write(report)
-            print(f"Validation report saved to {args.report}")
-
-    if args.update:
-        print(f"Updating RTM links in {args.rtm_file}...")
-        updates = generator.update_rtm_links(args.rtm_file, dry_run=args.dry_run)
-
-        print("Updates:")
-        for link_type, count in updates.items():
-            if count > 0:
-                print(f"  - {link_type}: {count}")
-
-        if args.dry_run:
-            print("(Dry run - no changes made)")
-
-
-if __name__ == '__main__':
-    main()

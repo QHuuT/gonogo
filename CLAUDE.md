@@ -55,6 +55,38 @@ python tools/report_generator.py --input quality/logs/test_execution.log  # Gene
 python tools/report_generator.py --type unit --output quality/reports/    # Filtered reports
 python tools/report_generator.py --input quality/logs/ --filename custom_report.html  # Custom output
 
+# Test Failure Tracking and Analysis (NEW)
+python tools/failure_tracking_demo.py                      # Generate failure analysis with sample data
+# View: quality/reports/failure_analysis_report.html (interactive failure dashboard)
+# View: quality/reports/failure_summary_daily.json (failure statistics)
+
+# Log-Failure Correlation for Debugging (NEW)
+python tools/log_correlation_demo.py                       # Generate correlation analysis
+# View: quality/reports/log_correlation_report.json (correlation data)
+# View: quality/reports/reproduction_script_*.py (auto-generated debug scripts)
+
+# GitHub Issue Creation from Test Failures (NEW)
+python tools/github_issue_creation_demo.py --dry-run       # Generate issue templates (dry-run)
+python tools/github_issue_creation_demo.py                 # Create actual GitHub issues
+# View: quality/reports/issue_template_*.md (generated issue templates)
+
+# Test Archive Management and Retention (NEW)
+python tools/archive_cleanup.py --metrics                  # Storage analysis and recommendations
+python tools/archive_cleanup.py --dry-run                  # Preview cleanup actions
+python tools/archive_cleanup.py --apply                    # Apply retention policies
+python tools/archive_cleanup.py --search "test_report"     # Search archived files
+python tools/archive_cleanup.py --bundle backup --patterns "reports/*.html"  # Create archive bundles
+
+# RTM (Requirements Traceability Matrix) Automation (NEW)
+python tools/rtm-links.py validate                         # Validate all RTM links
+python tools/rtm-links.py validate --format json           # Validate with JSON output
+python tools/rtm-links.py update --dry-run                 # Preview RTM link updates
+python tools/rtm-links.py update --backup                  # Update RTM with backup
+python tools/rtm-links.py generate-link EP-00001 --bold    # Generate GitHub issue link
+python tools/rtm-links.py generate-bdd-link tests/bdd/features/auth.feature user_login  # Generate BDD link
+python tools/rtm-links.py config-info                      # Show RTM configuration
+python tools/rtm-links.py doctor                          # Run RTM health diagnostics
+
 # Code Quality
 black src/ tests/                   # Format code
 isort src/ tests/                   # Sort imports
@@ -99,6 +131,8 @@ docker-compose up -d                # Local production test
 - [ ] Run tests: `pytest tests/ -v` (generates structured logs)
 - [ ] Generate test report: `python tools/report_generator.py --input quality/logs/`
 - [ ] Review test report for any failures or issues
+- [ ] Check failure patterns: `python tools/failure_tracking_demo.py` (review failure trends)
+- [ ] Verify archive status: `python tools/archive_cleanup.py --metrics` (storage optimization)
 - [ ] Run linting: `black src/ tests/ && isort src/ tests/ && flake8 src/ tests/`
 - [ ] Run type checking: `mypy src/`
 
@@ -110,11 +144,14 @@ docker-compose up -d                # Local production test
 - [ ] ⚠️ **NEVER commit fixes without corresponding unit tests**
 - [ ] ⚠️ **ALWAYS validate tests catch the specific problem being solved**
 
-**Documentation Updates** (⚠️ CRITICAL - Don't forget!):
-- [ ] Check if referenced docs need updates when implementing new infrastructure
-- [ ] Update docs/technical/development-workflow.md if workflow changes
-- [ ] Update docs/technical/quality-assurance.md if testing changes
-- [ ] Update docs/technical/documentation-workflow.md if doc process changes
+**🚨 MANDATORY DOCUMENTATION WORKFLOW** (⚠️ NEVER SKIP - ALWAYS COMPLETE!):
+- [ ] **ALWAYS UPDATE RTM FIRST**: Mark US-XXXXX status and add implementation details
+- [ ] **UPDATE GITHUB ISSUE**: Comment with completion details and close issue
+- [ ] **CHECK REFERENCED DOCS**: Update development-workflow.md, quality-assurance.md if changes made
+- [ ] **UPDATE CLAUDE.md**: Add new commands, update project structure if changed
+- [ ] **VALIDATE TRACEABILITY**: Ensure all links in RTM still work
+- [ ] ⚠️ **DOCUMENTATION IS NOT OPTIONAL - IT'S PART OF IMPLEMENTATION**
+- [ ] ⚠️ **INCOMPLETE DOCUMENTATION = INCOMPLETE WORK**
 
 **GitHub Integration & Project Management**:
 - [ ] Reference linked GitHub issue in commit message (Implements/Fixes US-XXXXX)
@@ -126,7 +163,7 @@ docker-compose up -d                # Local production test
 
 **Documentation & Traceability**:
 - [ ] Update RTM with implementation progress and project tracking
-- [ ] Validate RTM links if traceability matrix modified
+- [ ] Validate RTM links if traceability matrix modified: `python tools/rtm-links.py validate`
 - [ ] Update documentation if needed
 - [ ] Update CLAUDE.md if project structure changed
 - [ ] **Sync priority mapping**: Ensure issue labels match project priority fields
