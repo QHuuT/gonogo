@@ -49,7 +49,7 @@ class TestRTMLinkGenerator:
 | [**EP-00002**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00002) | [US-00003](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00003) | [blog.feature:create_post](../../tests/bdd/features/blog.feature) | [blog_service.py](../../src/be/services/blog_service.py) | 📝 |
 """
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False, encoding='utf-8') as f:
             f.write(content)
             f.flush()
             yield f.name
@@ -66,7 +66,7 @@ class TestRTMLinkGenerator:
 
     def test_initialization_with_custom_config(self):
         """Test RTMLinkGenerator initialization with custom config."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.yml', delete=False, encoding='utf-8') as f:
             f.write("""
 github:
   owner: "testowner"
@@ -166,7 +166,7 @@ link_patterns:
     def test_validate_file_link_existing_file(self, generator, temp_rtm_file):
         """Test file link validation for existing files."""
         # Create a temporary file to validate against
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False, encoding='utf-8') as temp_file:
             temp_file.write("# Test file")
             temp_file.flush()
 
@@ -220,7 +220,7 @@ link_patterns:
 [US-00014](https://old-url.com/US-00014)
 """
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False, encoding='utf-8') as f:
             f.write(old_content)
             f.flush()
 
@@ -329,7 +329,7 @@ class TestConfigurationHandling:
 
     def test_invalid_config_file(self):
         """Test behavior with invalid YAML config."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.yml', delete=False, encoding='utf-8') as f:
             f.write("invalid: yaml: content: [")
             f.flush()
 
@@ -350,7 +350,7 @@ class TestEdgeCases:
 
     def test_empty_rtm_file(self, generator):
         """Test validation of empty RTM file."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False, encoding='utf-8') as f:
             f.write("")
             f.flush()
 
@@ -369,7 +369,7 @@ class TestEdgeCases:
 [EP-00001](https://valid-link.com)
 """
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False, encoding='utf-8') as f:
             f.write(content)
             f.flush()
 

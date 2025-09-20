@@ -15,6 +15,9 @@ from sqlalchemy.orm import sessionmaker
 from src.be.main import app
 from src.security.gdpr.models import Base
 
+# Load custom test runner plugin
+pytest_plugins = ["tools.test_runner_plugin"]
+
 
 @pytest.fixture(scope="session")
 def test_db() -> Generator[str, None, None]:

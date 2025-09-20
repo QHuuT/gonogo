@@ -49,8 +49,8 @@ pytest --cov=src tests/             # Coverage report
 # --mode=verbose   : Detailed test information
 # --mode=detailed  : Maximum debugging (no output capture, locals shown)
 
-# Test Report Generation (NEW)
-python tools/report_generator.py --demo                    # Generate demo report
+# Test Report Generation with Coverage Integration (NEW)
+python tools/report_generator.py --demo                    # Generate demo report with coverage
 python tools/report_generator.py --input quality/logs/test_execution.log  # Generate from logs
 python tools/report_generator.py --type unit --output quality/reports/    # Filtered reports
 python tools/report_generator.py --input quality/logs/ --filename custom_report.html  # Custom output
@@ -101,6 +101,14 @@ docker-compose up -d                # Local production test
 - [ ] Review test report for any failures or issues
 - [ ] Run linting: `black src/ tests/ && isort src/ tests/ && flake8 src/ tests/`
 - [ ] Run type checking: `mypy src/`
+
+**🧪 MANDATORY UNIT TEST COVERAGE** (Critical Quality Gate):
+- [ ] **For ANY implementation or fix: Create unit tests before updating documentation**
+- [ ] **TDD Approach**: Write tests first (failing) → Implement → Tests pass
+- [ ] **Regression Prevention**: Add tests that would have caught the original issue
+- [ ] **Edge Cases**: Test error conditions, boundary values, and platform differences
+- [ ] ⚠️ **NEVER commit fixes without corresponding unit tests**
+- [ ] ⚠️ **ALWAYS validate tests catch the specific problem being solved**
 
 **Documentation Updates** (⚠️ CRITICAL - Don't forget!):
 - [ ] Check if referenced docs need updates when implementing new infrastructure
@@ -221,6 +229,7 @@ start quality/reports/test_report.html # Windows
 ### **Advanced Reporting Features**
 - **Interactive Filtering**: Filter by status, test type, search terms
 - **Timeline Visualization**: See test execution patterns over time
+- **Coverage Integration**: Visual coverage analysis with file-level details (NEW)
 - **Failure Analysis**: Categorized error patterns and debugging info
 - **Export Capabilities**: CSV export for external analysis
 - **GDPR Compliance**: Personal data sanitization in logs
