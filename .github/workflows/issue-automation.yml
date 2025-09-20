@@ -148,20 +148,91 @@ jobs:
                   console.log(`🚧 Found blocking relationship: This issue blocks #${blockedIssueNumber}`);
 
                   try {
-                    // Use GitHub's built-in issue relationship API
-                    await github.rest.issues.createRelationship({
-                      owner,
-                      repo,
-                      issue_number: issueNumber,
-                      related_issue_number: blockedIssueNumber,
-                      relationship_type: 'blocks'
+                    // Use GitHub Projects v2 API to create dependencies
+                    const projectId = 'PVT_kwHOBlfsAs4BDk4x'; // GoNoGo project ID
+
+                    // Get project items for both issues
+                    const currentIssueQuery = `
+                      query($projectId: ID!, $issueUrl: URI!) {
+                        node(id: $projectId) {
+                          ... on ProjectV2 {
+                            items(first: 100) {
+                              nodes {
+                                id
+                                content {
+                                  ... on Issue {
+                                    url
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    `;
+
+                    const currentIssueUrl = `https://github.com/${owner}/${repo}/issues/${issueNumber}`;
+                    const blockedIssueUrl = `https://github.com/${owner}/${repo}/issues/${blockedIssueNumber}`;
+
+                    // Find current issue project item
+                    const currentItemResult = await github.graphql(currentIssueQuery, {
+                      projectId,
+                      issueUrl: currentIssueUrl
                     });
 
-                    console.log(`🔗 Created blocking relationship: #${issueNumber} blocks #${blockedIssueNumber}`);
+                    const currentItem = currentItemResult.node.items.nodes.find(item =>
+                      item.content && item.content.url === currentIssueUrl
+                    );
+
+                    // Find blocked issue project item
+                    const blockedItemResult = await github.graphql(currentIssueQuery, {
+                      projectId,
+                      issueUrl: blockedIssueUrl
+                    });
+
+                    const blockedItem = blockedItemResult.node.items.nodes.find(item =>
+                      item.content && item.content.url === blockedIssueUrl
+                    );
+
+                    if (currentItem && blockedItem) {
+                      // Create dependency: current issue blocks blocked issue
+                      const dependencyMutation = `
+                        mutation($projectId: ID!, $dependencyItemId: ID!, $dependentItemId: ID!) {
+                          addProjectV2ItemDependency(input: {
+                            projectId: $projectId,
+                            dependencyItemId: $dependencyItemId,
+                            dependentItemId: $dependentItemId
+                          }) {
+                            dependency {
+                              id
+                            }
+                          }
+                        }
+                      `;
+
+                      await github.graphql(dependencyMutation, {
+                        projectId,
+                        dependencyItemId: currentItem.id,
+                        dependentItemId: blockedItem.id
+                      });
+
+                      console.log(`🔗 Created GitHub Projects dependency: #${issueNumber} blocks #${blockedIssueNumber}`);
+                    } else {
+                      console.log(`⚠️ Could not find project items for dependency creation`);
+
+                      // Fallback: Add status/blocked label
+                      await github.rest.issues.addLabels({
+                        owner,
+                        repo,
+                        issue_number: blockedIssueNumber,
+                        labels: ['status/blocked']
+                      });
+                      console.log(`📝 Fallback: Added status/blocked label to #${blockedIssueNumber}`);
+                    }
                   } catch (error) {
                     console.log(`❌ Failed to create blocking relationship with #${blockedIssueNumber}:`, error.message);
 
-                    // Fallback: Add status/blocked label to blocked issue
+                    // Fallback: Add status/blocked label
                     try {
                       await github.rest.issues.addLabels({
                         owner,
@@ -187,20 +258,91 @@ jobs:
                   console.log(`🛑 Found dependency: This issue is blocked by #${blockingIssueNumber}`);
 
                   try {
-                    // Use GitHub's built-in issue relationship API
-                    await github.rest.issues.createRelationship({
-                      owner,
-                      repo,
-                      issue_number: blockingIssueNumber,
-                      related_issue_number: issueNumber,
-                      relationship_type: 'blocks'
+                    // Use GitHub Projects v2 API to create dependencies
+                    const projectId = 'PVT_kwHOBlfsAs4BDk4x'; // GoNoGo project ID
+
+                    // Get project items for both issues
+                    const currentIssueQuery = `
+                      query($projectId: ID!, $issueUrl: URI!) {
+                        node(id: $projectId) {
+                          ... on ProjectV2 {
+                            items(first: 100) {
+                              nodes {
+                                id
+                                content {
+                                  ... on Issue {
+                                    url
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    `;
+
+                    const currentIssueUrl = `https://github.com/${owner}/${repo}/issues/${issueNumber}`;
+                    const blockingIssueUrl = `https://github.com/${owner}/${repo}/issues/${blockingIssueNumber}`;
+
+                    // Find current issue project item
+                    const currentItemResult = await github.graphql(currentIssueQuery, {
+                      projectId,
+                      issueUrl: currentIssueUrl
                     });
 
-                    console.log(`🔗 Created blocking relationship: #${blockingIssueNumber} blocks #${issueNumber}`);
+                    const currentItem = currentItemResult.node.items.nodes.find(item =>
+                      item.content && item.content.url === currentIssueUrl
+                    );
+
+                    // Find blocking issue project item
+                    const blockingItemResult = await github.graphql(currentIssueQuery, {
+                      projectId,
+                      issueUrl: blockingIssueUrl
+                    });
+
+                    const blockingItem = blockingItemResult.node.items.nodes.find(item =>
+                      item.content && item.content.url === blockingIssueUrl
+                    );
+
+                    if (currentItem && blockingItem) {
+                      // Create dependency: blocking issue blocks current issue
+                      const dependencyMutation = `
+                        mutation($projectId: ID!, $dependencyItemId: ID!, $dependentItemId: ID!) {
+                          addProjectV2ItemDependency(input: {
+                            projectId: $projectId,
+                            dependencyItemId: $dependencyItemId,
+                            dependentItemId: $dependentItemId
+                          }) {
+                            dependency {
+                              id
+                            }
+                          }
+                        }
+                      `;
+
+                      await github.graphql(dependencyMutation, {
+                        projectId,
+                        dependencyItemId: blockingItem.id,
+                        dependentItemId: currentItem.id
+                      });
+
+                      console.log(`🔗 Created GitHub Projects dependency: #${blockingIssueNumber} blocks #${issueNumber}`);
+                    } else {
+                      console.log(`⚠️ Could not find project items for dependency creation`);
+
+                      // Fallback: Add status/blocked label
+                      await github.rest.issues.addLabels({
+                        owner,
+                        repo,
+                        issue_number: issueNumber,
+                        labels: ['status/blocked']
+                      });
+                      console.log(`📝 Fallback: Added status/blocked label to #${issueNumber}`);
+                    }
                   } catch (error) {
                     console.log(`❌ Failed to create blocking relationship with #${blockingIssueNumber}:`, error.message);
 
-                    // Fallback: Add status/blocked label to current issue
+                    // Fallback: Add status/blocked label
                     try {
                       await github.rest.issues.addLabels({
                         owner,
