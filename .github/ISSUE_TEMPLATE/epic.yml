@@ -58,7 +58,7 @@ body:
         **We want** advanced search and filtering capabilities
         **So that** we can quickly find relevant content
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: business-value
@@ -83,7 +83,7 @@ body:
         - [ ] Search results load within 2 seconds
         - [ ] Mobile search experience is optimized
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: business-outcomes
@@ -95,7 +95,7 @@ body:
         - Secondary - Reduce bounce rate from content pages
         - Metrics - Search usage, time on site, pages per session
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: user-stories
@@ -132,7 +132,7 @@ body:
         - High
         - Critical
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: risks-mitigation
@@ -172,6 +172,7 @@ body:
         - label: This epic involves personal data processing
         - label: GDPR compliance review required
         - label: Privacy impact assessment needed
+        - label: Not applicable
 
   - type: textarea
     id: additional-context

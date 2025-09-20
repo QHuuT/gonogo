@@ -74,7 +74,7 @@ body:
         **I want** to search for blog posts by keyword
         **So that** I can quickly find content relevant to my interests
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: business-value
@@ -86,7 +86,7 @@ body:
         - Reduces bounce rate through better content access
         - Supports content strategy and user engagement goals
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: acceptance-criteria-functional
@@ -98,7 +98,7 @@ body:
         - [ ] **Given** I search for a keyword, **When** results are displayed, **Then** they are ranked by relevance
         - [ ] **Given** no results are found, **When** I search, **Then** I see a helpful "no results" message
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: acceptance-criteria-nonfunctional
@@ -111,7 +111,7 @@ body:
         - [ ] **Security**: Search input is sanitized to prevent XSS
         - [ ] **Mobile**: Search interface works on mobile devices
     validations:
-      required: true
+      required: false
 
   - type: checkboxes
     id: gdpr-considerations
@@ -123,6 +123,7 @@ body:
         - label: Data collection requires user consent
         - label: Privacy impact assessment needed
         - label: Data retention policies apply
+        - label: Not Applicable
 
   - type: textarea
     id: gdpr-details

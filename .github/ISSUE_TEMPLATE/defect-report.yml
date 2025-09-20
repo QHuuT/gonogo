@@ -27,19 +27,19 @@ body:
     id: related-epic
     attributes:
       label: Related Epic
-      description: Link to affected epic (format EP-XXX or #issue-number)
+      description: Link to affected epic (format EP-XXX or #issue-number) - Needed for RTM
       placeholder: "EP-001 or #123"
     validations:
-      required: true
+      required: 
 
   - type: input
     id: related-user-story
     attributes:
       label: Related User Story
-      description: Link to affected user story (format US-XXX or #issue-number)
+      description: Link to affected user story (format US-XXX or #issue-number) - Needed for RTM
       placeholder: "US-001 or #456"
     validations:
-      required: true
+      required:
 
   - type: dropdown
     id: priority
@@ -75,7 +75,7 @@ body:
       description: Brief one-line description of the defect
       placeholder: "Blog post search returns no results for valid keywords"
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: environment
@@ -88,7 +88,7 @@ body:
         - Version - v1.2.3 (commit: abc123)
         - Device - Desktop / Mobile / Tablet
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: steps-to-reproduce
@@ -101,7 +101,7 @@ body:
         3. Click search button
         4. Observe results
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: expected-behavior
@@ -111,7 +111,7 @@ body:
       placeholder: |
         According to US-001 acceptance criteria, search should return blog posts containing the keyword "python" ranked by relevance.
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: actual-behavior
@@ -121,7 +121,7 @@ body:
       placeholder: |
         Search returns "No results found" message even though there are 5 blog posts containing "python" in the title or content.
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: business-impact
@@ -133,7 +133,7 @@ body:
         - Business Value Lost - Reduced engagement, potential user churn
         - Workaround Available - No - users must browse manually
     validations:
-      required: true
+      required: false
 
   - type: checkboxes
     id: gdpr-impact
@@ -146,6 +146,7 @@ body:
         - label: User notification required
         - label: Consent system affected
         - label: Data retention impacted
+        - label: Not applicable
 
   - type: textarea
     id: gdpr-details
@@ -189,7 +190,7 @@ body:
         - [ ] AC-1 - Given I search for a keyword, When results are displayed, Then they are ranked by relevance
         - [ ] NFR-1 - Search results return within 2 seconds (VIOLATED - no results returned)
     validations:
-      required: true
+      required: false
 
   - type: input
     id: workaround

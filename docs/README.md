@@ -5,10 +5,10 @@
 ## 🎯 Purpose: Documentation vs Project Management
 
 ### What's Here (docs/)
-- **Technical Documentation**: Architecture decisions, development guides
-- **Generated Content**: Auto-created from GitHub Issues (future)
-- **Permanent Records**: Compliance docs, technical specifications
-- **Developer Resources**: Setup guides, workflows, standards
+- **Context Documentation**: Stable decisions and compliance requirements
+- **Technical Documentation**: Architecture, implementation guides, and specifications
+- **User Documentation**: End-user guides and help content
+- **Traceability**: Requirements tracking and compliance mapping
 
 ### What's NOT Here (moved to .github/)
 - **Active Project Management**: Use [GitHub Issues](../.github/README.md) instead
@@ -20,19 +20,21 @@
 ```
 docs/
 ├── README.md                    # This guide
-├── 01-business/                # 📋 DEPRECATED: Being phased out
-│   └── README.md               # Points to GitHub Issues
-├── 02-technical/               # 🔧 TECHNICAL: Architecture & guides
-│   ├── bdd-scenarios/          # BDD test scenarios
-│   ├── api-docs/               # API documentation
-│   └── adrs/                   # Architecture Decision Records
-├── 03-user/                    # 👤 USER: End-user documentation
-│   └── guides/                 # User guides and help
-├── generated/                  # 🤖 AUTO-GENERATED: From GitHub Issues
-│   └── (future automation)    # RTM, status reports, summaries
-└── traceability/               # 🔗 TRACEABILITY: Requirements tracking
-    ├── requirements-matrix.md  # Links to GitHub Issues
-    └── gdpr-compliance-map.md  # Privacy compliance mapping
+├── context/                     # 🎯 CONTEXT: Stable decisions & compliance
+│   ├── decisions/              #   📋 ADRs (architecture decisions)
+│   └── compliance/             #   ⚖️  GDPR and legal requirements
+├── technical/                   # 🔧 TECHNICAL: Implementation docs
+│   ├── cross-cutting-architecture/  #   🏗️  System architecture
+│   ├── bdd-scenarios/          #   🧪 BDD test scenarios
+│   ├── api-docs/               #   📡 API documentation
+│   └── technical-epics/        #   📋 Technical implementation guides
+├── user/                        # 👤 USER: End-user documentation
+│   └── guides/                 #   📖 User guides and help
+├── traceability/               # 🔗 TRACEABILITY: Requirements tracking
+│   ├── requirements-matrix.md  #   📊 Links to GitHub Issues
+│   └── gdpr-compliance-map.md  #   🛡️  Privacy compliance mapping
+└── generated/                  # 🤖 AUTO-GENERATED: From GitHub Issues
+    └── (future automation)    #   📈 RTM, status reports, summaries
 ```
 
 ## 🔄 Documentation Strategy
@@ -40,13 +42,13 @@ docs/
 ### GitHub-First Approach
 1. **Create Issues**: Use [GitHub Issue Templates](../.github/ISSUE_TEMPLATE/)
 2. **Track Work**: Monitor [GitHub Issues](../../../issues)
-3. **Generate Docs**: Auto-create documentation from GitHub (future)
-4. **Manual Docs**: Keep technical guides and decisions here
+3. **Reference Context**: Link to stable docs for background
+4. **Generate Reports**: Auto-create summaries from GitHub (future)
 
-### Current Transition
-- **Phase 1**: ✅ GitHub Issue templates active
-- **Phase 2**: 🔄 Transitioning from docs/01-business/ to GitHub Issues
-- **Phase 3**: 🔮 Auto-generation from GitHub Issues (US-010)
+### Documentation Types
+- **Context Docs**: Stable background (ADRs, compliance) that GitHub Issues reference
+- **Technical Docs**: Implementation details and architecture
+- **Living Docs**: Generated from GitHub Issues (future automation)
 
 ## 📖 Key Documentation
 
@@ -55,39 +57,51 @@ docs/
 - **[Issue Templates](../../../issues/new/choose)** - Create new work
 - **[CLAUDE.md](../CLAUDE.md)** - Development workflow and standards
 
+### For Context & Background
+- **[Context Documentation](context/)** - Stable decisions and compliance
+  - [Architecture Decisions](context/decisions/) - Major technical and business decisions
+  - [GDPR Requirements](context/compliance/gdpr-requirements.md) - Privacy compliance
+- **[Requirements Matrix](traceability/requirements-matrix.md)** - Full traceability to GitHub
+
 ### For Technical Reference
-- **[Requirements Matrix](traceability/requirements-matrix.md)** - Full traceability
-- **[BDD Scenarios](02-technical/bdd-scenarios/)** - Executable specifications
-- **[Architecture Decisions](02-technical/adrs/)** - Technical decisions
+- **[Technical Documentation](technical/)** - Implementation and architecture
+  - [System Architecture](technical/cross-cutting-architecture/system-architecture.md) - Overall system design
+  - [Security Architecture](technical/cross-cutting-architecture/security-architecture.md) - Security and GDPR implementation
+  - [Integration Patterns](technical/cross-cutting-architecture/integration-patterns.md) - Service communication patterns
+  - [BDD Scenarios](technical/bdd-scenarios/) - Executable specifications
 
-### For Project Understanding
-- **[Business Requirements](01-business/README.md)** - Overview (links to GitHub)
-- **[GitHub Workflow](../.github/GITHUB_WORKFLOW.md)** - How project management works
+### For End Users
+- **[User Documentation](user/)** - End-user guides and help
 
-## 🚫 What's Being Deprecated
+## 🔗 How GitHub Issues Reference Documentation
 
-### docs/01-business/ (Moving to GitHub)
-- ~~epics/~~ → Use [GitHub Issues](../../../issues) with Epic template
-- ~~user-stories/~~ → Use [GitHub Issues](../../../issues) with Story template
-- ~~defects/~~ → Use [GitHub Issues](../../../issues) with Defect template
+### Example GitHub Issue Structure
+```markdown
+## Epic: EP-007 Advanced Search Implementation
 
-### Why the Change?
-- **Single Source of Truth**: GitHub Issues are authoritative
-- **Live Status**: Real-time updates vs static files
-- **Better Collaboration**: Built-in discussions and assignments
-- **Integrated Workflow**: Same platform as code and reviews
+**Context & Background**:
+- Technology Choice: [ADR-001 Technology Stack](docs/context/decisions/adr-001-technology-stack.md)
+- Privacy Requirements: [GDPR Requirements](docs/context/compliance/gdpr-requirements.md#data-minimization)
+
+**Technical Implementation**:
+- Architecture: [System Architecture](docs/technical/cross-cutting-architecture/system-architecture.md)
+- Integration: [Integration Patterns](docs/technical/cross-cutting-architecture/integration-patterns.md)
+
+**Testing**:
+- BDD Scenarios: [Search Scenarios](docs/technical/bdd-scenarios/search-functionality.feature)
+```
 
 ## 🤖 Future: Auto-Generated Documentation
 
-**US-010** will implement automation to generate documentation from GitHub Issues:
+**Planned automation** will generate documentation from GitHub Issues:
 
 ```
 GitHub Issues → Generated Documentation
-├── Epic summaries
-├── Updated RTM with live links
-├── Status reports
-├── Progress dashboards
-└── Stakeholder summaries
+├── Epic summaries and progress reports
+├── Updated RTM with live GitHub links
+├── Status dashboards and metrics
+├── Stakeholder summaries
+└── Compliance tracking reports
 ```
 
 ## 🔗 Quick Navigation
@@ -97,11 +111,19 @@ GitHub Issues → Generated Documentation
 - **📊 Track Progress**: [GitHub Issues](../../../issues)
 - **🔧 Development**: [CLAUDE.md](../CLAUDE.md)
 
-### Secondary (Documentation)
+### Context & Background
+- **🎯 Decisions**: [Architecture Decisions](context/decisions/)
+- **⚖️ Compliance**: [GDPR Requirements](context/compliance/gdpr-requirements.md)
 - **🔗 Traceability**: [Requirements Matrix](traceability/requirements-matrix.md)
-- **⚙️ Technical**: [Technical Docs](02-technical/)
-- **👤 User Guides**: [User Docs](03-user/)
+
+### Technical Implementation
+- **🏗️ Architecture**: [Cross-Cutting Architecture](technical/cross-cutting-architecture/)
+- **📡 APIs**: [API Documentation](technical/api-docs/)
+- **🧪 Testing**: [BDD Scenarios](technical/bdd-scenarios/)
+
+### User Support
+- **👤 User Guides**: [User Documentation](user/)
 
 ---
 
-**📌 Remember**: For all active project management, use [GitHub Issues](../../../issues). This documentation is for reference, technical specs, and generated content.
+**📌 Remember**: For all active project management, use [GitHub Issues](../../../issues). This documentation provides stable context and technical reference that GitHub Issues can link to for background information.
