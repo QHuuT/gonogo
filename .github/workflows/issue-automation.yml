@@ -144,31 +144,18 @@ jobs:
               }
             }
 
-            // 4. Add to GoNoGo project
+            // 4. Add to GoNoGo project using GitHub CLI (simpler approach)
             try {
-              const projectId = 'PVT_kwHOBlfsAs4BDk4x'; // GoNoGo project ID
+              const projectNumber = '2'; // GoNoGo project number
+              const issueUrl = `https://github.com/${owner}/${repo}/issues/${issueNumber}`;
 
-              // Add issue to project using GraphQL API
-              const addToProjectMutation = `
-                mutation($projectId: ID!, $contentId: ID!) {
-                  addProjectV2ItemByContentId(input: {
-                    projectId: $projectId
-                    contentId: $contentId
-                  }) {
-                    item {
-                      id
-                    }
-                  }
-                }
-              `;
+              // Use GitHub CLI to add to project (more reliable)
+              const { execSync } = require('child_process');
+              const result = execSync(`gh project item-add ${projectNumber} --owner ${owner} --url ${issueUrl}`,
+                { encoding: 'utf8', timeout: 10000 });
 
-              const result = await github.graphql(addToProjectMutation, {
-                projectId: projectId,
-                contentId: issue.node_id
-              });
-
-              console.log('📋 Added to GoNoGo project successfully');
-              console.log(`   Project item ID: ${result.addProjectV2ItemByContentId.item.id}`);
+              console.log('📋 Added to GoNoGo project successfully via CLI');
+              console.log(`   Result: ${result.trim()}`);
             } catch (error) {
               console.log('❌ Failed to add to project:', error.message);
               // This is not critical, so we continue
@@ -253,27 +240,14 @@ jobs:
 
               // Add to GoNoGo project if not already there
               try {
-                const projectId = 'PVT_kwHOBlfsAs4BDk4x';
+                const projectNumber = '2';
+                const issueUrl = issue.html_url;
 
-                const addToProjectMutation = `
-                  mutation($projectId: ID!, $contentId: ID!) {
-                    addProjectV2ItemByContentId(input: {
-                      projectId: $projectId
-                      contentId: $contentId
-                    }) {
-                      item {
-                        id
-                      }
-                    }
-                  }
-                `;
+                const { execSync } = require('child_process');
+                const result = execSync(`gh project item-add ${projectNumber} --owner ${owner} --url ${issueUrl}`,
+                  { encoding: 'utf8', timeout: 10000 });
 
-                await github.graphql(addToProjectMutation, {
-                  projectId: projectId,
-                  contentId: issue.node_id
-                });
-
-                console.log(`  📋 Added #${issue.number} to GoNoGo project`);
+                console.log(`  📋 Added #${issue.number} to GoNoGo project via CLI`);
               } catch (error) {
                 // Might already be in project or other issue - not critical
                 console.log(`  ℹ️ Could not add #${issue.number} to project: ${error.message}`);
