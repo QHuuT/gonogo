@@ -24,12 +24,23 @@ This file contains configuration and commands for Claude Code to help with devel
 # Development
 python -m uvicorn src.be.main:app --reload --host 0.0.0.0 --port 8000
 
-# Testing
-pytest tests/ -v                    # All tests
-pytest tests/unit/ -v               # Unit tests only
-pytest tests/integration/ -v        # Integration tests
-pytest tests/security/ -v           # Security tests
+# Testing (Enhanced Test Runner)
+pytest tests/ -v                    # All tests (standard mode)
+pytest --mode=silent --type=all     # All tests, minimal output
+pytest --mode=verbose --type=unit   # Unit tests with detailed output
+pytest --mode=detailed --type=integration  # Integration tests with full debugging
+pytest --type=unit                  # Unit tests only
+pytest --type=integration           # Integration tests only
+pytest --type=security              # Security tests only
+pytest --type=e2e                   # End-to-end tests only
+pytest --type=bdd                   # BDD scenarios only
 pytest --cov=src tests/             # Coverage report
+
+# Test Execution Modes
+# --mode=silent    : Minimal output, fastest execution
+# --mode=standard  : Default pytest behavior
+# --mode=verbose   : Detailed test information
+# --mode=detailed  : Maximum debugging (no output capture, locals shown)
 
 # Code Quality
 black src/ tests/                   # Format code

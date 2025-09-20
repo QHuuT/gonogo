@@ -77,7 +77,7 @@ testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-v --cov=src --cov-report=term-missing --cov-report=html"
+addopts = "-v --cov=src --cov-report=term-missing --cov-report=html -p tools.test_runner_plugin"
 asyncio_mode = "auto"
 
 # BDD configuration
@@ -88,7 +88,9 @@ markers = [
     "security: marks tests as security tests",
     "gdpr: marks tests as GDPR compliance tests",
     "performance: marks tests as performance tests",
-    "bdd: marks tests as BDD scenarios"
+    "bdd: marks tests as BDD scenarios",
+    "detailed: marks tests for detailed debugging mode",
+    "test_type: categorizes tests by type (unit, integration, etc.)"
 ]
 
 [tool.coverage.run]
