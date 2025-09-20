@@ -1,7 +1,7 @@
 name: 🐛 Defect Report
-description: Report a bug or defect in existing functionality
-title: "[DEFECT] DEF-XXX: "
-labels: ["defect", "bug", "needs-triage"]
+description: Report a defect or bug in existing functionality
+title: "DEF-XXXXX: [Brief description of the defect]"
+labels: ["defect", "needs-triage"]
 projects: ["gonogo/1"]
 assignees: []
 body:
@@ -18,8 +18,8 @@ body:
     id: defect-id
     attributes:
       label: Defect ID
-      description: Unique defect identifier (format DEF-XXX)
-      placeholder: "DEF-001"
+      description: Unique defect identifier (format DEF-XXXXX)
+      placeholder: "DEF-00001"
     validations:
       required: true
 
@@ -27,8 +27,8 @@ body:
     id: related-epic
     attributes:
       label: Related Epic
-      description: Link to affected epic (format EP-XXX or #issue-number) - Needed for RTM
-      placeholder: "EP-001 or #123"
+      description: Link to affected epic (format EP-XXXXX or #issue-number) - Needed for RTM
+      placeholder: "EP-00001 or #123"
     validations:
       required: 
 
@@ -36,8 +36,8 @@ body:
     id: related-user-story
     attributes:
       label: Related User Story
-      description: Link to affected user story (format US-XXX or #issue-number) - Needed for RTM
-      placeholder: "US-001 or #456"
+      description: Link to affected user story (format US-XXXXX or #issue-number) - Needed for RTM
+      placeholder: "US-00001 or #456"
     validations:
       required:
 

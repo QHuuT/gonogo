@@ -1,6 +1,6 @@
 name: 📋 Epic
 description: Create a new epic for organizing related user stories
-title: "[EPIC] EP-XXX: "
+title: "EP-XXXXX: [Brief description of the epic]"
 labels: ["epic", "needs-triage"]
 projects: ["gonogo/1"]
 assignees: []
@@ -18,8 +18,8 @@ body:
     id: epic-id
     attributes:
       label: Epic ID
-      description: Unique epic identifier (format EP-XXX)
-      placeholder: "EP-005"
+      description: Unique epic identifier (format EP-XXXXX)
+      placeholder: "EP-00005"
     validations:
       required: true
 
@@ -103,9 +103,9 @@ body:
       label: User Stories (Planned)
       description: List of user stories that will be part of this epic
       placeholder: |
-        - US-XXX: Basic content search
-        - US-XXX: Advanced filtering
-        - US-XXX: Search result optimization
+        - US-XXXXX: Basic content search
+        - US-XXXXX: Advanced filtering
+        - US-XXXXX: Search result optimization
     validations:
       required: false
 
@@ -115,7 +115,7 @@ body:
       label: Dependencies
       description: What other epics or external requirements does this depend on?
       placeholder: |
-        - EP-001: Blog Content Management (must be completed first)
+        - EP-00001: Blog Content Management (must be completed first)
         - Search indexing infrastructure
         - Performance optimization framework
     validations:

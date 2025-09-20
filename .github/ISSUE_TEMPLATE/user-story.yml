@@ -1,6 +1,6 @@
 name: 📖 User Story
 description: Create a new user story within an epic
-title: "[STORY] US-XXX: "
+title: "US-XXXXX: [Brief description of the user story]"
 labels: ["user-story", "needs-triage"]
 projects: ["gonogo/1"]
 assignees: []
@@ -18,8 +18,8 @@ body:
     id: story-id
     attributes:
       label: User Story ID
-      description: Unique user story identifier (format US-XXX)
-      placeholder: "US-013"
+      description: Unique user story identifier (format US-XXXXX)
+      placeholder: "US-00013"
     validations:
       required: true
 
@@ -27,8 +27,8 @@ body:
     id: epic-link
     attributes:
       label: Parent Epic
-      description: Link to the parent epic (format EP-XXX or #issue-number)
-      placeholder: "EP-004 or #123"
+      description: Link to the parent epic (format EP-XXXXX or #issue-number)
+      placeholder: "EP-00004 or #123"
     validations:
       required: true
 
