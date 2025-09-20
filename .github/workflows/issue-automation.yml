@@ -151,7 +151,7 @@ jobs:
               // Add issue to project using GraphQL API
               const addToProjectMutation = `
                 mutation($projectId: ID!, $contentId: ID!) {
-                  addProjectV2ItemById(input: {
+                  addProjectV2ItemByContentId(input: {
                     projectId: $projectId
                     contentId: $contentId
                   }) {
@@ -168,7 +168,7 @@ jobs:
               });
 
               console.log('📋 Added to GoNoGo project successfully');
-              console.log(`   Project item ID: ${result.addProjectV2ItemById.item.id}`);
+              console.log(`   Project item ID: ${result.addProjectV2ItemByContentId.item.id}`);
             } catch (error) {
               console.log('❌ Failed to add to project:', error.message);
               // This is not critical, so we continue
@@ -257,7 +257,7 @@ jobs:
 
                 const addToProjectMutation = `
                   mutation($projectId: ID!, $contentId: ID!) {
-                    addProjectV2ItemById(input: {
+                    addProjectV2ItemByContentId(input: {
                       projectId: $projectId
                       contentId: $contentId
                     }) {
