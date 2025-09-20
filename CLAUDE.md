@@ -74,16 +74,20 @@ docker-compose up -d                # Local production test
 - [ ] Run linting: `black src/ tests/ && isort src/ tests/ && flake8 src/ tests/`
 - [ ] Run type checking: `mypy src/`
 
-**GitHub Integration**:
+**GitHub Integration & Project Management**:
 - [ ] Reference linked GitHub issue in commit message (Implements/Fixes US-XXXXX)
 - [ ] Comment on linked issue with implementation details
 - [ ] Add BDD scenarios to issue description if created
+- [ ] **Update GitHub Project status**: Move from "Backlog" → "In Progress" → "Done"
+- [ ] **Update parent/child relationships**: Ensure Epic/US/DEF hierarchy is maintained
+- [ ] **Update dependency status**: Mark blocking issues as resolved if applicable
 
 **Documentation & Traceability**:
-- [ ] Update RTM with implementation progress
+- [ ] Update RTM with implementation progress and project tracking
 - [ ] Validate RTM links if traceability matrix modified
 - [ ] Update documentation if needed
 - [ ] Update CLAUDE.md if project structure changed
+- [ ] **Sync priority mapping**: Ensure issue labels match project priority fields
 
 ## Project Structure
 
@@ -204,23 +208,30 @@ test: add unit tests for blog post service
 ### **🚀 Enhanced Development Session Protocol**
 1. [ ] Read CLAUDE.md (this file) completely
 2. [ ] Check [GitHub Issues](../../issues) for assigned work
-3. [ ] **PLAN**: For any new task, create GitHub issue using CLI:
+3. [ ] **PLAN**: For any new task, create GitHub issue with full project integration:
    - **📖 Detailed Guide**: See [GitHub Issue Creation Guide](docs/technical/github-issue-creation.md)
-   - Use `gh issue create --title "EP-XXXXX: Title" --body "Content" --label "epic,priority/high"`
-   - Use `gh issue create --title "US-XXXXX: Title" --body "Content" --label "user-story,priority/medium"`
-   - Use `gh issue create --title "DEF-XXXXX: Title" --body "Content" --label "defect,priority/high"`
    - **Check existing IDs first**: `gh issue list --limit 50 --state all | grep -E "(EP-|US-|DEF-)"`
+   - **Set up project integration**: `export GONOGO_PROJECT_ID=$(gh project list --owner QHuuT --json number,title | jq -r '.[] | select(.title=="GoNoGo") | .number')`
+   - **Create issue + add to project**:
+     ```bash
+     ISSUE_URL=$(gh issue create --title "US-XXXXX: Title" --body "**Parent Epic**: EP-XXXXX\n**Dependencies**:\n- Blocks: #X\n- Blocked by: #Y" --label "user-story,priority/medium")
+     gh project item-add $GONOGO_PROJECT_ID --url $ISSUE_URL
+     ```
+   - **Set hierarchical relationships**: Epic → User Story → Defect
+   - **Document dependencies**: "Blocks #X" or "Blocked by #Y" relationships
 4. [ ] Review [Development Workflow](docs/technical/development-workflow.md) for task-specific processes
 5. [ ] Check [Requirements Matrix](docs/traceability/requirements-matrix.md) for current status
 6. [ ] Verify [GDPR implications](docs/context/compliance/gdpr-requirements.md) if handling personal data
 
-### **✅ Enhanced Commit Protocol**
+### **✅ Enhanced Commit Protocol with Project Integration**
 1. [ ] Complete all quality gates (tests, linting, type checking)
 2. [ ] **COMMIT**: Reference linked GitHub issue (e.g., "Implements US-00018")
 3. [ ] **COMMENT**: Update linked issue with implementation details
-4. [ ] **TRACE**: Update RTM with progress/completion status
-5. [ ] **BDD**: Add any created scenarios to issue description
-6. [ ] Follow [Conventional Commit](docs/technical/quality-assurance.md#commit-message-standards) format
+4. [ ] **PROJECT**: Update GitHub Project status and priority if needed
+5. [ ] **TRACE**: Update RTM with progress/completion status and project links
+6. [ ] **BDD**: Add any created scenarios to issue description
+7. [ ] **DEPENDENCIES**: Update dependency status if issue blocks/unblocks others
+8. [ ] Follow [Conventional Commit](docs/technical/quality-assurance.md#commit-message-standards) format
 
 ---
 

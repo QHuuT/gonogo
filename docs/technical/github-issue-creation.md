@@ -43,10 +43,28 @@ gh label list --limit 30
 - **Status**: `status/backlog`, `status/ready`, `status/in-progress`, `status/testing`, `status/done`
 - **Component**: `component/frontend`, `component/backend`
 
+### **Step 4: GitHub Project Setup**
+```bash
+# Check current authentication status
+gh auth status
+
+# Refresh authentication with project scope (if needed)
+gh auth refresh -s project -h github.com
+
+# List existing projects
+gh project list --owner QHuuT
+
+# Get project ID for GoNoGo project
+export GONOGO_PROJECT_ID=$(gh project list --owner QHuuT --json number,title | jq -r '.[] | select(.title=="GoNoGo") | .number')
+```
+
+**Note**: GitHub Projects integration requires `project` scope in authentication.
+
 ## 🔧 Issue Creation Commands
 
 ### **For Epics (EP-XXXXX)**
 ```bash
+# Step 1: Create the epic issue
 gh issue create \
   --title "EP-00006: [Epic Name]" \
   --body "## Epic Description
@@ -61,16 +79,30 @@ gh issue create \
 - [ ] [Criterion 1]
 - [ ] [Criterion 2]
 
+## Dependencies
+- **Blocks**: [List of issues this epic blocks]
+- **Blocked by**: [List of issues blocking this epic]
+
 ## Story Points Estimate
 [Total points]
 
-**Priority**: [High/Medium/Low]
-**Release**: [v1.0/v1.1/etc]" \
+**Priority**: High - [rationale]
+**Release**: [v1.0/v1.1/etc]
+**Related Issues**: [List dependent/related issues]" \
   --label "epic,priority/high,epic/[category],status/backlog"
+
+# Step 2: Add to GitHub Project
+gh project item-add $GONOGO_PROJECT_ID --url [ISSUE-URL]
+
+# Step 3: Set project fields (requires project item ID)
+ITEM_ID=$(gh project item-list $GONOGO_PROJECT_ID --format json | jq -r '.items[] | select(.content.title | contains("EP-00006")) | .id')
+gh project item-edit --id $ITEM_ID --field "Priority" --value "High"
+gh project item-edit --id $ITEM_ID --field "Status" --value "Backlog"
 ```
 
 ### **For User Stories (US-XXXXX)**
 ```bash
+# Step 1: Create the user story issue
 gh issue create \
   --title "US-00018: [User Story Title]" \
   --body "## User Story
@@ -85,6 +117,10 @@ As a [user type], I want [functionality] so that [benefit].
 ## BDD Scenarios
 - [feature-name.feature:scenario_name]
 
+## Dependencies
+- **Blocks**: [List of issues this user story blocks]
+- **Blocked by**: [List of issues blocking this user story]
+
 ## Technical Notes
 [Implementation details]
 
@@ -94,14 +130,25 @@ As a [user type], I want [functionality] so that [benefit].
 - [ ] Code reviewed and merged
 - [ ] RTM updated
 
-**Epic**: EP-XXXXX
+**Parent Epic**: EP-XXXXX
 **Story Points**: [1-8]
-**Priority**: [High/Medium/Low]" \
+**Priority**: Medium - [rationale]
+**Related Issues**: [List dependent/related issues]" \
   --label "user-story,priority/medium,epic/[category],status/backlog,component/backend"
+
+# Step 2: Add to GitHub Project
+gh project item-add $GONOGO_PROJECT_ID --url [ISSUE-URL]
+
+# Step 3: Set project fields and parent relationship
+ITEM_ID=$(gh project item-list $GONOGO_PROJECT_ID --format json | jq -r '.items[] | select(.content.title | contains("US-00018")) | .id')
+gh project item-edit --id $ITEM_ID --field "Priority" --value "Medium"
+gh project item-edit --id $ITEM_ID --field "Epic Parent" --value "EP-XXXXX"
+gh project item-edit --id $ITEM_ID --field "Status" --value "Backlog"
 ```
 
 ### **For Defects (DEF-XXXXX)**
 ```bash
+# Step 1: Create the defect issue
 gh issue create \
   --title "DEF-00003: [Brief defect description]" \
   --body "## 🐛 Problem Description
@@ -135,15 +182,29 @@ gh issue create \
 
 [Solution approach]
 
+## Dependencies
+- **Blocks**: [List of issues this defect blocks]
+- **Blocked by**: [List of issues blocking this defect fix]
+
 ## ✅ Acceptance Criteria
 
 - [ ] [Fix criterion 1]
 - [ ] [Fix criterion 2]
 
-**Priority**: [Critical/High/Medium/Low]
-**Epic**: [Related Epic if applicable]
+**Parent User Story**: US-XXXXX (if defect relates to specific user story)
+**Priority**: High - [affects RTM navigation usability]
+**Epic**: EP-XXXXX (if applicable)
 **Related Issues**: [US-XXXXX, etc.]" \
   --label "defect,priority/high,epic/[category],component/backend"
+
+# Step 2: Add to GitHub Project
+gh project item-add $GONOGO_PROJECT_ID --url [ISSUE-URL]
+
+# Step 3: Set project fields and parent relationship
+ITEM_ID=$(gh project item-list $GONOGO_PROJECT_ID --format json | jq -r '.items[] | select(.content.title | contains("DEF-00003")) | .id')
+gh project item-edit --id $ITEM_ID --field "Priority" --value "High"
+gh project item-edit --id $ITEM_ID --field "Parent User Story" --value "US-XXXXX"
+gh project item-edit --id $ITEM_ID --field "Status" --value "Backlog"
 ```
 
 ## ⚠️ Common Errors and Solutions
@@ -212,23 +273,64 @@ Created following enhanced GitHub-first workflow protocol from CLAUDE.md.
 python tools/rtm-links-simple.py --validate
 ```
 
+## 🔗 Dependency Management
+
+### **Issue Linking Strategies**
+
+**In Issue Body** (automatically creates references):
+```markdown
+## Dependencies
+- **Blocks**: #12, #13 (This issue blocks these issues)
+- **Blocked by**: #8, #9 (These issues must be completed first)
+- **Related to**: #15, #16 (Related but not blocking)
+
+## Parent Relationship
+- **Epic**: EP-00005 (Parent epic for user stories)
+- **User Story**: US-00014 (Parent user story for defects)
+```
+
+**GitHub Issue References**:
+- Use `#12` format to auto-link issues
+- Use "Blocks #12" or "Blocked by #8" for dependency tracking
+- Use "Closes #12" in commit messages to auto-close
+
+### **Hierarchical Relationships**
+
+**Epic → User Stories → Defects**:
+```bash
+# Epic has child user stories
+Epic Body: "## User Stories\n- US-00018: #18\n- US-00019: #19"
+
+# User Story references parent epic
+US Body: "**Parent Epic**: EP-00005 (#7)"
+
+# Defect references parent user story
+DEF Body: "**Parent User Story**: US-00014 (#8)"
+```
+
 ## 📚 Quick Reference Commands
 
 ```bash
+# Setup GitHub Project Integration
+export GONOGO_PROJECT_ID=$(gh project list --owner QHuuT --json number,title | jq -r '.[] | select(.title=="GoNoGo") | .number')
+
 # Check next available IDs
 gh issue list --limit 50 --state all | grep -E "(EP-|US-|DEF-)" | tail -10
 
 # Check available labels
 gh label list | grep -E "(priority|epic|component|status)"
 
-# Create epic
-gh issue create --title "EP-XXXXX: Title" --body "Content" --label "epic,priority/high,epic/category,status/backlog"
+# Create epic with project integration
+ISSUE_URL=$(gh issue create --title "EP-XXXXX: Title" --body "Content" --label "epic,priority/high")
+gh project item-add $GONOGO_PROJECT_ID --url $ISSUE_URL
 
-# Create user story
-gh issue create --title "US-XXXXX: Title" --body "Content" --label "user-story,priority/medium,epic/category,status/backlog,component/backend"
+# Create user story with parent relationship
+ISSUE_URL=$(gh issue create --title "US-XXXXX: Title" --body "**Parent Epic**: EP-XXXXX" --label "user-story,priority/medium")
+gh project item-add $GONOGO_PROJECT_ID --url $ISSUE_URL
 
-# Create defect
-gh issue create --title "DEF-XXXXX: Title" --body "Content" --label "defect,priority/high,epic/category,component/backend"
+# Create defect with parent relationship
+ISSUE_URL=$(gh issue create --title "DEF-XXXXX: Title" --body "**Parent User Story**: US-XXXXX" --label "defect,priority/high")
+gh project item-add $GONOGO_PROJECT_ID --url $ISSUE_URL
 
 # Update RTM after creation
 # Edit docs/traceability/requirements-matrix.md manually
