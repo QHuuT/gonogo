@@ -16,17 +16,22 @@ This document details the technical implementation of GitHub workflow integratio
 │   ├── user-story.yml        # User story template
 │   └── defect-report.yml     # Defect report template
 ├── workflows/
-│   ├── rtm-sync.yml          # RTM synchronization
-│   ├── deploy-docs.yml       # Documentation deployment
-│   └── validate-issues.yml   # Issue validation
+│   ├── auto-label-issues.yml # ✅ Automatic issue labeling (IMPLEMENTED)
+│   ├── rtm-sync.yml          # RTM synchronization (PLANNED)
+│   ├── deploy-docs.yml       # Documentation deployment (PLANNED)
+│   └── validate-issues.yml   # Issue validation (PLANNED)
 ├── actions/
 │   ├── extract-issue-data/   # Custom action for issue parsing
 │   ├── update-rtm/           # RTM update action
 │   └── build-docs/           # Documentation build action
 └── scripts/
-    ├── generate_rtm.py       # RTM generation script
-    ├── build_site.py         # Site building script
-    └── validate_templates.py # Template validation
+    ├── generate_rtm.py       # RTM generation script (PLANNED)
+    ├── build_site.py         # Site building script (PLANNED)
+    └── validate_templates.py # Template validation (PLANNED)
+
+src/shared/utils/
+├── github_label_mapper.py   # ✅ Python label mapping logic (IMPLEMENTED)
+└── github_action_runner.py  # ✅ GitHub Actions integration (IMPLEMENTED)
 ```
 
 ## 🔧 Core Components
@@ -100,7 +105,69 @@ body:
 
 ### 2. GitHub Actions Workflows
 
-#### RTM Synchronization (`.github/workflows/rtm-sync.yml`)
+#### ✅ Automatic Issue Labeling (`.github/workflows/auto-label-issues.yml`) - IMPLEMENTED
+
+**Production-ready GitHub Action for automatic label assignment based on issue template responses and traceability matrix mapping.**
+
+```yaml
+name: Auto-Label Issues from Templates
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  auto-label:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run GitHub Issue Label Mapper
+        id: label-mapper
+        run: |
+          cd src/shared/utils
+          python github_action_runner.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+
+      - name: Update issue labels
+        if: steps.label-mapper.outputs.labels_changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const newLabels = JSON.parse('${{ steps.label-mapper.outputs.new_labels }}');
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: newLabels
+            });
+
+            console.log(`Updated issue #${context.issue.number} with labels: ${newLabels.join(', ')}`);
+```
+
+**Key Features:**
+- **Automatic triggering** on issue creation/editing
+- **Python-based logic** with full type hints and error handling
+- **Traceability matrix integration** for epic-to-component mapping
+- **GDPR detection** from template responses
+- **Release planning** based on business rules
+- **Status management** with content analysis
+
+#### RTM Synchronization (`.github/workflows/rtm-sync.yml`) - PLANNED
 ```yaml
 name: Sync Requirements Traceability Matrix
 
@@ -155,7 +222,81 @@ jobs:
           publish_dir: ./docs-build
 ```
 
-### 3. Custom GitHub Actions
+### 3. ✅ Python Label Mapping System - IMPLEMENTED
+
+#### GitHub Label Mapper (`src/shared/utils/github_label_mapper.py`)
+
+**Production-ready Python module with comprehensive label assignment logic:**
+
+```python
+class GitHubIssueLabelMapper:
+    """
+    Maps GitHub issue template responses to appropriate labels.
+
+    Features:
+    - Priority mapping from dropdown selections
+    - Epic-to-component mapping via traceability matrix
+    - GDPR detection from template checkboxes
+    - Release planning based on business rules
+    - Status management with content analysis
+    """
+
+    def generate_labels(self, issue_data: IssueData) -> List[str]:
+        """Generate all appropriate labels for an issue."""
+        all_labels = set(issue_data.existing_labels)
+
+        # Apply all mapping rules
+        all_labels.update(self.map_priority_labels(issue_data))
+        all_labels.update(self.map_epic_labels(issue_data))
+        all_labels.update(self.map_gdpr_labels(issue_data))
+        all_labels.update(self.map_release_labels(issue_data))
+        all_labels.update(self.map_status_labels(issue_data))
+
+        # Remove needs-triage if meaningful labels added
+        if len(all_labels) > len(issue_data.existing_labels):
+            all_labels.discard("needs-triage")
+
+        return sorted(list(all_labels))
+```
+
+**Label Mapping Logic:**
+- **Priority**: Direct mapping from template dropdown
+- **Epic/Component**: Reads `docs/traceability/requirements-matrix.md` for mappings
+- **GDPR**: Keyword detection from checkbox selections
+- **Release**: Business rules (Critical/EP-002/EP-003 → MVP)
+- **Status**: Content analysis with smart defaults
+
+#### GitHub Action Runner (`src/shared/utils/github_action_runner.py`)
+
+**GitHub Actions integration with proper error handling:**
+
+```python
+class GitHubActionRunner:
+    """Handles GitHub Action integration for automatic label assignment."""
+
+    def run(self) -> None:
+        """Main execution method for the GitHub Action."""
+        # Load GitHub event data
+        event_data = self.load_github_event()
+
+        # Extract issue information
+        issue_data = self.extract_issue_data(event_data)
+
+        # Generate labels using mapper
+        new_labels = self.label_mapper.generate_labels(issue_data)
+
+        # Output results for GitHub Action workflow
+        self.set_github_output("new_labels", json.dumps(new_labels))
+        self.set_github_output("labels_changed", "true")
+```
+
+**Production Features:**
+- Type-annotated classes with full error handling
+- GitHub Actions environment integration
+- Comprehensive logging for debugging
+- Graceful fallbacks for missing data
+
+### 4. Custom GitHub Actions - PLANNED
 
 #### Extract Issue Data Action
 ```javascript

@@ -31,8 +31,8 @@ This directory contains **ALL project management infrastructure**:
 │   ├── user-story.yml       # User story template
 │   ├── defect-report.yml    # Bug/defect reporting
 │   └── config.yml           # Template configuration
-├── workflows/               # 🤖 FUTURE: Automation
-│   └── (future automation)  # Auto-generate docs from issues
+├── workflows/               # 🤖 AUTOMATION: GitHub Actions
+│   └── auto-label-issues.yml # Automatic issue label assignment
 ├── labels.yml              # 🏷️ Label definitions for organization
 ├── GITHUB_WORKFLOW.md      # 📚 This guide
 └── *.md                    # 📋 Project management documentation
@@ -47,7 +47,11 @@ The `docs/` directory serves a **different purpose**:
 
 ## 🎯 The GitHub Workflow Integration provides:
 - Standardized issue templates for epics, user stories, and defects
-- Automatic labeling and project assignment
+- **Automatic label assignment** based on template responses and traceability matrix
+- Intelligent component mapping from epic associations
+- GDPR compliance detection and labeling
+- Release planning automation (MVP/v1.1/v1.2)
+- Status management with smart initial assignment
 - Traceability between issues and documentation
 - Integration with Requirements Traceability Matrix (RTM)
 
@@ -56,17 +60,34 @@ The `docs/` directory serves a **different purpose**:
 ### Epic Template
 **When to use**: Creating a new epic (collection of related user stories)
 **Template**: Epic template includes business value, success criteria, and user story planning
-**Labels**: Automatically tagged with `epic`, `needs-triage`
+**Auto-assigned labels**:
+- `epic` (issue type)
+- `priority/*` (based on priority selection)
+- `epic/*` and `component/*` (based on epic ID and traceability matrix)
+- `release/*` (based on priority and business rules)
+- `gdpr/*` (if GDPR considerations selected)
+- `status/backlog` (initial status)
 
 ### User Story Template
 **When to use**: Creating a specific user story within an epic
 **Template**: Includes acceptance criteria, GDPR considerations, and traceability links
-**Labels**: Automatically tagged with `user-story`, `needs-triage`
+**Auto-assigned labels**:
+- `user-story` (issue type)
+- `priority/*` (based on priority selection)
+- `epic/*` and `component/*` (inherited from parent epic via traceability matrix)
+- `release/*` (based on priority and parent epic business rules)
+- `gdpr/*` (if GDPR considerations selected)
+- `status/backlog` or `status/ready` (based on content indicators)
 
 ### Defect Report Template
 **When to use**: Reporting a bug or issue in existing functionality
 **Template**: Includes reproduction steps, impact assessment, and affected requirements
-**Labels**: Automatically tagged with `defect`, `bug`, `needs-triage`
+**Auto-assigned labels**:
+- `defect` (issue type)
+- `priority/*` (based on priority/severity selection)
+- `component/*` (based on affected components or linked epic)
+- `release/*` (based on priority and affected epic)
+- `status/backlog` (initial status)
 
 ## 🏷️ Label System
 
@@ -105,6 +126,67 @@ The `docs/` directory serves a **different purpose**:
 - `component/documentation` - Documentation
 - `component/testing` - Testing work
 - `component/ci-cd` - CI/CD pipeline
+
+### GDPR-Specific Labels
+- `gdpr/personal-data` - Involves personal data processing
+- `gdpr/consent-required` - Requires user consent
+- `gdpr/privacy-review` - Needs privacy impact assessment
+- `gdpr/data-retention` - Related to data retention policies
+
+### Release Planning Labels
+- `release/mvp` - Part of MVP release
+- `release/v1.1` - Part of v1.1 release
+- `release/v1.2` - Part of v1.2 release
+
+## 🤖 Automatic Label Assignment System
+
+### How It Works
+When you create or edit an issue using the templates, the system automatically assigns relevant labels based on:
+
+1. **Form Responses**: Priority, epic ID, GDPR checkboxes
+2. **Traceability Matrix**: Epic-to-component mappings from `docs/traceability/requirements-matrix.md`
+3. **Content Analysis**: Keywords in issue body for status and GDPR detection
+4. **Business Rules**: Release planning logic based on priority and epic classification
+
+### Label Assignment Rules
+
+#### Priority Mapping
+- Priority "Critical" → `priority/critical`
+- Priority "High" → `priority/high`
+- Priority "Medium" → `priority/medium`
+- Priority "Low" → `priority/low`
+
+#### Epic-to-Component Mapping
+Based on the Requirements Traceability Matrix:
+- EP-001 (Blog Content) → `component/frontend` + `epic/blog-content`
+- EP-002 (Comment System) → `component/backend` + `epic/comment-system`
+- EP-003 (Privacy/GDPR) → `component/gdpr` + `epic/privacy-consent`
+- EP-004 (GitHub Workflow) → `component/ci-cd` + `epic/github-workflow`
+
+#### GDPR Detection
+Automatically assigns GDPR labels when issue contains:
+- "personal data processing" → `gdpr/personal-data`
+- "requires user consent" → `gdpr/consent-required`
+- "privacy impact assessment" → `gdpr/privacy-review`
+- "data retention" → `gdpr/data-retention`
+
+#### Release Planning Logic
+- **Critical priority** OR **EP-002/EP-003** → `release/mvp`
+- **High priority** → `release/v1.1`
+- **Medium/Low priority** → `release/v1.2`
+
+#### Status Assignment
+- Default: `status/backlog`
+- Contains "ready for development" → `status/ready`
+- Contains "in progress" → `status/in-progress`
+- Contains "blocked by" → `status/blocked`
+
+### Automation Trigger
+The labeling system runs automatically:
+- **When**: Issues are opened or edited
+- **Processing Time**: Within 30 seconds
+- **Error Handling**: Graceful fallbacks if traceability matrix unavailable
+- **Logging**: All label assignments logged for transparency
 
 ## 🔄 Workflow Process
 
@@ -167,6 +249,7 @@ The `docs/` directory serves a **different purpose**:
 - Issue creation triggers RTM update (when US-010 is implemented)
 - Status changes automatically reflected in documentation
 - Links between epics, stories, and defects maintained
+- Label assignments driven by current RTM epic mappings
 
 ### Documentation Links
 - Issues link back to repository documentation
@@ -203,20 +286,31 @@ github-label-sync --access-token YOUR_TOKEN YourUsername/gonogo
 ```
 
 ### Project Automation Rules
-- New `epic` issues → Add to project, set status "Backlog"
-- New `user-story` issues → Add to project, set status "Backlog"
-- New `defect` issues → Add to project, set status "Backlog"
+- New `epic` issues → Add to project, automatically assign labels, set status "Backlog"
+- New `user-story` issues → Add to project, automatically assign labels, set status "Backlog"
+- New `defect` issues → Add to project, automatically assign labels, set status "Backlog"
 - Issue assigned → Move to "In Progress"
 - PR linked → Move to "Review"
 - PR merged → Move to "Testing"
 - Issue closed → Move to "Done"
 
+### Automatic Label Assignment (Active)
+- **GitHub Action**: `.github/workflows/auto-label-issues.yml`
+- **Python Implementation**: `src/shared/utils/github_label_mapper.py`
+- **Triggers**: Issue opened/edited events
+- **Logic**: Based on form responses, traceability matrix, and business rules
+
 ## 🔧 Troubleshooting
 
 ### Common Issues
 - **Templates not appearing**: Check `.github/ISSUE_TEMPLATE/` directory structure
-- **Labels not applied**: Verify label names match template configuration
+- **Labels not automatically applied**:
+  - Check GitHub Actions tab for workflow execution
+  - Verify labels exist in repository (import from `labels.yml`)
+  - Check workflow logs in Actions tab
+- **Wrong component labels**: Update epic mappings in `docs/traceability/requirements-matrix.md`
 - **Project not updated**: Check project automation rules
+- **GDPR labels not assigned**: Ensure GDPR checkboxes are selected in templates
 
 ### Support
 - Check [project documentation](../docs/README.md)
@@ -225,4 +319,12 @@ github-label-sync --access-token YOUR_TOKEN YourUsername/gonogo
 
 ---
 
-**Next Steps**: After setting up templates, implement US-010 for automated RTM updates and US-011 for GitHub Pages documentation site.
+**Completed Features**:
+- ✅ **US-009**: GitHub Issue Template Integration with automatic labeling
+- ✅ **Automatic Label Assignment**: Production-ready GitHub Action
+- ✅ **Traceability Matrix Integration**: Epic-to-component mapping
+
+**Next Steps**:
+- **US-010**: Automated RTM updates from GitHub Issues
+- **US-011**: GitHub Pages documentation site
+- **Enhanced automation**: Status transitions and project board management

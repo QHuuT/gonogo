@@ -16,7 +16,7 @@ This matrix traces all requirements from business needs through implementation a
 | **EP-001** | Blog Content Management | US-001, US-002 | 8 | High | 📝 Planned |
 | **EP-002** | GDPR-Compliant Comment System | US-003, US-004, US-005 | 16 | High | 📝 Planned |
 | **EP-003** | Privacy and Consent Management | US-006, US-007, US-008 | 29 | Critical | 📝 Planned |
-| **EP-004** | GitHub Workflow Integration | US-009, US-010, US-011, US-012 | 21 | High | 📝 Planned |
+| **EP-004** | GitHub Workflow Integration | US-009, US-010, US-011, US-012 | 21 | High | ⏳ In Progress |
 
 ## Requirements Traceability Matrix
 
@@ -29,7 +29,7 @@ This matrix traces all requirements from business needs through implementation a
 | **EP-003** | **GDPR-001** | GDPR consent banner and management | Critical | US-006 | gdpr-consent.feature:consent_banner | test_gdpr_consent_steps.py | src/security/gdpr/consent.py | - | 📝 Planned | MVP Critical |
 | **EP-003** | **GDPR-002** | Data subject rights implementation | Critical | US-007 | gdpr-rights.feature:data_access | test_gdpr_rights_steps.py | src/security/gdpr/rights.py | - | 📝 Planned | MVP Critical |
 | **EP-003** | **GDPR-003** | Automated data retention and cleanup | High | US-008 | gdpr-rights.feature:data_retention | test_gdpr_rights_steps.py | src/security/gdpr/retention.py | - | 📝 Planned | Post-MVP |
-| **EP-004** | **WF-001** | GitHub Issue template integration | High | US-009 | github-workflow.feature:issue_templates | test_github_workflow_steps.py | .github/ISSUE_TEMPLATE/ | - | ✅ Done | Quality of Life |
+| **EP-004** | **WF-001** | GitHub Issue template integration with automatic labeling | High | US-009 | github-integration.feature:automatic_labeling | test_github_label_steps.py | .github/ISSUE_TEMPLATE/, .github/workflows/auto-label-issues.yml, src/shared/utils/github_label_mapper.py | - | ✅ Done | Quality of Life |
 | **EP-004** | **WF-002** | Automated RTM updates from GitHub | High | US-010 | github-workflow.feature:rtm_automation | test_github_workflow_steps.py | .github/workflows/rtm-update.yml | - | 📝 Planned | Quality of Life |
 | **EP-004** | **WF-003** | GitHub Pages documentation site | Medium | US-011 | github-workflow.feature:pages_deployment | test_github_workflow_steps.py | .github/workflows/pages.yml | - | 📝 Planned | Quality of Life |
 | **EP-004** | **WF-004** | GitHub Projects board configuration | Medium | US-012 | github-workflow.feature:projects_board | test_github_workflow_steps.py | GitHub Projects settings | - | 📝 Planned | Quality of Life |
@@ -96,6 +96,15 @@ This matrix traces all requirements from business needs through implementation a
 | **Advanced Navigation** | 📝 Planned | Basic blog | Medium |
 | **Comment Moderation** | 📝 Planned | Comment system | Medium |
 | **Data Retention Automation** | 📝 Planned | Data rights | High |
+
+### Development Tools & Workflow (Quality of Life)
+
+| Component | Status | Dependencies | Priority |
+|-----------|--------|--------------|----------|
+| **GitHub Issue Templates + Auto-Labeling** | ✅ Done | GitHub CLI setup | High |
+| **Automated RTM Updates** | 📝 Planned | GitHub Actions | Medium |
+| **GitHub Pages Documentation** | 📝 Planned | RTM automation | Medium |
+| **Project Board Configuration** | 📝 Planned | Issue templates | Low |
 
 ## Test Coverage Metrics
 
