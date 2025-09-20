@@ -3,8 +3,8 @@ BDD test configuration and fixtures for pytest-bdd.
 """
 
 import pytest
-from pytest_bdd import given, when, then, parsers
 from fastapi.testclient import TestClient
+from pytest_bdd import given, parsers, then, when
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -42,7 +42,7 @@ def bdd_context():
         "comments": {},
         "current_user": None,
         "current_page": None,
-        "gdpr_enabled": True
+        "gdpr_enabled": True,
     }
 
 
@@ -70,12 +70,12 @@ def sample_blog_posts(bdd_database, bdd_context):
             "id": 1,
             "title": "Sample Blog Post",
             "content": "This is sample content for testing.",
-            "published": True
+            "published": True,
         },
         {
             "id": 2,
             "title": "GDPR Compliance Guide",
             "content": "Understanding GDPR requirements for blogs.",
-            "published": True
-        }
+            "published": True,
+        },
     ]

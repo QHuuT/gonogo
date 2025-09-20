@@ -65,7 +65,7 @@ def sample_blog_post():
         "excerpt": "This is a test excerpt.",
         "published": True,
         "tags": ["test", "blog"],
-        "author": "Test Author"
+        "author": "Test Author",
     }
 
 
@@ -77,7 +77,7 @@ def sample_comment():
         "author_name": "Test Commenter",
         "email": "test@example.com",
         "content": "This is a test comment.",
-        "consent_given": True
+        "consent_given": True,
     }
 
 
@@ -89,13 +89,13 @@ def gdpr_test_data():
         "consent_request": {
             "consent_type": "analytics",
             "consent_given": True,
-            "consent_version": "1.0"
+            "consent_version": "1.0",
         },
         "data_subject_request": {
             "request_type": "access",
             "contact_email": "user@example.com",
-            "description": "I want to see all my data"
-        }
+            "description": "I want to see all my data",
+        },
     }
 
 
@@ -104,13 +104,15 @@ def gdpr_test_data():
 def test_environment():
     """Set up test environment variables."""
 
-    os.environ.update({
-        "ENVIRONMENT": "testing",
-        "DEBUG": "false",
-        "SECRET_KEY": "test-secret-key",
-        "DATABASE_URL": "sqlite:///:memory:",
-        "GDPR_TEST_MODE": "true"
-    })
+    os.environ.update(
+        {
+            "ENVIRONMENT": "testing",
+            "DEBUG": "false",
+            "SECRET_KEY": "test-secret-key",
+            "DATABASE_URL": "sqlite:///:memory:",
+            "GDPR_TEST_MODE": "true",
+        }
+    )
 
 
 # Security test fixtures
@@ -121,7 +123,7 @@ def security_headers():
     return {
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
-        "X-XSS-Protection": "1; mode=block"
+        "X-XSS-Protection": "1; mode=block",
     }
 
 

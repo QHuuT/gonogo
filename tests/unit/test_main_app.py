@@ -49,7 +49,7 @@ class TestMainApplication:
         # Check that static files route exists
         static_mount = None
         for route in app.routes:
-            if hasattr(route, 'path') and route.path == '/static':
+            if hasattr(route, "path") and route.path == "/static":
                 static_mount = route
                 break
 
@@ -83,7 +83,7 @@ class TestMainApplication:
         from src.be.main import templates
 
         assert templates is not None
-        assert hasattr(templates, 'env')  # Jinja2 environment should be available
+        assert hasattr(templates, "env")  # Jinja2 environment should be available
 
     def test_cors_headers_in_response(self, client: TestClient):
         """Test that appropriate headers are set in responses."""

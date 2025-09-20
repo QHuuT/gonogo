@@ -128,3 +128,83 @@ Feature: GitHub Issue Template Integration
     Then the template should warn about personal data exposure
     And users should be guided to redact sensitive information
     And GDPR compliance should be verified before issue submission
+
+# Automatic Label Assignment
+  @automation @labeling @priority_high
+  Scenario: Epic issues receive automatic labels based on traceability matrix mapping
+    Given the traceability matrix defines epic-to-component mappings
+    And a user creates an epic issue using the epic template
+    When they set a valid priority level
+    And they provide a valid epic ID from the traceability matrix
+    And they submit the issue
+    Then the issue should automatically receive the corresponding priority label
+    And the issue should automatically receive the epic label based on the traceability matrix
+    And the issue should automatically receive the component label based on the traceability matrix
+    And the "needs-triage" label should be removed
+
+  @automation @labeling @inheritance
+  Scenario: User story issues inherit labels from parent epic mapping
+    Given the traceability matrix defines epic-to-component relationships
+    And a user creates a user story using the user story template
+    When they reference a valid parent epic from the traceability matrix
+    And they set a priority level
+    And they submit the issue
+    Then the issue should receive labels corresponding to the parent epic's mapping
+    And the component label should match the epic's component in the traceability matrix
+    And the release label should be determined by priority and epic mapping rules
+
+  @automation @labeling @gdpr
+  Scenario: GDPR-related issues receive appropriate GDPR labels
+    Given a user creates an issue using any template
+    When they indicate GDPR involvement through template checkboxes
+    And they submit the issue
+    Then the issue should automatically receive corresponding GDPR labels
+    And the labels should match the GDPR considerations selected
+
+  @automation @labeling @priority_mapping
+  Scenario Outline: Issues receive correct priority labels
+    Given a user creates an issue with priority "<priority_level>"
+    When they submit the issue
+    Then the issue should automatically receive the priority label "<expected_label>"
+
+    Examples:
+      | priority_level | expected_label     |
+      | Critical       | priority/critical  |
+      | High           | priority/high      |
+      | Medium         | priority/medium    |
+      | Low            | priority/low       |
+
+  @automation @labeling @release_planning
+  Scenario: Issues receive release labels based on business rules
+    Given the traceability matrix defines epic priorities and release mappings
+    And a user creates an issue with a specific priority
+    When the issue is linked to an epic with defined release characteristics
+    And they submit the issue
+    Then the release label should be determined by the business rules
+    And critical items should be assigned to MVP release
+    And high priority items should follow the release mapping logic
+
+  @automation @labeling @status_management
+  Scenario: Issues receive appropriate initial status labels
+    Given a user creates an issue using any template
+    When they submit the issue
+    Then the issue should receive an appropriate initial status label
+    And the status should be "backlog" unless specific readiness indicators are present
+    And status should be "ready" if readiness indicators are detected in the issue content
+
+  @automation @validation @error_handling
+  Scenario: Label assignment handles invalid or missing traceability data
+    Given a user creates an issue with invalid epic references
+    When they submit the issue
+    Then the system should gracefully handle the invalid references
+    And no invalid component mappings should be applied
+    And valid labels should still be assigned where possible
+    And the system should log appropriate warnings for missing mappings
+
+  @automation @validation @label_existence
+  Scenario: Only existing repository labels are assigned
+    Given the repository has a defined set of labels
+    When the automatic labeling system processes any issue
+    Then only labels that exist in the repository should be assigned
+    And attempts to assign non-existent labels should be handled gracefully
+    And the labeling process should not fail due to missing labels

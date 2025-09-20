@@ -3,9 +3,8 @@ Step definitions for GDPR consent BDD scenarios.
 """
 
 import pytest
-from pytest_bdd import scenarios, given, when, then, parsers
 from fastapi.testclient import TestClient
-
+from pytest_bdd import given, parsers, scenarios, then, when
 
 # Load scenarios from feature file
 scenarios("../features/gdpr-consent.feature")
@@ -45,11 +44,7 @@ def see_consent_banner(bdd_test_client, bdd_context):
 def previously_gave_analytics_consent(bdd_context):
     """Set up previous consent for analytics."""
     bdd_context["consent_history"] = [
-        {
-            "type": "analytics",
-            "given": True,
-            "timestamp": "2023-01-01T00:00:00Z"
-        }
+        {"type": "analytics", "given": True, "timestamp": "2023-01-01T00:00:00Z"}
     ]
 
 
@@ -74,7 +69,7 @@ def marketing_consent_one_year_ago(bdd_context):
             "type": "marketing",
             "given": True,
             "timestamp": "2022-01-01T00:00:00Z",  # One year ago
-            "expires": "2023-01-01T00:00:00Z"
+            "expires": "2023-01-01T00:00:00Z",
         }
     ]
 

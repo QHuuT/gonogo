@@ -3,9 +3,8 @@ Step definitions for blog content BDD scenarios.
 """
 
 import pytest
-from pytest_bdd import scenarios, given, when, then, parsers
 from fastapi.testclient import TestClient
-
+from pytest_bdd import given, parsers, scenarios, then, when
 
 # Load scenarios from feature file
 scenarios("../features/blog-content.feature")
@@ -48,8 +47,10 @@ def posts_with_keyword(keyword, bdd_context):
     """Verify posts exist containing specific keyword."""
     posts = bdd_context.get("sample_posts", [])
     matching_posts = [
-        post for post in posts
-        if keyword.lower() in post["title"].lower() or keyword.lower() in post["content"].lower()
+        post
+        for post in posts
+        if keyword.lower() in post["title"].lower()
+        or keyword.lower() in post["content"].lower()
     ]
     assert len(matching_posts) > 0, f"No posts found containing '{keyword}'"
     bdd_context["keyword_posts"] = matching_posts
@@ -61,7 +62,7 @@ def posts_in_categories(category1, category2, bdd_context):
     # Mock posts with categories for testing
     bdd_context["categorized_posts"] = {
         category1: [{"title": f"Post in {category1}", "category": category1}],
-        category2: [{"title": f"Post in {category2}", "category": category2}]
+        category2: [{"title": f"Post in {category2}", "category": category2}],
     }
 
 
@@ -156,13 +157,15 @@ def page_loads_within_time(seconds, bdd_context):
     """Verify page load time performance."""
     # In a real implementation, we'd measure actual load time
     # For now, we'll verify the response is successful
-    response = bdd_context["responses"].get("homepage") or bdd_context["responses"].get("performance_test")
+    response = bdd_context["responses"].get("homepage") or bdd_context["responses"].get(
+        "performance_test"
+    )
     assert response.status_code == 200
     # Mock performance check
     assert True  # Would check actual response time
 
 
-@then(parsers.parse('I should be redirected to the full blog post page'))
+@then(parsers.parse("I should be redirected to the full blog post page"))
 def redirected_to_post_page(bdd_context):
     """Verify redirection to full post page."""
     response = bdd_context["responses"]["post_detail"]
@@ -198,7 +201,7 @@ def see_navigation_links(bdd_context):
     assert bdd_context.get("looking_for_navigation") is True
 
 
-@then('clicking these links should take me to adjacent posts')
+@then("clicking these links should take me to adjacent posts")
 def navigation_links_work(bdd_context):
     """Verify navigation links function correctly."""
     # In a real implementation, we'd test link functionality

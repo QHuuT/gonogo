@@ -1,0 +1,47 @@
+name: Auto-Label Issues from Templates
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  auto-label:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run GitHub Issue Label Mapper
+        id: label-mapper
+        run: |
+          cd src/shared/utils
+          python github_action_runner.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+
+      - name: Update issue labels
+        if: steps.label-mapper.outputs.labels_changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const newLabels = JSON.parse('${{ steps.label-mapper.outputs.new_labels }}');
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: newLabels
+            });
+
+            console.log(`Updated issue #${context.issue.number} with labels: ${newLabels.join(', ')}`);

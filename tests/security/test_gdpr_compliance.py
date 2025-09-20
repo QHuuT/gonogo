@@ -3,9 +3,10 @@ Security tests for GDPR compliance and data protection.
 Focus on security aspects of data handling and privacy.
 """
 
-import pytest
 import re
 from datetime import datetime, timedelta
+
+import pytest
 
 from src.security.gdpr.models import ConsentType, DataSubjectRights
 from src.security.gdpr.service import GDPRService
@@ -24,14 +25,17 @@ class TestGDPRSecurity:
         consent_id = service.record_consent(
             consent_type=ConsentType.ANALYTICS,
             consent_given=True,
-            ip_address=original_ip
+            ip_address=original_ip,
         )
 
         # Verify IP is hashed, not stored plaintext
         from src.security.gdpr.models import ConsentRecord
-        record = db_session.query(ConsentRecord).filter(
-            ConsentRecord.consent_id == consent_id
-        ).first()
+
+        record = (
+            db_session.query(ConsentRecord)
+            .filter(ConsentRecord.consent_id == consent_id)
+            .first()
+        )
 
         # Original IP should not appear anywhere in the hash
         assert original_ip not in record.ip_address_hash
@@ -45,24 +49,22 @@ class TestGDPRSecurity:
 
         service = GDPRService(db_session)
 
-        test_emails = [
-            "user1@example.com",
-            "user2@example.com",
-            "admin@company.com"
-        ]
+        test_emails = ["user1@example.com", "user2@example.com", "admin@company.com"]
 
         hashed_emails = []
 
         for email in test_emails:
             request_id = service.create_data_subject_request(
-                request_type=DataSubjectRights.ACCESS,
-                contact_email=email
+                request_type=DataSubjectRights.ACCESS, contact_email=email
             )
 
             from src.security.gdpr.models import DataSubjectRequest
-            request = db_session.query(DataSubjectRequest).filter(
-                DataSubjectRequest.id == request_id
-            ).first()
+
+            request = (
+                db_session.query(DataSubjectRequest)
+                .filter(DataSubjectRequest.id == request_id)
+                .first()
+            )
 
             hashed_emails.append(request.contact_email_hash)
 
@@ -82,8 +84,7 @@ class TestGDPRSecurity:
         # Generate multiple consent IDs
         for i in range(10):
             consent_id = service.record_consent(
-                consent_type=ConsentType.FUNCTIONAL,
-                consent_given=True
+                consent_type=ConsentType.FUNCTIONAL, consent_given=True
             )
             consent_ids.append(consent_id)
 
@@ -111,12 +112,11 @@ class TestGDPRSecurity:
         consent_id = service.record_consent(
             consent_type=ConsentType.MARKETING,
             consent_given=True,
-            ip_address=sensitive_ip
+            ip_address=sensitive_ip,
         )
 
         service.create_data_subject_request(
-            request_type=DataSubjectRights.ERASURE,
-            contact_email=sensitive_email
+            request_type=DataSubjectRights.ERASURE, contact_email=sensitive_email
         )
 
         # Check that sensitive data is not in logs
@@ -140,8 +140,7 @@ class TestGDPRSecurity:
 
         # Verify database still works
         legitimate_consent_id = service.record_consent(
-            consent_type=ConsentType.ANALYTICS,
-            consent_given=True
+            consent_type=ConsentType.ANALYTICS, consent_given=True
         )
 
         assert legitimate_consent_id is not None
@@ -163,15 +162,17 @@ class TestGDPRSecurity:
             # Try in email field
             try:
                 request_id = service.create_data_subject_request(
-                    request_type=DataSubjectRights.ACCESS,
-                    contact_email=malicious_input
+                    request_type=DataSubjectRights.ACCESS, contact_email=malicious_input
                 )
 
                 # If successful, verify malicious content was properly escaped/hashed
                 from src.security.gdpr.models import DataSubjectRequest
-                request = db_session.query(DataSubjectRequest).filter(
-                    DataSubjectRequest.id == request_id
-                ).first()
+
+                request = (
+                    db_session.query(DataSubjectRequest)
+                    .filter(DataSubjectRequest.id == request_id)
+                    .first()
+                )
 
                 # Original malicious input should not be stored
                 assert malicious_input not in str(request.contact_email_hash)
@@ -187,8 +188,7 @@ class TestGDPRSecurity:
 
         # Create a legitimate consent
         real_consent_id = service.record_consent(
-            consent_type=ConsentType.ANALYTICS,
-            consent_given=True
+            consent_type=ConsentType.ANALYTICS, consent_given=True
         )
 
         fake_consent_id = "nonexistent-consent-id"
@@ -218,14 +218,17 @@ class TestGDPRSecurity:
         consent_id = service.record_consent(
             consent_type=ConsentType.MARKETING,
             consent_given=True,
-            ip_address="192.168.1.1"
+            ip_address="192.168.1.1",
         )
 
         # Manually age the record beyond retention period
         from src.security.gdpr.models import ConsentRecord
-        record = db_session.query(ConsentRecord).filter(
-            ConsentRecord.consent_id == consent_id
-        ).first()
+
+        record = (
+            db_session.query(ConsentRecord)
+            .filter(ConsentRecord.consent_id == consent_id)
+            .first()
+        )
 
         # Set creation date to 4 years ago (beyond 3-year retention)
         record.created_at = datetime.utcnow() - timedelta(days=1461)  # 4 years
@@ -271,19 +274,19 @@ class TestGDPRSecurity:
         consent_id = service.record_consent(
             consent_type=ConsentType.ANALYTICS,
             consent_given=True,
-            ip_address="192.168.1.200"
+            ip_address="192.168.1.200",
         )
 
         erasure_request_id = service.create_data_subject_request(
             request_type=DataSubjectRights.ERASURE,
-            contact_email="delete.me@example.com"
+            contact_email="delete.me@example.com",
         )
 
         # Process erasure request
         service.process_data_subject_request(
             request_id=erasure_request_id,
             response_data={"status": "data_deleted"},
-            notes="All personal data deleted per GDPR Article 17"
+            notes="All personal data deleted per GDPR Article 17",
         )
 
         # Withdraw the consent as part of erasure
@@ -292,17 +295,21 @@ class TestGDPRSecurity:
         # Verify that data is properly marked for deletion
         from src.security.gdpr.models import ConsentRecord, DataSubjectRequest
 
-        consent_record = db_session.query(ConsentRecord).filter(
-            ConsentRecord.consent_id == consent_id
-        ).first()
+        consent_record = (
+            db_session.query(ConsentRecord)
+            .filter(ConsentRecord.consent_id == consent_id)
+            .first()
+        )
 
         assert consent_record.consent_given is False
         assert consent_record.withdrawn_at is not None
         assert "forgotten" in consent_record.withdrawal_reason
 
-        erasure_request = db_session.query(DataSubjectRequest).filter(
-            DataSubjectRequest.id == erasure_request_id
-        ).first()
+        erasure_request = (
+            db_session.query(DataSubjectRequest)
+            .filter(DataSubjectRequest.id == erasure_request_id)
+            .first()
+        )
 
         assert erasure_request.status == "completed"
         assert "deleted" in erasure_request.response_data["status"]
@@ -315,14 +322,17 @@ class TestGDPRSecurity:
         # Record consent with minimal data
         consent_id = service.record_consent(
             consent_type=ConsentType.FUNCTIONAL,
-            consent_given=True
+            consent_given=True,
             # Note: Not providing IP or user agent unless necessary
         )
 
         from src.security.gdpr.models import ConsentRecord
-        record = db_session.query(ConsentRecord).filter(
-            ConsentRecord.consent_id == consent_id
-        ).first()
+
+        record = (
+            db_session.query(ConsentRecord)
+            .filter(ConsentRecord.consent_id == consent_id)
+            .first()
+        )
 
         # Verify minimal data storage
         assert record.consent_id is not None

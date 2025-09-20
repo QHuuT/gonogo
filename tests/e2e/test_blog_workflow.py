@@ -32,8 +32,8 @@ class TestBlogE2E:
     def test_gdpr_consent_and_data_request_flow(self, db_session):
         """Test complete GDPR consent and data subject request flow."""
 
-        from src.security.gdpr.service import GDPRService
         from src.security.gdpr.models import ConsentType, DataSubjectRights
+        from src.security.gdpr.service import GDPRService
 
         service = GDPRService(db_session)
 
@@ -41,7 +41,7 @@ class TestBlogE2E:
         consent_id = service.record_consent(
             consent_type=ConsentType.ANALYTICS,
             consent_given=True,
-            ip_address="192.168.1.50"
+            ip_address="192.168.1.50",
         )
 
         # Step 2: Verify consent is active
@@ -52,28 +52,27 @@ class TestBlogE2E:
         request_id = service.create_data_subject_request(
             request_type=DataSubjectRights.ACCESS,
             contact_email="e2e.test@example.com",
-            description="I want to see what data you have about me"
+            description="I want to see what data you have about me",
         )
 
         # Step 4: Admin processes the request
         user_data = {
             "consents": [{"type": "analytics", "status": "active"}],
             "comments": [],
-            "ip_logs": "anonymized_after_30_days"
+            "ip_logs": "anonymized_after_30_days",
         }
 
         process_result = service.process_data_subject_request(
             request_id=request_id,
             response_data=user_data,
-            notes="Data access request fulfilled"
+            notes="Data access request fulfilled",
         )
 
         assert process_result is True
 
         # Step 5: User withdraws consent
         withdrawal_result = service.withdraw_consent(
-            consent_id,
-            "No longer want analytics tracking"
+            consent_id, "No longer want analytics tracking"
         )
 
         assert withdrawal_result is True
@@ -82,7 +81,9 @@ class TestBlogE2E:
         final_consents = service.get_active_consents(consent_id)
         assert final_consents[ConsentType.ANALYTICS] is False
 
-    def test_security_headers_across_endpoints(self, client: TestClient, security_headers):
+    def test_security_headers_across_endpoints(
+        self, client: TestClient, security_headers
+    ):
         """Test that security headers are properly set across all endpoints."""
 
         test_endpoints = ["/", "/health"]
@@ -101,9 +102,10 @@ class TestBlogE2E:
     def test_gdpr_data_lifecycle_complete_flow(self, db_session):
         """Test complete data lifecycle from creation to deletion."""
 
-        from src.security.gdpr.service import GDPRService
-        from src.security.gdpr.models import ConsentType, DataSubjectRights
         from datetime import datetime, timedelta
+
+        from src.security.gdpr.models import ConsentType, DataSubjectRights
+        from src.security.gdpr.service import GDPRService
 
         service = GDPRService(db_session)
 
@@ -112,7 +114,7 @@ class TestBlogE2E:
             consent_type=ConsentType.MARKETING,
             consent_given=True,
             ip_address="10.0.0.100",
-            user_agent="E2E Test Browser"
+            user_agent="E2E Test Browser",
         )
 
         # Phase 2: Data Usage (simulate normal operations)
@@ -123,14 +125,14 @@ class TestBlogE2E:
         erasure_request_id = service.create_data_subject_request(
             request_type=DataSubjectRights.ERASURE,
             contact_email="delete.my.data@example.com",
-            description="Please delete all my personal data"
+            description="Please delete all my personal data",
         )
 
         # Phase 4: Data Deletion Process
         service.process_data_subject_request(
             request_id=erasure_request_id,
             response_data={"status": "all_data_deleted"},
-            notes="All personal data removed per GDPR Article 17"
+            notes="All personal data removed per GDPR Article 17",
         )
 
         # Phase 5: Consent Withdrawal
@@ -139,9 +141,12 @@ class TestBlogE2E:
         # Phase 6: Data Anonymization
         # Simulate aging of data for anonymization
         from src.security.gdpr.models import ConsentRecord
-        record = db_session.query(ConsentRecord).filter(
-            ConsentRecord.consent_id == consent_id
-        ).first()
+
+        record = (
+            db_session.query(ConsentRecord)
+            .filter(ConsentRecord.consent_id == consent_id)
+            .first()
+        )
 
         # Age the record for anonymization testing
         record.created_at = datetime.utcnow() - timedelta(days=31)
@@ -164,9 +169,12 @@ class TestBlogE2E:
 
         # Erasure request should be completed
         from src.security.gdpr.models import DataSubjectRequest
-        erasure_request = db_session.query(DataSubjectRequest).filter(
-            DataSubjectRequest.id == erasure_request_id
-        ).first()
+
+        erasure_request = (
+            db_session.query(DataSubjectRequest)
+            .filter(DataSubjectRequest.id == erasure_request_id)
+            .first()
+        )
 
         assert erasure_request.status == "completed"
         assert "deleted" in erasure_request.response_data["status"]
@@ -174,8 +182,8 @@ class TestBlogE2E:
     def test_compliance_monitoring_workflow(self, db_session):
         """Test compliance monitoring and reporting workflow."""
 
-        from src.security.gdpr.service import GDPRService
         from src.security.gdpr.models import ConsentType, DataSubjectRights
+        from src.security.gdpr.service import GDPRService
 
         service = GDPRService(db_session)
 
@@ -186,7 +194,7 @@ class TestBlogE2E:
 
         service.create_data_subject_request(
             request_type=DataSubjectRights.ACCESS,
-            contact_email="compliance.test@example.com"
+            contact_email="compliance.test@example.com",
         )
 
         # Generate compliance report
@@ -198,7 +206,7 @@ class TestBlogE2E:
             "active_consents",
             "pending_data_subject_requests",
             "overdue_requests",
-            "compliance_score"
+            "compliance_score",
         ]
 
         for metric in required_metrics:
@@ -231,8 +239,13 @@ class TestBlogE2E:
                 error_content = response.text.lower()
 
                 dangerous_keywords = [
-                    "traceback", "password", "secret", "database",
-                    "internal path", "file system", "stack trace"
+                    "traceback",
+                    "password",
+                    "secret",
+                    "database",
+                    "internal path",
+                    "file system",
+                    "stack trace",
                 ]
 
                 for keyword in dangerous_keywords:

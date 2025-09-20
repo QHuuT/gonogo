@@ -7,7 +7,7 @@ from enum import Enum
 from typing import Dict, Optional
 
 from pydantic import BaseModel, Field
-from sqlalchemy import Column, DateTime, Integer, String, Text, Boolean, JSON
+from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -15,6 +15,7 @@ Base = declarative_base()
 
 class ConsentType(str, Enum):
     """Types of consent that can be given."""
+
     ESSENTIAL = "essential"
     FUNCTIONAL = "functional"
     ANALYTICS = "analytics"
@@ -23,6 +24,7 @@ class ConsentType(str, Enum):
 
 class LegalBasis(str, Enum):
     """Legal basis for data processing under GDPR."""
+
     CONSENT = "consent"
     CONTRACT = "contract"
     LEGAL_OBLIGATION = "legal_obligation"
@@ -33,12 +35,13 @@ class LegalBasis(str, Enum):
 
 class DataSubjectRights(str, Enum):
     """GDPR Data Subject Rights."""
-    ACCESS = "access"              # Article 15
+
+    ACCESS = "access"  # Article 15
     RECTIFICATION = "rectification"  # Article 16
-    ERASURE = "erasure"           # Article 17
-    RESTRICT = "restrict"         # Article 18
-    PORTABILITY = "portability"   # Article 20
-    OBJECT = "object"             # Article 21
+    ERASURE = "erasure"  # Article 17
+    RESTRICT = "restrict"  # Article 18
+    PORTABILITY = "portability"  # Article 20
+    OBJECT = "object"  # Article 21
 
 
 class ConsentRecord(Base):
@@ -67,7 +70,9 @@ class ConsentRecord(Base):
 
     # Audit trail
     ip_address_hash = Column(String(64), nullable=True)  # Hashed IP for security
-    user_agent_hash = Column(String(64), nullable=True)   # Hashed for fingerprinting prevention
+    user_agent_hash = Column(
+        String(64), nullable=True
+    )  # Hashed for fingerprinting prevention
 
 
 class DataProcessingRecord(Base):
@@ -134,8 +139,10 @@ class DataSubjectRequest(Base):
 
 # Pydantic models for API
 
+
 class ConsentRequest(BaseModel):
     """Request model for consent submission."""
+
     consent_type: ConsentType
     consent_given: bool
     consent_version: str = "1.0"
@@ -143,6 +150,7 @@ class ConsentRequest(BaseModel):
 
 class ConsentResponse(BaseModel):
     """Response model for consent operations."""
+
     consent_id: str
     consent_type: ConsentType
     consent_given: bool
@@ -152,6 +160,7 @@ class ConsentResponse(BaseModel):
 
 class DataSubjectRequestCreate(BaseModel):
     """Request model for data subject rights requests."""
+
     request_type: DataSubjectRights
     contact_email: str
     description: Optional[str] = None
@@ -162,6 +171,7 @@ class DataSubjectRequestCreate(BaseModel):
 
 class DataSubjectRequestResponse(BaseModel):
     """Response model for data subject rights requests."""
+
     request_id: int
     request_type: DataSubjectRights
     status: str
@@ -184,10 +194,9 @@ class GDPRCompliance(BaseModel):
     last_audit_date: Optional[datetime] = None
 
     @classmethod
-    def calculate_compliance_score(cls,
-                                 consent_records: int,
-                                 pending_requests: int,
-                                 overdue_requests: int) -> float:
+    def calculate_compliance_score(
+        cls, consent_records: int, pending_requests: int, overdue_requests: int
+    ) -> float:
         """Calculate a GDPR compliance score (0-100)."""
 
         score = 100.0

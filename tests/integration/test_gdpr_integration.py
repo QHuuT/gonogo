@@ -3,8 +3,9 @@ Integration tests for GDPR compliance.
 Testing pyramid: Integration tests (20% of total tests)
 """
 
-import pytest
 from datetime import datetime, timedelta
+
+import pytest
 
 from src.security.gdpr.models import ConsentType, DataSubjectRights
 from src.security.gdpr.service import GDPRService
@@ -22,7 +23,7 @@ class TestGDPRIntegration:
         consent_id = service.record_consent(
             consent_type=ConsentType.ANALYTICS,
             consent_given=True,
-            ip_address="192.168.1.100"
+            ip_address="192.168.1.100",
         )
 
         # Step 2: Verify consent is active
@@ -32,8 +33,7 @@ class TestGDPRIntegration:
 
         # Step 3: Withdraw consent
         withdrawal_result = service.withdraw_consent(
-            consent_id,
-            "User requested data deletion"
+            consent_id, "User requested data deletion"
         )
         assert withdrawal_result is True
 
@@ -48,18 +48,16 @@ class TestGDPRIntegration:
 
         # Record multiple consents
         analytics_id = service.record_consent(
-            consent_type=ConsentType.ANALYTICS,
-            consent_given=True
+            consent_type=ConsentType.ANALYTICS, consent_given=True
         )
 
         marketing_id = service.record_consent(
-            consent_type=ConsentType.MARKETING,
-            consent_given=True
+            consent_type=ConsentType.MARKETING, consent_given=True
         )
 
         functional_id = service.record_consent(
             consent_type=ConsentType.FUNCTIONAL,
-            consent_given=False  # Explicitly denied
+            consent_given=False,  # Explicitly denied
         )
 
         # Verify each consent independently
@@ -81,14 +79,17 @@ class TestGDPRIntegration:
         request_id = service.create_data_subject_request(
             request_type=DataSubjectRights.ACCESS,
             contact_email="integration.test@example.com",
-            description="I need access to all my personal data for review"
+            description="I need access to all my personal data for review",
         )
 
         # Step 2: Verify request was created properly
         from src.security.gdpr.models import DataSubjectRequest
-        request = db_session.query(DataSubjectRequest).filter(
-            DataSubjectRequest.id == request_id
-        ).first()
+
+        request = (
+            db_session.query(DataSubjectRequest)
+            .filter(DataSubjectRequest.id == request_id)
+            .first()
+        )
 
         assert request is not None
         assert request.status == "pending"
@@ -100,16 +101,16 @@ class TestGDPRIntegration:
             "personal_data": {
                 "comments": [],
                 "consents": ["analytics"],
-                "ip_access_logs": "anonymized"
+                "ip_access_logs": "anonymized",
             },
             "data_sources": ["comments_table", "consent_records"],
-            "export_date": datetime.utcnow().isoformat()
+            "export_date": datetime.utcnow().isoformat(),
         }
 
         process_result = service.process_data_subject_request(
             request_id=request_id,
             response_data=response_data,
-            notes="Data exported successfully to secure download link"
+            notes="Data exported successfully to secure download link",
         )
 
         assert process_result is True
@@ -130,14 +131,17 @@ class TestGDPRIntegration:
             consent_type=ConsentType.FUNCTIONAL,
             consent_given=True,
             ip_address="10.0.0.1",
-            user_agent="Test Browser 1.0"
+            user_agent="Test Browser 1.0",
         )
 
         # Manually age the record for testing
         from src.security.gdpr.models import ConsentRecord
-        record = db_session.query(ConsentRecord).filter(
-            ConsentRecord.consent_id == consent_id
-        ).first()
+
+        record = (
+            db_session.query(ConsentRecord)
+            .filter(ConsentRecord.consent_id == consent_id)
+            .first()
+        )
 
         original_ip_hash = record.ip_address_hash
         original_ua_hash = record.user_agent_hash
@@ -164,14 +168,17 @@ class TestGDPRIntegration:
         # Create a request
         request_id = service.create_data_subject_request(
             request_type=DataSubjectRights.ERASURE,
-            contact_email="overdue.test@example.com"
+            contact_email="overdue.test@example.com",
         )
 
         # Make it overdue
         from src.security.gdpr.models import DataSubjectRequest
-        request = db_session.query(DataSubjectRequest).filter(
-            DataSubjectRequest.id == request_id
-        ).first()
+
+        request = (
+            db_session.query(DataSubjectRequest)
+            .filter(DataSubjectRequest.id == request_id)
+            .first()
+        )
 
         request.due_date = datetime.utcnow() - timedelta(days=5)  # 5 days overdue
         db_session.commit()
@@ -195,7 +202,7 @@ class TestGDPRIntegration:
 
         request_id = service.create_data_subject_request(
             request_type=DataSubjectRights.ACCESS,
-            contact_email="report.test@example.com"
+            contact_email="report.test@example.com",
         )
 
         # Generate report
@@ -230,16 +237,24 @@ class TestGDPRIntegration:
             data_subjects="Blog visitors who choose to comment",
             retention_period_days=1095,  # 3 years
             recipients=["Blog administrators", "Comment moderation service"],
-            security_measures=["encryption", "access_controls", "audit_logging", "data_minimization"]
+            security_measures=[
+                "encryption",
+                "access_controls",
+                "audit_logging",
+                "data_minimization",
+            ],
         )
 
         assert activity_id is not None
 
         # Verify the record was created
         from src.security.gdpr.models import DataProcessingRecord
-        record = db_session.query(DataProcessingRecord).filter(
-            DataProcessingRecord.id == activity_id
-        ).first()
+
+        record = (
+            db_session.query(DataProcessingRecord)
+            .filter(DataProcessingRecord.id == activity_id)
+            .first()
+        )
 
         assert record is not None
         assert record.activity_name == "Blog Comment Processing"
@@ -254,15 +269,17 @@ class TestGDPRIntegration:
 
         # Create consent that expires
         consent_id = service.record_consent(
-            consent_type=ConsentType.MARKETING,
-            consent_given=True
+            consent_type=ConsentType.MARKETING, consent_given=True
         )
 
         # Manually expire the consent for testing
         from src.security.gdpr.models import ConsentRecord
-        record = db_session.query(ConsentRecord).filter(
-            ConsentRecord.consent_id == consent_id
-        ).first()
+
+        record = (
+            db_session.query(ConsentRecord)
+            .filter(ConsentRecord.consent_id == consent_id)
+            .first()
+        )
 
         # Set expiration to yesterday
         record.expires_at = datetime.utcnow() - timedelta(days=1)
