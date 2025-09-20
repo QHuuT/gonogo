@@ -1,6 +1,17 @@
-# Business Requirements Documentation
+# Business Requirements - MOVED TO GITHUB ISSUES
 
-This directory contains all business requirements, organized by epics and user stories for clear navigation and traceability.
+**⚠️ This directory is being phased out in favor of GitHub-first project management.**
+
+## 🔄 Where to Find Business Requirements Now
+
+### Active Project Management (Primary)
+- **📋 Create Epics/Stories**: [GitHub Issue Templates](../../.github/ISSUE_TEMPLATE/)
+- **📊 Track Progress**: [GitHub Issues](../../../issues)
+- **🎯 Current Work**: [Active Issues](../../../issues?q=is%3Aissue+is%3Aopen)
+
+### Documentation (Secondary)
+- **🔗 Requirements Matrix**: [Traceability](../traceability/requirements-matrix.md)
+- **📚 GitHub Workflow**: [How to Use GitHub Issues](../../.github/GITHUB_WORKFLOW.md)
 
 ## 📁 Directory Structure
 

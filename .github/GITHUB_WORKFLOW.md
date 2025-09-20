@@ -1,10 +1,51 @@
 # GitHub Workflow Integration
 
-This document explains how to use the GitHub issue templates and workflow integration for managing epics, user stories, and defects.
+**This is the PRIMARY project management system for GoNoGo.**
 
-## 🎯 Overview
+## 🎯 Philosophy: GitHub-First Project Management
 
-The GitHub workflow integration provides:
+### Why GitHub Issues (Not Separate Documentation)
+- **Single Source of Truth**: GitHub Issues are the authoritative source for all project work
+- **Live Status**: Real-time updates on what's being worked on
+- **Integrated**: Same platform as code, PRs, and discussions
+- **Collaborative**: Built-in assignment, commenting, and tracking
+
+### Documentation Strategy
+```
+GitHub Issues (Primary)    →    Generated Documentation (Secondary)
+├── Epics                 →    ├── Auto-generated RTM
+├── User Stories          →    ├── Epic summaries
+├── Defects               →    ├── Status reports
+└── Live status           →    └── Archive/history
+```
+
+## 🏗️ Architecture Overview
+
+### .github/ Directory Purpose
+This directory contains **ALL project management infrastructure**:
+
+```
+.github/
+├── ISSUE_TEMPLATE/           # 🎯 PRIMARY: Issue creation forms
+│   ├── epic.yml             # Epic creation template
+│   ├── user-story.yml       # User story template
+│   ├── defect-report.yml    # Bug/defect reporting
+│   └── config.yml           # Template configuration
+├── workflows/               # 🤖 FUTURE: Automation
+│   └── (future automation)  # Auto-generate docs from issues
+├── labels.yml              # 🏷️ Label definitions for organization
+├── GITHUB_WORKFLOW.md      # 📚 This guide
+└── *.md                    # 📋 Project management documentation
+```
+
+### vs docs/ Directory Purpose
+The `docs/` directory serves a **different purpose**:
+- **Manual documentation**: Architecture decisions, development guides
+- **Generated content**: Auto-created from GitHub Issues (future)
+- **Permanent records**: Technical specifications, compliance docs
+- **Developer guides**: CLAUDE.md, setup instructions
+
+## 🎯 The GitHub Workflow Integration provides:
 - Standardized issue templates for epics, user stories, and defects
 - Automatic labeling and project assignment
 - Traceability between issues and documentation
