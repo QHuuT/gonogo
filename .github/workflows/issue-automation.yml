@@ -144,30 +144,35 @@ jobs:
               for (const blockMatch of blocksMatches) {
                 const blockedIssueMatch = blockMatch.match(/#(\d+)/);
                 if (blockedIssueMatch) {
-                  const blockedIssueNumber = blockedIssueMatch[1];
+                  const blockedIssueNumber = parseInt(blockedIssueMatch[1]);
                   console.log(`🚧 Found blocking relationship: This issue blocks #${blockedIssueNumber}`);
 
                   try {
-                    // Add comment to blocked issue
-                    const blockingComment = `⚠️ **Blocked by**: #${issueNumber} - ${issue.title}\n\n_This issue cannot proceed until the blocking issue is resolved._`;
-                    await github.rest.issues.createComment({
+                    // Use GitHub's built-in issue relationship API
+                    await github.rest.issues.createRelationship({
                       owner,
                       repo,
-                      issue_number: parseInt(blockedIssueNumber),
-                      body: blockingComment
+                      issue_number: issueNumber,
+                      related_issue_number: blockedIssueNumber,
+                      relationship_type: 'blocks'
                     });
 
-                    // Add blocked label to the blocked issue
-                    await github.rest.issues.addLabels({
-                      owner,
-                      repo,
-                      issue_number: parseInt(blockedIssueNumber),
-                      labels: ['status/blocked']
-                    });
-
-                    console.log(`🔗 Added blocking relationship to #${blockedIssueNumber}`);
+                    console.log(`🔗 Created blocking relationship: #${issueNumber} blocks #${blockedIssueNumber}`);
                   } catch (error) {
                     console.log(`❌ Failed to create blocking relationship with #${blockedIssueNumber}:`, error.message);
+
+                    // Fallback: Add status/blocked label to blocked issue
+                    try {
+                      await github.rest.issues.addLabels({
+                        owner,
+                        repo,
+                        issue_number: blockedIssueNumber,
+                        labels: ['status/blocked']
+                      });
+                      console.log(`📝 Fallback: Added status/blocked label to #${blockedIssueNumber}`);
+                    } catch (fallbackError) {
+                      console.log(`❌ Fallback failed:`, fallbackError.message);
+                    }
                   }
                 }
               }
@@ -178,30 +183,35 @@ jobs:
               for (const blockedMatch of blockedByMatches) {
                 const blockingIssueMatch = blockedMatch.match(/#(\d+)/);
                 if (blockingIssueMatch) {
-                  const blockingIssueNumber = blockingIssueMatch[1];
+                  const blockingIssueNumber = parseInt(blockingIssueMatch[1]);
                   console.log(`🛑 Found dependency: This issue is blocked by #${blockingIssueNumber}`);
 
                   try {
-                    // Add comment to blocking issue
-                    const dependencyComment = `🔗 **Blocks**: #${issueNumber} - ${issue.title}\n\n_This issue is blocking another issue from proceeding._`;
-                    await github.rest.issues.createComment({
+                    // Use GitHub's built-in issue relationship API
+                    await github.rest.issues.createRelationship({
                       owner,
                       repo,
-                      issue_number: parseInt(blockingIssueNumber),
-                      body: dependencyComment
+                      issue_number: blockingIssueNumber,
+                      related_issue_number: issueNumber,
+                      relationship_type: 'blocks'
                     });
 
-                    // Add blocked label to current issue
-                    await github.rest.issues.addLabels({
-                      owner,
-                      repo,
-                      issue_number: issueNumber,
-                      labels: ['status/blocked']
-                    });
-
-                    console.log(`🔗 Added dependency relationship with #${blockingIssueNumber}`);
+                    console.log(`🔗 Created blocking relationship: #${blockingIssueNumber} blocks #${issueNumber}`);
                   } catch (error) {
-                    console.log(`❌ Failed to create dependency relationship with #${blockingIssueNumber}:`, error.message);
+                    console.log(`❌ Failed to create blocking relationship with #${blockingIssueNumber}:`, error.message);
+
+                    // Fallback: Add status/blocked label to current issue
+                    try {
+                      await github.rest.issues.addLabels({
+                        owner,
+                        repo,
+                        issue_number: issueNumber,
+                        labels: ['status/blocked']
+                      });
+                      console.log(`📝 Fallback: Added status/blocked label to #${issueNumber}`);
+                    } catch (fallbackError) {
+                      console.log(`❌ Fallback failed:`, fallbackError.message);
+                    }
                   }
                 }
               }
