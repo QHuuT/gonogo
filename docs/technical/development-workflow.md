@@ -8,54 +8,105 @@ This document defines the complete development workflow for GoNoGo, integrating 
 
 ## 📋 Core Development Workflow
 
-### **Phase 1: Requirements Analysis**
+### **Phase 1: Requirements Analysis & GitHub Issue Creation**
 1. **Read CLAUDE.md** for current project state and commands
 2. **Check GitHub Issues** for active epics and user stories
-3. **Review Context** in `docs/context/` for background decisions and compliance
-4. **Review BDD Scenarios** in `tests/bdd/features/`
-5. **Check RTM Status** in `docs/traceability/requirements-matrix.md`
-6. **Verify GDPR Implications** in `docs/context/compliance/gdpr-requirements.md`
+3. **CREATE GITHUB ISSUE** using templates when planning new tasks:
+   ```bash
+   # For new features/epics
+   gh issue create --template epic --title "EP-XXXXX: Feature Name"
+
+   # For specific requirements
+   gh issue create --template user-story --title "US-XXXXX: Specific Requirement"
+
+   # For bug fixes
+   gh issue create --template defect --title "DEF-XXXXX: Bug Description"
+   ```
+4. **Review Context** in `docs/context/` for background decisions and compliance
+5. **Review BDD Scenarios** in `tests/bdd/features/`
+6. **Check RTM Status** in `docs/traceability/requirements-matrix.md`
+7. **Verify GDPR Implications** in `docs/context/compliance/gdpr-requirements.md`
 
 ### **Phase 2: Test-Driven Implementation**
-7. **Write/Update BDD Step Definitions** in `tests/bdd/step_definitions/`
-8. **Run BDD Tests** (should fail - RED phase)
-   ```bash
-   pytest tests/bdd/ -v --tb=short
+8. **Write/Update BDD Step Definitions** in `tests/bdd/step_definitions/`
+9. **ADD BDD SCENARIOS TO GITHUB ISSUE** in the issue description:
+   ```markdown
+   ## BDD Scenarios
+   - Feature: authentication.feature:user_login
+   - Feature: authentication.feature:user_logout
    ```
-9. **Implement Minimum Code** to make tests pass (GREEN phase)
-10. **Refactor** while keeping tests green (REFACTOR phase)
-11. **Run Full Test Suite** to ensure no regressions
+10. **Run BDD Tests** (should fail - RED phase)
+    ```bash
+    pytest tests/bdd/ -v --tb=short
+    ```
+11. **Implement Minimum Code** to make tests pass (GREEN phase)
+12. **Refactor** while keeping tests green (REFACTOR phase)
+13. **Run Full Test Suite** to ensure no regressions
 
 ### **Phase 3: Documentation & Traceability**
-12. **Update RTM** in `docs/traceability/requirements-matrix.md`
-13. **Update Technical Docs** if architecture changed (see [Documentation Workflow](documentation-workflow.md))
-14. **Verify GDPR Compliance** if personal data involved
-15. **Update CLAUDE.md** if workflow or structure changed
+14. **UPDATE RTM** in `docs/traceability/requirements-matrix.md` with:
+    - Link to GitHub issue
+    - Implementation status (⏳ In Progress → ✅ Done)
+    - BDD scenario references
+    - Test implementation links
+15. **Update Technical Docs** if architecture changed (see [Documentation Workflow](documentation-workflow.md))
+16. **Verify GDPR Compliance** if personal data involved
+17. **Update CLAUDE.md** if workflow or structure changed
 
-### **Phase 4: Quality Gates**
-16. **Run Quality Checks**:
+### **Phase 4: Quality Gates (MANDATORY)**
+18. **Run Quality Checks** (must pass before commit):
     ```bash
     black src/ tests/ && isort src/ tests/ && flake8 src/ tests/ && mypy src/
     ```
-17. **Run Security Tests**: `pytest tests/security/ -v`
-18. **Run GDPR Compliance Tests**: `pytest tests/security/test_gdpr_compliance.py -v`
-19. **Verify Test Coverage**: `pytest --cov=src tests/ --cov-report=term-missing`
-
-### **Phase 5: Integration & Commit**
-20. **Integration Test**: `pytest tests/integration/ -v`
-21. **E2E Test** (if applicable): `pytest tests/e2e/ -v`
-22. **Commit with Conventional Message**:
+19. **Run Security Tests**: `pytest tests/security/ -v`
+20. **Run GDPR Compliance Tests**: `pytest tests/security/test_gdpr_compliance.py -v`
+21. **Verify Test Coverage**: `pytest --cov=src tests/ --cov-report=term-missing`
+22. **Validate RTM Links** if RTM was modified:
     ```bash
-    git commit -m "feat: implement [user story] with BDD coverage
+    python tools/rtm-links-simple.py --validate
+    ```
 
-    - Add BDD scenarios for [feature]
-    - Implement [specific functionality]
-    - Update RTM with traceability
-    - Ensure GDPR compliance
+### **Phase 5: Integration & GitHub-First Commit**
+23. **Integration Test**: `pytest tests/integration/ -v`
+24. **E2E Test** (if applicable): `pytest tests/e2e/ -v`
+25. **COMMIT WITH GITHUB ISSUE REFERENCE**:
+    ```bash
+    git commit -m "feat: implement user authentication system
 
-    Closes: US-XXX
-    Tests: BDD scenarios passing
-    Coverage: XX% maintained"
+    Implements US-00018: User login with GDPR consent
+
+    - Add login/logout BDD scenarios
+    - Implement authentication service
+    - Add GDPR consent handling
+    - Update RTM with completion status
+
+    🤖 Generated with [Claude Code](https://claude.ai/code)
+
+    Co-Authored-By: Claude <noreply@anthropic.com>"
+    ```
+26. **COMMENT ON GITHUB ISSUE** with implementation details:
+    ```bash
+    gh issue comment [ISSUE-NUMBER] --body "
+    ## Implementation Completed ✅
+
+    **Files Changed:**
+    - \`src/be/services/auth_service.py\` - Authentication logic
+    - \`tests/bdd/features/authentication.feature\` - BDD scenarios
+    - \`tests/bdd/step_definitions/auth_steps.py\` - Test implementations
+
+    **BDD Scenarios Implemented:**
+    - User login with valid credentials
+    - User logout functionality
+    - GDPR consent validation
+
+    **Quality Gates Passed:**
+    - All tests passing ✅
+    - Code quality checks passed ✅
+    - GDPR compliance validated ✅
+    - RTM updated ✅
+
+    **Commit:** [commit-hash]
+    "
     ```
 
 ## 🔄 BDD Scenario Development Process

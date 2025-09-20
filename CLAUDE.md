@@ -48,31 +48,42 @@ docker-compose up -d                # Local production test
 
 ## Development Procedures
 
-### 🔄 Standard Workflow (ALWAYS follow this)
+### 🔄 GitHub-First Development Workflow (ALWAYS follow this)
 **📖 Detailed Process**: See [Development Workflow](docs/technical/development-workflow.md)
 
-1. **Start**: Read CLAUDE.md for current project state
+1. **Plan**: Read CLAUDE.md → Create GitHub issue (Epic/US/DEF) using templates
 2. **Code**: Implement changes following project conventions
 3. **Test**: Run relevant tests (unit → integration → security)
-4. **Quality**: Run linting and type checking
-5. **Document**: Update CLAUDE.md and relevant documentation
-6. **Commit**: Use conventional commit messages
+4. **Quality**: Complete quality gates (linting, type checking, coverage)
+5. **Document**: Update RTM and relevant documentation
+6. **Commit**: Reference linked issue in commit message
+7. **Trace**: Update Requirements Traceability Matrix with progress
 
-### 📝 Before Every Session
+### 📝 Before Every Session (GitHub-First Protocol)
 - [ ] Read CLAUDE.md completely
 - [ ] Check current git status
 - [ ] Review recent commits for context
-- [ ] Update todos if needed
+- [ ] Check [GitHub Issues](../../issues) for assigned work
+- [ ] Verify RTM status for any in-progress tasks
 
-### ✅ Before Every Commit
+### ✅ Before Every Commit (Enhanced Protocol)
 **📖 Complete Checklist**: See [Quality Assurance Guidelines](docs/technical/quality-assurance.md#quality-gates)
 
+**Quality Gates**:
 - [ ] Run tests: `pytest tests/ -v`
 - [ ] Run linting: `black src/ tests/ && isort src/ tests/ && flake8 src/ tests/`
 - [ ] Run type checking: `mypy src/`
+
+**GitHub Integration**:
+- [ ] Reference linked GitHub issue in commit message (Implements/Fixes US-XXXXX)
+- [ ] Comment on linked issue with implementation details
+- [ ] Add BDD scenarios to issue description if created
+
+**Documentation & Traceability**:
+- [ ] Update RTM with implementation progress
+- [ ] Validate RTM links if traceability matrix modified
 - [ ] Update documentation if needed
 - [ ] Update CLAUDE.md if project structure changed
-- [ ] Validate RTM links if traceability matrix modified
 
 ## Project Structure
 
@@ -189,19 +200,24 @@ test: add unit tests for blog post service
 
 ## Quick Start Checklist
 
-### **🚀 New Development Session**
-1. [ ] Read CLAUDE.md (this file)
-2. [ ] Check [GitHub Issues](../../issues) for current work
-3. [ ] Review [Development Workflow](docs/technical/development-workflow.md) if needed
-4. [ ] Check [Requirements Matrix](docs/traceability/requirements-matrix.md) status
-5. [ ] Verify [GDPR implications](docs/context/compliance/gdpr-requirements.md) if handling personal data
-6. [ ] Review [RTM Link Management](docs/technical/documentation-workflow.md#requirements-traceability-matrix-link-management) if updating traceability
+### **🚀 Enhanced Development Session Protocol**
+1. [ ] Read CLAUDE.md (this file) completely
+2. [ ] Check [GitHub Issues](../../issues) for assigned work
+3. [ ] **PLAN**: For any new task, create GitHub issue using templates:
+   - Use `gh issue create --template epic` for new features
+   - Use `gh issue create --template user-story` for specific requirements
+   - Use `gh issue create --template defect` for bug fixes
+4. [ ] Review [Development Workflow](docs/technical/development-workflow.md) for task-specific processes
+5. [ ] Check [Requirements Matrix](docs/traceability/requirements-matrix.md) for current status
+6. [ ] Verify [GDPR implications](docs/context/compliance/gdpr-requirements.md) if handling personal data
 
-### **✅ Before Every Commit**
-1. [ ] Follow [Development Workflow](docs/technical/development-workflow.md) phases
-2. [ ] Complete [Quality Gates](docs/technical/quality-assurance.md#quality-gates)
-3. [ ] Update [Documentation](docs/technical/documentation-workflow.md) if needed
-4. [ ] Use [Conventional Commit](docs/technical/quality-assurance.md#commit-message-standards) format
+### **✅ Enhanced Commit Protocol**
+1. [ ] Complete all quality gates (tests, linting, type checking)
+2. [ ] **COMMIT**: Reference linked GitHub issue (e.g., "Implements US-00018")
+3. [ ] **COMMENT**: Update linked issue with implementation details
+4. [ ] **TRACE**: Update RTM with progress/completion status
+5. [ ] **BDD**: Add any created scenarios to issue description
+6. [ ] Follow [Conventional Commit](docs/technical/quality-assurance.md#commit-message-standards) format
 
 ---
 

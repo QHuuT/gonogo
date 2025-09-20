@@ -67,26 +67,38 @@ Update **continuously** during development:
 
 ## 🔄 Documentation Update Workflow
 
-### **Daily Documentation Tasks**
+### **Daily Documentation Tasks (GitHub-First Protocol)**
 1. **Check GitHub Issues**: Review new/updated issues for documentation needs
-2. **Update RTM**: Link new GitHub Issues to requirements matrix
+2. **UPDATE RTM IMMEDIATELY**: For every new GitHub issue created:
+   - Add issue to RTM epic-to-user-story mapping
+   - Update main RTM table with proper GitHub issue links
+   - Set status to ⏳ In Progress when work begins
+   - Add BDD scenario references when created
+   - Update to ✅ Done when implementation complete
 3. **Verify Links**: Ensure GitHub Issues reference relevant context docs
+4. **Validate RTM Links**: Run `python tools/rtm-links-simple.py --validate` weekly
 
-### **Feature Development Documentation**
+### **Feature Development Documentation (Enhanced Protocol)**
 1. **Before Implementation**:
+   - Create GitHub issue using templates (`gh issue create --template user-story`)
    - Review relevant ADRs in `docs/context/decisions/`
    - Check GDPR requirements in `docs/context/compliance/`
    - Verify BDD scenarios in `tests/bdd/features/`
+   - **UPDATE RTM**: Add new issue to requirements matrix immediately
 
 2. **During Implementation**:
+   - **ADD BDD SCENARIOS TO GITHUB ISSUE**: Update issue description with scenario references
    - Update technical docs if architecture changes
    - Create/update BDD scenarios for new functionality
    - Document API changes in `docs/technical/api-docs/`
+   - **UPDATE RTM STATUS**: Change to ⏳ In Progress
 
 3. **After Implementation**:
-   - Update RTM with completion status
+   - **COMMENT ON GITHUB ISSUE**: Add implementation details and commit references
+   - **UPDATE RTM**: Change status to ✅ Done with final implementation links
    - Verify GDPR compliance mapping
    - Update cross-references in documentation
+   - **VALIDATE RTM**: Run RTM validation tool to ensure all links work
 
 ### **Major Decision Documentation**
 1. **Create ADR**: New file in `docs/context/decisions/`
@@ -200,14 +212,15 @@ The RTM maintains clickable links to all referenced artifacts:
 
 ### **RTM Link Validation Checklist**
 
-**Before every commit involving RTM changes**:
-- [ ] All epic links use GitHub issue search format
-- [ ] All user story links use GitHub issue search format
-- [ ] All BDD scenario links point to existing feature files
-- [ ] All test implementation links point to existing step definition files
-- [ ] All GDPR requirement links point to correct documentation
-- [ ] Relative paths are calculated correctly from RTM file location
-- [ ] No broken links when viewed in GitHub web interface
+**MANDATORY RTM Update Checklist (Before Every Commit)**:
+- [ ] **GitHub Issues**: All epic/US/DEF links use GitHub issue search format
+- [ ] **Implementation Status**: Status updated (⏳ → ✅) for completed work
+- [ ] **BDD Scenarios**: All scenario links point to existing feature files
+- [ ] **Test Links**: All test implementation links point to existing step definition files
+- [ ] **GDPR Links**: All GDPR requirement links point to correct documentation
+- [ ] **Path Validation**: Relative paths calculated correctly from RTM file location
+- [ ] **Link Validation**: Run `python tools/rtm-links-simple.py --validate`
+- [ ] **GitHub Integration**: No broken links when viewed in GitHub web interface
 
 **Weekly RTM link health check**:
 - [ ] All GitHub issue links resolve to actual issues
