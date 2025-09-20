@@ -10,91 +10,22 @@ body:
       value: |
         ## Defect Report
 
-        Thank you for reporting a defect! This template ensures all required information is captured for proper investigation and resolution.
-
-        **Reference** - See [defect template](../docs/01-business/defect-template.md) for detailed guidelines.
-
-  - type: input
-    id: defect-id
-    attributes:
-      label: Defect ID
-      description: Unique defect identifier (format DEF-XXXXX)
-      placeholder: "DEF-00001"
-    validations:
-      required: true
-
-  - type: input
-    id: related-epic
-    attributes:
-      label: Related Epic
-      description: Link to affected epic (format EP-XXXXX or #issue-number) - Needed for RTM
-      placeholder: "EP-00001 or #123"
-    validations:
-      required: 
+        Thanks for reporting a defect! This streamlined template captures the essential information needed for investigation.
 
   - type: input
     id: related-user-story
     attributes:
       label: Related User Story
-      description: Link to affected user story (format US-XXXXX or #issue-number) - Needed for RTM
+      description: Link to affected user story (format US-XXXXX or #issue-number)
       placeholder: "US-00001 or #456"
     validations:
-      required:
-
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Priority
-      description: Business priority for fixing this defect
-      options:
-        - Critical
-        - High
-        - Medium
-        - Low
-    validations:
       required: true
-
-  - type: dropdown
-    id: severity
-    attributes:
-      label: Severity
-      description: Technical severity of the defect
-      options:
-        - Blocker
-        - Critical
-        - Major
-        - Minor
-        - Trivial
-    validations:
-      required: true
-
-  - type: input
-    id: defect-summary
-    attributes:
-      label: Defect Summary
-      description: Brief one-line description of the defect
-      placeholder: "Blog post search returns no results for valid keywords"
-    validations:
-      required: false
-
-  - type: textarea
-    id: environment
-    attributes:
-      label: Environment
-      description: Where was this defect observed?
-      placeholder: |
-        - Browser/Platform - Chrome 118, Windows 11
-        - Environment - Production
-        - Version - v1.2.3 (commit: abc123)
-        - Device - Desktop / Mobile / Tablet
-    validations:
-      required: false
 
   - type: textarea
     id: steps-to-reproduce
     attributes:
       label: Steps to Reproduce
-      description: Detailed steps to reproduce the defect
+      description: Clear steps to reproduce the issue
       placeholder: |
         1. Navigate to blog homepage
         2. Enter "python" in search box
@@ -107,9 +38,8 @@ body:
     id: expected-behavior
     attributes:
       label: Expected Behavior
-      description: What should happen according to the user story acceptance criteria?
-      placeholder: |
-        According to US-001 acceptance criteria, search should return blog posts containing the keyword "python" ranked by relevance.
+      description: What should happen?
+      placeholder: "Search should return blog posts containing the keyword"
     validations:
       required: false
 
@@ -118,8 +48,7 @@ body:
     attributes:
       label: Actual Behavior
       description: What actually happens?
-      placeholder: |
-        Search returns "No results found" message even though there are 5 blog posts containing "python" in the title or content.
+      placeholder: "Search returns 'No results found' message"
     validations:
       required: false
 
@@ -127,11 +56,29 @@ body:
     id: business-impact
     attributes:
       label: Business Impact
-      description: How does this defect affect users and business?
+      description: How does this affect users and business?
+      placeholder: "Users cannot find content, reduced engagement"
+    validations:
+      required: false
+
+  - type: textarea
+    id: error-messages
+    attributes:
+      label: Error Messages & Logs (Optional)
+      description: Console errors, logs, or error messages
       placeholder: |
-        - User Impact - 100% of users cannot find content through search
-        - Business Value Lost - Reduced engagement, potential user churn
-        - Workaround Available - No - users must browse manually
+        ```
+        [Paste any error messages or console output]
+        ```
+    validations:
+      required: false
+
+  - type: input
+    id: workaround
+    attributes:
+      label: Workaround Available
+      description: Is there a temporary workaround?
+      placeholder: "Yes - users can browse by category | No workaround available"
     validations:
       required: false
 
@@ -142,86 +89,6 @@ body:
       description: Does this defect have privacy implications?
       options:
         - label: Personal data may be affected
-        - label: Data breach assessment needed
-        - label: User notification required
         - label: Consent system affected
         - label: Data retention impacted
         - label: Not applicable
-
-  - type: textarea
-    id: gdpr-details
-    attributes:
-      label: GDPR Impact Details (if applicable)
-      description: Specific privacy concerns and immediate actions required
-      placeholder: |
-        - Personal Data Affected - Search terms may be logged
-        - Compliance Risk - Medium - search analytics may retain personal data
-        - Immediate Actions - Review search logging, ensure data anonymization
-    validations:
-      required: false
-
-  - type: textarea
-    id: evidence
-    attributes:
-      label: Evidence
-      description: Screenshots, error messages, logs, or other supporting evidence
-      placeholder: |
-        Screenshots - [Attach or link to screenshots]
-
-        Error Messages -
-        ```
-        [Paste any error messages or console output]
-        ```
-
-        Network/Console Logs -
-        ```
-        [Browser console errors, network failures, etc.]
-        ```
-    validations:
-      required: false
-
-  - type: textarea
-    id: acceptance-criteria-violated
-    attributes:
-      label: Acceptance Criteria Violated
-      description: Reference specific acceptance criteria from the related user story
-      placeholder: |
-        From US-001:
-        - [ ] AC-1 - Given I search for a keyword, When results are displayed, Then they are ranked by relevance
-        - [ ] NFR-1 - Search results return within 2 seconds (VIOLATED - no results returned)
-    validations:
-      required: false
-
-  - type: input
-    id: workaround
-    attributes:
-      label: Workaround Available
-      description: Is there a temporary workaround for users?
-      placeholder: "Yes - users can browse by category | No workaround available"
-    validations:
-      required: false
-
-  - type: textarea
-    id: additional-context
-    attributes:
-      label: Additional Context
-      description: Any other relevant information, related defects, or investigation notes
-      placeholder: |
-        - Similar issue reported in DEF-XXX for different search terms
-        - Issue may be related to recent search index update
-        - Affects both mobile and desktop versions
-    validations:
-      required: false
-
-  - type: markdown
-    attributes:
-      value: |
-        ## Next Steps
-
-        1. Defect will be triaged and assigned a priority
-        2. Root cause analysis will be performed
-        3. Fix will be implemented following BDD workflow
-        4. BDD scenarios will be updated to prevent regression
-        5. RTM will be updated with defect resolution
-
-        **Resolution Process** - Follow the [Defect Management Workflow](../CLAUDE.md#defect-management-workflow) for systematic resolution.

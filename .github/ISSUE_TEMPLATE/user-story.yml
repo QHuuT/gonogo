@@ -10,81 +10,26 @@ body:
       value: |
         ## User Story Creation
 
-        Thank you for creating a user story! This template ensures all required information is captured for proper traceability and implementation.
-
-        **Reference** - See [user story template](../docs/01-business/user-story-template.md) for detailed guidelines.
-
-  - type: input
-    id: story-id
-    attributes:
-      label: User Story ID
-      description: Unique user story identifier (format US-XXXXX)
-      placeholder: "US-00013"
-    validations:
-      required: true
-
-  - type: input
-    id: epic-link
-    attributes:
-      label: Parent Epic
-      description: Link to the parent epic (format EP-XXXXX or #issue-number)
-      placeholder: "EP-00004 or #123"
-    validations:
-      required: true
-
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Priority
-      description: Business priority of this user story
-      options:
-        - Critical
-        - High
-        - Medium
-        - Low
-    validations:
-      required: true
-
-  - type: dropdown
-    id: complexity
-    attributes:
-      label: Story Points
-      description: Estimated complexity in story points
-      options:
-        - "1"
-        - "2"
-        - "3"
-        - "5"
-        - "8"
-        - "13"
-        - "21"
-    validations:
-      required: true
+        Create a user story within an epic. Keep it simple - you can add details later.
 
   - type: textarea
     id: user-story
     attributes:
       label: User Story
-      description: |
-        **As a** [user type]
-        **I want** [what they want]
-        **So that** [why they want it]
+      description: What do you want to achieve?
       placeholder: |
         **As a** blog visitor
         **I want** to search for blog posts by keyword
-        **So that** I can quickly find content relevant to my interests
+        **So that** I can quickly find relevant content
     validations:
-      required: false
+      required: true
 
   - type: textarea
     id: business-value
     attributes:
-      label: Business Value
+      label: Business Value (Optional)
       description: Why is this user story important?
-      placeholder: |
-        - Improves user experience by making content discoverable
-        - Reduces bounce rate through better content access
-        - Supports content strategy and user engagement goals
+      placeholder: "Improves user experience by making content discoverable"
     validations:
       required: false
 
@@ -100,43 +45,15 @@ body:
     validations:
       required: false
 
-  - type: textarea
-    id: acceptance-criteria-nonfunctional
-    attributes:
-      label: Acceptance Criteria - Non-Functional Requirements
-      description: Performance, security, usability, and other quality requirements
-      placeholder: |
-        - [ ] **Performance**: Search results return within 2 seconds
-        - [ ] **Accessibility**: Search is usable with keyboard navigation
-        - [ ] **Security**: Search input is sanitized to prevent XSS
-        - [ ] **Mobile**: Search interface works on mobile devices
-    validations:
-      required: false
-
   - type: checkboxes
     id: gdpr-considerations
     attributes:
       label: GDPR Considerations
-      description: Does this user story involve personal data?
+      description: Does this involve personal data?
       options:
-        - label: This story involves personal data processing
-        - label: Data collection requires user consent
-        - label: Privacy impact assessment needed
-        - label: Data retention policies apply
-        - label: Not Applicable
-
-  - type: textarea
-    id: gdpr-details
-    attributes:
-      label: GDPR Details (if applicable)
-      description: Specific GDPR considerations and compliance requirements
-      placeholder: |
-        - Personal Data Involved - Search terms (if logged)
-        - Legal Basis - Legitimate interest (analytics) or Consent
-        - Retention Period - 30 days for analytics, immediate deletion for search terms
-        - Data Subject Rights - Right to access search history, right to deletion
-    validations:
-      required: false
+        - label: Involves personal data processing
+        - label: GDPR compliance review needed
+        - label: Not applicable
 
   - type: textarea
     id: dependencies
@@ -151,47 +68,24 @@ body:
       required: false
 
   - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies (Optional)
+      description: What other user stories or requirements must be completed first?
+      placeholder: |
+        - US-XXXXX: Other user story that must be done first
+        - Infrastructure or technical requirements
+    validations:
+      required: false
+
+  - type: textarea
     id: technical-notes
     attributes:
-      label: Technical Notes
-      description: Implementation hints, architecture considerations, or technical constraints
+      label: Technical Notes (Optional)
+      description: Implementation hints or technical considerations
       placeholder: |
-        - Implement full-text search using PostgreSQL or Elasticsearch
         - Consider search result caching for performance
         - Ensure search queries are properly escaped
-        - Plan for search analytics and monitoring
-    validations:
-      required: false
-
-  - type: textarea
-    id: definition-of-done
-    attributes:
-      label: Definition of Done Checklist
-      description: Additional criteria specific to this story (beyond standard DoD)
-      placeholder: |
-        - [ ] Search functionality tested with various keywords
-        - [ ] Search performance meets 2-second requirement
-        - [ ] Mobile search interface validated
-        - [ ] Search analytics tracking implemented
-        - [ ] Help documentation updated with search features
-    validations:
-      required: false
-
-  - type: input
-    id: confidence-level
-    attributes:
-      label: Confidence Level
-      description: How confident are you in the story point estimate?
-      placeholder: "High / Medium / Low"
-    validations:
-      required: false
-
-  - type: textarea
-    id: additional-context
-    attributes:
-      label: Additional Context
-      description: Mockups, user research, competitive analysis, or other relevant information
-      placeholder: "Links to designs, user feedback, research data, etc."
     validations:
       required: false
 

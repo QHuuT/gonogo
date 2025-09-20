@@ -13,26 +13,27 @@ This matrix traces all requirements from business needs through implementation a
 
 | Epic ID | Epic Name | User Stories | Total Story Points | Priority | Status |
 |---------|-----------|--------------|-------------------|----------|--------|
-| **EP-001** | Blog Content Management | US-001, US-002 | 8 | High | 📝 Planned |
-| **EP-002** | GDPR-Compliant Comment System | US-003, US-004, US-005 | 16 | High | 📝 Planned |
-| **EP-003** | Privacy and Consent Management | US-006, US-007, US-008 | 29 | Critical | 📝 Planned |
-| **EP-004** | GitHub Workflow Integration | US-009, US-010, US-011, US-012 | 21 | High | ⏳ In Progress |
+| **EP-00001** | Blog Content Management | US-00001, US-00002 | 8 | High | 📝 Planned |
+| **EP-00002** | GDPR-Compliant Comment System | US-00003, US-00004, US-00005 | 16 | High | 📝 Planned |
+| **EP-00003** | Privacy and Consent Management | US-00006, US-00007, US-00008 | 29 | Critical | 📝 Planned |
+| **EP-00004** | GitHub Workflow Integration | US-00009, US-00010, US-00011, US-00012, US-00013 | 21 | High | ⏳ In Progress |
 
 ## Requirements Traceability Matrix
 
 | Epic | Req ID | Requirement Description | Priority | User Story | BDD Scenario | Test Implementation | Code Implementation | Defects | Status | Notes |
 |------|--------|------------------------|----------|------------|--------------|-------------------|-------------------|---------|--------|-------|
-| **EP-001** | **BR-001** | Blog visitors can read posts without barriers | High | US-001 | blog-content.feature:view_blog_homepage | test_blog_content_steps.py | src/be/main.py:home | - | ✅ Basic | MVP Core |
-| **EP-001** | **BR-002** | Blog post navigation and discovery | Medium | US-002 | blog-content.feature:navigate_between_posts | test_blog_content_steps.py | src/be/api/posts.py | - | 📝 Planned | Post-MVP |
-| **EP-002** | **BR-003** | GDPR-compliant comment submission | High | US-003 | comment-system.feature:submit_comment | test_comment_system_steps.py | src/be/api/comments.py | - | 📝 Planned | MVP Core |
-| **EP-002** | **BR-004** | Comment display and moderation | Medium | US-004, US-005 | comment-system.feature:view_comments | test_comment_system_steps.py | src/be/services/comments.py | - | 📝 Planned | MVP Core |
-| **EP-003** | **GDPR-001** | GDPR consent banner and management | Critical | US-006 | gdpr-consent.feature:consent_banner | test_gdpr_consent_steps.py | src/security/gdpr/consent.py | - | 📝 Planned | MVP Critical |
-| **EP-003** | **GDPR-002** | Data subject rights implementation | Critical | US-007 | gdpr-rights.feature:data_access | test_gdpr_rights_steps.py | src/security/gdpr/rights.py | - | 📝 Planned | MVP Critical |
-| **EP-003** | **GDPR-003** | Automated data retention and cleanup | High | US-008 | gdpr-rights.feature:data_retention | test_gdpr_rights_steps.py | src/security/gdpr/retention.py | - | 📝 Planned | Post-MVP |
-| **EP-004** | **WF-001** | GitHub Issue template integration with automatic labeling | High | US-009 | github-integration.feature:automatic_labeling | test_github_label_steps.py | .github/ISSUE_TEMPLATE/, .github/workflows/auto-label-issues.yml, src/shared/utils/github_label_mapper.py | - | ✅ Done | Quality of Life |
-| **EP-004** | **WF-002** | Automated RTM updates from GitHub | High | US-010 | github-workflow.feature:rtm_automation | test_github_workflow_steps.py | .github/workflows/rtm-update.yml | - | 📝 Planned | Quality of Life |
-| **EP-004** | **WF-003** | GitHub Pages documentation site | Medium | US-011 | github-workflow.feature:pages_deployment | test_github_workflow_steps.py | .github/workflows/pages.yml | - | 📝 Planned | Quality of Life |
-| **EP-004** | **WF-004** | GitHub Projects board configuration | Medium | US-012 | github-workflow.feature:projects_board | test_github_workflow_steps.py | GitHub Projects settings | - | 📝 Planned | Quality of Life |
+| **EP-00001** | **BR-00001** | Blog visitors can read posts without barriers | High | US-00001 | blog-content.feature:view_blog_homepage | test_blog_content_steps.py | src/be/main.py:home | - | ✅ Basic | MVP Core |
+| **EP-00001** | **BR-00002** | Blog post navigation and discovery | Medium | US-00002 | blog-content.feature:navigate_between_posts | test_blog_content_steps.py | src/be/api/posts.py | - | 📝 Planned | Post-MVP |
+| **EP-00002** | **BR-00003** | GDPR-compliant comment submission | High | US-00003 | comment-system.feature:submit_comment | test_comment_system_steps.py | src/be/api/comments.py | - | 📝 Planned | MVP Core |
+| **EP-00002** | **BR-00004** | Comment display and moderation | Medium | US-00004, US-00005 | comment-system.feature:view_comments | test_comment_system_steps.py | src/be/services/comments.py | - | 📝 Planned | MVP Core |
+| **EP-00003** | **GDPR-00001** | GDPR consent banner and management | Critical | US-00006 | gdpr-consent.feature:consent_banner | test_gdpr_consent_steps.py | src/security/gdpr/consent.py | - | 📝 Planned | MVP Critical |
+| **EP-00003** | **GDPR-00002** | Data subject rights implementation | Critical | US-00007 | gdpr-rights.feature:data_access | test_gdpr_rights_steps.py | src/security/gdpr/rights.py | - | 📝 Planned | MVP Critical |
+| **EP-00003** | **GDPR-00003** | Automated data retention and cleanup | High | US-00008 | gdpr-rights.feature:data_retention | test_gdpr_rights_steps.py | src/security/gdpr/retention.py | - | 📝 Planned | Post-MVP |
+| **EP-00004** | **WF-00001** | GitHub Issue template integration with automatic labeling | High | US-00009 | github-integration.feature:automatic_labeling | test_github_label_steps.py | .github/ISSUE_TEMPLATE/, .github/workflows/auto-label-issues.yml, src/shared/utils/github_label_mapper.py | - | ✅ Done | Quality of Life |
+| **EP-00004** | **WF-00002** | Automated RTM updates from GitHub | High | US-00010 | github-workflow.feature:rtm_automation | test_github_workflow_steps.py | .github/workflows/rtm-update.yml | - | 📝 Planned | Quality of Life |
+| **EP-00004** | **WF-00003** | GitHub Pages documentation site | Medium | US-00011 | github-workflow.feature:pages_deployment | test_github_workflow_steps.py | .github/workflows/pages.yml | - | 📝 Planned | Quality of Life |
+| **EP-00004** | **WF-00004** | GitHub Projects board configuration | Medium | US-00012 | github-workflow.feature:projects_board | test_github_workflow_steps.py | GitHub Projects settings | - | 📝 Planned | Quality of Life |
+| **EP-00004** | **WF-00005** | Auto-detect environment information for defect reports | Medium | US-00013 | github-integration.feature:environment_detection | test_github_environment_steps.py | .github/ISSUE_TEMPLATE/defect-report.yml, static/js/environment-detector.js | - | 📝 Planned | Quality of Life |
 
 ## GDPR Compliance Mapping
 
