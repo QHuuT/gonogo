@@ -16,6 +16,53 @@ quality/
 └── README.md          # This guide
 ```
 
+## ⚙️ Report Generation Conditions & Triggers
+
+### **Automatic Report Generation**
+Reports are generated based on these conditions and triggers:
+
+#### **1. Test Execution Triggers**
+- **When**: Every time `pytest` is run with the structured logging plugin
+- **Condition**: Tests must be executed in the project with pytest
+- **Output**: Structured logs created in `quality/logs/`
+- **Automatic**: Yes, via pytest integration plugin
+
+#### **2. Coverage Report Triggers**
+- **When**: `pytest --cov=src` command is executed
+- **Condition**: pytest-cov plugin must be installed and configured
+- **Output**: HTML and JSON coverage reports in `quality/reports/coverage/`
+- **Automatic**: Yes, when coverage flags are used
+
+#### **3. Manual Report Generation**
+- **When**: Explicitly run via command line tools
+- **Condition**: User or CI/CD pipeline executes report generation commands
+- **Output**: Various report types based on available data
+- **Automatic**: No, requires manual execution
+
+#### **4. Failure-Based Report Generation**
+- **When**: Test failures are detected and tracked
+- **Condition**: FailureTracker system records failures during test execution
+- **Output**: Failure analysis reports and reproduction scripts
+- **Automatic**: Yes, when failures occur
+
+#### **5. Archive Management Triggers**
+- **When**: Scheduled via cron jobs or manual execution
+- **Condition**: Reports and logs exist and meet retention policy criteria
+- **Output**: Compressed archives and cleanup reports
+- **Automatic**: Can be automated via scheduling
+
+### **Data Requirements for Report Generation**
+Each report type requires specific data sources to exist:
+
+| Report Type | Required Data Source | Trigger Condition |
+|-------------|---------------------|-------------------|
+| **Test Execution** | Structured log files | Pytest runs with logging enabled |
+| **Coverage** | Coverage data files | Tests run with `--cov` flag |
+| **Failure Analysis** | Failure tracking DB | Test failures recorded in database |
+| **Log Correlation** | Both logs + failures | Structured logging + failure tracking |
+| **GitHub Issues** | Failure data + auth | Failures exist + GitHub credentials |
+| **Archive Reports** | Historical reports | Previous reports exist in quality/ |
+
 ## 🎯 Quick Start Commands
 
 ```bash
@@ -258,13 +305,39 @@ pytest --cov=src tests/ \
 ```
 
 ### Automated Report Scheduling
+
+#### **Production Scheduling** (Recommended)
 ```bash
-# Add to crontab for daily reports
+# Daily comprehensive reports (runs after nightly tests)
 0 2 * * * cd /path/to/gonogo && python tools/report_generator.py 2>&1 | logger -t test_reports
 
-# Weekly archive cleanup
+# Weekly archive cleanup (Sunday 3 AM)
 0 3 * * 0 cd /path/to/gonogo && python tools/archive_cleanup.py --apply 2>&1 | logger -t archive_cleanup
+
+# Daily failure analysis (if failures exist)
+30 2 * * * cd /path/to/gonogo && python tools/failure_tracking_demo.py 2>&1 | logger -t failure_tracking
+
+# Weekly storage metrics report (Monday 8 AM)
+0 8 * * 1 cd /path/to/gonogo && python tools/archive_cleanup.py --metrics 2>&1 | logger -t storage_metrics
 ```
+
+#### **Development Scheduling** (Optional)
+```bash
+# After each test run, generate reports (via Git hooks)
+# .git/hooks/post-commit:
+#!/bin/bash
+pytest --cov=src tests/ --cov-report=html
+python tools/report_generator.py
+
+# On pull request merge (GitHub Actions)
+# Automatically generate and archive reports
+```
+
+#### **Trigger Conditions for Automation**
+- **Daily Reports**: Generate if new test logs exist from previous 24 hours
+- **Archive Cleanup**: Execute if storage usage > threshold OR weekly schedule
+- **Failure Analysis**: Trigger when failure count > baseline OR daily schedule
+- **Coverage Reports**: Generate after any test execution with coverage enabled
 
 ### CI/CD Integration
 ```yaml
