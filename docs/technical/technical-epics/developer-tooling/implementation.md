@@ -83,7 +83,7 @@ body:
     id: user-story-id
     attributes:
       label: User Story ID
-      placeholder: "US-001"
+      placeholder: "US-00001"
     validations:
       required: true
 

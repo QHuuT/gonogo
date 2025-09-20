@@ -18,7 +18,7 @@ This matrix ensures 100% traceability from business requirements through impleme
 
 | BR/GDPR ID | Requirement Description | Priority | US ID | BDD Scenario | Test Case | Implementation | Status | Notes |
 |------------|------------------------|----------|-------|--------------|-----------|----------------|--------|-------|
-| BR-001 | [Business requirement text] | High | US-001 | BDD-001 | TC-001 | src/be/... | ✅ Done | |
+| BR-00001 | [Business requirement text] | High | US-00001 | BDD-001 | TC-001 | src/be/... | ✅ Done | |
 | GDPR-001 | [GDPR compliance requirement] | Critical | CS-001 | BDD-SEC-001 | TC-SEC-001 | src/security/... | ⏳ In Progress | |
 
 ## Status Legend

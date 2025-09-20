@@ -32,9 +32,9 @@ The privacy framework provides comprehensive GDPR compliance infrastructure with
 
 ## 🔗 Related User Stories (GitHub Issues)
 
-- **US-006**: GDPR Consent Banner - Cookie and tracking consent interface
-- **US-007**: Privacy Rights Management - Data subject rights implementation
-- **US-008**: Data Retention Management - Automated data lifecycle management
+- **US-00006**: GDPR Consent Banner - Cookie and tracking consent interface
+- **US-00007**: Privacy Rights Management - Data subject rights implementation
+- **US-00008**: Data Retention Management - Automated data lifecycle management
 
 ## 🏗️ Technical Dependencies
 

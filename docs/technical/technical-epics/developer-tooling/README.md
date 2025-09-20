@@ -31,10 +31,10 @@ The developer tooling capability provides comprehensive GitHub workflow integrat
 
 ## 🔗 Related User Stories (GitHub Issues)
 
-- **US-009**: GitHub Issue Template Integration - Custom templates for epic/story/defect creation
-- **US-010**: Automated Traceability Matrix Updates - GitHub Actions for sync and updates
-- **US-011**: GitHub Pages Documentation Site - Public documentation hosting
-- **US-012**: GitHub Projects Board Configuration - Kanban board for visual management
+- **US-00009**: GitHub Issue Template Integration - Custom templates for epic/story/defect creation
+- **US-00010**: Automated Traceability Matrix Updates - GitHub Actions for sync and updates
+- **US-00011**: GitHub Pages Documentation Site - Public documentation hosting
+- **US-00012**: GitHub Projects Board Configuration - Kanban board for visual management
 
 ## 🏗️ Technical Dependencies
 

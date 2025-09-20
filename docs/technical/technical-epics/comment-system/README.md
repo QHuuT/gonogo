@@ -33,9 +33,9 @@ The comment system provides a legally compliant user engagement platform that im
 
 ## 🔗 Related User Stories (GitHub Issues)
 
-- **US-003**: Submit Comment with Consent - Core comment submission functionality
-- **US-004**: View Comments - Comment display and threading
-- **US-005**: Moderate Comments - Admin moderation workflow
+- **US-00003**: Submit Comment with Consent - Core comment submission functionality
+- **US-00004**: View Comments - Comment display and threading
+- **US-00005**: Moderate Comments - Admin moderation workflow
 
 ## 🏗️ Technical Dependencies
 

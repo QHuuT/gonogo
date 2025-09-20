@@ -21,7 +21,7 @@ This directory contains stable compliance requirements and legal obligations tha
 ### GitHub Issues Reference Compliance
 Example GitHub Issue referencing compliance:
 ```markdown
-## User Story: US-015 Comment Deletion Feature
+## User Story: US-00015 Comment Deletion Feature
 
 **Compliance Requirements**:
 - GDPR Right to Erasure (see docs/01-business/compliance/gdpr-requirements.md#right-to-erasure)

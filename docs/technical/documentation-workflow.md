@@ -116,9 +116,9 @@ Update **continuously** during development:
 ## ADR-003: Search Implementation Approach
 
 **GitHub Issues Affected**:
-- Epic EP-007: Advanced Search Implementation
-- User Story US-015: Basic keyword search
-- User Story US-016: Filter by category
+- Epic EP-00007: Advanced Search Implementation
+- User Story US-00015: Basic keyword search
+- User Story US-00016: Filter by category
 
 **Implementation Tracking**:
 See [Requirements Matrix](../traceability/requirements-matrix.md) for current status.

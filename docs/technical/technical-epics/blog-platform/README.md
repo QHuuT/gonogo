@@ -31,8 +31,8 @@ The blog platform provides a seamless content reading experience using server-si
 
 ## 🔗 Related User Stories (GitHub Issues)
 
-- **US-001**: View Blog Posts - Core blog post display functionality
-- **US-002**: Blog Post Navigation - Content discovery and navigation
+- **US-00001**: View Blog Posts - Core blog post display functionality
+- **US-00002**: Blog Post Navigation - Content discovery and navigation
 
 ## 🏗️ Technical Dependencies
 
