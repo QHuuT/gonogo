@@ -22,18 +22,18 @@ This matrix traces all requirements from business needs through implementation a
 
 | Epic | Req ID | Requirement Description | Priority | User Story | BDD Scenario | Test Implementation | Code Implementation | Defects | Status | Notes |
 |------|--------|------------------------|----------|------------|--------------|-------------------|-------------------|---------|--------|-------|
-| **EP-00001** | **BR-00001** | Blog visitors can read posts without barriers | High | US-00001 | blog-content.feature:view_blog_homepage | test_blog_content_steps.py | src/be/main.py:home | - | ✅ Basic | MVP Core |
-| **EP-00001** | **BR-00002** | Blog post navigation and discovery | Medium | US-00002 | blog-content.feature:navigate_between_posts | test_blog_content_steps.py | src/be/api/posts.py | - | 📝 Planned | Post-MVP |
-| **EP-00002** | **BR-00003** | GDPR-compliant comment submission | High | US-00003 | comment-system.feature:submit_comment | test_comment_system_steps.py | src/be/api/comments.py | - | 📝 Planned | MVP Core |
-| **EP-00002** | **BR-00004** | Comment display and moderation | Medium | US-00004, US-00005 | comment-system.feature:view_comments | test_comment_system_steps.py | src/be/services/comments.py | - | 📝 Planned | MVP Core |
-| **EP-00003** | **GDPR-00001** | GDPR consent banner and management | Critical | US-00006 | gdpr-consent.feature:consent_banner | test_gdpr_consent_steps.py | src/security/gdpr/consent.py | - | 📝 Planned | MVP Critical |
-| **EP-00003** | **GDPR-00002** | Data subject rights implementation | Critical | US-00007 | gdpr-rights.feature:data_access | test_gdpr_rights_steps.py | src/security/gdpr/rights.py | - | 📝 Planned | MVP Critical |
-| **EP-00003** | **GDPR-00003** | Automated data retention and cleanup | High | US-00008 | gdpr-rights.feature:data_retention | test_gdpr_rights_steps.py | src/security/gdpr/retention.py | - | 📝 Planned | Post-MVP |
-| **EP-00004** | **WF-00001** | GitHub Issue template integration with automatic labeling | High | US-00009 | github-integration.feature:epic_automatic_labels | test_github_label_steps.py | .github/ISSUE_TEMPLATE/, .github/workflows/auto-label-issues.yml, src/shared/utils/github_label_mapper.py | - | ✅ Done | Quality of Life |
-| **EP-00004** | **WF-00002** | Automated RTM updates from GitHub | High | US-00010 | github-workflow.feature:rtm_automation | test_github_workflow_steps.py | .github/workflows/rtm-update.yml | - | 📝 Planned | Quality of Life |
-| **EP-00004** | **WF-00003** | GitHub Pages documentation site | Medium | US-00011 | github-workflow.feature:pages_deployment | test_github_workflow_steps.py | .github/workflows/pages.yml | - | 📝 Planned | Quality of Life |
-| **EP-00004** | **WF-00004** | GitHub Projects board configuration | Medium | US-00012 | github-workflow.feature:projects_board | test_github_workflow_steps.py | GitHub Projects settings | - | 📝 Planned | Quality of Life |
-| **EP-00004** | **WF-00005** | Auto-detect environment information for defect reports | Medium | US-00013 | github-integration.feature:environment_detection | test_github_environment_steps.py | .github/ISSUE_TEMPLATE/defect-report.yml, static/js/environment-detector.js | - | 📝 Planned | Quality of Life |
+| [**EP-00001**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00001) | **BR-00001** | Blog visitors can read posts without barriers | High | [US-00001](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00001) | [blog-content.feature:view_blog_homepage](../../tests/bdd/features/blog-content.feature) | [test_blog_content_steps.py](../../tests/bdd/step_definitions/test_blog_content_steps.py) | src/be/main.py:home | - | ✅ Basic | MVP Core |
+| [**EP-00001**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00001) | **BR-00002** | Blog post navigation and discovery | Medium | [US-00002](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00002) | [blog-content.feature:navigate_between_posts](../../tests/bdd/features/blog-content.feature) | [test_blog_content_steps.py](../../tests/bdd/step_definitions/test_blog_content_steps.py) | src/be/api/posts.py | - | 📝 Planned | Post-MVP |
+| [**EP-00002**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00002) | **BR-00003** | GDPR-compliant comment submission | High | [US-00003](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00003) | [comment-system.feature:submit_comment](../../tests/bdd/features/comment-system.feature) | [test_comment_system_steps.py](../../tests/bdd/step_definitions/test_comment_system_steps.py) | src/be/api/comments.py | - | 📝 Planned | MVP Core |
+| [**EP-00002**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00002) | **BR-00004** | Comment display and moderation | Medium | [US-00004](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00004), [US-00005](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00005) | [comment-system.feature:view_comments](../../tests/bdd/features/comment-system.feature) | [test_comment_system_steps.py](../../tests/bdd/step_definitions/test_comment_system_steps.py) | src/be/services/comments.py | - | 📝 Planned | MVP Core |
+| [**EP-00003**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00003) | [**GDPR-00001**](../context/compliance/gdpr-requirements.md) | GDPR consent banner and management | Critical | [US-00006](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00006) | [gdpr-consent.feature:consent_banner](../../tests/bdd/features/gdpr-consent.feature) | [test_gdpr_consent_steps.py](../../tests/bdd/step_definitions/test_gdpr_consent_steps.py) | src/security/gdpr/consent.py | - | 📝 Planned | MVP Critical |
+| [**EP-00003**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00003) | [**GDPR-00002**](../context/compliance/gdpr-requirements.md) | Data subject rights implementation | Critical | [US-00007](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00007) | [gdpr-rights.feature:data_access](../../tests/bdd/features/gdpr-rights.feature) | [test_gdpr_rights_steps.py](../../tests/bdd/step_definitions/test_gdpr_rights_steps.py) | src/security/gdpr/rights.py | - | 📝 Planned | MVP Critical |
+| [**EP-00003**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00003) | [**GDPR-00003**](../context/compliance/gdpr-requirements.md) | Automated data retention and cleanup | High | [US-00008](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00008) | [gdpr-rights.feature:data_retention](../../tests/bdd/features/gdpr-rights.feature) | [test_gdpr_rights_steps.py](../../tests/bdd/step_definitions/test_gdpr_rights_steps.py) | src/security/gdpr/retention.py | - | 📝 Planned | Post-MVP |
+| [**EP-00004**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00004) | **WF-00001** | GitHub Issue template integration with automatic labeling | High | [US-00009](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00009) | [github-integration.feature:epic_automatic_labels](../../tests/bdd/features/github-integration.feature) | [test_github_label_steps.py](../../tests/bdd/step_definitions/test_github_label_steps.py) | .github/ISSUE_TEMPLATE/, .github/workflows/auto-label-issues.yml, src/shared/utils/github_label_mapper.py | - | ✅ Done | Quality of Life |
+| [**EP-00004**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00004) | **WF-00002** | Automated RTM updates from GitHub | High | [US-00010](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00010) | [github-workflow.feature:rtm_automation](../../tests/bdd/features/github-workflow.feature) | [test_github_workflow_steps.py](../../tests/bdd/step_definitions/test_github_workflow_steps.py) | .github/workflows/rtm-update.yml | - | 📝 Planned | Quality of Life |
+| [**EP-00004**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00004) | **WF-00003** | GitHub Pages documentation site | Medium | [US-00011](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00011) | [github-workflow.feature:pages_deployment](../../tests/bdd/features/github-workflow.feature) | [test_github_workflow_steps.py](../../tests/bdd/step_definitions/test_github_workflow_steps.py) | .github/workflows/pages.yml | - | 📝 Planned | Quality of Life |
+| [**EP-00004**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00004) | **WF-00004** | GitHub Projects board configuration | Medium | [US-00012](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00012) | [github-workflow.feature:projects_board](../../tests/bdd/features/github-workflow.feature) | [test_github_workflow_steps.py](../../tests/bdd/step_definitions/test_github_workflow_steps.py) | GitHub Projects settings | - | 📝 Planned | Quality of Life |
+| [**EP-00004**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00004) | **WF-00005** | Auto-detect environment information for defect reports | Medium | [US-00013](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00013) | [github-integration.feature:environment_detection](../../tests/bdd/features/github-integration.feature) | [test_github_environment_steps.py](../../tests/bdd/step_definitions/test_github_environment_steps.py) | .github/ISSUE_TEMPLATE/defect-report.yml, static/js/environment-detector.js | - | 📝 Planned | Quality of Life |
 
 ## GDPR Compliance Mapping
 
@@ -60,34 +60,34 @@ This matrix traces all requirements from business needs through implementation a
 
 | User Story | BDD Feature File | Key Scenarios | Test File |
 |------------|-----------------|---------------|-----------|
-| US-00001: View Blog Posts | blog-content.feature | view_blog_homepage, view_individual_post | test_blog_content_steps.py |
-| US-00002: Blog Navigation | blog-content.feature | navigate_between_posts, search_content | test_blog_content_steps.py |
+| [US-00001: View Blog Posts](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00001) | [blog-content.feature](../../tests/bdd/features/blog-content.feature) | view_blog_homepage, view_individual_post | [test_blog_content_steps.py](../../tests/bdd/step_definitions/test_blog_content_steps.py) |
+| [US-00002: Blog Navigation](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00002) | [blog-content.feature](../../tests/bdd/features/blog-content.feature) | navigate_between_posts, search_content | [test_blog_content_steps.py](../../tests/bdd/step_definitions/test_blog_content_steps.py) |
 
 ### Epic 2: GDPR-Compliant Comment System (EP-00002)
 
 | User Story | BDD Feature File | Key Scenarios | Test File |
 |------------|-----------------|---------------|-----------|
-| US-00003: Submit Comment | comment-system.feature | submit_comment_minimal_data, submit_comment_email_consent | test_comment_system_steps.py |
-| US-00004: View Comments | comment-system.feature | view_existing_comments | test_comment_system_steps.py |
-| US-00005: Moderate Comments | comment-system.feature | admin_moderates_comments | test_comment_system_steps.py |
+| [US-00003: Submit Comment](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00003) | [comment-system.feature](../../tests/bdd/features/comment-system.feature) | submit_comment_minimal_data, submit_comment_email_consent | [test_comment_system_steps.py](../../tests/bdd/step_definitions/test_comment_system_steps.py) |
+| [US-00004: View Comments](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00004) | [comment-system.feature](../../tests/bdd/features/comment-system.feature) | view_existing_comments | [test_comment_system_steps.py](../../tests/bdd/step_definitions/test_comment_system_steps.py) |
+| [US-00005: Moderate Comments](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00005) | [comment-system.feature](../../tests/bdd/features/comment-system.feature) | admin_moderates_comments | [test_comment_system_steps.py](../../tests/bdd/step_definitions/test_comment_system_steps.py) |
 
 ### Epic 3: Privacy and Consent Management (EP-00003)
 
 | User Story | BDD Feature File | Key Scenarios | Test File |
 |------------|-----------------|---------------|-----------|
-| US-00006: GDPR Consent Banner | gdpr-consent.feature | first_visit_consent_banner, accept_all_cookies, customize_consent | test_gdpr_consent_steps.py |
-| US-00007: Privacy Rights | gdpr-rights.feature | right_of_access, right_to_erasure, data_portability | test_gdpr_rights_steps.py |
-| US-00008: Data Retention | gdpr-rights.feature | automated_data_retention | test_gdpr_rights_steps.py |
+| [US-00006: GDPR Consent Banner](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00006) | [gdpr-consent.feature](../../tests/bdd/features/gdpr-consent.feature) | first_visit_consent_banner, accept_all_cookies, customize_consent | [test_gdpr_consent_steps.py](../../tests/bdd/step_definitions/test_gdpr_consent_steps.py) |
+| [US-00007: Privacy Rights](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00007) | [gdpr-rights.feature](../../tests/bdd/features/gdpr-rights.feature) | right_of_access, right_to_erasure, data_portability | [test_gdpr_rights_steps.py](../../tests/bdd/step_definitions/test_gdpr_rights_steps.py) |
+| [US-00008: Data Retention](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00008) | [gdpr-rights.feature](../../tests/bdd/features/gdpr-rights.feature) | automated_data_retention | [test_gdpr_rights_steps.py](../../tests/bdd/step_definitions/test_gdpr_rights_steps.py) |
 
 ### Epic 4: GitHub Workflow Integration (EP-00004)
 
 | User Story | BDD Feature File | Key Scenarios | Test File |
 |------------|-----------------|---------------|-----------|
-| US-00009: GitHub Issue Template Integration | github-integration.feature | epic_automatic_labels, user_story_automatic_labels, gdpr_automatic_labels | test_github_label_steps.py |
-| US-00010: Automated RTM Updates | github-workflow.feature | rtm_automation | test_github_workflow_steps.py |
-| US-00011: GitHub Pages Documentation | github-workflow.feature | pages_deployment | test_github_workflow_steps.py |
-| US-00012: GitHub Projects Board | github-workflow.feature | projects_board | test_github_workflow_steps.py |
-| US-00013: Environment Auto-Detection | github-integration.feature | environment_detection | test_github_environment_steps.py |
+| [US-00009: GitHub Issue Template Integration](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00009) | [github-integration.feature](../../tests/bdd/features/github-integration.feature) | epic_automatic_labels, user_story_automatic_labels, gdpr_automatic_labels | [test_github_label_steps.py](../../tests/bdd/step_definitions/test_github_label_steps.py) |
+| [US-00010: Automated RTM Updates](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00010) | [github-workflow.feature](../../tests/bdd/features/github-workflow.feature) | rtm_automation | [test_github_workflow_steps.py](../../tests/bdd/step_definitions/test_github_workflow_steps.py) |
+| [US-00011: GitHub Pages Documentation](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00011) | [github-workflow.feature](../../tests/bdd/features/github-workflow.feature) | pages_deployment | [test_github_workflow_steps.py](../../tests/bdd/step_definitions/test_github_workflow_steps.py) |
+| [US-00012: GitHub Projects Board](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00012) | [github-workflow.feature](../../tests/bdd/features/github-workflow.feature) | projects_board | [test_github_workflow_steps.py](../../tests/bdd/step_definitions/test_github_workflow_steps.py) |
+| [US-00013: Environment Auto-Detection](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00013) | [github-integration.feature](../../tests/bdd/features/github-integration.feature) | environment_detection | [test_github_environment_steps.py](../../tests/bdd/step_definitions/test_github_environment_steps.py) |
 
 ## Implementation Status
 
