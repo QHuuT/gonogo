@@ -15,7 +15,10 @@
       "Bash(pip install:*)",
       "Bash(gh issue view:*)",
       "Bash(pytest:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(gh issue reopen:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh run list:*)"
     ],
     "deny": [],
     "ask": []

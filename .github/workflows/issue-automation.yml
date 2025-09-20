@@ -115,13 +115,99 @@ jobs:
                   } catch (error) {
                     console.log('❌ Failed to add comment:', error.message);
                   }
+
+                  // Update parent epic to show child relationship
+                  try {
+                    const childRefComment = `📋 **Child Issue Added**: #${issueNumber} - ${issue.title}\n\n_Automatically linked from ${issue.title}_`;
+                    await github.rest.issues.createComment({
+                      owner,
+                      repo,
+                      issue_number: epicIssue.number,
+                      body: childRefComment
+                    });
+                    console.log(`🔄 Added child reference to epic #${epicIssue.number}`);
+                  } catch (error) {
+                    console.log('❌ Failed to add child reference:', error.message);
+                  }
                 }
               } catch (error) {
                 console.log('❌ Failed to search for epic:', error.message);
               }
             }
 
-            // 3. Clean up status labels (keep only status/blocked)
+            // 3. Handle cross-references (Blocks/Blocked by relationships)
+            const blocksMatches = body.match(/Blocks[:\s]*#(\d+)/gi);
+            const blockedByMatches = body.match(/Blocked by[:\s]*#(\d+)/gi);
+
+            // Process "Blocks" relationships
+            if (blocksMatches) {
+              for (const blockMatch of blocksMatches) {
+                const blockedIssueMatch = blockMatch.match(/#(\d+)/);
+                if (blockedIssueMatch) {
+                  const blockedIssueNumber = blockedIssueMatch[1];
+                  console.log(`🚧 Found blocking relationship: This issue blocks #${blockedIssueNumber}`);
+
+                  try {
+                    // Add comment to blocked issue
+                    const blockingComment = `⚠️ **Blocked by**: #${issueNumber} - ${issue.title}\n\n_This issue cannot proceed until the blocking issue is resolved._`;
+                    await github.rest.issues.createComment({
+                      owner,
+                      repo,
+                      issue_number: parseInt(blockedIssueNumber),
+                      body: blockingComment
+                    });
+
+                    // Add blocked label to the blocked issue
+                    await github.rest.issues.addLabels({
+                      owner,
+                      repo,
+                      issue_number: parseInt(blockedIssueNumber),
+                      labels: ['status/blocked']
+                    });
+
+                    console.log(`🔗 Added blocking relationship to #${blockedIssueNumber}`);
+                  } catch (error) {
+                    console.log(`❌ Failed to create blocking relationship with #${blockedIssueNumber}:`, error.message);
+                  }
+                }
+              }
+            }
+
+            // Process "Blocked by" relationships
+            if (blockedByMatches) {
+              for (const blockedMatch of blockedByMatches) {
+                const blockingIssueMatch = blockedMatch.match(/#(\d+)/);
+                if (blockingIssueMatch) {
+                  const blockingIssueNumber = blockingIssueMatch[1];
+                  console.log(`🛑 Found dependency: This issue is blocked by #${blockingIssueNumber}`);
+
+                  try {
+                    // Add comment to blocking issue
+                    const dependencyComment = `🔗 **Blocks**: #${issueNumber} - ${issue.title}\n\n_This issue is blocking another issue from proceeding._`;
+                    await github.rest.issues.createComment({
+                      owner,
+                      repo,
+                      issue_number: parseInt(blockingIssueNumber),
+                      body: dependencyComment
+                    });
+
+                    // Add blocked label to current issue
+                    await github.rest.issues.addLabels({
+                      owner,
+                      repo,
+                      issue_number: issueNumber,
+                      labels: ['status/blocked']
+                    });
+
+                    console.log(`🔗 Added dependency relationship with #${blockingIssueNumber}`);
+                  } catch (error) {
+                    console.log(`❌ Failed to create dependency relationship with #${blockingIssueNumber}:`, error.message);
+                  }
+                }
+              }
+            }
+
+            // 5. Clean up status labels (keep only status/blocked)
             const currentLabels = issue.labels || [];
             const statusLabelsToRemove = currentLabels
               .filter(label =>
@@ -146,14 +232,14 @@ jobs:
               }
             }
 
-            // 4. Add to GoNoGo project using GitHub CLI (simpler approach)
+            // 6. Add to GoNoGo project using GitHub CLI with project ID
             try {
-              const projectNumber = '2'; // GoNoGo project number
+              const projectId = 'PVT_kwHOBlfsAs4BDk4x'; // GoNoGo project ID
               const issueUrl = `https://github.com/${owner}/${repo}/issues/${issueNumber}`;
 
-              // Use GitHub CLI to add to project (more reliable)
+              // Use GitHub CLI to add to project with ID
               const { execSync } = require('child_process');
-              const result = execSync(`gh project item-add ${projectNumber} --owner ${owner} --url ${issueUrl}`,
+              const result = execSync(`gh project item-add ${projectId} --url ${issueUrl}`,
                 { encoding: 'utf8', timeout: 10000 });
 
               console.log('📋 Added to GoNoGo project successfully via CLI');
