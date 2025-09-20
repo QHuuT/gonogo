@@ -1,0 +1,347 @@
+name: RTM Link Validation
+
+# Related Issue: US-00016 - GitHub Action for automated RTM validation
+# Epic: EP-00005 - RTM Automation
+
+on:
+  # Run on pull requests
+  pull_request:
+    paths:
+      - 'docs/traceability/**'
+      - 'tests/bdd/features/**'
+      - 'tests/bdd/step_definitions/**'
+      - '.github/workflows/rtm-validation.yml'
+      - 'config/rtm-automation.yml'
+      - 'src/shared/utils/rtm_link_generator.py'
+      - 'tools/rtm-links*.py'
+
+  # Run on pushes to main
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/traceability/**'
+      - 'tests/bdd/features/**'
+      - 'tests/bdd/step_definitions/**'
+
+  # Run weekly to catch external issues
+  schedule:
+    - cron: '0 8 * * 1'  # Every Monday at 8 AM UTC
+
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      rtm_file:
+        description: 'RTM file to validate'
+        required: false
+        default: 'docs/traceability/requirements-matrix.md'
+        type: string
+      create_report:
+        description: 'Create validation report'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  rtm-validation:
+    name: Validate RTM Links
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write  # For PR comments
+      issues: write        # For creating issues
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml click
+
+      - name: Validate RTM Links
+        id: validate
+        run: |
+          # Use input RTM file if provided, otherwise default
+          RTM_FILE="${{ github.event.inputs.rtm_file || 'docs/traceability/requirements-matrix.md' }}"
+
+          echo "Validating RTM file: $RTM_FILE"
+
+          # Run validation and capture output
+          python tools/rtm-links-simple.py --validate --rtm-file "$RTM_FILE" > rtm_validation_output.txt 2>&1
+          VALIDATION_EXIT_CODE=$?
+
+          echo "validation_exit_code=$VALIDATION_EXIT_CODE" >> $GITHUB_OUTPUT
+          echo "rtm_file=$RTM_FILE" >> $GITHUB_OUTPUT
+
+          # Extract key metrics
+          TOTAL_LINKS=$(grep "Total links:" rtm_validation_output.txt | cut -d: -f2 | xargs)
+          VALID_LINKS=$(grep "Valid links:" rtm_validation_output.txt | cut -d: -f2 | xargs)
+          INVALID_LINKS=$(grep "Invalid links:" rtm_validation_output.txt | cut -d: -f2 | xargs)
+          HEALTH_SCORE=$(grep "Health score:" rtm_validation_output.txt | cut -d: -f2 | xargs | cut -d% -f1)
+
+          echo "total_links=$TOTAL_LINKS" >> $GITHUB_OUTPUT
+          echo "valid_links=$VALID_LINKS" >> $GITHUB_OUTPUT
+          echo "invalid_links=$INVALID_LINKS" >> $GITHUB_OUTPUT
+          echo "health_score=$HEALTH_SCORE" >> $GITHUB_OUTPUT
+
+          # Store full output for later use
+          echo "validation_output<<EOF" >> $GITHUB_OUTPUT
+          cat rtm_validation_output.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Generate Validation Report
+        if: ${{ github.event.inputs.create_report == 'true' || github.event.inputs.create_report == '' }}
+        run: |
+          RTM_FILE="${{ steps.validate.outputs.rtm_file }}"
+
+          # Create detailed markdown report
+          cat > rtm_validation_report.md << 'EOF'
+          # RTM Link Validation Report
+
+          **Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          **RTM File**: `${{ steps.validate.outputs.rtm_file }}`
+          **Workflow**: ${{ github.workflow }}
+          **Run ID**: ${{ github.run_id }}
+
+          ## Summary
+
+          | Metric | Value |
+          |--------|-------|
+          | Total Links | ${{ steps.validate.outputs.total_links }} |
+          | Valid Links | ${{ steps.validate.outputs.valid_links }} |
+          | Invalid Links | ${{ steps.validate.outputs.invalid_links }} |
+          | Health Score | ${{ steps.validate.outputs.health_score }}% |
+
+          ## Health Status
+
+          EOF
+
+          # Add health status badge
+          HEALTH_SCORE="${{ steps.validate.outputs.health_score }}"
+          if [ -n "$HEALTH_SCORE" ]; then
+            if (( $(echo "$HEALTH_SCORE >= 95" | bc -l) )); then
+              echo "🟢 **EXCELLENT** - RTM links are in excellent condition" >> rtm_validation_report.md
+            elif (( $(echo "$HEALTH_SCORE >= 85" | bc -l) )); then
+              echo "🟡 **GOOD** - RTM links are in good condition with minor issues" >> rtm_validation_report.md
+            elif (( $(echo "$HEALTH_SCORE >= 70" | bc -l) )); then
+              echo "🟠 **WARNING** - RTM links need attention" >> rtm_validation_report.md
+            else
+              echo "🔴 **CRITICAL** - RTM links require immediate attention" >> rtm_validation_report.md
+            fi
+          fi
+
+          echo "" >> rtm_validation_report.md
+          echo "## Validation Details" >> rtm_validation_report.md
+          echo "" >> rtm_validation_report.md
+          echo "\`\`\`" >> rtm_validation_report.md
+          cat rtm_validation_output.txt >> rtm_validation_report.md
+          echo "\`\`\`" >> rtm_validation_report.md
+
+      - name: Upload Validation Report
+        if: ${{ github.event.inputs.create_report == 'true' || github.event.inputs.create_report == '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtm-validation-report
+          path: rtm_validation_report.md
+          retention-days: 30
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            let reportContent = '';
+            try {
+              reportContent = fs.readFileSync('rtm_validation_report.md', 'utf8');
+            } catch (error) {
+              // Fallback to basic output if report doesn't exist
+              reportContent = `# RTM Validation Results
+
+              **Total Links**: ${{ steps.validate.outputs.total_links }}
+              **Valid Links**: ${{ steps.validate.outputs.valid_links }}
+              **Invalid Links**: ${{ steps.validate.outputs.invalid_links }}
+              **Health Score**: ${{ steps.validate.outputs.health_score }}%
+
+              <details>
+              <summary>Validation Output</summary>
+
+              \`\`\`
+              ${{ steps.validate.outputs.validation_output }}
+              \`\`\`
+              </details>`;
+            }
+
+            // Find existing comment to update or create new one
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.data.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('RTM Validation Results')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: reportContent
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: reportContent
+              });
+            }
+
+      - name: Check Validation Status
+        run: |
+          HEALTH_SCORE="${{ steps.validate.outputs.health_score }}"
+          INVALID_LINKS="${{ steps.validate.outputs.invalid_links }}"
+
+          echo "RTM Validation completed:"
+          echo "- Health Score: ${HEALTH_SCORE}%"
+          echo "- Invalid Links: ${INVALID_LINKS}"
+
+          # Set warning if health score is below threshold
+          if [ -n "$HEALTH_SCORE" ] && (( $(echo "$HEALTH_SCORE < 85" | bc -l) )); then
+            echo "::warning::RTM health score (${HEALTH_SCORE}%) is below recommended threshold (85%)"
+          fi
+
+          # Fail the job if health score is critically low
+          if [ -n "$HEALTH_SCORE" ] && (( $(echo "$HEALTH_SCORE < 50" | bc -l) )); then
+            echo "::error::RTM health score (${HEALTH_SCORE}%) is critically low"
+            exit 1
+          fi
+
+      - name: Create Issue for Critical Failures
+        if: failure() && github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `RTM Validation Critical Failure - ${new Date().toISOString().split('T')[0]}`;
+            const body = `# RTM Validation Critical Failure
+
+            The weekly RTM validation has detected critical issues that require immediate attention.
+
+            ## Validation Results
+
+            **Total Links**: ${{ steps.validate.outputs.total_links }}
+            **Valid Links**: ${{ steps.validate.outputs.valid_links }}
+            **Invalid Links**: ${{ steps.validate.outputs.invalid_links }}
+            **Health Score**: ${{ steps.validate.outputs.health_score }}%
+
+            ## Action Required
+
+            Please review and fix the RTM links to ensure proper traceability.
+
+            ## Validation Details
+
+            \`\`\`
+            ${{ steps.validate.outputs.validation_output }}
+            \`\`\`
+
+            **Workflow Run**: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            ---
+            This issue was automatically created by the RTM validation workflow.`;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['rtm-automation', 'priority-high', 'component/documentation']
+            });
+
+  rtm-update-check:
+    name: Check for RTM Updates
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml click
+
+      - name: Check for Available Updates
+        run: |
+          echo "Checking for available RTM link updates..."
+
+          python tools/rtm-links-simple.py --update > rtm_update_check.txt 2>&1
+
+          # Check if updates are available
+          if grep -q "Updates that would be made:" rtm_update_check.txt; then
+            echo "has_updates=true" >> $GITHUB_ENV
+            echo "Updates are available:"
+            cat rtm_update_check.txt
+          else
+            echo "has_updates=false" >> $GITHUB_ENV
+            echo "No updates needed"
+          fi
+
+      - name: Comment about Available Updates
+        if: env.has_updates == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const updateOutput = fs.readFileSync('rtm_update_check.txt', 'utf8');
+
+            const comment = `## RTM Link Updates Available
+
+            The RTM automation system detected that link updates are available for this repository.
+
+            <details>
+            <summary>Update Details</summary>
+
+            \`\`\`
+            ${updateOutput}
+            \`\`\`
+            </details>
+
+            ### To apply updates:
+
+            1. Run locally: \`python tools/rtm-links-simple.py --update --force\`
+            2. Or use the full CLI: \`python tools/rtm-links.py update --force\`
+
+            **Note**: Updates will be applied in the link format defined in the RTM automation configuration.
+
+            ---
+            *This comment was automatically generated by the RTM validation workflow.*`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
