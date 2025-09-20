@@ -88,6 +88,10 @@ python tools/github_issue_creation_demo.py --dry-run       # Generate issue temp
 python tools/github_issue_creation_demo.py                 # Create actual GitHub issues
 # View: quality/reports/issue_template_*.md (generated issue templates)
 
+# Test Log Generation (NEW)
+python tools/generate_test_logs.py                         # Generate sample test logs with proper structure
+# View: quality/logs/test_execution.log (structured test logs with test_status)
+
 # Test Archive Management and Retention (NEW)
 python tools/archive_cleanup.py --metrics                  # Storage analysis and recommendations
 python tools/archive_cleanup.py --dry-run                  # Preview cleanup actions

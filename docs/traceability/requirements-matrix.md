@@ -185,7 +185,7 @@ This matrix traces all requirements from business needs through implementation a
 
 | Defect ID | Epic | User Story | Priority | Status | Assignee | Created | Description |
 |-----------|------|------------|----------|--------|----------|---------|-------------|
-| [**DEF-00008**](https://github.com/QHuuT/gonogo/issues/35) | EP-00006 | US-00023 | Medium | 🔍 Open | - | 2025-09-20 | Report generator processes log entries but produces 0 test results due to missing test_status field |
+| [**DEF-00008**](https://github.com/QHuuT/gonogo/issues/35) | EP-00006 | US-00023 | Medium | ✅ Resolved | - | 2025-09-20 | Report generator processes log entries but produces 0 test results due to missing test_status field |
 
 ### Defect Summary by Epic
 
@@ -194,7 +194,7 @@ This matrix traces all requirements from business needs through implementation a
 | EP-00001 | 0 | 0 | 0 | 0 | 0 | 0 |
 | EP-00002 | 0 | 0 | 0 | 0 | 0 | 0 |
 | EP-00003 | 0 | 0 | 0 | 0 | 0 | 0 |
-| EP-00006 | 1 | 0 | 0 | 1 | 0 | 0 |
+| EP-00006 | 1 | 0 | 0 | 1 | 0 | 1 |
 
 ## Quality Gates
 

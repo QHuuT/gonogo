@@ -708,12 +708,46 @@ def main():
     test_type_filter = None if args.type == 'all' else args.type
     report_data = generator.process_log_data(log_entries, test_type_filter)
 
+    # Analyze log quality and provide feedback
+    _analyze_and_report_log_quality(log_entries, report_data)
+
     print(f"Generating report with {len(report_data.test_results)} test results...")
     output_path = generator.generate_report(report_data, args.template, args.filename)
 
     print(f"Report generation complete: {output_path}")
     print(f"Summary: {report_data.summary.total_tests} tests, "
           f"{report_data.summary.success_rate:.1f}% success rate")
+
+
+def _analyze_and_report_log_quality(log_entries: List[LogEntry], report_data: ReportData):
+    """Analyze log quality and provide feedback about potential issues."""
+
+    # Count logs with test_status
+    logs_with_status = sum(1 for entry in log_entries if entry.test_status)
+    logs_with_test_id = sum(1 for entry in log_entries if entry.test_id)
+
+    # Calculate conversion rate
+    conversion_rate = (len(report_data.test_results) / logs_with_test_id * 100) if logs_with_test_id > 0 else 0
+
+    # Provide feedback based on analysis
+    if len(report_data.test_results) == 0 and len(log_entries) > 0:
+        print("\n[WARNING] No test results generated from log entries!")
+        print("   This usually indicates missing test_status fields in log entries.")
+        print("   Solutions:")
+        print("   - Use structured logging methods: logger.test_passed(), logger.test_failed(), etc.")
+        print("   - Generate sample logs: python tools/generate_test_logs.py")
+        print("   - Try demo mode: python tools/report_generator.py --demo")
+
+    elif conversion_rate < 50 and logs_with_test_id > 0:
+        print(f"\n[WARNING] Low conversion rate: {conversion_rate:.1f}% ({len(report_data.test_results)}/{logs_with_test_id})")
+        print("   Some log entries may be missing test_status fields.")
+        print(f"   Log analysis: {logs_with_status}/{len(log_entries)} entries have test_status")
+
+    elif len(report_data.test_results) > 0:
+        print(f"[SUCCESS] Good log quality: {len(report_data.test_results)} test results from {len(log_entries)} log entries")
+        if logs_with_status < len(log_entries):
+            incomplete_logs = len(log_entries) - logs_with_status
+            print(f"   Note: {incomplete_logs} log entries without test_status (info/debug logs)")
 
 
 def _create_demo_data() -> ReportData:
