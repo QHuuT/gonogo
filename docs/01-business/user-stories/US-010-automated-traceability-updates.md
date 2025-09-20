@@ -1,6 +1,6 @@
 # US-010: Automated Traceability Matrix Updates
 
-**Epic**: [EP-004: GitHub Workflow Integration](../epics/EP-004-workflow.md)
+**Epic**: [EP-004: GitHub Workflow Integration](../epics/EP-004-github-workflow-integration.md)
 **Story ID**: US-010
 **Priority**: High
 **Complexity**: 8 Story Points
@@ -78,7 +78,7 @@
 - Issue relationships → RTM Hierarchy
 
 ## Links
-- **Epic**: [EP-004: GitHub Workflow Integration](../epics/EP-004-workflow.md)
+- **Epic**: [EP-004: GitHub Workflow Integration](../epics/EP-004-github-workflow-integration.md)
 - **BDD Scenarios**: [github-workflow.feature](../../02-technical/bdd-scenarios/github-workflow.feature)
 - **RTM Entry**: [Requirements Matrix](../../traceability/requirements-matrix.md)
 

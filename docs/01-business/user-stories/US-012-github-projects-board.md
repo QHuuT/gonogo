@@ -1,6 +1,6 @@
 # US-012: GitHub Projects Board Configuration
 
-**Epic**: [EP-004: GitHub Workflow Integration](../epics/EP-004-workflow.md)
+**Epic**: [EP-004: GitHub Workflow Integration](../epics/EP-004-github-workflow-integration.md)
 **Story ID**: US-012
 **Priority**: Medium
 **Complexity**: 3 Story Points
@@ -76,7 +76,7 @@
 - Backlog grooming with priority sorting
 
 ## Links
-- **Epic**: [EP-004: GitHub Workflow Integration](../epics/EP-004-workflow.md)
+- **Epic**: [EP-004: GitHub Workflow Integration](../epics/EP-004-github-workflow-integration.md)
 - **BDD Scenarios**: [github-workflow.feature](../../02-technical/bdd-scenarios/github-workflow.feature)
 - **RTM Entry**: [Requirements Matrix](../../traceability/requirements-matrix.md)
 

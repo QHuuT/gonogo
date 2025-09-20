@@ -34,7 +34,7 @@ This directory contains all business requirements, organized by epics and user s
 | [EP-001](epics/EP-001-blog-content-management.md) | Blog Content Management | High | 8 | 2 | 📝 Planned |
 | [EP-002](epics/EP-002-gdpr-compliant-comment-system.md) | GDPR-Compliant Comment System | High | 16 | 3 | 📝 Planned |
 | [EP-003](epics/EP-003-privacy-and-consent-management.md) | Privacy and Consent Management | Critical | 29 | 3 | 📝 Planned |
-| [EP-004](epics/EP-004-workflow.md) | GitHub Workflow Integration | High | 21 | 4 | 📝 Planned |
+| [EP-004](epics/EP-004-github-workflow-integration.md) | GitHub Workflow Integration | High | 21 | 4 | 📝 Planned |
 
 ## 📋 User Stories by Epic
 
