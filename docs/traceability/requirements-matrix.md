@@ -29,7 +29,7 @@ This matrix traces all requirements from business needs through implementation a
 | **EP-00003** | **GDPR-00001** | GDPR consent banner and management | Critical | US-00006 | gdpr-consent.feature:consent_banner | test_gdpr_consent_steps.py | src/security/gdpr/consent.py | - | 📝 Planned | MVP Critical |
 | **EP-00003** | **GDPR-00002** | Data subject rights implementation | Critical | US-00007 | gdpr-rights.feature:data_access | test_gdpr_rights_steps.py | src/security/gdpr/rights.py | - | 📝 Planned | MVP Critical |
 | **EP-00003** | **GDPR-00003** | Automated data retention and cleanup | High | US-00008 | gdpr-rights.feature:data_retention | test_gdpr_rights_steps.py | src/security/gdpr/retention.py | - | 📝 Planned | Post-MVP |
-| **EP-00004** | **WF-00001** | GitHub Issue template integration with automatic labeling | High | US-00009 | github-integration.feature:automatic_labeling | test_github_label_steps.py | .github/ISSUE_TEMPLATE/, .github/workflows/auto-label-issues.yml, src/shared/utils/github_label_mapper.py | - | ✅ Done | Quality of Life |
+| **EP-00004** | **WF-00001** | GitHub Issue template integration with automatic labeling | High | US-00009 | github-integration.feature:epic_automatic_labels | test_github_label_steps.py | .github/ISSUE_TEMPLATE/, .github/workflows/auto-label-issues.yml, src/shared/utils/github_label_mapper.py | - | ✅ Done | Quality of Life |
 | **EP-00004** | **WF-00002** | Automated RTM updates from GitHub | High | US-00010 | github-workflow.feature:rtm_automation | test_github_workflow_steps.py | .github/workflows/rtm-update.yml | - | 📝 Planned | Quality of Life |
 | **EP-00004** | **WF-00003** | GitHub Pages documentation site | Medium | US-00011 | github-workflow.feature:pages_deployment | test_github_workflow_steps.py | .github/workflows/pages.yml | - | 📝 Planned | Quality of Life |
 | **EP-00004** | **WF-00004** | GitHub Projects board configuration | Medium | US-00012 | github-workflow.feature:projects_board | test_github_workflow_steps.py | GitHub Projects settings | - | 📝 Planned | Quality of Life |
@@ -56,28 +56,38 @@ This matrix traces all requirements from business needs through implementation a
 
 ## User Story to BDD Scenario Mapping
 
-### Epic 1: Blog Content Management (EP-001)
+### Epic 1: Blog Content Management (EP-00001)
 
 | User Story | BDD Feature File | Key Scenarios | Test File |
 |------------|-----------------|---------------|-----------|
-| US-001: View Blog Posts | blog-content.feature | view_blog_homepage, view_individual_post | test_blog_content_steps.py |
-| US-002: Blog Navigation | blog-content.feature | navigate_between_posts, search_content | test_blog_content_steps.py |
+| US-00001: View Blog Posts | blog-content.feature | view_blog_homepage, view_individual_post | test_blog_content_steps.py |
+| US-00002: Blog Navigation | blog-content.feature | navigate_between_posts, search_content | test_blog_content_steps.py |
 
-### Epic 2: GDPR-Compliant Comment System (EP-002)
-
-| User Story | BDD Feature File | Key Scenarios | Test File |
-|------------|-----------------|---------------|-----------|
-| US-003: Submit Comment | comment-system.feature | submit_comment_minimal_data, submit_comment_email_consent | test_comment_system_steps.py |
-| US-004: View Comments | comment-system.feature | view_existing_comments | test_comment_system_steps.py |
-| US-005: Moderate Comments | comment-system.feature | admin_moderates_comments | test_comment_system_steps.py |
-
-### Epic 3: Privacy and Consent Management (EP-003)
+### Epic 2: GDPR-Compliant Comment System (EP-00002)
 
 | User Story | BDD Feature File | Key Scenarios | Test File |
 |------------|-----------------|---------------|-----------|
-| US-006: GDPR Consent Banner | gdpr-consent.feature | first_visit_consent_banner, accept_all_cookies, customize_consent | test_gdpr_consent_steps.py |
-| US-007: Privacy Rights | gdpr-rights.feature | right_of_access, right_to_erasure, data_portability | test_gdpr_rights_steps.py |
-| US-008: Data Retention | gdpr-rights.feature | automated_data_retention | test_gdpr_rights_steps.py |
+| US-00003: Submit Comment | comment-system.feature | submit_comment_minimal_data, submit_comment_email_consent | test_comment_system_steps.py |
+| US-00004: View Comments | comment-system.feature | view_existing_comments | test_comment_system_steps.py |
+| US-00005: Moderate Comments | comment-system.feature | admin_moderates_comments | test_comment_system_steps.py |
+
+### Epic 3: Privacy and Consent Management (EP-00003)
+
+| User Story | BDD Feature File | Key Scenarios | Test File |
+|------------|-----------------|---------------|-----------|
+| US-00006: GDPR Consent Banner | gdpr-consent.feature | first_visit_consent_banner, accept_all_cookies, customize_consent | test_gdpr_consent_steps.py |
+| US-00007: Privacy Rights | gdpr-rights.feature | right_of_access, right_to_erasure, data_portability | test_gdpr_rights_steps.py |
+| US-00008: Data Retention | gdpr-rights.feature | automated_data_retention | test_gdpr_rights_steps.py |
+
+### Epic 4: GitHub Workflow Integration (EP-00004)
+
+| User Story | BDD Feature File | Key Scenarios | Test File |
+|------------|-----------------|---------------|-----------|
+| US-00009: GitHub Issue Template Integration | github-integration.feature | epic_automatic_labels, user_story_automatic_labels, gdpr_automatic_labels | test_github_label_steps.py |
+| US-00010: Automated RTM Updates | github-workflow.feature | rtm_automation | test_github_workflow_steps.py |
+| US-00011: GitHub Pages Documentation | github-workflow.feature | pages_deployment | test_github_workflow_steps.py |
+| US-00012: GitHub Projects Board | github-workflow.feature | projects_board | test_github_workflow_steps.py |
+| US-00013: Environment Auto-Detection | github-integration.feature | environment_detection | test_github_environment_steps.py |
 
 ## Implementation Status
 
