@@ -144,7 +144,7 @@ jobs:
               // Add issue to project using GraphQL API
               const addToProjectMutation = `
                 mutation($projectId: ID!, $contentId: ID!) {
-                  addProjectV2ItemByContentId(input: {
+                  addProjectV2ItemById(input: {
                     projectId: $projectId
                     contentId: $contentId
                   }) {
@@ -243,7 +243,7 @@ jobs:
 
                 const addToProjectMutation = `
                   mutation($projectId: ID!, $contentId: ID!) {
-                    addProjectV2ItemByContentId(input: {
+                    addProjectV2ItemById(input: {
                       projectId: $projectId
                       contentId: $contentId
                     }) {
