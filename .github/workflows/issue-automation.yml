@@ -25,10 +25,18 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Generate GitHub App Token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+          installation_id: ${{ secrets.APP_INSTALLATION_ID }}
+
       - name: Parse epic relationships and automate issue management
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ steps.generate_token.outputs.token }}
           script: |
             const { owner, repo } = context.repo;
             const issueNumber = context.issue.number;
@@ -161,7 +169,7 @@ jobs:
               });
 
               console.log('📋 Added to GoNoGo project successfully');
-              console.log(`   Project item ID: ${result.addProjectV2ItemByContentId.item.id}`);
+              console.log(`   Project item ID: ${result.addProjectV2ItemById.item.id}`);
             } catch (error) {
               console.log('❌ Failed to add to project:', error.message);
               // This is not critical, so we continue
@@ -174,10 +182,18 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
 
     steps:
+      - name: Generate GitHub App Token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+          installation_id: ${{ secrets.APP_INSTALLATION_ID }}
+
       - name: Bulk cleanup of existing issues
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ steps.generate_token.outputs.token }}
           script: |
             const { owner, repo } = context.repo;
 
