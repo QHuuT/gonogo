@@ -18,7 +18,7 @@ This matrix traces all requirements from business needs through implementation a
 | **EP-00003** | Privacy and Consent Management | US-00006, US-00007, US-00008 | 29 | Critical | 📝 Planned |
 | **EP-00004** | GitHub Workflow Integration | US-00009, US-00010, US-00011, US-00012, US-00013 | 21 | High | ⏳ In Progress |
 | **EP-00005** | Requirements Traceability Matrix Automation | US-00014, US-00015, US-00016, US-00017 | 20 | Medium | ⏳ In Progress |
-| **EP-00006** | Test Logging and Reporting | US-00021, US-00022, US-00023, US-00024, US-00025, US-00026, US-00027, US-00028, US-00029, US-00030 | 47 | High | ✅ Done |
+| **EP-00006** | Test Logging and Reporting | US-00021, US-00022, US-00023, US-00024, US-00025, US-00026, US-00027, US-00028, US-00029, US-00030, US-00032 | 48 | High | ✅ Done |
 
 ## Requirements Traceability Matrix
 
@@ -50,6 +50,7 @@ This matrix traces all requirements from business needs through implementation a
 | [**EP-00006**](https://github.com/QHuuT/gonogo/issues/17) | **TST-00008** | Test report archiving and retention management | Low | [US-00028](https://github.com/QHuuT/gonogo/issues/25) | [archiving.feature:retention_policies](../../tests/bdd/features/archiving.feature) | [test_archiving_steps.py](../../tests/bdd/step_definitions/test_archiving_steps.py) | src/shared/testing/archive_manager.py, tools/archive_cleanup.py, tools/archive_management_demo.py | - | ✅ Done | Development Enhancement |
 | [**EP-00006**](https://github.com/QHuuT/gonogo/issues/17) | **TST-00009** | Documentation for test logging and reporting system | Medium | [US-00029](https://github.com/QHuuT/gonogo/issues/26) | [documentation.feature:user_guides](../../tests/bdd/features/documentation.feature) | [test_documentation_steps.py](../../tests/bdd/step_definitions/test_documentation_steps.py) | Enhanced docs/technical/development-workflow.md, updated CLAUDE.md | - | ✅ Done | Development Enhancement |
 | [**EP-00006**](https://github.com/QHuuT/gonogo/issues/17) | **TST-00010** | GDPR sanitization strategy for test logs | Medium | [US-00030](https://github.com/QHuuT/gonogo/issues/27) | [gdpr-sanitization.feature:data_classification](../../tests/bdd/features/gdpr-sanitization.feature) | [test_gdpr_sanitization_steps.py](../../tests/bdd/step_definitions/test_gdpr_sanitization_steps.py) | GDPR log sanitization service | [DEF-00004](https://github.com/QHuuT/gonogo/issues/30) | ✅ Done | GDPR Compliance - **Resolved**: RTM import error fixed, import standardization complete |
+| [**EP-00006**](https://github.com/QHuuT/gonogo/issues/17) | **TST-00011** | Enhanced archive management with current report tracking and automated cleanup | High | [US-00032](https://github.com/QHuuT/gonogo/issues/34) | [enhanced-archiving.feature:current_report_tracking](../../tests/bdd/features/enhanced-archiving.feature) | [test_enhanced_archiving_steps.py](../../tests/bdd/step_definitions/test_enhanced_archiving_steps.py) | Enhanced archive_manager.py, archive_cleanup.py | - | 📝 Planned | Development Enhancement - **Current report visibility and automated cleanup capabilities** |
 
 ## GDPR Compliance Mapping
 
