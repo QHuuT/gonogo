@@ -18,7 +18,8 @@
       "Bash(mkdir:*)",
       "Bash(gh issue reopen:*)",
       "Bash(gh run view:*)",
-      "Bash(gh run list:*)"
+      "Bash(gh run list:*)",
+      "Bash(gh issue edit:*)"
     ],
     "deny": [],
     "ask": []
