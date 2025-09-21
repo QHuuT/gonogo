@@ -112,289 +112,135 @@ class RTMReportGenerator:
 
         epics = self._get_filtered_epics(filters)
 
-        html = """
+        html = f"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic RTM Matrix</title>
+    <title>🎯 Dynamic RTM Matrix - GoNoGo</title>
+
+    <!-- Design System and Component Styles -->
+    <link rel="stylesheet" href="/static/css/design-system.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/rtm-components.css">
+
+    <!-- Accessibility and SEO Meta Tags -->
+    <meta name="description" content="Requirements Traceability Matrix for GoNoGo project - Interactive dashboard showing epic progress, user stories, tests, and defects">
+    <meta name="keywords" content="RTM, requirements, traceability, matrix, GoNoGo, project management">
+    <meta name="author" content="GoNoGo Project Team">
+    <link rel="canonical" href="/rtm/matrix">
+
+    <!-- Favicon and Touch Icons -->
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png">
+
+    <!-- Performance Optimizations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+
+    <!-- Open Graph Meta Tags for Social Sharing -->
+    <meta property="og:title" content="RTM Matrix - GoNoGo Project">
+    <meta property="og:description" content="Interactive Requirements Traceability Matrix dashboard">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="/rtm/matrix">
+
+    <!-- Skip Link for Accessibility -->
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
-        h2 { color: #34495e; margin-top: 30px; }
-        .metadata { background: #ecf0f1; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
-        .epic-card { border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; overflow: hidden; }
-        .epic-header { background: #3498db; color: white; padding: 15px; }
-        .epic-content { padding: 15px; }
-        .progress-bar { background: #ecf0f1; height: 20px; border-radius: 10px; overflow: hidden; margin-top: 10px; }
-        .progress-fill { background: linear-gradient(90deg, #27ae60, #2ecc71); height: 100%; border-radius: 10px; transition: width 0.3s ease; }
-        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
-        .status-planned { background: #f39c12; color: white; }
-        .status-in-progress { background: #e67e22; color: white; }
-        .status-completed { background: #27ae60; color: white; }
-        .status-blocked { background: #e74c3c; color: white; }
-        .test-summary, .defect-summary { display: flex; gap: 15px; margin-top: 10px; }
-        .metric { text-align: center; padding: 10px; background: #f8f9fa; border-radius: 5px; flex: 1; }
-        .metric-value { font-size: 18px; font-weight: bold; color: #2c3e50; }
-        .metric-label { font-size: 12px; color: #7f8c8d; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background: #f8f9fa; font-weight: 600; }
-        .filter-info { font-style: italic; color: #7f8c8d; }
-        .test-type-badge { background: #34495e; color: white; padding: 2px 6px; border-radius: 8px; font-size: 10px; font-weight: bold; }
-        .test-filter-section { margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; }
-        .test-filter-button { padding: 6px 12px; margin: 0 5px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; font-size: 12px; }
-        .test-filter-button.active { background: #3498db; color: white; border-color: #3498db; }
-        .test-filter-button:hover { background: #e9ecef; }
-        .test-filter-button.active:hover { background: #2980b9; }
-        .test-row { transition: opacity 0.3s ease; }
-        .test-row.hidden { display: none; }
-        .us-filter-section { margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; }
-        .us-filter-button { padding: 6px 12px; margin: 0 5px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; font-size: 12px; }
-        .us-filter-button.active { background: #27ae60; color: white; border-color: #27ae60; }
-        .us-filter-button:hover { background: #e9ecef; }
-        .us-filter-button.active:hover { background: #229954; }
-        .us-row { transition: opacity 0.3s ease; }
-        .us-row.hidden { display: none; }
-        .test-metrics-dashboard { margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; }
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .metric-card { background: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .metric-icon { font-size: 24px; margin-bottom: 8px; }
-        .metric-number { font-size: 24px; font-weight: bold; color: #2c3e50; margin-bottom: 4px; }
-        .metric-title { font-size: 12px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; }
-        .test-type-breakdown h5 { margin: 0 0 15px 0; color: #2c3e50; }
-        .test-type-stat { margin-bottom: 12px; }
-        .test-type-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 12px; }
-        .test-type-label { font-weight: bold; text-transform: uppercase; }
-        .test-type-count { color: #7f8c8d; }
-        .test-type-bar { height: 8px; background: #ecf0f1; border-radius: 4px; overflow: hidden; }
-        .test-type-progress { height: 100%; transition: width 0.3s ease; }
-        .no-tests { text-align: center; color: #7f8c8d; font-style: italic; padding: 20px; }
-        .defect-filter-section { margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; }
-        .defect-filter-button { padding: 6px 12px; margin: 0 5px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; font-size: 12px; }
-        .defect-filter-button.active { background: #e74c3c; color: white; border-color: #e74c3c; }
-        .defect-filter-button:hover { background: #e9ecef; }
-        .defect-filter-button.active:hover { background: #c0392b; }
-        .defect-row { transition: opacity 0.3s ease; }
-        .defect-row.hidden { display: none; }
-        .priority-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
-        .priority-critical { background: #e74c3c; }
-        .priority-high { background: #f39c12; }
-        .priority-medium { background: #f1c40f; color: #2c3e50; }
-        .priority-low { background: #27ae60; }
-        .defect-status-open { background: #e74c3c; color: white; }
-        .defect-status-in-progress { background: #f39c12; color: white; }
-        .defect-status-resolved { background: #27ae60; color: white; }
-        .defect-status-closed { background: #95a5a6; color: white; }
-        .severity-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; border: 2px solid; }
-        .severity-critical { color: #e74c3c; border-color: #e74c3c; background: #fdedec; }
-        .severity-high { color: #f39c12; border-color: #f39c12; background: #fef9e7; }
-        .severity-medium { color: #f1c40f; border-color: #f1c40f; background: #fcf3cf; }
-        .severity-low { color: #27ae60; border-color: #27ae60; background: #eafaf1; }
-        .epic-title-link { color: #f8f9fa !important; text-decoration: none; transition: all 0.2s ease; }
-        .epic-title-link:hover { color: #ffd700 !important; text-decoration: underline; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
-        .epic-header { cursor: pointer; }
+        .skip-link {{
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            padding: var(--space-sm) var(--space-base);
+            border-radius: var(--radius-base);
+            text-decoration: none;
+            z-index: var(--z-tooltip);
+            transition: top var(--transition-fast);
+        }}
+        .skip-link:focus {{
+            top: 6px;
+        }}
     </style>
-    <script>
-        function toggleEpicDetails(epicId) {
-            const content = document.getElementById('epic-' + epicId);
-            content.style.display = content.style.display === 'none' ? 'block' : 'none';
-        }
 
-        function filterByStatus(status) {
-            const cards = document.querySelectorAll('.epic-card');
-            cards.forEach(card => {
-                const cardStatus = card.dataset.status;
-                card.style.display = status === 'all' || cardStatus === status ? 'block' : 'none';
-            });
-        }
-
-        function filterTestsByType(epicId, testType) {
-            const testTable = document.querySelector(`#epic-${epicId} .test-filter-section + table tbody`);
-            if (!testTable) return;
-
-            const testRows = testTable.querySelectorAll('tr.test-row');
-            const filterButtons = document.querySelectorAll(`#epic-${epicId} .test-filter-button`);
-
-            // Update button states
-            filterButtons.forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.testType === testType) {
-                    btn.classList.add('active');
-                }
-            });
-
-            // Filter test rows
-            testRows.forEach(row => {
-                const testTypeBadge = row.querySelector('.test-type-badge');
-                if (!testTypeBadge) return;
-
-                const rowTestType = testTypeBadge.textContent.toLowerCase();
-
-                if (testType === 'all' || rowTestType === testType.toLowerCase()) {
-                    row.classList.remove('hidden');
-                } else {
-                    row.classList.add('hidden');
-                }
-            });
-
-            // Update test count display
-            const allTestRows = testTable.querySelectorAll('tr.test-row'); // Only actual test rows
-            const visibleTestRows = testTable.querySelectorAll('tr.test-row:not(.hidden)');
-            const totalTests = allTestRows.length;
-            const visibleTests = visibleTestRows.length;
-
-            const countDisplay = document.querySelector(`#epic-${epicId} .test-count-display`);
-            if (countDisplay) {
-                if (totalTests === 0) {
-                    countDisplay.textContent = 'No tests available for this epic';
-                } else if (testType === 'all') {
-                    countDisplay.textContent = `Showing all ${totalTests} tests`;
-                } else {
-                    countDisplay.textContent = `Showing ${visibleTests} ${testType.toUpperCase()} tests (${totalTests} total)`;
-                }
-            }
-        }
-        function filterUserStoriesByStatus(epicId, status) {
-            const usTable = document.querySelector(`#epic-${epicId} table:first-of-type tbody`);
-            if (!usTable) return;
-            const usRows = usTable.querySelectorAll('.us-row');
-            const filterButtons = document.querySelectorAll(`#epic-${epicId} .us-filter-button`);
-            // Update button states
-            filterButtons.forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.usStatus === status) {
-                    btn.classList.add('active');
-                }
-            });
-            // Filter user story rows
-            usRows.forEach(row => {
-                const rowStatus = row.dataset.usStatus;
-                if (status === 'all' || rowStatus === status) {
-                    row.classList.remove('hidden');
-                } else {
-                    row.classList.add('hidden');
-                }
-            });
-            // Update user story count display
-            const visibleUsRows = usTable.querySelectorAll('.us-row:not(.hidden)');
-            const totalUs = usRows.length;
-            const visibleUs = visibleUsRows.length;
-            const countDisplay = document.querySelector(`#epic-${epicId} .us-count-display`);
-            if (countDisplay) {
-                if (status === 'all') {
-                    countDisplay.textContent = `Showing all user stories (${totalUs} total)`;
-                } else {
-                    const statusDisplay = status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-                    countDisplay.textContent = `Showing ${visibleUs} ${statusDisplay} user stories (${totalUs} total)`;
-                }
-            }
-        }
-        function filterDefects(epicId, filterType, filterValue) {
-            const defectTable = document.querySelector(`#epic-${epicId} .defect-filter-section + table tbody`);
-            if (!defectTable) return;
-            const defectRows = defectTable.querySelectorAll('.defect-row');
-            const filterButtons = document.querySelectorAll(`#epic-${epicId} .defect-filter-button`);
-
-            // Update button states
-            filterButtons.forEach(btn => {
-                btn.classList.remove('active');
-                if ((filterType === 'all' && btn.dataset.defectFilter === 'all') ||
-                    btn.dataset.defectFilter === `${filterType}:${filterValue}`) {
-                    btn.classList.add('active');
-                }
-            });
-
-            // Filter defect rows
-            defectRows.forEach(row => {
-                let shouldShow = false;
-                if (filterType === 'all') {
-                    shouldShow = true;
-                } else if (filterType === 'priority') {
-                    shouldShow = row.dataset.defectPriority === filterValue;
-                } else if (filterType === 'status') {
-                    shouldShow = row.dataset.defectStatus === filterValue;
-                }
-
-                if (shouldShow) {
-                    row.classList.remove('hidden');
-                } else {
-                    row.classList.add('hidden');
-                }
-            });
-
-            // Update defect count display
-            const visibleDefectRows = defectTable.querySelectorAll('.defect-row:not(.hidden)');
-            const totalDefects = defectRows.length;
-            const visibleDefects = visibleDefectRows.length;
-            const countDisplay = document.querySelector(`#epic-${epicId} .defect-count-display`);
-            if (countDisplay) {
-                if (filterType === 'all') {
-                    countDisplay.textContent = `Showing all defects (${totalDefects} total)`;
-                } else {
-                    const filterDisplay = filterValue.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-                    countDisplay.textContent = `Showing ${visibleDefects} ${filterDisplay} defects (${totalDefects} total)`;
-                }
-            }
-        }
-
-        function initializeTestFiltering() {
-            // Set E2E as default filter for all epics
-            const epics = document.querySelectorAll('.epic-card');
-            epics.forEach(epic => {
-                const epicId = epic.dataset.status ? epic.querySelector('.epic-header h3 a')?.textContent?.split(':')[0] : null;
-                if (epicId) {
-                    // Default to E2E tests only
-                    filterTestsByType(epicId, 'e2e');
-                }
-            });
-        }
-
-        // Add accessibility improvements
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add keyboard accessibility for epic headers
-            const epicHeaders = document.querySelectorAll('.epic-header');
-            epicHeaders.forEach(header => {
-                header.setAttribute('tabindex', '0');
-                header.setAttribute('role', 'button');
-                header.setAttribute('aria-expanded', 'false');
-
-                header.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        const epicId = this.querySelector('.epic-title-link')?.textContent?.split(':')[0] ||
-                                     this.textContent.trim().split(':')[0];
-                        toggleEpicDetails(epicId);
-                    }
-                });
-            });
-
-            // Initialize test filtering with E2E default
-            initializeTestFiltering();
-        });
-    </script>
+    <!-- Enhanced RTM Interactive Features -->
+    <script src="/static/js/rtm-interactions.js" defer></script>
 </head>
 <body>
-    <div class="container">
-        <h1>🎯 Dynamic Requirements Traceability Matrix</h1>
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
 
-        <div class="metadata">
-            <strong>Generated:</strong> """ + datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC') + """<br>
-            <strong>Total Epics:</strong> """ + str(len(epics)) + """<br>
-            """ + self._get_filter_info_html(filters) + """
+    <!-- Enhanced Page Header -->
+    <header class="page-header" role="banner">
+        <div class="page-header__content">
+            <h1 class="page-header__title">🎯 Requirements Traceability Matrix</h1>
+            <p class="page-header__subtitle">Interactive dashboard for GoNoGo project requirements tracking</p>
+            <div class="page-header__meta">
+                <div class="page-header__meta-item">
+                    <span class="page-header__meta-icon">📅</span>
+                    <span>Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}</span>
+                </div>
+                <div class="page-header__meta-item">
+                    <span class="page-header__meta-icon">📊</span>
+                    <span>Total Epics: {len(epics)}</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main id="main-content" class="rtm-container" role="main">
+
+        <!-- Enhanced Filter Toolbar -->
+        <div class="filter-toolbar" role="toolbar" aria-label="RTM Filters">
+            <!-- TEMPORARILY DISABLED: Search feature needs proper implementation
+            <div class="filter-group">
+                <label class="filter-group__label" for="rtm-search">Search:</label>
+                <div class="search-box">
+                    <span class="search-box__icon">🔍</span>
+                    <input
+                        type="text"
+                        id="rtm-search"
+                        class="search-box__input"
+                        placeholder="Search epics, user stories, tests, or defects..."
+                        aria-label="Search RTM content"
+                    >
+                    <button class="search-box__clear" id="clear-search" type="button" aria-label="Clear search">✕</button>
+                </div>
+            </div>
+            -->
+
+            <div class="filter-group">
+                <span class="filter-group__label">Epic Status:</span>
+                <div class="filter-group__controls">
+                    <button class="filter-button filter-button--active" onclick="filterByStatus('all')" data-filter-group="epic-status" data-filter-value="all">All</button>
+                    <button class="filter-button" onclick="filterByStatus('planned')" data-filter-group="epic-status" data-filter-value="planned">📝 Planned</button>
+                    <button class="filter-button" onclick="filterByStatus('in_progress')" data-filter-group="epic-status" data-filter-value="in_progress">⏳ In Progress</button>
+                    <button class="filter-button" onclick="filterByStatus('completed')" data-filter-group="epic-status" data-filter-value="completed">✅ Completed</button>
+                    <button class="filter-button" onclick="filterByStatus('blocked')" data-filter-group="epic-status" data-filter-value="blocked">🚫 Blocked</button>
+                </div>
+            </div>
+
+            <div class="export-toolbar">
+                <button class="export-button" data-export-format="csv" title="Export to CSV">
+                    <span class="export-button__icon">📄</span>
+                    CSV
+                </button>
+                <button class="export-button" data-export-format="json" title="Export to JSON">
+                    <span class="export-button__icon">📋</span>
+                    JSON
+                </button>
+            </div>
         </div>
 
-        <div style="margin-bottom: 20px;">
-            <strong>Filter by Status:</strong>
-            <button onclick="filterByStatus('all')" style="margin-left: 10px; padding: 5px 10px;">All</button>
-            <button onclick="filterByStatus('planned')" style="margin-left: 5px; padding: 5px 10px;">Planned</button>
-            <button onclick="filterByStatus('in_progress')" style="margin-left: 5px; padding: 5px 10px;">In Progress</button>
-            <button onclick="filterByStatus('completed')" style="margin-left: 5px; padding: 5px 10px;">Completed</button>
-        </div>
+        <!-- Search Results Count -->
+        <div class="search-results-count" style="display: none;" role="status" aria-live="polite"></div>
 
-        <h2>📊 Epic Progress Overview</h2>
+        <!-- Section Separator -->
+        <div class="section-separator">
+            <span class="section-separator__content">Epic Progress Overview</span>
+        </div>
 """
 
         for epic in epics:
@@ -417,139 +263,244 @@ class RTMReportGenerator:
             defects_count = metrics["defects_count"]
 
             html += f"""
-        <div class="epic-card" data-status="{epic.status}">
-            <div class="epic-header" onclick="toggleEpicDetails('{epic.epic_id}')">
-                <h3 style="margin: 0; display: inline-block;">{epic_title_link} <span class="status-badge status-{epic.status.replace('_', '-')}" style="margin-left: 10px;">{epic.status.replace('_', ' ').title()}</span></h3>
-            </div>
-            <div class="epic-content" id="epic-{epic.epic_id}">
-                <p><strong>Description:</strong> {clean_description.replace(chr(10), '<br>')}</p>
+        <!-- Epic Card with Enhanced Design -->
+        <article class="epic-card" data-status="{epic.status}" data-epic-id="{epic.epic_id}" aria-labelledby="epic-{epic.epic_id}-title">
+            <header class="epic-header" onclick="toggleEpicDetails('{epic.epic_id}')" role="button" tabindex="0" aria-expanded="false" aria-controls="epic-{epic.epic_id}">
+                <h2 id="epic-{epic.epic_id}-title" class="epic-title-link">
+                    {epic_title_link}
+                </h2>
+                <span class="status-badge status-badge--{epic.status.replace('_', '-')}" aria-label="Epic status: {epic.status.replace('_', ' ').title()}">
+                    {epic.status.replace('_', ' ').title()}
+                </span>
+            </header>
 
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: {progress}%"></div>
-                </div>
-                <p style="text-align: center; margin-top: 5px;"><strong>{progress:.1f}% Complete</strong></p>
+            <div class="epic-content" id="epic-{epic.epic_id}" aria-labelledby="epic-{epic.epic_id}-title" style="display: none;">
+                <!-- Epic Description -->
+                <section class="epic-description" aria-label="Epic Description">
+                    <h3 class="sr-only">Description</h3>
+                    <p>{clean_description.replace(chr(10), '<br>')}</p>
+                </section>
 
-                <div class="test-summary">
-                    <div class="metric">
-                        <div class="metric-value">{user_stories_count}</div>
-                        <div class="metric-label">User Stories</div>
+                <!-- Epic Progress with Enhanced Visual Design -->
+                <section class="epic-progress" aria-label="Epic Progress">
+                    <h3 class="sr-only">Progress</h3>
+                    <div class="epic-progress__label">
+                        <span>Progress</span>
+                        <span><strong>{progress:.1f}% Complete</strong></span>
                     </div>
-                    <div class="metric">
-                        <div class="metric-value">{completed_points}/{total_points}</div>
-                        <div class="metric-label">Story Points</div>
+                    <div class="epic-progress__bar" role="progressbar" aria-valuenow="{progress:.1f}" aria-valuemin="0" aria-valuemax="100" aria-label="Epic completion progress">
+                        <div class="epic-progress__fill" style="width: {progress}%"></div>
                     </div>
-                    <div class="metric">
-                        <div class="metric-value">{tests_count}</div>
-                        <div class="metric-label">Tests</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">{test_pass_rate:.1f}%</div>
-                        <div class="metric-label">Pass Rate ({tests_passed}/{tests_count})</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">{defects_count}</div>
-                        <div class="metric-label">Defects</div>
-                    </div>
-                </div>
+                </section>
 
-                <h4>User Stories</h4>
-                <div class="us-filter-section">
-                    <strong>Filter User Stories:</strong>
-                    <button class="us-filter-button active" data-us-status="all" onclick="filterUserStoriesByStatus('""" + epic.epic_id + """', 'all')">All</button>
-                    <button class="us-filter-button" data-us-status="planned" onclick="filterUserStoriesByStatus('""" + epic.epic_id + """', 'planned')">Planned</button>
-                    <button class="us-filter-button" data-us-status="in_progress" onclick="filterUserStoriesByStatus('""" + epic.epic_id + """', 'in_progress')">In Progress</button>
-                    <button class="us-filter-button" data-us-status="completed" onclick="filterUserStoriesByStatus('""" + epic.epic_id + """', 'completed')">Completed</button>
-                    <button class="us-filter-button" data-us-status="blocked" onclick="filterUserStoriesByStatus('""" + epic.epic_id + """', 'blocked')">Blocked</button>
-                    <span class="us-count-display" style="margin-left: 15px; font-style: italic; color: #7f8c8d;">Showing all user stories</span>
-                </div>
-                <table>
-                    <thead>
-                        <tr><th>ID</th><th>Title</th><th>Story Points</th><th>Status</th></tr>
-                    </thead>
-                    <tbody>
+                <!-- Enhanced Metrics Dashboard -->
+                <section class="metrics-dashboard" aria-label="Epic Metrics Overview">
+                    <h3 class="metrics-dashboard__title">📊 Overview Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card metric-card--info" aria-label="User Stories count">
+                            <span class="metric-card__icon">📋</span>
+                            <div class="metric-card__number">{user_stories_count}</div>
+                            <div class="metric-card__label">User Stories</div>
+                            <div class="metric-card__description">Total stories in epic</div>
+                        </div>
+                        <div class="metric-card metric-card--{('success' if completed_points == total_points else 'warning' if completed_points > 0 else 'info')}" aria-label="Story Points progress">
+                            <span class="metric-card__icon">⭐</span>
+                            <div class="metric-card__number">{completed_points}/{total_points}</div>
+                            <div class="metric-card__label">Story Points</div>
+                            <div class="metric-card__description">Completed vs Total</div>
+                        </div>
+                        <div class="metric-card metric-card--{('success' if tests_count > 0 else 'info')}" aria-label="Tests count">
+                            <span class="metric-card__icon">🧪</span>
+                            <div class="metric-card__number">{tests_count}</div>
+                            <div class="metric-card__label">Tests</div>
+                            <div class="metric-card__description">Total test cases</div>
+                        </div>
+                        <div class="metric-card metric-card--{('success' if test_pass_rate >= 80 else 'warning' if test_pass_rate >= 60 else 'danger')}" aria-label="Test pass rate">
+                            <span class="metric-card__icon">✅</span>
+                            <div class="metric-card__number">{test_pass_rate:.1f}%</div>
+                            <div class="metric-card__label">Pass Rate</div>
+                            <div class="metric-card__description">{tests_passed} passed, {tests_failed} failed, {tests_not_run} not run</div>
+                        </div>
+                        <div class="metric-card metric-card--{('danger' if defects_count > 0 else 'success')}" aria-label="Defects count">
+                            <span class="metric-card__icon">🐛</span>
+                            <div class="metric-card__number">{defects_count}</div>
+                            <div class="metric-card__label">Defects</div>
+                            <div class="metric-card__description">Open issues to resolve</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- User Stories Collapsible Section -->
+                <section class="collapsible" aria-label="User Stories">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="user-stories-{epic.epic_id}">
+                        <h3 class="collapsible__title">📋 User Stories ({user_stories_count})</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="user-stories-{epic.epic_id}">
+                        <div class="collapsible__body">
+                            <!-- User Stories Filter Section -->
+                            <div class="filter-section" role="group" aria-label="User Stories Filters">
+                                <h4 class="filter-section__title">Filter User Stories:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--us filter-button--active"
+                                            data-us-status="all"
+                                            data-filter-group="epic-{epic.epic_id}-us"
+                                            data-filter-value="all"
+                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'all')"
+                                            aria-pressed="true">All</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="planned"
+                                            data-filter-group="epic-{epic.epic_id}-us"
+                                            data-filter-value="planned"
+                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'planned')"
+                                            aria-pressed="false">📝 Planned</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="in_progress"
+                                            data-filter-group="epic-{epic.epic_id}-us"
+                                            data-filter-value="in_progress"
+                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'in_progress')"
+                                            aria-pressed="false">⏳ In Progress</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="completed"
+                                            data-filter-group="epic-{epic.epic_id}-us"
+                                            data-filter-value="completed"
+                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'completed')"
+                                            aria-pressed="false">✅ Completed</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="blocked"
+                                            data-filter-group="epic-{epic.epic_id}-us"
+                                            data-filter-value="blocked"
+                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'blocked')"
+                                            aria-pressed="false">🚫 Blocked</button>
+                                </div>
+                                <div class="us-count-display filter-count" role="status" aria-live="polite">Showing all user stories</div>
+                            </div>
+
+                            <!-- User Stories Table -->
+                            <table class="rtm-table" role="table" aria-label="User Stories for {epic.epic_id}">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Story Points</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
 """
             for us in epic_data["user_stories"]:
                 user_story_link = self._render_user_story_id_link(us["user_story_id"], us.get("github_issue_number"))
                 status_normalized = us["implementation_status"].replace('_', '-')
                 html += f"""
-                        <tr class="us-row" data-us-status="{us['implementation_status']}">
-                            <td>{user_story_link}</td>
-                            <td>{us["title"]}</td>
-                            <td>{us["story_points"]}</td>
-                            <td><span class="status-badge status-{status_normalized}">{us["implementation_status"].replace('_', ' ').title()}</span></td>
-                        </tr>
+                                    <tr class="rtm-table__row us-row" data-us-status="{us['implementation_status']}">
+                                        <td>{user_story_link}</td>
+                                        <td>{us["title"]}</td>
+                                        <td>{us["story_points"]}</td>
+                                        <td><span class="status-badge status-badge--{status_normalized}">{us["implementation_status"].replace('_', ' ').title()}</span></td>
+                                    </tr>
 """
 
             html += f"""
-                    </tbody>
-                </table>
-
-                <h4>Test Metrics</h4>
-                <div class="test-metrics-dashboard">
-                    <div class="metrics-grid">
-                        <div class="metric-card">
-                            <div class="metric-icon">🧪</div>
-                            <div class="metric-content">
-                                <div class="metric-number">{tests_count}</div>
-                                <div class="metric-title">Total Tests</div>
-                            </div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-icon">✅</div>
-                            <div class="metric-content">
-                                <div class="metric-number">{test_pass_rate:.1f}%</div>
-                                <div class="metric-title">Pass Rate</div>
-                            </div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-icon">⚡</div>
-                            <div class="metric-content">
-                                <div class="metric-number">{tests_passed}</div>
-                                <div class="metric-title">Passed</div>
-                            </div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-icon">❌</div>
-                            <div class="metric-content">
-                                <div class="metric-number">{tests_failed}</div>
-                                <div class="metric-title">Failed</div>
-                            </div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-icon">⏭️</div>
-                            <div class="metric-content">
-                                <div class="metric-number">{tests_not_run}</div>
-                                <div class="metric-title">Not Run</div>
-                            </div>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="test-type-breakdown">
-                        <h5>Test Distribution by Type</h5>
-                        <div class="test-type-stats">"""
+                </section>
+
+                <!-- Tests Collapsible Section -->
+                <section class="collapsible" aria-label="Tests">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="tests-{epic.epic_id}">
+                        <h3 class="collapsible__title">🧪 Test Coverage ({tests_count})</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="tests-{epic.epic_id}">
+                        <div class="collapsible__body">
+                            <!-- Enhanced Test Metrics Dashboard -->
+                            <div class="metrics-dashboard">
+                                <h4 class="metrics-dashboard__title">📊 Test Metrics</h4>
+                                <div class="metrics-grid">
+                                    <div class="metric-card metric-card--info" aria-label="Total tests count">
+                                        <span class="metric-card__icon">🧪</span>
+                                        <div class="metric-card__number">{tests_count}</div>
+                                        <div class="metric-card__label">Total Tests</div>
+                                        <div class="metric-card__description">Across all test types</div>
+                                    </div>
+                                    <div class="metric-card metric-card--{('success' if test_pass_rate >= 80 else 'warning' if test_pass_rate >= 60 else 'danger')}" aria-label="Test pass rate">
+                                        <span class="metric-card__icon">✅</span>
+                                        <div class="metric-card__number">{test_pass_rate:.1f}%</div>
+                                        <div class="metric-card__label">Pass Rate</div>
+                                        <div class="metric-card__description">Overall success rate</div>
+                                    </div>
+                                    <div class="metric-card metric-card--success" aria-label="Passed tests">
+                                        <span class="metric-card__icon">⚡</span>
+                                        <div class="metric-card__number">{tests_passed}</div>
+                                        <div class="metric-card__label">Passed</div>
+                                        <div class="metric-card__description">Successfully executed</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Failed tests">
+                                        <span class="metric-card__icon">❌</span>
+                                        <div class="metric-card__number">{tests_failed}</div>
+                                        <div class="metric-card__label">Failed</div>
+                                        <div class="metric-card__description">Need attention</div>
+                                    </div>
+                                    <div class="metric-card metric-card--warning" aria-label="Tests not run">
+                                        <span class="metric-card__icon">⏭️</span>
+                                        <div class="metric-card__number">{tests_not_run}</div>
+                                        <div class="metric-card__label">Not Run</div>
+                                        <div class="metric-card__description">Pending execution</div>
+                                    </div>
+                                </div>
+
+                                <!-- Test Type Breakdown -->
+                                <div class="test-breakdown">
+                                    <h5 class="test-breakdown__title">Test Distribution by Type</h5>"""
 
             # Add test type breakdown HTML
             html += self._generate_test_type_breakdown_html(epic_data.get("tests", []))
 
-            html += """
-                        </div>
-                    </div>
-                </div>
+            html += f"""
+                                </div>
+                            </div>
 
-                <h4>Test Traceability</h4>
-                <div class="test-filter-section">
-                    <strong>Filter Tests:</strong>
-                    <button class="test-filter-button active" data-test-type="e2e" onclick="filterTestsByType('""" + epic.epic_id + """', 'e2e')">E2E Only</button>
-                    <button class="test-filter-button" data-test-type="unit" onclick="filterTestsByType('""" + epic.epic_id + """', 'unit')">Unit</button>
-                    <button class="test-filter-button" data-test-type="integration" onclick="filterTestsByType('""" + epic.epic_id + """', 'integration')">Integration</button>
-                    <button class="test-filter-button" data-test-type="security" onclick="filterTestsByType('""" + epic.epic_id + """', 'security')">Security</button>
-                    <button class="test-filter-button" data-test-type="all" onclick="filterTestsByType('""" + epic.epic_id + """', 'all')">All Tests</button>
-                    <span class="test-count-display" style="margin-left: 15px; font-style: italic; color: #7f8c8d;">Showing E2E tests only</span>
-                </div>
-                <table>
-                    <thead>
-                        <tr><th>Test Type</th><th>Test File</th><th>Function/Scenario</th><th>Last Execution</th><th>Status</th></tr>
-                    </thead>
-                    <tbody>
+                            <!-- Test Filter Section -->
+                            <div class="filter-section" role="group" aria-label="Test Filters">
+                                <h4 class="filter-section__title">Filter Tests:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--test filter-button--active"
+                                            data-test-type="e2e"
+                                            data-filter-group="epic-{epic.epic_id}-test"
+                                            data-filter-value="e2e"
+                                            onclick="filterTestsByType('{epic.epic_id}', 'e2e')"
+                                            aria-pressed="true">🔄 E2E Only</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="unit"
+                                            data-filter-group="epic-{epic.epic_id}-test"
+                                            data-filter-value="unit"
+                                            onclick="filterTestsByType('{epic.epic_id}', 'unit')"
+                                            aria-pressed="false">⚗️ Unit</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="integration"
+                                            data-filter-group="epic-{epic.epic_id}-test"
+                                            data-filter-value="integration"
+                                            onclick="filterTestsByType('{epic.epic_id}', 'integration')"
+                                            aria-pressed="false">🔗 Integration</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="security"
+                                            data-filter-group="epic-{epic.epic_id}-test"
+                                            data-filter-value="security"
+                                            onclick="filterTestsByType('{epic.epic_id}', 'security')"
+                                            aria-pressed="false">🛡️ Security</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="all"
+                                            data-filter-group="epic-{epic.epic_id}-test"
+                                            data-filter-value="all"
+                                            onclick="filterTestsByType('{epic.epic_id}', 'all')"
+                                            aria-pressed="false">📋 All Tests</button>
+                                </div>
+                                <div class="test-count-display filter-count" role="status" aria-live="polite">Showing E2E tests only</div>
+                            </div>
+
+                            <!-- Test Traceability Table -->
+                            <table class="rtm-table" role="table" aria-label="Test Traceability for {epic.epic_id}">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">Test Type</th><th scope="col">Test File</th><th scope="col">Function/Scenario</th><th scope="col">Last Execution</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
 """
 
             # Add test information
@@ -672,8 +623,11 @@ class RTMReportGenerator:
                 </table>
             </div>
         </div>
+    </div>
+</article>
 """
 
+        # Close the main container and HTML after all epics
         html += """
     </div>
 </body>
@@ -1040,6 +994,26 @@ class RTMReportGenerator:
             "security": sum(1 for d in defects if d.is_security_issue),
         }
 
+    def _get_filter_summary(self, filters: Dict[str, Any]) -> str:
+        """Generate a concise filter summary for the header."""
+        active_filters = {k: v for k, v in filters.items() if v is not None and v != "" and k not in ["include_tests", "include_defects"]}
+        if not active_filters:
+            return "None"
+
+        # Create a more user-friendly summary
+        summary_parts = []
+        for k, v in active_filters.items():
+            if k == "us_status_filter":
+                summary_parts.append(f"US: {v}")
+            elif k == "test_type_filter":
+                summary_parts.append(f"Tests: {v}")
+            elif k == "defect_priority_filter":
+                summary_parts.append(f"Defects: {v}")
+            else:
+                summary_parts.append(f"{k}: {v}")
+
+        return ", ".join(summary_parts)
+
     def _get_filter_info_html(self, filters: Dict[str, Any]) -> str:
         """Generate HTML filter information."""
         active_filters = {k: v for k, v in filters.items() if v is not None and v != "" and k not in ["include_tests", "include_defects"]}
@@ -1065,10 +1039,13 @@ class RTMReportGenerator:
 
     def _render_epic_title_link(self, epic_id: str, title: str, github_issue_number: int) -> str:
         """Render epic title as GitHub link if available."""
+        # Clean title by stripping whitespace and normalizing spaces
+        clean_title = ' '.join(title.strip().split()) if title else "No title"
+
         if github_issue_number and github_issue_number > 0:
             github_url = self._get_github_issue_link(github_issue_number)
-            return f'<a href="{github_url}" target="_blank" class="epic-title-link" title="Click to open {epic_id} in GitHub">{epic_id}: {title}</a>'
-        return f"{epic_id}: {title}"
+            return f'<a href="{github_url}" target="_blank" class="epic-title-link" title="Click to open {epic_id} in GitHub">{epic_id}: {clean_title}</a>'
+        return f"{epic_id}: {clean_title}"
 
     def _extract_epic_description(self, github_body: str) -> str:
         """Extract just the Epic Description field from GitHub issue template."""
