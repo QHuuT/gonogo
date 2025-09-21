@@ -6,17 +6,17 @@ and GDPR-compliant sanitization.
 """
 
 import json
-import time
-import uuid
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Dict, Any, Optional, List, Union
-from dataclasses import dataclass, asdict
-from threading import Lock
 import logging
 import logging.handlers
+import time
+import uuid
+from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from threading import Lock
+from typing import Any, Dict, List, Optional, Union
 
-from .config import LoggingConfig, LogLevel, EnvironmentMode
+from .config import EnvironmentMode, LoggingConfig, LogLevel
 from .sanitizer import LogSanitizer, SanitizationLevel
 
 
@@ -56,7 +56,7 @@ class LogEntry:
         environment: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         stack_trace: Optional[str] = None,
-        tags: Optional[List[str]] = None
+        tags: Optional[List[str]] = None,
     ) -> "LogEntry":
         """Create a new log entry with current timestamp."""
         return cls(
@@ -71,7 +71,7 @@ class LogEntry:
             session_id=str(uuid.uuid4())[:8],  # Short session ID
             metadata=metadata,
             stack_trace=stack_trace,
-            tags=tags or []
+            tags=tags or [],
         )
 
 
@@ -114,16 +114,18 @@ class StructuredLogger:
             filename=log_file_path,
             maxBytes=self.config.max_file_size_mb * 1024 * 1024,
             backupCount=self.config.max_files,
-            encoding='utf-8'
+            encoding="utf-8",
         )
 
         # Set up formatter
-        formatter = logging.Formatter('%(message)s')  # We'll format JSON ourselves
+        formatter = logging.Formatter("%(message)s")  # We'll format JSON ourselves
         self._file_handler.setFormatter(formatter)
 
         # Create logger
         self._file_logger = logging.getLogger(f"gonogo_structured_{self._session_id}")
-        self._file_logger.setLevel(getattr(logging, self.config.log_level.value.upper()))
+        self._file_logger.setLevel(
+            getattr(logging, self.config.log_level.value.upper())
+        )
         self._file_logger.addHandler(self._file_handler)
         self._file_logger.propagate = False
 
@@ -137,7 +139,7 @@ class StructuredLogger:
         duration_ms: Optional[float] = None,
         metadata: Optional[Dict[str, Any]] = None,
         stack_trace: Optional[str] = None,
-        tags: Optional[List[str]] = None
+        tags: Optional[List[str]] = None,
     ) -> LogEntry:
         """Log a structured entry."""
 
@@ -152,7 +154,7 @@ class StructuredLogger:
             environment=self.config.environment.value,
             metadata=metadata,
             stack_trace=stack_trace if self.config.include_stack_traces else None,
-            tags=tags
+            tags=tags,
         )
 
         # Convert to dictionary
@@ -171,11 +173,8 @@ class StructuredLogger:
                 self._log_buffer.pop(0)  # Remove oldest entry
 
         # Write to file
-        json_line = json.dumps(entry_dict, separators=(',', ':'))
-        self._file_logger.log(
-            getattr(logging, level.value.upper()),
-            json_line
-        )
+        json_line = json.dumps(entry_dict, separators=(",", ":"))
+        self._file_logger.log(getattr(logging, level.value.upper()), json_line)
 
         return entry
 
@@ -208,10 +207,12 @@ class StructuredLogger:
             test_name=test_name,
             test_status="started",
             tags=["test_lifecycle"],
-            **kwargs
+            **kwargs,
         )
 
-    def test_passed(self, test_id: str, test_name: str, duration_ms: float, **kwargs) -> LogEntry:
+    def test_passed(
+        self, test_id: str, test_name: str, duration_ms: float, **kwargs
+    ) -> LogEntry:
         """Log test pass."""
         return self.info(
             f"Test passed: {test_name}",
@@ -220,11 +221,18 @@ class StructuredLogger:
             test_status="passed",
             duration_ms=duration_ms,
             tags=["test_lifecycle", "success"],
-            **kwargs
+            **kwargs,
         )
 
-    def test_failed(self, test_id: str, test_name: str, duration_ms: float,
-                   error_message: str, stack_trace: Optional[str] = None, **kwargs) -> LogEntry:
+    def test_failed(
+        self,
+        test_id: str,
+        test_name: str,
+        duration_ms: float,
+        error_message: str,
+        stack_trace: Optional[str] = None,
+        **kwargs,
+    ) -> LogEntry:
         """Log test failure."""
         return self.error(
             f"Test failed: {test_name} - {error_message}",
@@ -234,10 +242,12 @@ class StructuredLogger:
             duration_ms=duration_ms,
             stack_trace=stack_trace,
             tags=["test_lifecycle", "failure"],
-            **kwargs
+            **kwargs,
         )
 
-    def test_skipped(self, test_id: str, test_name: str, reason: str, **kwargs) -> LogEntry:
+    def test_skipped(
+        self, test_id: str, test_name: str, reason: str, **kwargs
+    ) -> LogEntry:
         """Log test skip."""
         return self.warning(
             f"Test skipped: {test_name} - {reason}",
@@ -246,14 +256,18 @@ class StructuredLogger:
             test_status="skipped",
             metadata={"skip_reason": reason},
             tags=["test_lifecycle", "skipped"],
-            **kwargs
+            **kwargs,
         )
 
     # Buffer and query methods
     def get_recent_logs(self, count: int = 100) -> List[LogEntry]:
         """Get recent log entries from buffer."""
         with self._lock:
-            return self._log_buffer[-count:] if count < len(self._log_buffer) else self._log_buffer.copy()
+            return (
+                self._log_buffer[-count:]
+                if count < len(self._log_buffer)
+                else self._log_buffer.copy()
+            )
 
     def get_logs_for_test(self, test_id: str) -> List[LogEntry]:
         """Get all log entries for a specific test."""
@@ -263,7 +277,9 @@ class StructuredLogger:
     def get_failed_test_logs(self) -> List[LogEntry]:
         """Get log entries for failed tests."""
         with self._lock:
-            return [entry for entry in self._log_buffer if entry.test_status == "failed"]
+            return [
+                entry for entry in self._log_buffer if entry.test_status == "failed"
+            ]
 
     def clear_buffer(self) -> None:
         """Clear the in-memory log buffer."""
@@ -272,7 +288,7 @@ class StructuredLogger:
 
     def flush(self) -> None:
         """Flush any pending log entries to file."""
-        if hasattr(self._file_handler, 'flush'):
+        if hasattr(self._file_handler, "flush"):
             self._file_handler.flush()
 
     def close(self) -> None:
@@ -289,7 +305,7 @@ class StructuredLogger:
             "sanitizer": self.sanitizer.get_sanitization_info(),
             "session_id": self._session_id,
             "buffer_size": len(self._log_buffer),
-            "log_file": str(self.config.get_log_file_path())
+            "log_file": str(self.config.get_log_file_path()),
         }
 
 

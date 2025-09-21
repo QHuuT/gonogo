@@ -5,14 +5,15 @@ Provides environment-aware configuration for structured logging with GDPR compli
 """
 
 import os
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Dict, Any, Optional
-from dataclasses import dataclass
+from typing import Any, Dict, Optional
 
 
 class EnvironmentMode(Enum):
     """Environment modes for logging configuration."""
+
     DEVELOPMENT = "dev"
     TESTING = "test"
     PRODUCTION = "prod"
@@ -20,6 +21,7 @@ class EnvironmentMode(Enum):
 
 class LogLevel(Enum):
     """Log levels for structured logging."""
+
     DEBUG = "debug"
     INFO = "info"
     WARNING = "warning"
@@ -92,7 +94,7 @@ class LoggingConfig:
                 include_stack_traces=True,
                 sanitize_personal_data=False,  # Full logging for debugging
                 anonymize_ips=False,
-                exclude_user_data=False
+                exclude_user_data=False,
             )
 
         elif environment == EnvironmentMode.TESTING:
@@ -104,7 +106,7 @@ class LoggingConfig:
                 sanitize_personal_data=True,  # Basic sanitization
                 anonymize_ips=True,
                 exclude_user_data=False,
-                log_filename="test_execution_test.log"
+                log_filename="test_execution_test.log",
             )
 
         else:  # PRODUCTION
@@ -117,7 +119,7 @@ class LoggingConfig:
                 anonymize_ips=True,
                 exclude_user_data=True,
                 data_retention_days=7,  # Shorter retention in prod
-                log_filename="test_execution_prod.log"
+                log_filename="test_execution_prod.log",
             )
 
     def to_dict(self) -> Dict[str, Any]:
@@ -136,7 +138,7 @@ class LoggingConfig:
             "flush_interval_seconds": self.flush_interval_seconds,
             "data_retention_days": self.data_retention_days,
             "anonymize_ips": self.anonymize_ips,
-            "exclude_user_data": self.exclude_user_data
+            "exclude_user_data": self.exclude_user_data,
         }
 
     def get_log_file_path(self) -> Path:

@@ -10,19 +10,65 @@ body:
       value: |
         ## Epic Creation
 
-        Create an epic to organize related user stories. Keep it simple - you can add details later.
+        Create an epic to organize related user stories.
+
+        ⚠️ **Important**: The "Epic Description" field below is automatically displayed in the Requirements Traceability Matrix (RTM) reports. Keep it concise and clear for optimal RTM presentation.
 
   - type: textarea
     id: epic-description
     attributes:
       label: Epic Description
-      description: What do we want to achieve and why?
+      description: |
+        🎯 **RTM Integration**: This description appears directly in Requirements Traceability Matrix reports.
+
+        Write a clear, concise description in user story format:
+        - Use "As a [user], I want [goal], So that [benefit]" format
+        - Add 1-2 sentences explaining the epic's purpose
+        - **Limit: 500 characters** (hard limit imposed by RTM import system)
+        - Avoid excessive markdown formatting (it will be cleaned for RTM display)
+        - Focus on the essential user story and business purpose
       placeholder: |
         **As a** blog visitor
         **I want** advanced search capabilities
         **So that** I can quickly find relevant content
+
+        Comprehensive search functionality for content discovery.
     validations:
       required: true
+
+  - type: textarea
+    id: detailed-description
+    attributes:
+      label: Detailed Description
+      description: |
+        📝 **Extensive Details**: Use this field for comprehensive epic documentation.
+
+        This field is NOT displayed in RTM reports - use it for:
+        - Detailed requirements and specifications
+        - Technical implementation notes
+        - Stakeholder context and background
+        - Links to external resources
+        - Any extensive information that doesn't fit in the 500-character RTM description
+      placeholder: |
+        ## Background
+        Provide detailed context about why this epic is needed...
+
+        ## Technical Considerations
+        - Architecture implications
+        - Integration requirements
+        - Performance considerations
+
+        ## Stakeholder Impact
+        - User experience improvements
+        - Business process changes
+        - Training requirements
+
+        ## External Resources
+        - [Design mockups](https://example.com)
+        - [Requirements document](https://example.com)
+        - [Technical specifications](https://example.com)
+    validations:
+      required: false
 
   - type: textarea
     id: business-value
@@ -99,3 +145,29 @@ body:
         - label: Involves personal data processing
         - label: GDPR compliance review needed
         - label: Not applicable
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        ## 📊 Requirements Traceability Matrix (RTM) Integration
+
+        **Fields displayed in RTM reports:**
+        - ✅ **Epic Description** → Main display (500 char limit) - keep concise!
+        - ✅ **Epic Status** → Progress tracking
+        - ✅ **GitHub Links** → Direct links to this issue
+        - ✅ **User Story Progress** → Calculated automatically
+
+        **Fields NOT displayed in RTM (for detailed documentation):**
+        - 📝 **Detailed Description** → Comprehensive epic documentation
+        - 📝 **Business Value** → Internal stakeholder reference
+        - 📝 **Success Criteria** → Detailed acceptance criteria
+        - 📝 **Risks & Dependencies** → Project management details
+
+        **After creating this epic:**
+        1. Link related User Stories using "Parent Epic: EP-XXXXX" in their descriptions
+        2. Epic progress will be automatically calculated in RTM reports
+        3. View RTM reports: `python tools/dynamic_rtm_demo.py --html`
+
+        💡 **Best Practice**: Use Epic Description for RTM (concise), Detailed Description for comprehensive documentation!

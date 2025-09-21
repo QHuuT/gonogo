@@ -36,8 +36,4 @@ async def home():
 async def health_check():
     """Health check endpoint with database status."""
     db_health = check_database_health()
-    return {
-        "status": "healthy",
-        "service": "gonogo-blog-rtm",
-        "database": db_health
-    }
+    return {"status": "healthy", "service": "gonogo-blog-rtm", "database": db_health}

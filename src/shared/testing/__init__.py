@@ -11,12 +11,12 @@ Components:
 """
 
 from .failure_tracker import (
-    FailureTracker,
     FailureCategory,
-    FailureSeverity,
-    TestFailure,
     FailurePattern,
-    FailureStatistics
+    FailureSeverity,
+    FailureStatistics,
+    FailureTracker,
+    TestFailure,
 )
 
 __all__ = [
@@ -25,5 +25,5 @@ __all__ = [
     "FailureSeverity",
     "TestFailure",
     "FailurePattern",
-    "FailureStatistics"
+    "FailureStatistics",
 ]

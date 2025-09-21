@@ -10,16 +10,16 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 
 import os
 from typing import Generator
-from sqlalchemy import create_engine, MetaData
-from sqlalchemy.orm import sessionmaker, Session
+
+from sqlalchemy import MetaData, create_engine
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from .models.traceability.base import Base
 
 # Database configuration
 DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "sqlite:///./gonogo.db"  # Default to SQLite for development
+    "DATABASE_URL", "sqlite:///./gonogo.db"  # Default to SQLite for development
 )
 
 # SQLite-specific configuration for development
@@ -28,13 +28,12 @@ if DATABASE_URL.startswith("sqlite"):
         DATABASE_URL,
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
-        echo=os.getenv("SQL_DEBUG", "false").lower() == "true"
+        echo=os.getenv("SQL_DEBUG", "false").lower() == "true",
     )
 else:
     # PostgreSQL configuration for production
     engine = create_engine(
-        DATABASE_URL,
-        echo=os.getenv("SQL_DEBUG", "false").lower() == "true"
+        DATABASE_URL, echo=os.getenv("SQL_DEBUG", "false").lower() == "true"
     )
 
 # Session configuration
@@ -98,8 +97,14 @@ def check_database_health() -> dict:
             db.execute("SELECT 1")
             return {
                 "status": "healthy",
-                "database_url": DATABASE_URL.split("@")[-1] if "@" in DATABASE_URL else DATABASE_URL,
-                "engine": str(engine.url).split("@")[-1] if "@" in str(engine.url) else str(engine.url)
+                "database_url": (
+                    DATABASE_URL.split("@")[-1] if "@" in DATABASE_URL else DATABASE_URL
+                ),
+                "engine": (
+                    str(engine.url).split("@")[-1]
+                    if "@" in str(engine.url)
+                    else str(engine.url)
+                ),
             }
         finally:
             db.close()
@@ -107,5 +112,7 @@ def check_database_health() -> dict:
         return {
             "status": "unhealthy",
             "error": str(e),
-            "database_url": DATABASE_URL.split("@")[-1] if "@" in DATABASE_URL else DATABASE_URL
+            "database_url": (
+                DATABASE_URL.split("@")[-1] if "@" in DATABASE_URL else DATABASE_URL
+            ),
         }

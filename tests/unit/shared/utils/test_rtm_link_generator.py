@@ -8,16 +8,17 @@ Related Issue: US-00015 - Automated RTM link generation and validation
 Epic: EP-00005 - RTM Automation
 """
 
-import pytest
-import tempfile
+import importlib.util
 import os
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 # Import the module under test
 # Use direct module loading to avoid namespace collision in full test suite context
 import sys
-import importlib.util
+import tempfile
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 # Load the module directly from the source file to avoid namespace collision
 repo_root = Path(__file__).parent.parent.parent.parent.parent
@@ -60,7 +61,9 @@ class TestRTMLinkGenerator:
 | [**EP-00002**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+EP-00002) | [US-00003](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00003) | [blog.feature:create_post](../../tests/bdd/features/blog.feature) | [blog_service.py](../../src/be/services/blog_service.py) | 📝 |
 """
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False, encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".md", delete=False, encoding="utf-8"
+        ) as f:
             f.write(content)
             f.flush()
             yield f.name
@@ -70,26 +73,30 @@ class TestRTMLinkGenerator:
 
     def test_initialization_with_default_config(self, generator):
         """Test RTMLinkGenerator initialization with default config."""
-        assert generator.github_owner == 'QHuuT'
-        assert generator.github_repo == 'gonogo'
-        assert 'github' in generator.config
-        assert 'link_patterns' in generator.config
+        assert generator.github_owner == "QHuuT"
+        assert generator.github_repo == "gonogo"
+        assert "github" in generator.config
+        assert "link_patterns" in generator.config
 
     def test_initialization_with_custom_config(self):
         """Test RTMLinkGenerator initialization with custom config."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yml', delete=False, encoding='utf-8') as f:
-            f.write("""
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".yml", delete=False, encoding="utf-8"
+        ) as f:
+            f.write(
+                """
 github:
   owner: "testowner"
   repo: "testrepo"
 link_patterns:
   epic: "https://example.com/{owner}/{repo}/issues?q={id}"
-""")
+"""
+            )
             f.flush()
 
             generator = RTMLinkGenerator(f.name)
-            assert generator.github_owner == 'testowner'
-            assert generator.github_repo == 'testrepo'
+            assert generator.github_owner == "testowner"
+            assert generator.github_repo == "testrepo"
 
         os.unlink(f.name)
 
@@ -102,13 +109,17 @@ link_patterns:
     def test_generate_github_issue_link_user_story(self, generator):
         """Test GitHub issue link generation for user stories."""
         link = generator.generate_github_issue_link("US-00014", bold=False)
-        expected = "[US-00014](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00014)"
+        expected = (
+            "[US-00014](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+US-00014)"
+        )
         assert link == expected
 
     def test_generate_github_issue_link_defect(self, generator):
         """Test GitHub issue link generation for defects."""
         link = generator.generate_github_issue_link("DEF-00001", bold=False)
-        expected = "[DEF-00001](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+DEF-00001)"
+        expected = (
+            "[DEF-00001](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+DEF-00001)"
+        )
         assert link == expected
 
     def test_generate_file_link_relative(self, generator):
@@ -136,13 +147,15 @@ link_patterns:
         feature_file = "tests/bdd/features/auth.feature"
         scenario_name = "user_login"
 
-        link = generator.generate_bdd_scenario_link(feature_file, scenario_name, rtm_path)
+        link = generator.generate_bdd_scenario_link(
+            feature_file, scenario_name, rtm_path
+        )
         expected = "[auth.feature:user_login](../../tests/bdd/features/auth.feature)"
         assert link == expected
 
     def test_extract_references_from_rtm(self, generator, temp_rtm_file):
         """Test extraction of references from RTM content."""
-        with open(temp_rtm_file, 'r', encoding='utf-8') as f:
+        with open(temp_rtm_file, "r", encoding="utf-8") as f:
             content = f.read()
 
         references = generator.extract_references_from_rtm(content)
@@ -151,10 +164,10 @@ link_patterns:
         assert len(references) > 0
 
         # Check for specific reference types
-        epic_refs = [ref for ref in references if ref[2] == 'epic']
-        us_refs = [ref for ref in references if ref[2] == 'user_story']
-        bdd_refs = [ref for ref in references if ref[2] == 'bdd_scenario']
-        file_refs = [ref for ref in references if ref[2] == 'file']
+        epic_refs = [ref for ref in references if ref[2] == "epic"]
+        us_refs = [ref for ref in references if ref[2] == "user_story"]
+        bdd_refs = [ref for ref in references if ref[2] == "bdd_scenario"]
+        file_refs = [ref for ref in references if ref[2] == "file"]
 
         assert len(epic_refs) > 0
         assert len(us_refs) > 0
@@ -177,7 +190,9 @@ link_patterns:
     def test_validate_file_link_existing_file(self, generator, temp_rtm_file):
         """Test file link validation for existing files."""
         # Create a temporary file to validate against
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False, encoding='utf-8') as temp_file:
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".py", delete=False, encoding="utf-8"
+        ) as temp_file:
             temp_file.write("# Test file")
             temp_file.flush()
 
@@ -191,11 +206,16 @@ link_patterns:
 
     def test_validate_file_link_nonexistent_file(self, generator, temp_rtm_file):
         """Test file link validation for non-existent files."""
-        assert generator.validate_file_link("nonexistent/file.py", temp_rtm_file) is False
+        assert (
+            generator.validate_file_link("nonexistent/file.py", temp_rtm_file) is False
+        )
 
     def test_validate_file_link_external_url(self, generator, temp_rtm_file):
         """Test file link validation for external URLs."""
-        assert generator.validate_file_link("https://example.com/file", temp_rtm_file) is True
+        assert (
+            generator.validate_file_link("https://example.com/file", temp_rtm_file)
+            is True
+        )
 
     def test_validate_rtm_links(self, generator, temp_rtm_file):
         """Test RTM link validation."""
@@ -213,13 +233,13 @@ link_patterns:
         updates = generator.update_rtm_links(temp_rtm_file, dry_run=True)
 
         assert isinstance(updates, dict)
-        assert 'epic_links' in updates
-        assert 'user_story_links' in updates
-        assert 'defect_links' in updates
-        assert 'file_links' in updates
+        assert "epic_links" in updates
+        assert "user_story_links" in updates
+        assert "defect_links" in updates
+        assert "file_links" in updates
 
         # File should not be modified in dry run
-        with open(temp_rtm_file, 'r', encoding='utf-8') as f:
+        with open(temp_rtm_file, "r", encoding="utf-8") as f:
             content = f.read()
         assert "EP-00001" in content  # Original content should be preserved
 
@@ -231,17 +251,19 @@ link_patterns:
 [US-00014](https://old-url.com/US-00014)
 """
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False, encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".md", delete=False, encoding="utf-8"
+        ) as f:
             f.write(old_content)
             f.flush()
 
             updates = generator.update_rtm_links(f.name, dry_run=False)
 
             # Check that updates were recorded
-            assert updates['epic_links'] > 0 or updates['user_story_links'] > 0
+            assert updates["epic_links"] > 0 or updates["user_story_links"] > 0
 
             # Check that file was actually updated
-            with open(f.name, 'r', encoding='utf-8') as updated_f:
+            with open(f.name, "r", encoding="utf-8") as updated_f:
                 updated_content = updated_f.read()
 
             assert "github.com/QHuuT/gonogo/issues" in updated_content
@@ -256,7 +278,7 @@ link_patterns:
             url="https://example.com",
             type="epic",
             valid=False,
-            error_message="Invalid format"
+            error_message="Invalid format",
         )
 
         result = RTMValidationResult(
@@ -264,7 +286,7 @@ link_patterns:
             valid_links=9,
             invalid_links=[invalid_link],
             errors=["Test error"],
-            warnings=["Test warning"]
+            warnings=["Test warning"],
         )
 
         report = generator.generate_validation_report(result)
@@ -285,11 +307,7 @@ class TestRTMLinkDataClasses:
 
     def test_rtm_link_creation(self):
         """Test RTMLink creation."""
-        link = RTMLink(
-            text="EP-00001",
-            url="https://example.com",
-            type="epic"
-        )
+        link = RTMLink(text="EP-00001", url="https://example.com", type="epic")
 
         assert link.text == "EP-00001"
         assert link.url == "https://example.com"
@@ -304,7 +322,7 @@ class TestRTMLinkDataClasses:
             url="https://example.com",
             type="epic",
             valid=False,
-            error_message="Invalid format"
+            error_message="Invalid format",
         )
 
         assert link.valid is False
@@ -313,11 +331,7 @@ class TestRTMLinkDataClasses:
     def test_rtm_validation_result_creation(self):
         """Test RTMValidationResult creation."""
         result = RTMValidationResult(
-            total_links=5,
-            valid_links=4,
-            invalid_links=[],
-            errors=[],
-            warnings=[]
+            total_links=5, valid_links=4, invalid_links=[], errors=[], warnings=[]
         )
 
         assert result.total_links == 5
@@ -335,12 +349,14 @@ class TestConfigurationHandling:
         generator = RTMLinkGenerator("nonexistent-config.yml")
 
         # Should use default configuration
-        assert generator.github_owner == 'QHuuT'
-        assert generator.github_repo == 'gonogo'
+        assert generator.github_owner == "QHuuT"
+        assert generator.github_repo == "gonogo"
 
     def test_invalid_config_file(self):
         """Test behavior with invalid YAML config."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yml', delete=False, encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".yml", delete=False, encoding="utf-8"
+        ) as f:
             f.write("invalid: yaml: content: [")
             f.flush()
 
@@ -348,7 +364,7 @@ class TestConfigurationHandling:
             try:
                 generator = RTMLinkGenerator(f.name)
                 # If it doesn't raise an exception, that's acceptable
-                assert hasattr(generator, 'config')
+                assert hasattr(generator, "config")
             except Exception:
                 # If it raises an exception, that's also acceptable
                 pass
@@ -361,7 +377,9 @@ class TestEdgeCases:
 
     def test_empty_rtm_file(self, generator):
         """Test validation of empty RTM file."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False, encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".md", delete=False, encoding="utf-8"
+        ) as f:
             f.write("")
             f.flush()
 
@@ -380,7 +398,9 @@ class TestEdgeCases:
 [EP-00001](https://valid-link.com)
 """
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False, encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".md", delete=False, encoding="utf-8"
+        ) as f:
             f.write(content)
             f.flush()
 
@@ -400,5 +420,5 @@ class TestEdgeCases:
         assert "](" in link
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main([__file__])

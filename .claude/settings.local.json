@@ -19,7 +19,12 @@
       "Bash(gh issue reopen:*)",
       "Bash(gh run view:*)",
       "Bash(gh run list:*)",
-      "Bash(gh issue edit:*)"
+      "Bash(gh issue edit:*)",
+      "Bash(black:*)",
+      "Bash(isort:*)",
+      "Bash(flake8:*)",
+      "Bash(chmod:*)",
+      "Bash(alembic upgrade:*)"
     ],
     "deny": [],
     "ask": []

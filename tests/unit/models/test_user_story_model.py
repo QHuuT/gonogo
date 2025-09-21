@@ -7,10 +7,12 @@ Related Issue: US-00052 - Database schema design for traceability relationships
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
-import pytest
 import json
+
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from src.be.models.traceability.base import Base
 from src.be.models.traceability.epic import Epic
 from src.be.models.traceability.user_story import UserStory
@@ -45,7 +47,7 @@ def user_story(epic):
         github_issue_number=123,
         title="Test User Story",
         story_points=5,
-        priority="high"
+        priority="high",
     )
 
 
@@ -66,7 +68,9 @@ class TestUserStory:
         db_session.add(user_story)
         db_session.commit()
 
-        retrieved = db_session.query(UserStory).filter_by(user_story_id="US-00001").first()
+        retrieved = (
+            db_session.query(UserStory).filter_by(user_story_id="US-00001").first()
+        )
         assert retrieved is not None
         assert retrieved.user_story_id == "US-00001"
         assert retrieved.github_issue_number == 123
@@ -85,47 +89,49 @@ class TestUserStory:
     def test_update_from_github_basic(self, user_story):
         """Test updating from GitHub issue data."""
         github_data = {
-            'state': 'open',
-            'title': 'Updated Title',
-            'body': 'Updated description',
-            'labels': ['bug', 'priority-high'],
-            'assignees': ['developer1', 'developer2']
+            "state": "open",
+            "title": "Updated Title",
+            "body": "Updated description",
+            "labels": ["bug", "priority-high"],
+            "assignees": ["developer1", "developer2"],
         }
 
         user_story.update_from_github(github_data)
 
-        assert user_story.github_issue_state == 'open'
-        assert user_story.title == 'Updated Title'
-        assert user_story.description == 'Updated description'
-        assert 'bug' in user_story.github_labels
-        assert 'developer1' in user_story.github_assignees
+        assert user_story.github_issue_state == "open"
+        assert user_story.title == "Updated Title"
+        assert user_story.description == "Updated description"
+        assert "bug" in user_story.github_labels
+        assert "developer1" in user_story.github_assignees
 
     def test_update_from_github_partial(self, user_story):
         """Test updating from partial GitHub data."""
         original_title = user_story.title
-        github_data = {'state': 'closed'}
+        github_data = {"state": "closed"}
 
         user_story.update_from_github(github_data)
 
-        assert user_story.github_issue_state == 'closed'
+        assert user_story.github_issue_state == "closed"
         assert user_story.title == original_title  # Should remain unchanged
 
     def test_calculate_test_coverage_no_tests(self, user_story):
         """Test test coverage calculation with no tests."""
         result = user_story.calculate_test_coverage()
 
-        assert result['total_tests'] == 0
-        assert result['passed_tests'] == 0
-        assert result['coverage_percentage'] == 0.0
+        assert result["total_tests"] == 0
+        assert result["passed_tests"] == 0
+        assert result["coverage_percentage"] == 0.0
 
     def test_bdd_integration_fields(self, user_story):
         """Test BDD integration fields."""
         user_story.has_bdd_scenarios = True
-        user_story.bdd_feature_files = json.dumps(['features/auth.feature', 'features/user.feature'])
+        user_story.bdd_feature_files = json.dumps(
+            ["features/auth.feature", "features/user.feature"]
+        )
 
         assert user_story.has_bdd_scenarios is True
         feature_files = json.loads(user_story.bdd_feature_files)
-        assert 'features/auth.feature' in feature_files
+        assert "features/auth.feature" in feature_files
 
     def test_gdpr_fields(self, user_story):
         """Test GDPR-related fields."""
@@ -148,7 +154,7 @@ class TestUserStory:
 
     def test_implementation_status_values(self, user_story):
         """Test valid implementation status values."""
-        valid_statuses = ['todo', 'in_progress', 'in_review', 'done', 'blocked']
+        valid_statuses = ["todo", "in_progress", "in_review", "done", "blocked"]
 
         for status in valid_statuses:
             user_story.implementation_status = status
@@ -169,7 +175,9 @@ class TestUserStory:
 
     def test_acceptance_criteria(self, user_story):
         """Test acceptance criteria field."""
-        criteria = "Given user is logged in, When they click profile, Then profile page loads"
+        criteria = (
+            "Given user is logged in, When they click profile, Then profile page loads"
+        )
         user_story.acceptance_criteria = criteria
 
         assert user_story.acceptance_criteria == criteria
@@ -185,22 +193,22 @@ class TestUserStory:
         """Test dictionary conversion with basic UserStory data."""
         result = user_story.to_dict()
 
-        assert result['user_story_id'] == "US-00001"
-        assert result['epic_id'] == user_story.epic_id
-        assert result['github_issue_number'] == 123
-        assert result['story_points'] == 5
-        assert result['priority'] == "high"
-        assert 'test_coverage' in result
-        assert 'defect_count' in result
+        assert result["user_story_id"] == "US-00001"
+        assert result["epic_id"] == user_story.epic_id
+        assert result["github_issue_number"] == 123
+        assert result["story_points"] == 5
+        assert result["priority"] == "high"
+        assert "test_coverage" in result
+        assert "defect_count" in result
 
     def test_to_dict_includes_test_coverage(self, user_story):
         """Test that to_dict includes test coverage calculation."""
         result = user_story.to_dict()
 
-        coverage = result['test_coverage']
-        assert coverage['total_tests'] == 0
-        assert coverage['passed_tests'] == 0
-        assert coverage['coverage_percentage'] == 0.0
+        coverage = result["test_coverage"]
+        assert coverage["total_tests"] == 0
+        assert coverage["passed_tests"] == 0
+        assert coverage["coverage_percentage"] == 0.0
 
     def test_repr(self, user_story):
         """Test string representation."""
@@ -217,13 +225,13 @@ class TestUserStory:
             user_story_id="US-00001",
             epic_id=epic.id,
             github_issue_number=123,
-            title="First Story"
+            title="First Story",
         )
         us2 = UserStory(
             user_story_id="US-00002",
             epic_id=epic.id,
             github_issue_number=123,  # Same GitHub issue number
-            title="Second Story"
+            title="Second Story",
         )
 
         db_session.add(us1)
@@ -239,13 +247,13 @@ class TestUserStory:
             user_story_id="US-00001",
             epic_id=epic.id,
             github_issue_number=123,
-            title="First Story"
+            title="First Story",
         )
         us2 = UserStory(
             user_story_id="US-00001",  # Same user story ID
             epic_id=epic.id,
             github_issue_number=124,
-            title="Second Story"
+            title="Second Story",
         )
 
         db_session.add(us1)
@@ -261,7 +269,7 @@ class TestUserStory:
             user_story_id="US-00002",
             epic_id=epic.id,
             github_issue_number=124,
-            title="Default Test"
+            title="Default Test",
         )
 
         assert us.status == "planned"

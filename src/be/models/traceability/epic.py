@@ -9,15 +9,16 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 Architecture Decision: ADR-003 - Hybrid GitHub + Database RTM Architecture
 """
 
-from sqlalchemy import Column, String, Integer, Text, Float, Boolean, Index
+from sqlalchemy import Boolean, Column, Float, Index, Integer, String, Text
 from sqlalchemy.orm import relationship
+
 from .base import TraceabilityBase
 
 
 class Epic(TraceabilityBase):
     """Epic entity for high-level feature groupings."""
 
-    __tablename__ = 'epics'
+    __tablename__ = "epics"
 
     # Epic-specific fields
     epic_id = Column(String(20), unique=True, nullable=False, index=True)
@@ -32,11 +33,11 @@ class Epic(TraceabilityBase):
     completion_percentage = Column(Float, default=0.0, nullable=False)
 
     # Priority and planning
-    priority = Column(String(20), default='medium', index=True, nullable=False)
+    priority = Column(String(20), default="medium", index=True, nullable=False)
     # Values: critical, high, medium, low
 
     # Risk assessment
-    risk_level = Column(String(20), default='medium', nullable=False)
+    risk_level = Column(String(20), default="medium", nullable=False)
     # Values: low, medium, high, critical
 
     # GDPR implications
@@ -45,7 +46,9 @@ class Epic(TraceabilityBase):
 
     # Relationships
     # User Stories - hybrid relationship (cached in DB, source of truth in GitHub)
-    user_stories = relationship("UserStory", back_populates="epic", cascade="all, delete-orphan")
+    user_stories = relationship(
+        "UserStory", back_populates="epic", cascade="all, delete-orphan"
+    )
 
     # Tests - direct database relationship
     tests = relationship("Test", back_populates="epic", cascade="all, delete-orphan")
@@ -55,9 +58,9 @@ class Epic(TraceabilityBase):
 
     # Indexes for performance
     __table_args__ = (
-        Index('idx_epic_status_priority', 'status', 'priority'),
-        Index('idx_epic_completion', 'completion_percentage'),
-        Index('idx_epic_release', 'target_release_version', 'priority'),
+        Index("idx_epic_status_priority", "status", "priority"),
+        Index("idx_epic_completion", "completion_percentage"),
+        Index("idx_epic_release", "target_release_version", "priority"),
     )
 
     def __init__(self, epic_id: str, title: str, **kwargs):
@@ -73,9 +76,9 @@ class Epic(TraceabilityBase):
         if self.completion_percentage is None:
             self.completion_percentage = 0.0
         if self.priority is None:
-            self.priority = 'medium'
+            self.priority = "medium"
         if self.risk_level is None:
-            self.risk_level = 'medium'
+            self.risk_level = "medium"
         if self.gdpr_applicable is None:
             self.gdpr_applicable = False
 
@@ -94,21 +97,23 @@ class Epic(TraceabilityBase):
     def to_dict(self):
         """Convert to dictionary with Epic-specific fields."""
         base_dict = super().to_dict()
-        base_dict.update({
-            'epic_id': self.epic_id,
-            'business_value': self.business_value,
-            'success_criteria': self.success_criteria,
-            'total_story_points': self.total_story_points,
-            'completed_story_points': self.completed_story_points,
-            'completion_percentage': self.completion_percentage,
-            'priority': self.priority,
-            'risk_level': self.risk_level,
-            'gdpr_applicable': self.gdpr_applicable,
-            'gdpr_considerations': self.gdpr_considerations,
-            'test_count': len(self.tests) if self.tests else 0,
-            'user_story_count': len(self.user_stories) if self.user_stories else 0,
-            'defect_count': len(self.defects) if self.defects else 0
-        })
+        base_dict.update(
+            {
+                "epic_id": self.epic_id,
+                "business_value": self.business_value,
+                "success_criteria": self.success_criteria,
+                "total_story_points": self.total_story_points,
+                "completed_story_points": self.completed_story_points,
+                "completion_percentage": self.completion_percentage,
+                "priority": self.priority,
+                "risk_level": self.risk_level,
+                "gdpr_applicable": self.gdpr_applicable,
+                "gdpr_considerations": self.gdpr_considerations,
+                "test_count": len(self.tests) if self.tests else 0,
+                "user_story_count": len(self.user_stories) if self.user_stories else 0,
+                "defect_count": len(self.defects) if self.defects else 0,
+            }
+        )
         return base_dict
 
     def __repr__(self):

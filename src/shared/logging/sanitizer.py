@@ -5,18 +5,19 @@ Provides sanitization patterns and utilities for removing or anonymizing
 personal data from log entries in compliance with GDPR requirements.
 """
 
-import re
 import hashlib
+import re
 from enum import Enum
-from typing import List, Dict, Any, Pattern, Callable
+from typing import Any, Callable, Dict, List, Pattern
 
 
 class SanitizationLevel(Enum):
     """Levels of log sanitization."""
-    NONE = "none"           # No sanitization (development only)
-    BASIC = "basic"         # Basic PII removal
-    STRICT = "strict"       # Comprehensive sanitization
-    PARANOID = "paranoid"   # Maximum sanitization
+
+    NONE = "none"  # No sanitization (development only)
+    BASIC = "basic"  # Basic PII removal
+    STRICT = "strict"  # Comprehensive sanitization
+    PARANOID = "paranoid"  # Maximum sanitization
 
 
 class LogSanitizer:
@@ -37,56 +38,41 @@ class LogSanitizer:
 
         # Email addresses
         patterns["email"] = re.compile(
-            r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
-            re.IGNORECASE
+            r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", re.IGNORECASE
         )
 
         # IP addresses (IPv4 and IPv6)
-        patterns["ipv4"] = re.compile(
-            r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b'
-        )
-        patterns["ipv6"] = re.compile(
-            r'\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b'
-        )
+        patterns["ipv4"] = re.compile(r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b")
+        patterns["ipv6"] = re.compile(r"\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b")
 
         if self.level in [SanitizationLevel.STRICT, SanitizationLevel.PARANOID]:
             # Phone numbers (various formats)
             patterns["phone"] = re.compile(
-                r'(\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}',
-                re.IGNORECASE
+                r"(\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}",
+                re.IGNORECASE,
             )
 
             # Social security numbers
-            patterns["ssn"] = re.compile(
-                r'\b\d{3}-?\d{2}-?\d{4}\b'
-            )
+            patterns["ssn"] = re.compile(r"\b\d{3}-?\d{2}-?\d{4}\b")
 
             # Credit card numbers (basic pattern)
-            patterns["credit_card"] = re.compile(
-                r'\b(?:\d{4}[-\s]?){3}\d{4}\b'
-            )
+            patterns["credit_card"] = re.compile(r"\b(?:\d{4}[-\s]?){3}\d{4}\b")
 
             # User paths (containing usernames)
             patterns["user_path"] = re.compile(
-                r'/(?:home|users?)/[^/\s]+',
-                re.IGNORECASE
+                r"/(?:home|users?)/[^/\s]+", re.IGNORECASE
             )
 
         if self.level == SanitizationLevel.PARANOID:
             # Names (common patterns - be careful with false positives)
-            patterns["names"] = re.compile(
-                r'\b[A-Z][a-z]+\s+[A-Z][a-z]+\b'
-            )
+            patterns["names"] = re.compile(r"\b[A-Z][a-z]+\s+[A-Z][a-z]+\b")
 
             # Session tokens and API keys
-            patterns["tokens"] = re.compile(
-                r'\b[A-Za-z0-9]{20,}\b'
-            )
+            patterns["tokens"] = re.compile(r"\b[A-Za-z0-9]{20,}\b")
 
             # URLs with sensitive parameters
             patterns["sensitive_urls"] = re.compile(
-                r'https?://[^\s]*(?:token|key|password|auth)=[^\s&]*',
-                re.IGNORECASE
+                r"https?://[^\s]*(?:token|key|password|auth)=[^\s&]*", re.IGNORECASE
             )
 
         return patterns
@@ -106,7 +92,7 @@ class LogSanitizer:
             "user_path": "/[USER_PATH_REDACTED]",
             "names": "[NAME_REDACTED]",
             "tokens": "[TOKEN_REDACTED]",
-            "sensitive_urls": "[SENSITIVE_URL_REDACTED]"
+            "sensitive_urls": "[SENSITIVE_URL_REDACTED]",
         }
 
     def sanitize_text(self, text: str) -> str:
@@ -158,14 +144,20 @@ class LogSanitizer:
             return False
 
         sensitive_fields = {
-            "user_id", "email", "password", "token", "session_id",
-            "api_key", "auth_header", "personal_data"
+            "user_id",
+            "email",
+            "password",
+            "token",
+            "session_id",
+            "api_key",
+            "auth_header",
+            "personal_data",
         }
 
         if self.level == SanitizationLevel.PARANOID:
-            sensitive_fields.update({
-                "user_agent", "referer", "remote_addr", "client_ip"
-            })
+            sensitive_fields.update(
+                {"user_agent", "referer", "remote_addr", "client_ip"}
+            )
 
         return field_name.lower() in sensitive_fields
 
@@ -175,7 +167,7 @@ class LogSanitizer:
             "level": self.level.value,
             "patterns_active": list(self._patterns.keys()),
             "replacements": self._replacements,
-            "description": self._get_level_description()
+            "description": self._get_level_description(),
         }
 
     def _get_level_description(self) -> str:
@@ -184,6 +176,6 @@ class LogSanitizer:
             SanitizationLevel.NONE: "No sanitization - full logging (development only)",
             SanitizationLevel.BASIC: "Basic PII removal (emails, IPs)",
             SanitizationLevel.STRICT: "Comprehensive sanitization (PII, paths, tokens)",
-            SanitizationLevel.PARANOID: "Maximum sanitization (aggressive pattern matching)"
+            SanitizationLevel.PARANOID: "Maximum sanitization (aggressive pattern matching)",
         }
         return descriptions.get(self.level, "Unknown level")

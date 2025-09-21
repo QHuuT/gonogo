@@ -7,16 +7,17 @@ ensuring proper categorization, storage, and analysis of test failures.
 Related to: US-00025 Test failure tracking and reporting
 """
 
-import tempfile
-import pytest
-from datetime import datetime, timedelta
-from pathlib import Path
-from unittest.mock import patch, MagicMock
+import importlib.util
 
 # Import the module under test
 # Use importlib to explicitly load from the correct source path
 import sys
-import importlib.util
+import tempfile
+from datetime import datetime, timedelta
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 # Load the module directly from the source file to avoid namespace collision
 repo_root = Path(__file__).parent.parent.parent.parent.parent
@@ -41,7 +42,7 @@ class TestFailureTracker:
     @pytest.fixture
     def temp_db(self):
         """Create temporary database for testing."""
-        with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as f:
+        with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
             db_path = Path(f.name)
         yield db_path
         # Handle Windows file locking issues with SQLite
@@ -64,21 +65,34 @@ class TestFailureTracker:
 
         # Check that tables exist by attempting to query them
         import sqlite3
+
         with sqlite3.connect(tracker.db_path) as conn:
             tables = conn.execute(
                 "SELECT name FROM sqlite_master WHERE type='table'"
             ).fetchall()
 
         table_names = [t[0] for t in tables]
-        assert 'test_failures' in table_names
-        assert 'failure_patterns' in table_names
+        assert "test_failures" in table_names
+        assert "failure_patterns" in table_names
 
     def test_failure_categorization(self, tracker):
         """Test automatic failure categorization."""
         test_cases = [
-            ("AssertionError: expected 5 but got 3", "assert", FailureCategory.ASSERTION_ERROR),
-            ("ModuleNotFoundError: No module named 'nonexistent'", "", FailureCategory.IMPORT_ERROR),
-            ("UnicodeEncodeError: 'charmap' codec can't encode", "", FailureCategory.UNICODE_ERROR),
+            (
+                "AssertionError: expected 5 but got 3",
+                "assert",
+                FailureCategory.ASSERTION_ERROR,
+            ),
+            (
+                "ModuleNotFoundError: No module named 'nonexistent'",
+                "",
+                FailureCategory.IMPORT_ERROR,
+            ),
+            (
+                "UnicodeEncodeError: 'charmap' codec can't encode",
+                "",
+                FailureCategory.UNICODE_ERROR,
+            ),
             ("TimeoutError: operation timed out", "", FailureCategory.TIMEOUT_ERROR),
             ("ConnectionError: Failed to connect", "", FailureCategory.NETWORK_ERROR),
             ("PermissionError: Access denied", "", FailureCategory.PERMISSION_ERROR),
@@ -95,7 +109,7 @@ class TestFailureTracker:
         critical_failure = TestFailure(
             test_name="test_critical",
             failure_message="Fatal error: segmentation fault",
-            stack_trace="core dumped"
+            stack_trace="core dumped",
         )
         severity = tracker.determine_severity(critical_failure)
         assert severity == FailureSeverity.CRITICAL
@@ -104,7 +118,7 @@ class TestFailureTracker:
         high_failure = TestFailure(
             test_name="test_high",
             failure_message="Database connection failed",
-            stack_trace=""
+            stack_trace="",
         )
         severity = tracker.determine_severity(high_failure)
         assert severity == FailureSeverity.HIGH
@@ -114,7 +128,7 @@ class TestFailureTracker:
             test_name="test_flaky",
             failure_message="Random failure",
             stack_trace="",
-            occurrence_count=5
+            occurrence_count=5,
         )
         severity = tracker.determine_severity(flaky_failure)
         assert severity == FailureSeverity.FLAKY
@@ -130,7 +144,7 @@ class TestFailureTracker:
             category=FailureCategory.ASSERTION_ERROR,
             severity=FailureSeverity.MEDIUM,
             session_id="test_session_123",
-            execution_mode="verbose"
+            execution_mode="verbose",
         )
 
         failure_id = tracker.record_failure(failure)
@@ -139,10 +153,11 @@ class TestFailureTracker:
 
         # Verify the failure was stored
         import sqlite3
+
         with sqlite3.connect(tracker.db_path) as conn:
             result = conn.execute(
                 "SELECT test_name, category, occurrence_count FROM test_failures WHERE id = ?",
-                (failure_id,)
+                (failure_id,),
             ).fetchone()
 
         assert result is not None
@@ -156,7 +171,7 @@ class TestFailureTracker:
             test_name="test_duplicate",
             test_file="test_file.py",
             failure_message="Same error message",
-            stack_trace="Same stack trace"
+            stack_trace="Same stack trace",
         )
 
         # Record the same failure twice
@@ -168,10 +183,10 @@ class TestFailureTracker:
 
         # Verify occurrence count was incremented
         import sqlite3
+
         with sqlite3.connect(tracker.db_path) as conn:
             result = conn.execute(
-                "SELECT occurrence_count FROM test_failures WHERE id = ?",
-                (first_id,)
+                "SELECT occurrence_count FROM test_failures WHERE id = ?", (first_id,)
             ).fetchone()
 
         assert result[0] == 2
@@ -180,9 +195,21 @@ class TestFailureTracker:
         """Test failure statistics generation."""
         # Create some test failures
         failures = [
-            TestFailure(test_name="test1", failure_message="Error 1", category=FailureCategory.ASSERTION_ERROR),
-            TestFailure(test_name="test2", failure_message="Error 2", category=FailureCategory.ASSERTION_ERROR),
-            TestFailure(test_name="test3", failure_message="Error 3", category=FailureCategory.IMPORT_ERROR),
+            TestFailure(
+                test_name="test1",
+                failure_message="Error 1",
+                category=FailureCategory.ASSERTION_ERROR,
+            ),
+            TestFailure(
+                test_name="test2",
+                failure_message="Error 2",
+                category=FailureCategory.ASSERTION_ERROR,
+            ),
+            TestFailure(
+                test_name="test3",
+                failure_message="Error 3",
+                category=FailureCategory.IMPORT_ERROR,
+            ),
         ]
 
         for failure in failures:
@@ -199,7 +226,9 @@ class TestFailureTracker:
         """Test retrieval of top failing tests."""
         # Create failures with different occurrence counts
         failure1 = TestFailure(test_name="flaky_test", failure_message="Error")
-        failure2 = TestFailure(test_name="stable_test", failure_message="Different error")
+        failure2 = TestFailure(
+            test_name="stable_test", failure_message="Different error"
+        )
 
         # Record flaky test multiple times
         for _ in range(5):
@@ -211,8 +240,8 @@ class TestFailureTracker:
         top_failing = tracker.get_top_failing_tests(limit=5)
 
         assert len(top_failing) >= 2
-        assert top_failing[0]['test_name'] == "flaky_test"
-        assert top_failing[0]['total_failures'] >= 5
+        assert top_failing[0]["test_name"] == "flaky_test"
+        assert top_failing[0]["total_failures"] >= 5
 
     def test_detect_patterns(self, tracker):
         """Test pattern detection functionality."""
@@ -221,7 +250,7 @@ class TestFailureTracker:
             failure = TestFailure(
                 test_name=f"test_{i}",
                 failure_message="AssertionError: Test failed",
-                category=FailureCategory.ASSERTION_ERROR
+                category=FailureCategory.ASSERTION_ERROR,
             )
             tracker.record_failure(failure)
 
@@ -229,8 +258,7 @@ class TestFailureTracker:
 
         assert len(patterns) > 0
         assertion_pattern = next(
-            (p for p in patterns if p.category == FailureCategory.ASSERTION_ERROR),
-            None
+            (p for p in patterns if p.category == FailureCategory.ASSERTION_ERROR), None
         )
         assert assertion_pattern is not None
         assert assertion_pattern.occurrences >= 3
@@ -238,17 +266,13 @@ class TestFailureTracker:
     def test_cleanup_old_failures(self, tracker):
         """Test cleanup of old failure records."""
         # Create an old failure
-        old_failure = TestFailure(
-            test_name="old_test",
-            failure_message="Old error"
-        )
+        old_failure = TestFailure(test_name="old_test", failure_message="Old error")
         # Set an old timestamp
         old_failure.last_seen = datetime.utcnow() - timedelta(days=100)
 
         # Create a recent failure
         recent_failure = TestFailure(
-            test_name="recent_test",
-            failure_message="Recent error"
+            test_name="recent_test", failure_message="Recent error"
         )
 
         tracker.record_failure(old_failure)
@@ -261,7 +285,7 @@ class TestFailureTracker:
 
         # Verify recent failure still exists
         top_failing = tracker.get_top_failing_tests()
-        test_names = [t['test_name'] for t in top_failing]
+        test_names = [t["test_name"] for t in top_failing]
         assert "recent_test" in test_names
         # Old test should be gone, but might not be in top failing if there are others
 
@@ -272,8 +296,7 @@ class TestTestFailure:
     def test_failure_creation(self):
         """Test TestFailure object creation and defaults."""
         failure = TestFailure(
-            test_name="test_example",
-            failure_message="Test error message"
+            test_name="test_example", failure_message="Test error message"
         )
 
         assert failure.test_name == "test_example"
@@ -291,13 +314,13 @@ class TestTestFailure:
         failure1 = TestFailure(
             test_name="test_function",
             failure_message="AssertionError: expected 5 got 3",
-            category=FailureCategory.ASSERTION_ERROR
+            category=FailureCategory.ASSERTION_ERROR,
         )
 
         failure2 = TestFailure(
             test_name="test_function",
             failure_message="AssertionError: expected 7 got 9",  # Different numbers
-            category=FailureCategory.ASSERTION_ERROR
+            category=FailureCategory.ASSERTION_ERROR,
         )
 
         # Should generate same hash (numbers normalized)
@@ -306,7 +329,7 @@ class TestTestFailure:
         failure3 = TestFailure(
             test_name="different_test",  # Different test name
             failure_message="AssertionError: expected 5 got 3",
-            category=FailureCategory.ASSERTION_ERROR
+            category=FailureCategory.ASSERTION_ERROR,
         )
 
         # Should generate different hash (different test name)
@@ -316,11 +339,13 @@ class TestTestFailure:
         """Test that error hash normalizes common variable elements."""
         failure = TestFailure(
             test_name="test_function",
-            failure_message="Error at line 123 with value 0x7f8b8c000000 in file /path/to/file.py"
+            failure_message="Error at line 123 with value 0x7f8b8c000000 in file /path/to/file.py",
         )
 
         # Verify normalization patterns are applied
-        assert "123" not in failure._generate_error_hash()  # Numbers should be normalized
+        assert (
+            "123" not in failure._generate_error_hash()
+        )  # Numbers should be normalized
 
 
 class TestFailureEnums:
@@ -345,7 +370,7 @@ class TestFailureTrackerIntegration:
     @pytest.fixture
     def tracker(self):
         """Create FailureTracker with temporary database."""
-        with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as f:
+        with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
             db_path = Path(f.name)
         tracker = FailureTracker(db_path=db_path)
         yield tracker
@@ -364,7 +389,7 @@ class TestFailureTrackerIntegration:
             test_file="tests/test_file.py",
             failure_message="UnicodeEncodeError: 'charmap' codec can't encode character '✅'",
             stack_trace="Error with emoji ✅ and symbols ⚠️ 📝",
-            metadata={"status": "✅", "type": "📝"}
+            metadata={"status": "✅", "type": "📝"},
         )
 
         failure_id = tracker.record_failure(failure)
@@ -372,10 +397,11 @@ class TestFailureTrackerIntegration:
 
         # Verify Unicode content was stored correctly
         import sqlite3
+
         with sqlite3.connect(tracker.db_path) as conn:
             result = conn.execute(
                 "SELECT failure_message, stack_trace FROM test_failures WHERE id = ?",
-                (failure_id,)
+                (failure_id,),
             ).fetchone()
 
         assert "✅" in result[0]
@@ -388,7 +414,7 @@ class TestFailureTrackerIntegration:
         failure = TestFailure(
             test_name="test_large_stack",
             failure_message="Error with large stack trace",
-            stack_trace=large_stack_trace
+            stack_trace=large_stack_trace,
         )
 
         failure_id = tracker.record_failure(failure)
@@ -414,18 +440,13 @@ class TestFailureTrackerIntegration:
     def test_malformed_data_handling(self, tracker):
         """Test handling of malformed or edge case data."""
         # Empty strings
-        failure = TestFailure(
-            test_name="",
-            failure_message="",
-            stack_trace=""
-        )
+        failure = TestFailure(test_name="", failure_message="", stack_trace="")
         failure_id = tracker.record_failure(failure)
         assert failure_id is not None
 
         # Very long test name
         failure = TestFailure(
-            test_name="test_" + "x" * 1000,
-            failure_message="Long test name error"
+            test_name="test_" + "x" * 1000, failure_message="Long test name error"
         )
         failure_id = tracker.record_failure(failure)
         assert failure_id is not None

@@ -10,9 +10,9 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 
 import re
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
-from src.be.models.traceability import Epic, UserStory, Defect, GitHubSync
+from src.be.models.traceability import Defect, Epic, GitHubSync, UserStory
 
 
 class GitHubDatabaseSyncSimulator:
@@ -24,24 +24,24 @@ class GitHubDatabaseSyncSimulator:
 
     def parse_issue_type(self, issue_data: Dict[str, Any]) -> Optional[str]:
         """Determine issue type (Epic, User Story, Defect) from title and labels."""
-        title = issue_data.get('title', '').upper()
-        labels = [label['name'] for label in issue_data.get('labels', [])]
+        title = issue_data.get("title", "").upper()
+        labels = [label["name"] for label in issue_data.get("labels", [])]
 
-        if title.startswith('EP-') or 'epic' in labels:
-            return 'epic'
-        elif title.startswith('US-') or 'user-story' in labels:
-            return 'user_story'
-        elif title.startswith('DEF-') or 'defect' in labels or 'bug' in labels:
-            return 'defect'
+        if title.startswith("EP-") or "epic" in labels:
+            return "epic"
+        elif title.startswith("US-") or "user-story" in labels:
+            return "user_story"
+        elif title.startswith("DEF-") or "defect" in labels or "bug" in labels:
+            return "defect"
 
         return None
 
     def extract_entity_id(self, title: str, entity_type: str) -> Optional[str]:
         """Extract entity ID from title (EP-XXXXX, US-XXXXX, DEF-XXXXX)."""
         patterns = {
-            'epic': r'(EP-\d{5})',
-            'user_story': r'(US-\d{5})',
-            'defect': r'(DEF-\d{5})'
+            "epic": r"(EP-\d{5})",
+            "user_story": r"(US-\d{5})",
+            "defect": r"(DEF-\d{5})",
         }
 
         pattern = patterns.get(entity_type)
@@ -53,43 +53,45 @@ class GitHubDatabaseSyncSimulator:
 
     def parse_epic_reference(self, body: str) -> Optional[str]:
         """Extract parent epic reference from issue body."""
-        match = re.search(r'\*?\*?Parent Epic\*?\*?[:\s]*EP-(\d{5})', body, re.IGNORECASE)
-        return f'EP-{match.group(1)}' if match else None
+        match = re.search(
+            r"\*?\*?Parent Epic\*?\*?[:\s]*EP-(\d{5})", body, re.IGNORECASE
+        )
+        return f"EP-{match.group(1)}" if match else None
 
     def parse_story_points(self, body: str) -> int:
         """Extract story points from issue body."""
-        match = re.search(r'\*?\*?Story Points\*?\*?[:\s]*(\d+)', body, re.IGNORECASE)
+        match = re.search(r"\*?\*?Story Points\*?\*?[:\s]*(\d+)", body, re.IGNORECASE)
         return int(match.group(1)) if match else 0
 
     def parse_priority(self, labels: list) -> str:
         """Extract priority from labels."""
         priority_map = {
-            'priority/critical': 'critical',
-            'priority/high': 'high',
-            'priority/medium': 'medium',
-            'priority/low': 'low'
+            "priority/critical": "critical",
+            "priority/high": "high",
+            "priority/medium": "medium",
+            "priority/low": "low",
         }
 
         for label in labels:
             if label in priority_map:
                 return priority_map[label]
 
-        return 'medium'
+        return "medium"
 
     def parse_severity(self, labels: list) -> str:
         """Extract severity from labels (for defects)."""
         severity_map = {
-            'severity/critical': 'critical',
-            'severity/high': 'high',
-            'severity/medium': 'medium',
-            'severity/low': 'low'
+            "severity/critical": "critical",
+            "severity/high": "high",
+            "severity/medium": "medium",
+            "severity/low": "low",
         }
 
         for label in labels:
             if label in severity_map:
                 return severity_map[label]
 
-        return 'medium'
+        return "medium"
 
     def sync_epic(self, db, issue_data: Dict[str, Any], entity_id: str) -> bool:
         """Sync Epic to database."""
@@ -97,11 +99,11 @@ class GitHubDatabaseSyncSimulator:
             # Check if Epic already exists
             existing = db.query(Epic).filter(Epic.epic_id == entity_id).first()
 
-            title = issue_data['title']
-            description = issue_data.get('body', '')
-            labels = [label['name'] for label in issue_data.get('labels', [])]
+            title = issue_data["title"]
+            description = issue_data.get("body", "")
+            labels = [label["name"] for label in issue_data.get("labels", [])]
             priority = self.parse_priority(labels)
-            status = 'completed' if issue_data['state'] == 'closed' else 'planned'
+            status = "completed" if issue_data["state"] == "closed" else "planned"
 
             if existing:
                 # Update existing Epic
@@ -116,7 +118,7 @@ class GitHubDatabaseSyncSimulator:
                     title=title,
                     description=description,
                     priority=priority,
-                    status=status
+                    status=status,
                 )
                 db.add(epic)
 
@@ -128,14 +130,16 @@ class GitHubDatabaseSyncSimulator:
         """Sync User Story to database."""
         try:
             # Check if User Story already exists
-            existing = db.query(UserStory).filter(UserStory.user_story_id == entity_id).first()
+            existing = (
+                db.query(UserStory).filter(UserStory.user_story_id == entity_id).first()
+            )
 
-            title = issue_data['title']
-            description = issue_data.get('body', '')
-            labels = [label['name'] for label in issue_data.get('labels', [])]
+            title = issue_data["title"]
+            description = issue_data.get("body", "")
+            labels = [label["name"] for label in issue_data.get("labels", [])]
             priority = self.parse_priority(labels)
             story_points = self.parse_story_points(description)
-            github_issue_number = issue_data['number']
+            github_issue_number = issue_data["number"]
 
             # Find parent Epic
             epic_reference = self.parse_epic_reference(description)
@@ -146,7 +150,9 @@ class GitHubDatabaseSyncSimulator:
                     epic_id = epic.id
 
             # Determine implementation status
-            implementation_status = 'done' if issue_data['state'] == 'closed' else 'todo'
+            implementation_status = (
+                "done" if issue_data["state"] == "closed" else "todo"
+            )
 
             if existing:
                 # Update existing User Story
@@ -155,7 +161,7 @@ class GitHubDatabaseSyncSimulator:
                 existing.priority = priority
                 existing.story_points = story_points
                 existing.implementation_status = implementation_status
-                existing.github_issue_state = issue_data['state']
+                existing.github_issue_state = issue_data["state"]
                 if epic_id:
                     existing.epic_id = epic_id
             else:
@@ -165,12 +171,12 @@ class GitHubDatabaseSyncSimulator:
                         user_story_id=entity_id,
                         epic_id=epic_id,
                         github_issue_number=github_issue_number,
-                        github_issue_state=issue_data['state'],
+                        github_issue_state=issue_data["state"],
                         title=title,
                         description=description,
                         story_points=story_points,
                         priority=priority,
-                        implementation_status=implementation_status
+                        implementation_status=implementation_status,
                     )
                     db.add(user_story)
                 else:
@@ -187,16 +193,16 @@ class GitHubDatabaseSyncSimulator:
             # Check if Defect already exists
             existing = db.query(Defect).filter(Defect.defect_id == entity_id).first()
 
-            title = issue_data['title']
-            description = issue_data.get('body', '')
-            labels = [label['name'] for label in issue_data.get('labels', [])]
+            title = issue_data["title"]
+            description = issue_data.get("body", "")
+            labels = [label["name"] for label in issue_data.get("labels", [])]
             priority = self.parse_priority(labels)
             severity = self.parse_severity(labels)
-            github_issue_number = issue_data['number']
-            status = 'resolved' if issue_data['state'] == 'closed' else 'open'
+            github_issue_number = issue_data["number"]
+            status = "resolved" if issue_data["state"] == "closed" else "open"
 
             # Determine defect type
-            defect_type = 'security' if 'security' in labels else 'bug'
+            defect_type = "security" if "security" in labels else "bug"
 
             if existing:
                 # Update existing Defect
@@ -216,7 +222,7 @@ class GitHubDatabaseSyncSimulator:
                     severity=severity,
                     priority=priority,
                     status=status,
-                    defect_type=defect_type
+                    defect_type=defect_type,
                 )
                 db.add(defect)
 
@@ -229,9 +235,13 @@ class GitHubDatabaseSyncSimulator:
         try:
             sync_record = GitHubSync(
                 github_issue_number=self.issue_number,
-                sync_status='completed' if success else 'failed',
+                sync_status="completed" if success else "failed",
                 last_sync_time=datetime.utcnow(),
-                sync_errors=None if success else f'Failed to sync {entity_id or "unknown entity"}'
+                sync_errors=(
+                    None
+                    if success
+                    else f'Failed to sync {entity_id or "unknown entity"}'
+                ),
             )
             db.add(sync_record)
         except Exception:

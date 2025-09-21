@@ -9,7 +9,8 @@ Architecture Decision: ADR-003 - Hybrid GitHub + Database RTM Architecture
 """
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Text, Index
+
+from sqlalchemy import Column, DateTime, Index, Integer, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
 
@@ -29,7 +30,7 @@ class TraceabilityBase(Base):
     description = Column(Text)
 
     # Status tracking
-    status = Column(String(50), nullable=False, default='planned', index=True)
+    status = Column(String(50), nullable=False, default="planned", index=True)
     # Possible values: planned, in_progress, completed, blocked, cancelled
 
     # GitHub integration
@@ -40,11 +41,15 @@ class TraceabilityBase(Base):
     # Development versions (git-based, internal development)
     introduced_in_commit = Column(String(40), index=True)  # Git commit SHA
     introduced_in_branch = Column(String(100), index=True)  # Git branch name
-    resolved_in_commit = Column(String(40), index=True)     # Resolution commit SHA
+    resolved_in_commit = Column(String(40), index=True)  # Resolution commit SHA
 
     # Release versions (customer-facing versions)
-    target_release_version = Column(String(50), index=True)    # Planned release (e.g., v1.2.0)
-    released_in_version = Column(String(50), index=True)       # Actual release (e.g., v1.1.5)
+    target_release_version = Column(
+        String(50), index=True
+    )  # Planned release (e.g., v1.2.0)
+    released_in_version = Column(
+        String(50), index=True
+    )  # Actual release (e.g., v1.1.5)
 
     # Version context
     affects_versions = Column(Text)  # JSON array of affected versions
@@ -52,7 +57,9 @@ class TraceabilityBase(Base):
 
     # Audit trail
     created_at = Column(DateTime, default=func.now(), nullable=False)
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+    updated_at = Column(
+        DateTime, default=func.now(), onupdate=func.now(), nullable=False
+    )
 
     def __init__(self, **kwargs):
         """Initialize TraceabilityBase with default values."""
@@ -60,7 +67,7 @@ class TraceabilityBase(Base):
 
         # Set default status if not provided
         if self.status is None:
-            self.status = 'planned'
+            self.status = "planned"
 
     def set_git_context(self, commit_sha: str, branch: str):
         """Set git context for version tracking."""
@@ -74,14 +81,17 @@ class TraceabilityBase(Base):
             self.released_in_version = release_version
 
         # Update status if not already completed
-        if self.status not in ['completed', 'done']:
-            self.status = 'completed'
+        if self.status not in ["completed", "done"]:
+            self.status = "completed"
 
     def add_affected_version(self, version: str):
         """Add a version to the affected versions list."""
         import json
+
         try:
-            versions = json.loads(self.affects_versions) if self.affects_versions else []
+            versions = (
+                json.loads(self.affects_versions) if self.affects_versions else []
+            )
         except (json.JSONDecodeError, TypeError):
             versions = []
 
@@ -92,8 +102,11 @@ class TraceabilityBase(Base):
     def add_fixed_version(self, version: str):
         """Add a version to the fixed versions list."""
         import json
+
         try:
-            versions = json.loads(self.fixed_in_versions) if self.fixed_in_versions else []
+            versions = (
+                json.loads(self.fixed_in_versions) if self.fixed_in_versions else []
+            )
         except (json.JSONDecodeError, TypeError):
             versions = []
 
@@ -104,8 +117,11 @@ class TraceabilityBase(Base):
     def is_fixed_in_version(self, version: str) -> bool:
         """Check if issue is fixed in a specific version."""
         import json
+
         try:
-            versions = json.loads(self.fixed_in_versions) if self.fixed_in_versions else []
+            versions = (
+                json.loads(self.fixed_in_versions) if self.fixed_in_versions else []
+            )
             return version in versions
         except (json.JSONDecodeError, TypeError):
             return False
@@ -116,21 +132,21 @@ class TraceabilityBase(Base):
     def to_dict(self):
         """Convert to dictionary for JSON serialization."""
         return {
-            'id': self.id,
-            'title': self.title,
-            'description': self.description,
-            'status': self.status,
-            'github_issue_number': self.github_issue_number,
-            'github_issue_url': self.github_issue_url,
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "status": self.status,
+            "github_issue_number": self.github_issue_number,
+            "github_issue_url": self.github_issue_url,
             # Version tracking
-            'introduced_in_commit': self.introduced_in_commit,
-            'introduced_in_branch': self.introduced_in_branch,
-            'resolved_in_commit': self.resolved_in_commit,
-            'target_release_version': self.target_release_version,
-            'released_in_version': self.released_in_version,
-            'affects_versions': self.affects_versions,
-            'fixed_in_versions': self.fixed_in_versions,
+            "introduced_in_commit": self.introduced_in_commit,
+            "introduced_in_branch": self.introduced_in_branch,
+            "resolved_in_commit": self.resolved_in_commit,
+            "target_release_version": self.target_release_version,
+            "released_in_version": self.released_in_version,
+            "affects_versions": self.affects_versions,
+            "fixed_in_versions": self.fixed_in_versions,
             # Audit
-            'created_at': self.created_at.isoformat() if self.created_at else None,
-            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

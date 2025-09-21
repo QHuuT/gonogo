@@ -11,12 +11,13 @@ Related Issue: US-00017 - Comprehensive testing and extensibility framework
 Epic: EP-00005 - RTM Automation
 """
 
-import pytest
-import tempfile
 import os
-import sys
 import subprocess
+import sys
+import tempfile
 from pathlib import Path
+
+import pytest
 
 # Add src to Python path
 src_path = Path(__file__).parent.parent.parent / "src"
@@ -56,14 +57,11 @@ class TestRTMEndToEnd:
     def sample_config(self):
         """Sample configuration for testing."""
         return {
-            'github': {
-                'owner': 'TestOwner',
-                'repo': 'TestRepo'
+            "github": {"owner": "TestOwner", "repo": "TestRepo"},
+            "link_patterns": {
+                "epic": "https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}",
+                "user_story": "https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}",
             },
-            'link_patterns': {
-                'epic': 'https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}',
-                'user_story': 'https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}'
-            }
         }
 
     @pytest.fixture
@@ -99,20 +97,21 @@ class TestRTMEndToEnd:
 
             # Create config file
             import yaml
+
             config_file = config_dir / "rtm-automation.yml"
             config_file.write_text(yaml.dump(sample_config))
 
             yield {
-                'project_dir': temp_path,
-                'rtm_file': rtm_file,
-                'config_file': config_file
+                "project_dir": temp_path,
+                "rtm_file": rtm_file,
+                "config_file": config_file,
             }
 
     def test_rtm_generator_with_real_files(self, temp_project_structure):
         """Test RTM generator with real file structure."""
-        project_dir = temp_project_structure['project_dir']
-        rtm_file = temp_project_structure['rtm_file']
-        config_file = temp_project_structure['config_file']
+        project_dir = temp_project_structure["project_dir"]
+        rtm_file = temp_project_structure["rtm_file"]
+        config_file = temp_project_structure["config_file"]
 
         # Change to project directory
         original_cwd = os.getcwd()
@@ -130,11 +129,12 @@ class TestRTMEndToEnd:
             assert result.valid_links > 0
 
             # Check specific validations
-            github_links = [link for link in result.invalid_links
-                          if 'github' in link.url]
+            github_links = [
+                link for link in result.invalid_links if "github" in link.url
+            ]
             # GitHub links should be valid (format-wise)
             assert len(github_links) == 0 or all(
-                link.error_message and 'format' not in link.error_message.lower()
+                link.error_message and "format" not in link.error_message.lower()
                 for link in github_links
             )
 
@@ -143,9 +143,9 @@ class TestRTMEndToEnd:
 
     def test_rtm_update_with_real_files(self, temp_project_structure):
         """Test RTM update functionality with real files."""
-        project_dir = temp_project_structure['project_dir']
-        rtm_file = temp_project_structure['rtm_file']
-        config_file = temp_project_structure['config_file']
+        project_dir = temp_project_structure["project_dir"]
+        rtm_file = temp_project_structure["rtm_file"]
+        config_file = temp_project_structure["config_file"]
 
         original_cwd = os.getcwd()
         try:
@@ -180,22 +180,30 @@ class TestRTMEndToEnd:
 
     def test_cli_tool_integration(self, temp_project_structure):
         """Test CLI tool with real project structure."""
-        project_dir = temp_project_structure['project_dir']
-        rtm_file = temp_project_structure['rtm_file']
+        project_dir = temp_project_structure["project_dir"]
+        rtm_file = temp_project_structure["rtm_file"]
 
         # Get CLI tool path
-        cli_tool = Path(__file__).parent.parent.parent.parent / "tools" / "rtm-links-simple.py"
+        cli_tool = (
+            Path(__file__).parent.parent.parent.parent / "tools" / "rtm-links-simple.py"
+        )
 
         original_cwd = os.getcwd()
         try:
             os.chdir(project_dir)
 
             # Test validation
-            result = subprocess.run([
-                sys.executable, str(cli_tool),
-                '--validate',
-                '--rtm-file', str(rtm_file)
-            ], capture_output=True, text=True)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(cli_tool),
+                    "--validate",
+                    "--rtm-file",
+                    str(rtm_file),
+                ],
+                capture_output=True,
+                text=True,
+            )
 
             assert result.returncode == 0
             assert "Total links:" in result.stdout
@@ -203,11 +211,17 @@ class TestRTMEndToEnd:
             assert "Health score:" in result.stdout
 
             # Test update
-            result = subprocess.run([
-                sys.executable, str(cli_tool),
-                '--update',
-                '--rtm-file', str(rtm_file)
-            ], capture_output=True, text=True)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(cli_tool),
+                    "--update",
+                    "--rtm-file",
+                    str(rtm_file),
+                ],
+                capture_output=True,
+                text=True,
+            )
 
             assert result.returncode == 0
             assert "Updates that would be made:" in result.stdout
@@ -227,26 +241,26 @@ class TestRTMEndToEnd:
         assert isinstance(plugins, dict)
 
         # Check for expected plugin types
-        expected_types = ['link_generators', 'validators', 'parsers']
+        expected_types = ["link_generators", "validators", "parsers"]
         for plugin_type in expected_types:
             assert plugin_type in plugins
 
     def test_configuration_variations(self, temp_project_structure):
         """Test different configuration scenarios."""
-        config_file = temp_project_structure['config_file']
+        config_file = temp_project_structure["config_file"]
 
         # Test missing config file
         generator = RTMLinkGenerator("nonexistent-config.yml")
-        assert generator.github_owner == 'QHuuT'  # Default
+        assert generator.github_owner == "QHuuT"  # Default
 
         # Test custom config
         generator = RTMLinkGenerator(str(config_file))
-        assert generator.github_owner == 'TestOwner'  # From config
+        assert generator.github_owner == "TestOwner"  # From config
 
     def test_error_handling_integration(self, temp_project_structure):
         """Test error handling in integration scenarios."""
-        project_dir = temp_project_structure['project_dir']
-        config_file = temp_project_structure['config_file']
+        project_dir = temp_project_structure["project_dir"]
+        config_file = temp_project_structure["config_file"]
 
         original_cwd = os.getcwd()
         try:
@@ -271,31 +285,36 @@ class TestRTMEndToEnd:
 
     def test_link_generation_accuracy(self, temp_project_structure):
         """Test accuracy of generated links."""
-        config_file = temp_project_structure['config_file']
+        config_file = temp_project_structure["config_file"]
         generator = RTMLinkGenerator(str(config_file))
 
         # Test epic link
         epic_link = generator.generate_github_issue_link("EP-00001", bold=True)
-        assert epic_link == "[**EP-00001**](https://github.com/TestOwner/TestRepo/issues?q=is%3Aissue+EP-00001)"
+        assert (
+            epic_link
+            == "[**EP-00001**](https://github.com/TestOwner/TestRepo/issues?q=is%3Aissue+EP-00001)"
+        )
 
         # Test user story link
         us_link = generator.generate_github_issue_link("US-00014", bold=False)
-        assert us_link == "[US-00014](https://github.com/TestOwner/TestRepo/issues?q=is%3Aissue+US-00014)"
+        assert (
+            us_link
+            == "[US-00014](https://github.com/TestOwner/TestRepo/issues?q=is%3Aissue+US-00014)"
+        )
 
         # Test file link
-        rtm_path = temp_project_structure['rtm_file']
+        rtm_path = temp_project_structure["rtm_file"]
         file_link = generator.generate_file_link(
-            "tests/bdd/features/auth.feature",
-            str(rtm_path)
+            "tests/bdd/features/auth.feature", str(rtm_path)
         )
         assert "auth.feature" in file_link
         assert "](" in file_link
 
     def test_validation_report_generation(self, temp_project_structure):
         """Test validation report generation."""
-        project_dir = temp_project_structure['project_dir']
-        rtm_file = temp_project_structure['rtm_file']
-        config_file = temp_project_structure['config_file']
+        project_dir = temp_project_structure["project_dir"]
+        rtm_file = temp_project_structure["rtm_file"]
+        config_file = temp_project_structure["config_file"]
 
         original_cwd = os.getcwd()
         try:
@@ -337,7 +356,7 @@ class TestRTMPerformance:
             us_id = f"US-{i+1:05d}"
             large_content += f"| [**{epic_id}**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+{epic_id}) | [{us_id}](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+{us_id}) | ✅ |\n"
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
             f.write(large_content)
             f.flush()
 
@@ -345,6 +364,7 @@ class TestRTMPerformance:
 
             # Time the validation
             import time
+
             start_time = time.time()
             result = generator.validate_rtm_links(f.name)
             end_time = time.time()
@@ -359,5 +379,5 @@ class TestRTMPerformance:
         os.unlink(f.name)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main([__file__])

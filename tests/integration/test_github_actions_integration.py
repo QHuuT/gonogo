@@ -9,13 +9,14 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
 import json
-import pytest
-from unittest.mock import Mock, patch
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
+from unittest.mock import Mock, patch
+
+import pytest
 
 from src.be.database import get_db_session
-from src.be.models.traceability import Epic, UserStory, Defect, GitHubSync
+from src.be.models.traceability import Defect, Epic, GitHubSync, UserStory
 
 
 class MockGitHubIssue:
@@ -32,10 +33,10 @@ class MockGitHubIssue:
             "labels": [
                 {"name": "epic"},
                 {"name": "priority/high"},
-                {"name": "component/automation"}
+                {"name": "component/automation"},
             ],
             "created_at": "2025-09-21T00:00:00Z",
-            "updated_at": "2025-09-21T12:00:00Z"
+            "updated_at": "2025-09-21T12:00:00Z",
         }
 
     @staticmethod
@@ -49,10 +50,10 @@ class MockGitHubIssue:
             "labels": [
                 {"name": "user-story"},
                 {"name": "priority/high"},
-                {"name": "component/ci-cd"}
+                {"name": "component/ci-cd"},
             ],
             "created_at": "2025-09-21T00:00:00Z",
-            "updated_at": "2025-09-21T12:00:00Z"
+            "updated_at": "2025-09-21T12:00:00Z",
         }
 
     @staticmethod
@@ -67,10 +68,10 @@ class MockGitHubIssue:
                 {"name": "defect"},
                 {"name": "priority/high"},
                 {"name": "severity/high"},
-                {"name": "component/database"}
+                {"name": "component/database"},
             ],
             "created_at": "2025-09-21T00:00:00Z",
-            "updated_at": "2025-09-21T12:00:00Z"
+            "updated_at": "2025-09-21T12:00:00Z",
         }
 
 
@@ -126,7 +127,7 @@ class TestGitHubDatabaseSync:
             title="Old Title",
             description="Old description",
             priority="medium",
-            status="planned"
+            status="planned",
         )
         self.db.add(epic)
         self.db.commit()
@@ -141,7 +142,10 @@ class TestGitHubDatabaseSync:
 
         # Verify Epic was updated
         updated_epic = self.db.query(Epic).filter(Epic.epic_id == "EP-00005").first()
-        assert updated_epic.title == "EP-00005: Requirements Traceability Matrix Automation"
+        assert (
+            updated_epic.title
+            == "EP-00005: Requirements Traceability Matrix Automation"
+        )
         assert updated_epic.priority == "high"
         assert updated_epic.status == "completed"  # Closed issue → completed status
 
@@ -150,11 +154,7 @@ class TestGitHubDatabaseSync:
         from tests.integration.github_sync_simulator import GitHubDatabaseSyncSimulator
 
         # Create parent Epic first
-        epic = Epic(
-            epic_id="EP-00005",
-            title="RTM Automation",
-            status="planned"
-        )
+        epic = Epic(epic_id="EP-00005", title="RTM Automation", status="planned")
         self.db.add(epic)
         self.db.commit()
 
@@ -168,11 +168,17 @@ class TestGitHubDatabaseSync:
         assert success is True
 
         # Verify User Story was created with Epic reference
-        user_story = self.db.query(UserStory).filter(UserStory.user_story_id == "US-00056").first()
+        user_story = (
+            self.db.query(UserStory)
+            .filter(UserStory.user_story_id == "US-00056")
+            .first()
+        )
         assert user_story is not None
         assert user_story.epic_id == epic.id
         assert user_story.github_issue_number == 2
-        assert user_story.story_points == 8  # Should be parsed from "**Story Points**: 8"
+        assert (
+            user_story.story_points == 8
+        )  # Should be parsed from "**Story Points**: 8"
         assert user_story.implementation_status == "todo"
 
     def test_user_story_sync_closed_issue(self):
@@ -194,7 +200,11 @@ class TestGitHubDatabaseSync:
         assert success is True
 
         # Verify User Story has correct status
-        user_story = self.db.query(UserStory).filter(UserStory.user_story_id == "US-00056").first()
+        user_story = (
+            self.db.query(UserStory)
+            .filter(UserStory.user_story_id == "US-00056")
+            .first()
+        )
         assert user_story.implementation_status == "done"
         assert user_story.github_issue_state == "closed"
 
@@ -232,9 +242,11 @@ class TestGitHubDatabaseSync:
         self.db.commit()
 
         # Verify sync record
-        sync_record = self.db.query(GitHubSync).filter(
-            GitHubSync.github_issue_number == 123
-        ).first()
+        sync_record = (
+            self.db.query(GitHubSync)
+            .filter(GitHubSync.github_issue_number == 123)
+            .first()
+        )
         assert sync_record is not None
         assert sync_record.sync_status == "completed"
         assert sync_record.sync_errors is None
@@ -251,23 +263,27 @@ class TestGitHubDatabaseSync:
         self.db.commit()
 
         # Verify sync record
-        sync_record = self.db.query(GitHubSync).filter(
-            GitHubSync.github_issue_number == 124
-        ).first()
+        sync_record = (
+            self.db.query(GitHubSync)
+            .filter(GitHubSync.github_issue_number == 124)
+            .first()
+        )
         assert sync_record is not None
         assert sync_record.sync_status == "failed"
         assert "Failed to sync US-00001" in sync_record.sync_errors
 
     def test_epic_progress_calculation(self):
         """Test Epic progress calculation when User Stories are completed."""
-        from tests.integration.epic_progress_simulator import EpicProgressCalculatorSimulator
+        from tests.integration.epic_progress_simulator import (
+            EpicProgressCalculatorSimulator,
+        )
 
         # Create Epic with multiple User Stories
         epic = Epic(
             epic_id="EP-00005",
             title="RTM Automation",
             status="planned",
-            completion_percentage=0.0
+            completion_percentage=0.0,
         )
         self.db.add(epic)
         self.db.flush()
@@ -279,7 +295,7 @@ class TestGitHubDatabaseSync:
             github_issue_number=101,
             title="First User Story",
             story_points=5,
-            implementation_status="done"
+            implementation_status="done",
         )
         us2 = UserStory(
             user_story_id="US-00002",
@@ -287,7 +303,7 @@ class TestGitHubDatabaseSync:
             github_issue_number=102,
             title="Second User Story",
             story_points=3,
-            implementation_status="todo"
+            implementation_status="todo",
         )
         us3 = UserStory(
             user_story_id="US-00003",
@@ -295,7 +311,7 @@ class TestGitHubDatabaseSync:
             github_issue_number=103,
             title="Third User Story",
             story_points=2,
-            implementation_status="done"
+            implementation_status="done",
         )
 
         self.db.add_all([us1, us2, us3])
@@ -310,7 +326,9 @@ class TestGitHubDatabaseSync:
 
     def test_epic_progress_without_story_points(self):
         """Test Epic progress calculation when User Stories have no story points."""
-        from tests.integration.epic_progress_simulator import EpicProgressCalculatorSimulator
+        from tests.integration.epic_progress_simulator import (
+            EpicProgressCalculatorSimulator,
+        )
 
         # Create Epic
         epic = Epic(epic_id="EP-00006", title="Test Epic", status="planned")
@@ -324,7 +342,7 @@ class TestGitHubDatabaseSync:
             github_issue_number=201,
             title="First Test User Story",
             story_points=0,
-            implementation_status="done"
+            implementation_status="done",
         )
         us2 = UserStory(
             user_story_id="US-00011",
@@ -332,7 +350,7 @@ class TestGitHubDatabaseSync:
             github_issue_number=202,
             title="Second Test User Story",
             story_points=0,
-            implementation_status="todo"
+            implementation_status="todo",
         )
 
         self.db.add_all([us1, us2])
@@ -347,7 +365,9 @@ class TestGitHubDatabaseSync:
 
     def test_epic_status_update_on_completion(self):
         """Test that Epic status is updated when progress reaches 100%."""
-        from tests.integration.epic_progress_simulator import EpicProgressCalculatorSimulator
+        from tests.integration.epic_progress_simulator import (
+            EpicProgressCalculatorSimulator,
+        )
 
         # Create Epic
         epic = Epic(epic_id="EP-00007", title="Completed Epic", status="in_progress")
@@ -361,7 +381,7 @@ class TestGitHubDatabaseSync:
             github_issue_number=301,
             title="Completed User Story",
             story_points=5,
-            implementation_status="done"
+            implementation_status="done",
         )
         self.db.add(us)
         self.db.commit()
@@ -461,13 +481,14 @@ class TestGitHubActionsWorkflowIntegration:
             "issues.edited",
             "issues.labeled",
             "issues.closed",
-            "issues.reopened"
+            "issues.reopened",
         ]
 
         # In a real test, we'd verify the workflow YAML configuration
-        assert all(trigger in str(expected_triggers) for trigger in [
-            "opened", "edited", "labeled", "closed", "reopened"
-        ])
+        assert all(
+            trigger in str(expected_triggers)
+            for trigger in ["opened", "edited", "labeled", "closed", "reopened"]
+        )
 
     @pytest.mark.integration
     def test_job_dependencies(self):
@@ -477,11 +498,7 @@ class TestGitHubActionsWorkflowIntegration:
         # 2. sync-to-database (needs: process-issue)
         # 3. calculate-epic-progress (needs: sync-to-database)
 
-        job_order = [
-            "process-issue",
-            "sync-to-database",
-            "calculate-epic-progress"
-        ]
+        job_order = ["process-issue", "sync-to-database", "calculate-epic-progress"]
 
         # Verify logical dependency chain
         assert job_order[0] == "process-issue"

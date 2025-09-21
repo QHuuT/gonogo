@@ -8,8 +8,9 @@ Related to: US-00031 (Unicode encoding fixes)
 """
 
 import tempfile
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 class TestUnicodeEncodingValidation:
@@ -35,13 +36,15 @@ Arrows: → ← ↑ ↓ ↔ ⟶ ⟵
 """
 
         # This should NOT raise UnicodeEncodeError
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False, encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".md", delete=False, encoding="utf-8"
+        ) as f:
             f.write(unicode_content)
             f.flush()
             temp_path = f.name
 
         # Verify content was written correctly
-        with open(temp_path, 'r', encoding='utf-8') as f:
+        with open(temp_path, "r", encoding="utf-8") as f:
             read_content = f.read()
 
         assert "✅" in read_content
@@ -58,14 +61,16 @@ Arrows: → ← ↑ ↓ ↔ ⟶ ⟵
 
         # On Windows, this would raise UnicodeEncodeError without encoding='utf-8'
         # We'll simulate the check by ensuring we always use encoding
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False, encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".md", delete=False, encoding="utf-8"
+        ) as f:
             # This should work with explicit encoding
             f.write(unicode_content)
             f.flush()
             temp_path = f.name
 
         # Verify content
-        with open(temp_path, 'r', encoding='utf-8') as f:
+        with open(temp_path, "r", encoding="utf-8") as f:
             content = f.read()
             assert "✅" in content
 
@@ -83,17 +88,14 @@ Arrows: → ← ↑ ↓ ↔ ⟶ ⟵
 
         for file_type, content in test_cases:
             with tempfile.NamedTemporaryFile(
-                mode='w',
-                suffix=f'_{file_type}.txt',
-                delete=False,
-                encoding='utf-8'
+                mode="w", suffix=f"_{file_type}.txt", delete=False, encoding="utf-8"
             ) as f:
                 f.write(content)
                 f.flush()
                 temp_path = f.name
 
             # Verify content roundtrip
-            with open(temp_path, 'r', encoding='utf-8') as f:
+            with open(temp_path, "r", encoding="utf-8") as f:
                 read_content = f.read()
                 assert content == read_content
 
@@ -120,17 +122,33 @@ Arrows: → ← ↑ ↓ ↔ ⟶ ⟵
 - 🛡️ Regression prevention
 """
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False, encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".md", delete=False, encoding="utf-8"
+        ) as f:
             f.write(emoji_content)
             f.flush()
             temp_path = f.name
 
         # Read back and verify all emojis are preserved
-        with open(temp_path, 'r', encoding='utf-8') as f:
+        with open(temp_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Check for specific emojis that commonly cause issues
-        required_emojis = ["🎯", "🔧", "🧪", "📝", "✅", "🚨", "❌", "⚠️", "🔄", "🎉", "📊", "🌐", "🛡️"]
+        required_emojis = [
+            "🎯",
+            "🔧",
+            "🧪",
+            "📝",
+            "✅",
+            "🚨",
+            "❌",
+            "⚠️",
+            "🔄",
+            "🎉",
+            "📊",
+            "🌐",
+            "🛡️",
+        ]
         for emoji in required_emojis:
             assert emoji in content, f"Emoji {emoji} not found in content"
 
@@ -153,18 +171,20 @@ class TestFileOperationPatterns:
 """
 
         # This exact pattern caused the UnicodeEncodeError - ensure it now works
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False, encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".md", delete=False, encoding="utf-8"
+        ) as f:
             f.write(rtm_content)
             f.flush()
             temp_path = f.name
 
         # Verify specific Unicode characters that caused the original failure
-        with open(temp_path, 'r', encoding='utf-8') as f:
+        with open(temp_path, "r", encoding="utf-8") as f:
             content = f.read()
 
-        assert '\u2705' in content  # ✅ check mark emoji
-        assert '\u23f3' in content  # ⏳ hourglass emoji
-        assert '\U0001f4dd' in content  # 📝 memo emoji
+        assert "\u2705" in content  # ✅ check mark emoji
+        assert "\u23f3" in content  # ⏳ hourglass emoji
+        assert "\U0001f4dd" in content  # 📝 memo emoji
 
         # Cleanup
         Path(temp_path).unlink()
@@ -188,13 +208,15 @@ validation:
   unicode_support: "🌐"
 """
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yml', delete=False, encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".yml", delete=False, encoding="utf-8"
+        ) as f:
             f.write(config_content)
             f.flush()
             temp_path = f.name
 
         # Verify YAML with Unicode content
-        with open(temp_path, 'r', encoding='utf-8') as f:
+        with open(temp_path, "r", encoding="utf-8") as f:
             content = f.read()
             assert "✅" in content
             assert "🌐" in content

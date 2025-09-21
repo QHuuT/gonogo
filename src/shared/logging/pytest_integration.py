@@ -7,11 +7,12 @@ capture test execution information and generate structured logs.
 
 import time
 import uuid
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
+
 import pytest
 
-from .logger import StructuredLogger, get_logger
 from .config import LoggingConfig
+from .logger import StructuredLogger, get_logger
 
 
 class PytestLoggingPlugin:
@@ -41,8 +42,8 @@ class PytestLoggingPlugin:
                 "function": item.function.__name__,
                 "module": item.module.__name__,
                 "markers": [marker.name for marker in item.iter_markers()],
-                "nodeid": item.nodeid
-            }
+                "nodeid": item.nodeid,
+            },
         )
 
         # Store test_id in item for access during test
@@ -51,7 +52,7 @@ class PytestLoggingPlugin:
     def pytest_runtest_call(self, item):
         """Called during test execution."""
         # Add test context to any logs generated during test
-        if hasattr(item, 'test_id'):
+        if hasattr(item, "test_id"):
             # This would require modifying the global logger context
             # For now, we'll just ensure the test_id is available
             pass
@@ -72,7 +73,7 @@ class PytestLoggingPlugin:
             test_id=test_id,
             test_name=test_name,
             duration_ms=duration_ms,
-            tags=["test_lifecycle", "teardown"]
+            tags=["test_lifecycle", "teardown"],
         )
 
     def pytest_runtest_logreport(self, report):
@@ -86,7 +87,7 @@ class PytestLoggingPlugin:
 
         test_name = f"{report.fspath}::{report.location[2]}"
         start_time = self._test_start_times.get(report.nodeid, time.time())
-        duration_ms = report.duration * 1000 if hasattr(report, 'duration') else 0
+        duration_ms = report.duration * 1000 if hasattr(report, "duration") else 0
 
         # Determine test outcome and log accordingly
         if report.passed:
@@ -94,7 +95,7 @@ class PytestLoggingPlugin:
                 test_id=test_id,
                 test_name=test_name,
                 duration_ms=duration_ms,
-                metadata={"outcome": "passed"}
+                metadata={"outcome": "passed"},
             )
         elif report.failed:
             error_message = str(report.longrepr) if report.longrepr else "Test failed"
@@ -108,8 +109,8 @@ class PytestLoggingPlugin:
                 stack_trace=stack_trace,
                 metadata={
                     "outcome": "failed",
-                    "failure_type": self._classify_failure(report)
-                }
+                    "failure_type": self._classify_failure(report),
+                },
             )
         elif report.skipped:
             skip_reason = str(report.longrepr) if report.longrepr else "Test skipped"
@@ -117,7 +118,7 @@ class PytestLoggingPlugin:
                 test_id=test_id,
                 test_name=test_name,
                 reason=skip_reason,
-                metadata={"outcome": "skipped"}
+                metadata={"outcome": "skipped"},
             )
 
         # Clean up
@@ -131,8 +132,8 @@ class PytestLoggingPlugin:
             tags=["session_lifecycle", "start"],
             metadata={
                 "pytest_version": pytest.__version__,
-                "session_id": str(uuid.uuid4())
-            }
+                "session_id": str(uuid.uuid4()),
+            },
         )
 
     def pytest_sessionfinish(self, session, exitstatus):
@@ -143,10 +144,7 @@ class PytestLoggingPlugin:
         self.logger.info(
             "Test session finished",
             tags=["session_lifecycle", "finish"],
-            metadata={
-                "exit_status": exitstatus,
-                "summary": test_summary
-            }
+            metadata={"exit_status": exitstatus, "summary": test_summary},
         )
 
         # Flush all logs
@@ -154,8 +152,8 @@ class PytestLoggingPlugin:
 
     def _extract_stack_trace(self, report) -> Optional[str]:
         """Extract stack trace from test report."""
-        if hasattr(report, 'longrepr') and report.longrepr:
-            if hasattr(report.longrepr, 'reprtraceback'):
+        if hasattr(report, "longrepr") and report.longrepr:
+            if hasattr(report.longrepr, "reprtraceback"):
                 return str(report.longrepr.reprtraceback)
             else:
                 return str(report.longrepr)
@@ -163,7 +161,7 @@ class PytestLoggingPlugin:
 
     def _classify_failure(self, report) -> str:
         """Classify the type of test failure."""
-        if not hasattr(report, 'longrepr') or not report.longrepr:
+        if not hasattr(report, "longrepr") or not report.longrepr:
             return "unknown"
 
         error_text = str(report.longrepr).lower()
@@ -184,7 +182,11 @@ class PytestLoggingPlugin:
     def _generate_session_summary(self) -> Dict[str, Any]:
         """Generate a summary of the test session."""
         recent_logs = self.logger.get_recent_logs(1000)
-        test_logs = [log for log in recent_logs if log.test_status and log.test_status != "started"]
+        test_logs = [
+            log
+            for log in recent_logs
+            if log.test_status and log.test_status != "started"
+        ]
 
         if not test_logs:
             return {"total_tests": 0}
@@ -203,7 +205,7 @@ class PytestLoggingPlugin:
             "total_tests": len(test_logs),
             "status_counts": status_counts,
             "total_duration_ms": total_duration,
-            "average_duration_ms": total_duration / len(test_logs) if test_logs else 0
+            "average_duration_ms": total_duration / len(test_logs) if test_logs else 0,
         }
 
 
@@ -216,6 +218,6 @@ def setup_pytest_logging(config: Optional[LoggingConfig] = None) -> PytestLoggin
 # pytest plugin registration function
 def pytest_configure(config):
     """Configure pytest with structured logging."""
-    if not hasattr(config, '_structured_logging_plugin'):
+    if not hasattr(config, "_structured_logging_plugin"):
         config._structured_logging_plugin = setup_pytest_logging()
         config.pluginmanager.register(config._structured_logging_plugin)

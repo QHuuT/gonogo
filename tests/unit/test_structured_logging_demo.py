@@ -6,13 +6,19 @@ Related to: US-00022 Structured logging system for test execution
 """
 
 import time
-import pytest
 from pathlib import Path
+
+import pytest
 
 # Import the structured logging system
 from src.shared.logging import (
-    StructuredLogger, LoggingConfig, EnvironmentMode, LogLevel,
-    JSONFormatter, TestFormatter, SummaryFormatter
+    EnvironmentMode,
+    JSONFormatter,
+    LoggingConfig,
+    LogLevel,
+    StructuredLogger,
+    SummaryFormatter,
+    TestFormatter,
 )
 
 
@@ -36,7 +42,7 @@ class TestStructuredLoggingDemo:
             flush_interval_seconds=1.0,
             data_retention_days=7,
             anonymize_ips=True,
-            exclude_user_data=False
+            exclude_user_data=False,
         )
 
         self.logger = StructuredLogger(self.config)
@@ -44,9 +50,13 @@ class TestStructuredLoggingDemo:
     def test_basic_logging_functionality(self):
         """Test basic logging operations."""
         # Test different log levels
-        self.logger.debug("Debug message for development", metadata={"test_data": "debug_value"})
+        self.logger.debug(
+            "Debug message for development", metadata={"test_data": "debug_value"}
+        )
         self.logger.info("Information about test execution", tags=["demo", "info"])
-        self.logger.warning("Warning about potential issue", metadata={"warning_code": "W001"})
+        self.logger.warning(
+            "Warning about potential issue", metadata={"warning_code": "W001"}
+        )
         self.logger.error("Error occurred during test", metadata={"error_code": "E001"})
 
         # Verify logs were captured
@@ -92,9 +102,12 @@ class TestStructuredLoggingDemo:
         stack_trace = "  File 'test.py', line 42, in test_function\n    assert result == 5\nAssertionError: expected 5, got 3"
 
         self.logger.test_failed(
-            test_id, test_name, 25.3, error_msg,
+            test_id,
+            test_name,
+            25.3,
+            error_msg,
             stack_trace=stack_trace,
-            metadata={"assertion_type": "equality", "expected": 5, "actual": 3}
+            metadata={"assertion_type": "equality", "expected": 5, "actual": 3},
         )
 
         # Verify failure logs
@@ -111,12 +124,12 @@ class TestStructuredLoggingDemo:
             "user_email": "user@example.com",
             "ip_address": "192.168.1.100",
             "safe_data": "this should remain",
-            "file_path": "/home/john/documents/test.txt"
+            "file_path": "/home/john/documents/test.txt",
         }
 
         self.logger.info(
             "Processing user data: user@example.com from IP 192.168.1.100",
-            metadata=sensitive_data
+            metadata=sensitive_data,
         )
 
         # Get the log and verify sanitization
@@ -139,7 +152,7 @@ class TestStructuredLoggingDemo:
             test_id="json_test",
             test_name="test_json_format",
             metadata={"format": "json", "compact": True},
-            tags=["formatting", "json"]
+            tags=["formatting", "json"],
         )
 
         recent_logs = self.logger.get_recent_logs(1)
@@ -147,6 +160,7 @@ class TestStructuredLoggingDemo:
 
         # Verify it's valid JSON and contains expected fields
         import json
+
         parsed = json.loads(json_output)
 
         assert parsed["level"] == "info"
@@ -178,7 +192,7 @@ class TestStructuredLoggingDemo:
             ("test_2", "passed", 15.0),
             ("test_3", "failed", 8.0),
             ("test_4", "skipped", None),
-            ("test_5", "passed", 12.0)
+            ("test_5", "passed", 12.0),
         ]
 
         for test_id, status, duration in tests:
@@ -186,9 +200,13 @@ class TestStructuredLoggingDemo:
             if status == "passed":
                 self.logger.test_passed(test_id, f"test_case_{test_id}", duration)
             elif status == "failed":
-                self.logger.test_failed(test_id, f"test_case_{test_id}", duration, "Test failed")
+                self.logger.test_failed(
+                    test_id, f"test_case_{test_id}", duration, "Test failed"
+                )
             elif status == "skipped":
-                self.logger.test_skipped(test_id, f"test_case_{test_id}", "Test skipped")
+                self.logger.test_skipped(
+                    test_id, f"test_case_{test_id}", "Test skipped"
+                )
 
         # Generate summary
         formatter = SummaryFormatter()

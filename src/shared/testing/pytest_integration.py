@@ -7,15 +7,19 @@ capture and analyze test failures during test execution.
 Related to: US-00025 Test failure tracking and reporting
 """
 
-import pytest
 import platform
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
+import pytest
 
 from .failure_tracker import (
-    FailureTracker, TestFailure, FailureCategory, FailureSeverity
+    FailureCategory,
+    FailureSeverity,
+    FailureTracker,
+    TestFailure,
 )
 
 
@@ -25,14 +29,14 @@ class FailureTrackingPlugin:
     def __init__(self):
         """Initialize the failure tracking plugin."""
         self.failure_tracker = FailureTracker()
-        self.session_id = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        self.session_id = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
         self.execution_mode = "standard"
         self.current_session_failures = []
 
     def pytest_configure(self, config):
         """Configure plugin with pytest session details."""
         # Get execution mode from test runner plugin if available
-        if hasattr(config.option, 'mode'):
+        if hasattr(config.option, "mode"):
             self.execution_mode = config.option.mode
 
     def pytest_runtest_logreport(self, report):
@@ -45,10 +49,16 @@ class FailureTrackingPlugin:
         # Extract test information
         test_id = report.nodeid
         test_name = report.nodeid.split("::")[-1]
-        test_file = report.fspath.relto(Path.cwd()) if hasattr(report, 'fspath') else "unknown"
+        test_file = (
+            report.fspath.relto(Path.cwd()) if hasattr(report, "fspath") else "unknown"
+        )
 
         # Extract failure information
-        failure_message = str(report.longrepr.reprcrash.message) if report.longrepr and hasattr(report.longrepr, 'reprcrash') else "Unknown error"
+        failure_message = (
+            str(report.longrepr.reprcrash.message)
+            if report.longrepr and hasattr(report.longrepr, "reprcrash")
+            else "Unknown error"
+        )
         stack_trace = str(report.longrepr) if report.longrepr else ""
 
         # Create failure record
@@ -62,12 +72,14 @@ class FailureTrackingPlugin:
             execution_mode=self.execution_mode,
             environment_info=self._get_environment_info(),
             metadata={
-                "duration": getattr(report, 'duration', 0),
-                "keywords": list(report.keywords.keys()) if hasattr(report, 'keywords') else [],
-                "markers": [m.name for m in getattr(report, 'markers', [])],
+                "duration": getattr(report, "duration", 0),
+                "keywords": (
+                    list(report.keywords.keys()) if hasattr(report, "keywords") else []
+                ),
+                "markers": [m.name for m in getattr(report, "markers", [])],
                 "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
-                "platform": platform.platform()
-            }
+                "platform": platform.platform(),
+            },
         )
 
         # Auto-categorize and determine severity
@@ -128,6 +140,6 @@ def pytest_configure(config):
 def get_failure_tracking_hooks():
     """Get failure tracking hooks for integration with test runner plugin."""
     return {
-        'pytest_runtest_logreport': 'failure_tracking',
-        'pytest_sessionfinish': 'failure_tracking'
+        "pytest_runtest_logreport": "failure_tracking",
+        "pytest_sessionfinish": "failure_tracking",
     }

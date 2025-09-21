@@ -8,10 +8,10 @@ Related Issue: US-00017 - Comprehensive testing and extensibility framework
 Epic: EP-00005 - RTM Automation
 """
 
-from typing import List, Dict, Type, Any
 import importlib
 import pkgutil
 from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Type
 
 
 class RTMPlugin(ABC):
@@ -45,16 +45,13 @@ class PluginManager:
 
     def __init__(self):
         self.plugins: Dict[str, RTMPlugin] = {}
-        self.plugin_types = {
-            'link_generators': [],
-            'validators': [],
-            'parsers': []
-        }
+        self.plugin_types = {"link_generators": [], "validators": [], "parsers": []}
 
     def discover_plugins(self, plugin_dir: str = None) -> None:
         """Discover and load plugins from specified directory."""
         if plugin_dir is None:
             import os
+
             plugin_dir = os.path.dirname(__file__)
 
         # Discover plugins in each subdirectory
@@ -65,11 +62,11 @@ class PluginManager:
 
     def _load_plugins_from_dir(self, directory: str, plugin_type: str) -> None:
         """Load plugins from a specific directory."""
-        import sys
         import importlib.util
+        import sys
 
         for item in os.listdir(directory):
-            if item.startswith('__') or not item.endswith('.py'):
+            if item.startswith("__") or not item.endswith(".py"):
                 continue
 
             module_path = os.path.join(directory, item)
@@ -83,9 +80,11 @@ class PluginManager:
                 # Find plugin classes in the module
                 for attr_name in dir(module):
                     attr = getattr(module, attr_name)
-                    if (isinstance(attr, type) and
-                        issubclass(attr, RTMPlugin) and
-                        attr != RTMPlugin):
+                    if (
+                        isinstance(attr, type)
+                        and issubclass(attr, RTMPlugin)
+                        and attr != RTMPlugin
+                    ):
 
                         plugin_instance = attr()
                         self.register_plugin(plugin_instance, plugin_type)
@@ -115,10 +114,10 @@ class PluginManager:
         for plugin_type, plugins in self.plugin_types.items():
             result[plugin_type] = [
                 {
-                    'name': p.name,
-                    'version': p.version,
-                    'description': p.description,
-                    'enabled': p.enabled
+                    "name": p.name,
+                    "version": p.version,
+                    "description": p.description,
+                    "enabled": p.enabled,
                 }
                 for p in plugins
             ]

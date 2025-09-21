@@ -109,6 +109,67 @@ python tools/rtm-links.py generate-bdd-link tests/bdd/features/auth.feature user
 python tools/rtm-links.py config-info                      # Show RTM configuration
 python tools/rtm-links.py doctor                          # Run RTM health diagnostics
 
+# RTM Database Management CLI (NEW - Enhanced Database Operations)
+python tools/rtm-db.py --help                             # Show all available commands
+
+## Entity Management
+python tools/rtm-db.py entities create-epic --epic-id EP-00005 --title "Epic Title" --priority high
+python tools/rtm-db.py entities create-user-story --user-story-id US-00055 --epic-id EP-00005 --github-issue 55 --title "User Story Title" --story-points 8
+python tools/rtm-db.py entities create-test --test-type unit --test-file tests/unit/test_example.py --title "Test Title" --epic-id EP-00005
+
+## Query and Reporting
+python tools/rtm-db.py query epics                        # List all epics (table format)
+python tools/rtm-db.py query epics --format json          # List epics in JSON format
+python tools/rtm-db.py query epics --status planned --priority high  # Filter epics
+python tools/rtm-db.py query user-stories --epic-id EP-00005  # User stories for specific epic
+python tools/rtm-db.py query epic-progress EP-00005        # Detailed progress report for epic
+
+## Data Import/Export
+python tools/rtm-db.py data import-rtm docs/traceability/requirements-matrix.md  # Import from markdown
+python tools/rtm-db.py data import-rtm --dry-run docs/file.md  # Preview import without changes
+python tools/rtm-db.py data export --output rtm_backup.json   # Export all data to JSON
+python tools/rtm-db.py data export --format json --include-tests  # Export with test data
+
+## Database Administration
+python tools/rtm-db.py admin health-check                 # Check database connectivity and status
+python tools/rtm-db.py admin validate                     # Validate data integrity and relationships
+python tools/rtm-db.py admin validate --fix               # Auto-fix validation issues (when implemented)
+python tools/rtm-db.py admin reset --confirm              # Reset database (delete all data)
+
+## GitHub Integration Status
+python tools/rtm-db.py github sync-status                 # Show recent GitHub sync status
+python tools/rtm-db.py github sync --issue-number 55      # Sync specific issue (when implemented)
+python tools/rtm-db.py github sync --dry-run              # Preview sync operations
+
+# RTM Test-Database Integration CLI (NEW - Test Execution Integration)
+python tools/test-db-integration.py --help               # Show all available commands
+
+## Test Discovery and Synchronization
+python tools/test-db-integration.py discover tests       # Discover all tests and sync to database
+python tools/test-db-integration.py discover tests --dry-run  # Preview test discovery without changes
+python tools/test-db-integration.py discover scenarios   # Discover BDD scenarios and link to User Stories
+python tools/test-db-integration.py discover scenarios --dry-run  # Preview BDD scenario linking
+
+## Enhanced Test Execution with Database Integration
+python tools/test-db-integration.py run tests            # Run tests with basic database integration
+python tools/test-db-integration.py run tests --sync-tests  # Sync tests before running
+python tools/test-db-integration.py run tests --link-scenarios  # Link BDD scenarios before running
+python tools/test-db-integration.py run tests --auto-defects  # Auto-create defects from failures
+python tools/test-db-integration.py run tests --test-type unit  # Run specific test type
+python tools/test-db-integration.py run tests --sync-tests --link-scenarios --auto-defects  # Full integration
+
+## Integration Status and Analysis
+python tools/test-db-integration.py status overview       # Show test-database integration status
+python tools/test-db-integration.py utils analyze        # Analyze test-database integration patterns
+python tools/test-db-integration.py utils analyze --show-epic-refs  # Show Epic references in tests
+python tools/test-db-integration.py utils analyze --show-orphaned   # Show tests without Epic links
+
+## Enhanced Pytest Integration (NEW)
+pytest --sync-tests --link-scenarios --auto-defects tests/  # Run tests with full database integration
+pytest --sync-tests tests/unit/                         # Sync unit tests and run with database tracking
+pytest --link-scenarios tests/bdd/                      # Link BDD scenarios and run
+pytest --auto-defects tests/integration/                # Auto-create defects from integration test failures
+
 # Code Quality
 black src/ tests/                   # Format code
 isort src/ tests/                   # Sort imports

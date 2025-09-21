@@ -7,12 +7,12 @@ for test failure tracking and pattern analysis.
 Related to: US-00025 Test failure tracking and reporting
 """
 
+import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-import json
+from typing import Any, Dict, List, Optional
 
-from .failure_tracker import FailureTracker, FailureStatistics
+from .failure_tracker import FailureStatistics, FailureTracker
 
 
 class FailureReporter:
@@ -22,7 +22,9 @@ class FailureReporter:
         """Initialize reporter with failure tracker instance."""
         self.tracker = failure_tracker
 
-    def generate_daily_summary(self, output_path: Optional[Path] = None) -> Dict[str, Any]:
+    def generate_daily_summary(
+        self, output_path: Optional[Path] = None
+    ) -> Dict[str, Any]:
         """Generate daily failure summary report."""
         if output_path is None:
             output_path = Path("quality/reports/failure_summary_daily.json")
@@ -45,20 +47,22 @@ class FailureReporter:
                     "total_failures": today_stats.total_failures,
                     "unique_failures": today_stats.unique_failures,
                     "failure_rate": today_stats.failure_rate,
-                    "critical_count": today_stats.critical_failure_count
+                    "critical_count": today_stats.critical_failure_count,
                 },
                 "week": {
                     "total_failures": week_stats.total_failures,
                     "unique_failures": week_stats.unique_failures,
                     "failure_rate": week_stats.failure_rate,
-                    "trend": week_stats.trend_analysis.get("trend_direction", "unknown")
+                    "trend": week_stats.trend_analysis.get(
+                        "trend_direction", "unknown"
+                    ),
                 },
                 "month": {
                     "total_failures": month_stats.total_failures,
                     "unique_failures": month_stats.unique_failures,
                     "failure_rate": month_stats.failure_rate,
-                    "most_common_category": month_stats.most_common_category.value
-                }
+                    "most_common_category": month_stats.most_common_category.value,
+                },
             },
             "top_failing_tests": top_failing,
             "detected_patterns": [
@@ -69,16 +73,18 @@ class FailureReporter:
                     "category": p.category.value,
                     "severity": p.severity.value,
                     "impact_score": p.impact_score,
-                    "affected_test_count": len(p.affected_tests)
+                    "affected_test_count": len(p.affected_tests),
                 }
                 for p in patterns
             ],
-            "recommendations": self._generate_recommendations(today_stats, week_stats, patterns)
+            "recommendations": self._generate_recommendations(
+                today_stats, week_stats, patterns
+            ),
         }
 
         # Save report
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(report_data, f, indent=2, ensure_ascii=False)
 
         return report_data
@@ -318,7 +324,7 @@ class FailureReporter:
 
         # Save HTML report
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(html_content)
 
         return str(output_path)
@@ -333,7 +339,8 @@ class FailureReporter:
             category_class = f"category-{test['category'].replace('_', '-')}"
             severity_class = f"severity-{test['severity']}"
 
-            rows.append(f"""
+            rows.append(
+                f"""
                 <tr>
                     <td>{test['test_name']}</td>
                     <td><code>{test['test_file']}</code></td>
@@ -342,9 +349,10 @@ class FailureReporter:
                     <td><span class="{severity_class}">{test['severity'].title()}</span></td>
                     <td>{test['last_failure'][:10] if test['last_failure'] else 'Unknown'}</td>
                 </tr>
-            """)
+            """
+            )
 
-        return ''.join(rows)
+        return "".join(rows)
 
     def _generate_pattern_cards(self, patterns: List) -> str:
         """Generate HTML cards for detected patterns."""
@@ -353,7 +361,8 @@ class FailureReporter:
 
         cards = []
         for pattern in patterns:
-            cards.append(f"""
+            cards.append(
+                f"""
                 <div class="pattern-card">
                     <div class="pattern-header">{pattern.description}</div>
                     <div class="pattern-meta">
@@ -363,9 +372,10 @@ class FailureReporter:
                         <strong>Affected Tests:</strong> {len(pattern.affected_tests)}
                     </div>
                 </div>
-            """)
+            """
+            )
 
-        return ''.join(cards)
+        return "".join(cards)
 
     def _generate_recommendations(self, today_stats, week_stats, patterns) -> List[str]:
         """Generate actionable recommendations based on failure analysis."""
@@ -373,37 +383,53 @@ class FailureReporter:
 
         # Critical failure recommendations
         if today_stats.critical_failure_count > 0:
-            recommendations.append("🚨 Address critical failures immediately - these may block releases")
+            recommendations.append(
+                "🚨 Address critical failures immediately - these may block releases"
+            )
 
         # High failure rate recommendations
         if week_stats.failure_rate > 15:
-            recommendations.append("📈 Failure rate is high (>15%) - review test stability and infrastructure")
+            recommendations.append(
+                "📈 Failure rate is high (>15%) - review test stability and infrastructure"
+            )
 
         # Flaky test recommendations
         if week_stats.flaky_test_count > 0:
-            recommendations.append(f"🔄 {week_stats.flaky_test_count} flaky tests detected - investigate intermittent issues")
+            recommendations.append(
+                f"🔄 {week_stats.flaky_test_count} flaky tests detected - investigate intermittent issues"
+            )
 
         # Pattern-based recommendations
         for pattern in patterns:
             if pattern.category.value == "unicode_error" and pattern.occurrences > 2:
-                recommendations.append("🌐 Multiple Unicode errors detected - review file encoding practices")
+                recommendations.append(
+                    "🌐 Multiple Unicode errors detected - review file encoding practices"
+                )
             elif pattern.category.value == "import_error" and pattern.occurrences > 1:
-                recommendations.append("📦 Import errors detected - verify dependencies and Python path configuration")
+                recommendations.append(
+                    "📦 Import errors detected - verify dependencies and Python path configuration"
+                )
             elif pattern.category.value == "timeout_error" and pattern.occurrences > 1:
-                recommendations.append("⏱️ Timeout errors detected - review test performance and infrastructure")
+                recommendations.append(
+                    "⏱️ Timeout errors detected - review test performance and infrastructure"
+                )
 
         # Trend-based recommendations
         trend = week_stats.trend_analysis.get("trend_direction", "stable")
         if trend == "increasing":
-            recommendations.append("📊 Failure trend is increasing - investigate recent changes and infrastructure")
+            recommendations.append(
+                "📊 Failure trend is increasing - investigate recent changes and infrastructure"
+            )
 
         # Default recommendations if no specific issues
         if not recommendations:
-            recommendations.extend([
-                "✅ Test failure rates are within acceptable ranges",
-                "🔄 Continue monitoring for patterns and trends",
-                "📋 Review this report weekly to identify emerging issues"
-            ])
+            recommendations.extend(
+                [
+                    "✅ Test failure rates are within acceptable ranges",
+                    "🔄 Continue monitoring for patterns and trends",
+                    "📋 Review this report weekly to identify emerging issues",
+                ]
+            )
 
         return recommendations
 

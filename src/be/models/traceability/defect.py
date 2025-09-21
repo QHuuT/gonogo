@@ -9,15 +9,16 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 Architecture Decision: ADR-003 - Hybrid GitHub + Database RTM Architecture
 """
 
-from sqlalchemy import Column, String, Integer, Text, ForeignKey, Index, Boolean, Float
+from sqlalchemy import Boolean, Column, Float, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import relationship
+
 from .base import TraceabilityBase
 
 
 class Defect(TraceabilityBase):
     """Defect metadata cached from GitHub Issues for hybrid RTM system."""
 
-    __tablename__ = 'defects'
+    __tablename__ = "defects"
 
     # Defect identification
     defect_id = Column(String(20), unique=True, nullable=False, index=True)
@@ -31,23 +32,23 @@ class Defect(TraceabilityBase):
 
     # Traceability relationships
     # Note: Defects can relate to Epic, User Story, or Test
-    epic_id = Column(Integer, ForeignKey('epics.id'), nullable=True, index=True)
+    epic_id = Column(Integer, ForeignKey("epics.id"), nullable=True, index=True)
     epic = relationship("Epic")
 
     github_user_story_number = Column(Integer, nullable=True, index=True)
     # References User Story GitHub issue number
 
-    test_id = Column(Integer, ForeignKey('tests.id'), nullable=True, index=True)
+    test_id = Column(Integer, ForeignKey("tests.id"), nullable=True, index=True)
     test = relationship("Test")
 
     # Defect classification
-    defect_type = Column(String(50), default='bug', index=True)
+    defect_type = Column(String(50), default="bug", index=True)
     # Values: bug, regression, enhancement, security, performance, usability
 
-    severity = Column(String(20), default='medium', index=True)
+    severity = Column(String(20), default="medium", index=True)
     # Values: critical, high, medium, low
 
-    priority = Column(String(20), default='medium', index=True)
+    priority = Column(String(20), default="medium", index=True)
     # Values: critical, high, medium, low
 
     # Technical details
@@ -89,13 +90,13 @@ class Defect(TraceabilityBase):
 
     # Indexes for performance
     __table_args__ = (
-        Index('idx_defect_epic_severity', 'epic_id', 'severity'),
-        Index('idx_defect_type_priority', 'defect_type', 'priority'),
-        Index('idx_defect_user_story', 'github_user_story_number'),
-        Index('idx_defect_test_relation', 'test_id'),
-        Index('idx_defect_production', 'escaped_to_production', 'severity'),
-        Index('idx_defect_security_gdpr', 'is_security_issue', 'affects_gdpr'),
-        Index('idx_defect_environment', 'environment', 'found_in_phase'),
+        Index("idx_defect_epic_severity", "epic_id", "severity"),
+        Index("idx_defect_type_priority", "defect_type", "priority"),
+        Index("idx_defect_user_story", "github_user_story_number"),
+        Index("idx_defect_test_relation", "test_id"),
+        Index("idx_defect_production", "escaped_to_production", "severity"),
+        Index("idx_defect_security_gdpr", "is_security_issue", "affects_gdpr"),
+        Index("idx_defect_environment", "environment", "found_in_phase"),
     )
 
     def __init__(self, defect_id: str, github_issue_number: int, **kwargs):
@@ -106,22 +107,22 @@ class Defect(TraceabilityBase):
 
     def update_from_github(self, github_data: dict):
         """Update metadata from GitHub issue data."""
-        self.github_issue_state = github_data.get('state', 'open')
-        self.github_labels = str(github_data.get('labels', []))
-        self.github_assignees = str(github_data.get('assignees', []))
+        self.github_issue_state = github_data.get("state", "open")
+        self.github_labels = str(github_data.get("labels", []))
+        self.github_assignees = str(github_data.get("assignees", []))
 
         # Update title and description from GitHub
-        if github_data.get('title'):
-            self.title = github_data['title']
-        if github_data.get('body'):
-            self.description = github_data['body']
+        if github_data.get("title"):
+            self.title = github_data["title"]
+        if github_data.get("body"):
+            self.description = github_data["body"]
 
     def calculate_impact_score(self) -> int:
         """Calculate defect impact score for prioritization."""
         score = 0
 
         # Severity scoring
-        severity_scores = {'critical': 10, 'high': 7, 'medium': 4, 'low': 1}
+        severity_scores = {"critical": 10, "high": 7, "medium": 4, "low": 1}
         score += severity_scores.get(self.severity, 0)
 
         # Customer impact
@@ -144,45 +145,49 @@ class Defect(TraceabilityBase):
 
     def is_high_priority(self) -> bool:
         """Determine if defect should be high priority."""
-        return (self.severity in ['critical', 'high'] or
-                self.is_security_issue or
-                self.escaped_to_production or
-                self.affects_gdpr)
+        return (
+            self.severity in ["critical", "high"]
+            or self.is_security_issue
+            or self.escaped_to_production
+            or self.affects_gdpr
+        )
 
     def to_dict(self):
         """Convert to dictionary with Defect specific fields."""
         base_dict = super().to_dict()
-        base_dict.update({
-            'defect_id': self.defect_id,
-            'github_issue_number': self.github_issue_number,
-            'github_issue_state': self.github_issue_state,
-            'epic_id': self.epic_id,
-            'github_user_story_number': self.github_user_story_number,
-            'test_id': self.test_id,
-            'defect_type': self.defect_type,
-            'severity': self.severity,
-            'priority': self.priority,
-            'environment': self.environment,
-            'browser_version': self.browser_version,
-            'os_version': self.os_version,
-            'steps_to_reproduce': self.steps_to_reproduce,
-            'expected_behavior': self.expected_behavior,
-            'actual_behavior': self.actual_behavior,
-            'resolution_details': self.resolution_details,
-            'root_cause': self.root_cause,
-            'estimated_hours': self.estimated_hours,
-            'actual_hours': self.actual_hours,
-            'found_in_phase': self.found_in_phase,
-            'escaped_to_production': self.escaped_to_production,
-            'is_security_issue': self.is_security_issue,
-            'affects_gdpr': self.affects_gdpr,
-            'gdpr_impact_details': self.gdpr_impact_details,
-            'is_regression': self.is_regression,
-            'affects_customers': self.affects_customers,
-            'customer_impact_details': self.customer_impact_details,
-            'impact_score': self.calculate_impact_score(),
-            'is_high_priority': self.is_high_priority()
-        })
+        base_dict.update(
+            {
+                "defect_id": self.defect_id,
+                "github_issue_number": self.github_issue_number,
+                "github_issue_state": self.github_issue_state,
+                "epic_id": self.epic_id,
+                "github_user_story_number": self.github_user_story_number,
+                "test_id": self.test_id,
+                "defect_type": self.defect_type,
+                "severity": self.severity,
+                "priority": self.priority,
+                "environment": self.environment,
+                "browser_version": self.browser_version,
+                "os_version": self.os_version,
+                "steps_to_reproduce": self.steps_to_reproduce,
+                "expected_behavior": self.expected_behavior,
+                "actual_behavior": self.actual_behavior,
+                "resolution_details": self.resolution_details,
+                "root_cause": self.root_cause,
+                "estimated_hours": self.estimated_hours,
+                "actual_hours": self.actual_hours,
+                "found_in_phase": self.found_in_phase,
+                "escaped_to_production": self.escaped_to_production,
+                "is_security_issue": self.is_security_issue,
+                "affects_gdpr": self.affects_gdpr,
+                "gdpr_impact_details": self.gdpr_impact_details,
+                "is_regression": self.is_regression,
+                "affects_customers": self.affects_customers,
+                "customer_impact_details": self.customer_impact_details,
+                "impact_score": self.calculate_impact_score(),
+                "is_high_priority": self.is_high_priority(),
+            }
+        )
         return base_dict
 
     def __repr__(self):

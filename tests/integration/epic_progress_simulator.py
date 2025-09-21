@@ -24,21 +24,26 @@ class EpicProgressCalculatorSimulator:
         """Calculate Epic completion percentage based on linked User Stories."""
         try:
             # Get all User Stories linked to this Epic
-            user_stories = db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
+            user_stories = (
+                db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
+            )
 
             if not user_stories:
                 return 0.0
 
             total_story_points = sum(us.story_points for us in user_stories)
             completed_story_points = sum(
-                us.story_points for us in user_stories
-                if us.implementation_status == 'done'
+                us.story_points
+                for us in user_stories
+                if us.implementation_status == "done"
             )
 
             if total_story_points == 0:
                 # If no story points, use count-based calculation
                 total_count = len(user_stories)
-                completed_count = len([us for us in user_stories if us.implementation_status == 'done'])
+                completed_count = len(
+                    [us for us in user_stories if us.implementation_status == "done"]
+                )
                 progress = (completed_count / total_count) * 100
             else:
                 # Use story points for calculation
@@ -53,9 +58,11 @@ class EpicProgressCalculatorSimulator:
         """Update progress for all Epics that might be affected by this issue change."""
         try:
             # Find the User Story that corresponds to this issue
-            user_story = db.query(UserStory).filter(
-                UserStory.github_issue_number == self.issue_number
-            ).first()
+            user_story = (
+                db.query(UserStory)
+                .filter(UserStory.github_issue_number == self.issue_number)
+                .first()
+            )
 
             if not user_story:
                 return
@@ -76,11 +83,11 @@ class EpicProgressCalculatorSimulator:
 
             # Update Epic status based on progress
             if new_progress >= 100:
-                epic.status = 'completed'
+                epic.status = "completed"
             elif new_progress > 0:
-                epic.status = 'in_progress'
+                epic.status = "in_progress"
             else:
-                epic.status = 'planned'
+                epic.status = "planned"
 
             db.commit()
 

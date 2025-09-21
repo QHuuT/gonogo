@@ -9,12 +9,20 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 Architecture Decision: ADR-003 - Hybrid GitHub + Database RTM Architecture
 """
 
-from .base import TraceabilityBase, Base
-from .epic import Epic
-from .user_story import UserStory
+from .base import Base, TraceabilityBase
 from .defect import Defect
-from .test import Test
+from .epic import Epic
 from .github_sync import GitHubSync
+from .test import Test
+from .user_story import UserStory
 
 # Export all models for database migrations and imports
-__all__ = ["TraceabilityBase", "Base", "Epic", "UserStory", "Defect", "Test", "GitHubSync"]
+__all__ = [
+    "TraceabilityBase",
+    "Base",
+    "Epic",
+    "UserStory",
+    "Defect",
+    "Test",
+    "GitHubSync",
+]

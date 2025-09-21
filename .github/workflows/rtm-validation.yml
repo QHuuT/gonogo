@@ -35,6 +35,15 @@ on:
         required: false
         default: 'docs/traceability/requirements-matrix.md'
         type: string
+      rtm_mode:
+        description: 'RTM operation mode'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - database
+          - file
       create_report:
         description: 'Create validation report'
         required: false
@@ -69,23 +78,38 @@ jobs:
       - name: Validate RTM Links
         id: validate
         run: |
-          # Use input RTM file if provided, otherwise default
+          # Use input RTM file and mode if provided, otherwise defaults
           RTM_FILE="${{ github.event.inputs.rtm_file || 'docs/traceability/requirements-matrix.md' }}"
+          RTM_MODE="${{ github.event.inputs.rtm_mode || 'auto' }}"
 
-          echo "Validating RTM file: $RTM_FILE"
+          echo "Validating RTM - Mode: $RTM_MODE, File: $RTM_FILE"
 
+          # Show system information for debugging
+          echo "RTM System Information:"
+          python tools/rtm-links-simple.py --info --mode "$RTM_MODE"
+
+          echo "Running validation..."
           # Run validation and capture output
-          python tools/rtm-links-simple.py --validate --rtm-file "$RTM_FILE" > rtm_validation_output.txt 2>&1
+          python tools/rtm-links-simple.py --validate --mode "$RTM_MODE" --rtm-file "$RTM_FILE" > rtm_validation_output.txt 2>&1
           VALIDATION_EXIT_CODE=$?
 
           echo "validation_exit_code=$VALIDATION_EXIT_CODE" >> $GITHUB_OUTPUT
           echo "rtm_file=$RTM_FILE" >> $GITHUB_OUTPUT
+          echo "rtm_mode=$RTM_MODE" >> $GITHUB_OUTPUT
 
-          # Extract key metrics
-          TOTAL_LINKS=$(grep "Total links:" rtm_validation_output.txt | cut -d: -f2 | xargs)
-          VALID_LINKS=$(grep "Valid links:" rtm_validation_output.txt | cut -d: -f2 | xargs)
-          INVALID_LINKS=$(grep "Invalid links:" rtm_validation_output.txt | cut -d: -f2 | xargs)
-          HEALTH_SCORE=$(grep "Health score:" rtm_validation_output.txt | cut -d: -f2 | xargs | cut -d% -f1)
+          # Extract key metrics from enhanced output format
+          TOTAL_LINKS=$(grep "Total Links:" rtm_validation_output.txt | cut -d: -f2 | xargs)
+          VALID_LINKS=$(grep "Valid Links:" rtm_validation_output.txt | cut -d: -f2 | xargs)
+          INVALID_LINKS=$(grep "Invalid Links:" rtm_validation_output.txt | cut -d: -f2 | xargs)
+          HEALTH_SCORE=$(grep "Health Score:" rtm_validation_output.txt | cut -d: -f2 | xargs | cut -d% -f1)
+
+          # Fallback to old format if new format not found
+          if [ -z "$TOTAL_LINKS" ]; then
+            TOTAL_LINKS=$(grep "Total links:" rtm_validation_output.txt | cut -d: -f2 | xargs)
+            VALID_LINKS=$(grep "Valid links:" rtm_validation_output.txt | cut -d: -f2 | xargs)
+            INVALID_LINKS=$(grep "Invalid links:" rtm_validation_output.txt | cut -d: -f2 | xargs)
+            HEALTH_SCORE=$(grep "Health score:" rtm_validation_output.txt | cut -d: -f2 | xargs | cut -d% -f1)
+          fi
 
           echo "total_links=$TOTAL_LINKS" >> $GITHUB_OUTPUT
           echo "valid_links=$VALID_LINKS" >> $GITHUB_OUTPUT

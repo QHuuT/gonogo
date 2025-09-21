@@ -7,7 +7,8 @@ human-readable formats for different use cases.
 
 import json
 from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
+
 from .logger import LogEntry
 
 
@@ -24,7 +25,7 @@ class JSONFormatter:
         entry_dict = {
             "timestamp": entry.timestamp,
             "level": entry.level,
-            "message": entry.message
+            "message": entry.message,
         }
 
         # Add test-specific fields if present
@@ -53,7 +54,7 @@ class JSONFormatter:
 
         # Format JSON
         if self.compact:
-            return json.dumps(entry_dict, separators=(',', ':'))
+            return json.dumps(entry_dict, separators=(",", ":"))
         else:
             return json.dumps(entry_dict, indent=2)
 
@@ -61,30 +62,38 @@ class JSONFormatter:
         """Format multiple log entries as JSON array."""
         formatted_entries = [self.format(entry) for entry in entries]
         if self.compact:
-            return '[' + ','.join(formatted_entries) + ']'
+            return "[" + ",".join(formatted_entries) + "]"
         else:
-            return '[\n' + ',\n'.join(formatted_entries) + '\n]'
+            return "[\n" + ",\n".join(formatted_entries) + "\n]"
 
 
 class TestFormatter:
     """Human-readable formatter optimized for test output."""
 
-    def __init__(self, show_timestamp: bool = True, show_session: bool = False,
-                 colorize: bool = False):
+    def __init__(
+        self,
+        show_timestamp: bool = True,
+        show_session: bool = False,
+        colorize: bool = False,
+    ):
         """Initialize test formatter."""
         self.show_timestamp = show_timestamp
         self.show_session = show_session
         self.colorize = colorize
 
         # Color codes for terminal output
-        self.colors = {
-            "DEBUG": "\033[36m",    # Cyan
-            "INFO": "\033[32m",     # Green
-            "WARNING": "\033[33m",  # Yellow
-            "ERROR": "\033[31m",    # Red
-            "CRITICAL": "\033[35m", # Magenta
-            "RESET": "\033[0m"      # Reset
-        } if colorize else {}
+        self.colors = (
+            {
+                "DEBUG": "\033[36m",  # Cyan
+                "INFO": "\033[32m",  # Green
+                "WARNING": "\033[33m",  # Yellow
+                "ERROR": "\033[31m",  # Red
+                "CRITICAL": "\033[35m",  # Magenta
+                "RESET": "\033[0m",  # Reset
+            }
+            if colorize
+            else {}
+        )
 
     def format(self, entry: LogEntry) -> str:
         """Format a log entry for human reading."""
@@ -139,7 +148,7 @@ class TestFormatter:
     def _format_timestamp(self, timestamp: str) -> str:
         """Format timestamp for display."""
         try:
-            dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+            dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
             return dt.strftime("%H:%M:%S.%f")[:-3]  # HH:MM:SS.mmm
         except ValueError:
             return timestamp
@@ -150,7 +159,7 @@ class TestFormatter:
             "started": "🏃" if self.colorize else "→",
             "passed": "✅" if self.colorize else "✓",
             "failed": "❌" if self.colorize else "✗",
-            "skipped": "⏭️" if self.colorize else "⊘"
+            "skipped": "⏭️" if self.colorize else "⊘",
         }
         return markers.get(status, "•")
 
@@ -161,14 +170,19 @@ class TableFormatter:
     def __init__(self, columns: Optional[List[str]] = None):
         """Initialize table formatter."""
         self.columns = columns or [
-            "timestamp", "level", "test_name", "test_status", "duration_ms", "message"
+            "timestamp",
+            "level",
+            "test_name",
+            "test_status",
+            "duration_ms",
+            "message",
         ]
 
     def format_header(self) -> str:
         """Format table header."""
         headers = []
         for col in self.columns:
-            header = col.replace('_', ' ').title()
+            header = col.replace("_", " ").title()
             headers.append(header)
 
         # Create separator line
@@ -192,7 +206,9 @@ class TableFormatter:
                 value = value or ""
             elif col == "message":
                 # Truncate long messages
-                value = (value[:47] + "...") if value and len(value) > 50 else (value or "")
+                value = (
+                    (value[:47] + "...") if value and len(value) > 50 else (value or "")
+                )
             else:
                 value = str(value) if value is not None else ""
 
@@ -214,7 +230,7 @@ class TableFormatter:
     def _format_timestamp(self, timestamp: str) -> str:
         """Format timestamp for table display."""
         try:
-            dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+            dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
             return dt.strftime("%H:%M:%S")
         except ValueError:
             return timestamp[:8] if timestamp else ""
@@ -235,7 +251,9 @@ class SummaryFormatter:
 
         for entry in entries:
             if entry.test_status and entry.test_status != "started":
-                status_counts[entry.test_status] = status_counts.get(entry.test_status, 0) + 1
+                status_counts[entry.test_status] = (
+                    status_counts.get(entry.test_status, 0) + 1
+                )
                 test_count += 1
 
                 if entry.duration_ms:

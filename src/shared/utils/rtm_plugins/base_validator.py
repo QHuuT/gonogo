@@ -9,7 +9,8 @@ Epic: EP-00005 - RTM Automation
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
 from . import RTMPlugin
 
 
@@ -83,29 +84,31 @@ class StandardValidator(BaseValidator):
         errors = []
 
         # Check required fields
-        required_fields = ['epic', 'user_story', 'status']
+        required_fields = ["epic", "user_story", "status"]
         for field in required_fields:
             if not requirement.get(field):
                 errors.append(f"Missing required field: {field}")
 
         # Validate status values
-        valid_statuses = ['✅', '⏳', '📝', '❌', '⚠️']
-        status = requirement.get('status')
+        valid_statuses = ["✅", "⏳", "📝", "❌", "⚠️"]
+        status = requirement.get("status")
         if status and status not in valid_statuses:
             errors.append(f"Invalid status: {status}")
 
         # Validate epic format
-        epic = requirement.get('epic')
+        epic = requirement.get("epic")
         if epic:
             import re
-            if not re.match(r'EP-\d{5}', epic):
+
+            if not re.match(r"EP-\d{5}", epic):
                 errors.append(f"Invalid epic format: {epic}")
 
         # Validate user story format
-        user_story = requirement.get('user_story')
+        user_story = requirement.get("user_story")
         if user_story:
             import re
-            if not re.match(r'US-\d{5}', user_story):
+
+            if not re.match(r"US-\d{5}", user_story):
                 errors.append(f"Invalid user story format: {user_story}")
 
         return errors
@@ -114,13 +117,13 @@ class StandardValidator(BaseValidator):
         """Validate epic-to-user-story relationships."""
         errors = []
 
-        epics = rtm_data.get('epics', {})
-        requirements = rtm_data.get('requirements', [])
+        epics = rtm_data.get("epics", {})
+        requirements = rtm_data.get("requirements", [])
 
         # Check that all user stories reference valid epics
         referenced_epics = set()
         for req in requirements:
-            epic = req.get('epic')
+            epic = req.get("epic")
             if epic:
                 referenced_epics.add(epic)
 
@@ -133,7 +136,9 @@ class StandardValidator(BaseValidator):
         # Check for undefined epics
         undefined = referenced_epics - defined_epics
         if undefined:
-            errors.append(f"Undefined epics (referenced but not defined): {sorted(undefined)}")
+            errors.append(
+                f"Undefined epics (referenced but not defined): {sorted(undefined)}"
+            )
 
         return errors
 
@@ -161,13 +166,13 @@ class FormatValidator(BaseValidator):
         """Validate RTM markdown format."""
         errors = []
 
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         # Check for required sections
         required_sections = [
-            '# Requirements Traceability Matrix',
-            '## Epic',
-            '| Epic | User Story |'
+            "# Requirements Traceability Matrix",
+            "## Epic",
+            "| Epic | User Story |",
         ]
 
         for section in required_sections:
@@ -177,13 +182,13 @@ class FormatValidator(BaseValidator):
         # Validate table structure
         table_headers_found = False
         for line in lines:
-            if '| Epic | User Story |' in line:
+            if "| Epic | User Story |" in line:
                 table_headers_found = True
                 # Check if separator line follows
                 next_line_idx = lines.index(line) + 1
                 if next_line_idx < len(lines):
                     next_line = lines[next_line_idx]
-                    if not next_line.startswith('|--'):
+                    if not next_line.startswith("|--"):
                         errors.append("Table header not followed by separator line")
                 break
 

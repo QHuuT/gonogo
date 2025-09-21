@@ -7,11 +7,13 @@ Related Issue: US-00052 - Database schema design for traceability relationships
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
-import pytest
 import json
 from datetime import datetime
+
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from src.be.models.traceability.base import Base
 from src.be.models.traceability.epic import Epic
 from src.be.models.traceability.test import Test
@@ -45,7 +47,7 @@ def test_entity(epic):
         test_file_path="tests/unit/test_auth.py",
         title="Test Authentication",
         test_function_name="test_login_success",
-        epic_id=epic.id
+        epic_id=epic.id,
     )
 
 
@@ -65,7 +67,11 @@ class TestTestModel:
         db_session.add(test_entity)
         db_session.commit()
 
-        retrieved = db_session.query(Test).filter_by(test_function_name="test_login_success").first()
+        retrieved = (
+            db_session.query(Test)
+            .filter_by(test_function_name="test_login_success")
+            .first()
+        )
         assert retrieved is not None
         assert retrieved.test_type == "unit"
         assert retrieved.test_file_path == "tests/unit/test_auth.py"
@@ -83,7 +89,7 @@ class TestTestModel:
 
     def test_test_types(self, test_entity):
         """Test valid test types."""
-        valid_types = ['unit', 'integration', 'bdd', 'security', 'e2e']
+        valid_types = ["unit", "integration", "bdd", "security", "e2e"]
 
         for test_type in valid_types:
             test_entity.test_type = test_type
@@ -119,7 +125,9 @@ class TestTestModel:
     def test_update_execution_result_failure(self, test_entity):
         """Test updating execution result for failed test."""
         error_msg = "AssertionError: Expected 200, got 401"
-        test_entity.update_execution_result("failed", duration_ms=75.0, error_message=error_msg)
+        test_entity.update_execution_result(
+            "failed", duration_ms=75.0, error_message=error_msg
+        )
 
         assert test_entity.last_execution_status == "failed"
         assert test_entity.execution_duration_ms == 75.0
@@ -168,7 +176,7 @@ class TestTestModel:
 
     def test_test_priority_values(self, test_entity):
         """Test valid test priority values."""
-        valid_priorities = ['critical', 'high', 'medium', 'low']
+        valid_priorities = ["critical", "high", "medium", "low"]
 
         for priority in valid_priorities:
             test_entity.test_priority = priority
@@ -214,14 +222,14 @@ class TestTestModel:
         """Test dictionary conversion with basic Test data."""
         result = test_entity.to_dict()
 
-        assert result['test_type'] == "unit"
-        assert result['test_file_path'] == "tests/unit/test_auth.py"
-        assert result['test_function_name'] == "test_login_success"
-        assert result['epic_id'] == test_entity.epic_id
-        assert result['last_execution_status'] == "not_run"
-        assert result['execution_count'] == 0
-        assert result['failure_count'] == 0
-        assert result['success_rate'] == 0.0
+        assert result["test_type"] == "unit"
+        assert result["test_file_path"] == "tests/unit/test_auth.py"
+        assert result["test_function_name"] == "test_login_success"
+        assert result["epic_id"] == test_entity.epic_id
+        assert result["last_execution_status"] == "not_run"
+        assert result["execution_count"] == 0
+        assert result["failure_count"] == 0
+        assert result["success_rate"] == 0.0
 
     def test_to_dict_with_execution_data(self, test_entity):
         """Test dictionary conversion includes execution data."""
@@ -229,10 +237,10 @@ class TestTestModel:
 
         result = test_entity.to_dict()
 
-        assert result['last_execution_status'] == "passed"
-        assert result['execution_duration_ms'] == 123.45
-        assert result['execution_count'] == 1
-        assert result['success_rate'] == 100.0
+        assert result["last_execution_status"] == "passed"
+        assert result["execution_duration_ms"] == 123.45
+        assert result["execution_count"] == 1
+        assert result["success_rate"] == 100.0
 
     def test_repr(self, test_entity):
         """Test string representation."""
@@ -249,7 +257,7 @@ class TestTestModel:
         test = Test(
             test_type="integration",
             test_file_path="tests/integration/test_api.py",
-            title="API Test"
+            title="API Test",
         )
 
         assert test.status == "planned"
@@ -264,7 +272,7 @@ class TestTestModel:
 
     def test_execution_status_values(self, test_entity):
         """Test valid execution status values."""
-        valid_statuses = ['not_run', 'passed', 'failed', 'skipped', 'error']
+        valid_statuses = ["not_run", "passed", "failed", "skipped", "error"]
 
         for status in valid_statuses:
             test_entity.last_execution_status = status
@@ -285,21 +293,23 @@ class TestTestModel:
             test_type="unit",
             test_file_path="tests/unit/auth/test_login.py",
             title="Login Test",
-            epic_id=epic.id
+            epic_id=epic.id,
         )
         test2 = Test(
             test_type="unit",
             test_file_path="tests/unit/auth/test_logout.py",
             title="Logout Test",
-            epic_id=epic.id
+            epic_id=epic.id,
         )
 
         db_session.add_all([test1, test2])
         db_session.commit()
 
         # Query by file path pattern should work efficiently due to index
-        results = db_session.query(Test).filter(
-            Test.test_file_path.like("tests/unit/auth/%")
-        ).all()
+        results = (
+            db_session.query(Test)
+            .filter(Test.test_file_path.like("tests/unit/auth/%"))
+            .all()
+        )
 
         assert len(results) == 2

@@ -10,6 +10,7 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from src.be.models.traceability.base import Base
 from src.be.models.traceability.epic import Epic
 
@@ -33,7 +34,7 @@ def epic():
         title="Test Epic",
         description="Test epic description",
         business_value="Improve user experience",
-        priority="high"
+        priority="high",
     )
 
 
@@ -86,7 +87,9 @@ class TestEpic:
 
         assert epic.completed_story_points == 5
         assert epic.total_story_points == 15
-        assert abs(epic.completion_percentage - 33.333333333333336) < 0.0001  # 5/15 * 100 with tolerance
+        assert (
+            abs(epic.completion_percentage - 33.333333333333336) < 0.0001
+        )  # 5/15 * 100 with tolerance
 
     def test_update_progress_zero_total(self, epic):
         """Test progress update with zero total points."""
@@ -121,15 +124,15 @@ class TestEpic:
         """Test dictionary conversion with basic Epic data."""
         result = epic.to_dict()
 
-        assert result['epic_id'] == "EP-00001"
-        assert result['title'] == "Test Epic"
-        assert result['business_value'] == "Improve user experience"
-        assert result['priority'] == "high"
-        assert result['total_story_points'] == 0
-        assert result['completion_percentage'] == 0.0
-        assert result['test_count'] == 0
-        assert result['user_story_count'] == 0
-        assert result['defect_count'] == 0
+        assert result["epic_id"] == "EP-00001"
+        assert result["title"] == "Test Epic"
+        assert result["business_value"] == "Improve user experience"
+        assert result["priority"] == "high"
+        assert result["total_story_points"] == 0
+        assert result["completion_percentage"] == 0.0
+        assert result["test_count"] == 0
+        assert result["user_story_count"] == 0
+        assert result["defect_count"] == 0
 
     def test_to_dict_with_relationships(self, db_session, epic):
         """Test dictionary conversion includes relationship counts."""
@@ -140,9 +143,9 @@ class TestEpic:
         result = epic.to_dict()
 
         # Should have relationship count fields even if empty
-        assert 'test_count' in result
-        assert 'user_story_count' in result
-        assert 'defect_count' in result
+        assert "test_count" in result
+        assert "user_story_count" in result
+        assert "defect_count" in result
 
     def test_repr(self, epic):
         """Test string representation."""
@@ -168,7 +171,7 @@ class TestEpic:
 
     def test_priority_values(self, epic):
         """Test valid priority values."""
-        valid_priorities = ['critical', 'high', 'medium', 'low']
+        valid_priorities = ["critical", "high", "medium", "low"]
 
         for priority in valid_priorities:
             epic.priority = priority
@@ -176,7 +179,7 @@ class TestEpic:
 
     def test_risk_level_values(self, epic):
         """Test valid risk level values."""
-        valid_risk_levels = ['low', 'medium', 'high', 'critical']
+        valid_risk_levels = ["low", "medium", "high", "critical"]
 
         for risk_level in valid_risk_levels:
             epic.risk_level = risk_level

@@ -7,17 +7,20 @@ Related Issue: US-00052 - Database schema design for traceability relationships
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
-import pytest
 import json
 from datetime import datetime
+
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.be.models.traceability.base import TraceabilityBase, Base
+
+from src.be.models.traceability.base import Base, TraceabilityBase
 
 
 class TestEntity(TraceabilityBase):
     """Test entity for testing base functionality."""
-    __tablename__ = 'test_entities'
+
+    __tablename__ = "test_entities"
 
 
 @pytest.fixture
@@ -35,9 +38,7 @@ def db_session():
 def test_entity():
     """Create a test entity instance."""
     return TestEntity(
-        title="Test Entity",
-        description="Test description",
-        status="planned"
+        title="Test Entity", description="Test description", status="planned"
     )
 
 
@@ -154,12 +155,12 @@ class TestTraceabilityBase:
         """Test dictionary conversion with basic data."""
         result = test_entity.to_dict()
 
-        assert result['title'] == "Test Entity"
-        assert result['description'] == "Test description"
-        assert result['status'] == "planned"
-        assert result['id'] is None
-        assert 'created_at' in result
-        assert 'updated_at' in result
+        assert result["title"] == "Test Entity"
+        assert result["description"] == "Test description"
+        assert result["status"] == "planned"
+        assert result["id"] is None
+        assert "created_at" in result
+        assert "updated_at" in result
 
     def test_to_dict_with_git_context(self, test_entity):
         """Test dictionary conversion with git context."""
@@ -167,8 +168,8 @@ class TestTraceabilityBase:
 
         result = test_entity.to_dict()
 
-        assert result['introduced_in_commit'] == "abc123"
-        assert result['introduced_in_branch'] == "main"
+        assert result["introduced_in_commit"] == "abc123"
+        assert result["introduced_in_branch"] == "main"
 
     def test_repr(self, test_entity):
         """Test string representation."""

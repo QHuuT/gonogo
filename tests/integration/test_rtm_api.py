@@ -12,14 +12,15 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.be.main import app
 from src.be.database import get_db
+from src.be.main import app
 from src.be.models.traceability.base import Base
-
 
 # Test database setup
 TEST_DATABASE_URL = "sqlite:///./test_rtm.db"
-test_engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
+test_engine = create_engine(
+    TEST_DATABASE_URL, connect_args={"check_same_thread": False}
+)
 TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
 
@@ -58,7 +59,7 @@ def sample_epic(client, test_db):
         "title": "Test Epic",
         "description": "A test epic for integration testing",
         "business_value": "Improve testing capabilities",
-        "priority": "high"
+        "priority": "high",
     }
     response = client.post("/api/rtm/epics/", params=epic_data)
     assert response.status_code == 200
@@ -74,7 +75,7 @@ class TestEpicAPI:
             "epic_id": "EP-00001",
             "title": "Test Epic",
             "description": "A test epic",
-            "priority": "high"
+            "priority": "high",
         }
         response = client.post("/api/rtm/epics/", params=epic_data)
 
@@ -125,10 +126,7 @@ class TestEpicAPI:
 
     def test_update_epic(self, client, sample_epic):
         """Test updating an Epic."""
-        update_data = {
-            "title": "Updated Epic Title",
-            "priority": "critical"
-        }
+        update_data = {"title": "Updated Epic Title", "priority": "critical"}
         response = client.put("/api/rtm/epics/EP-00001", params=update_data)
 
         assert response.status_code == 200
@@ -160,7 +158,7 @@ class TestUserStoryAPI:
             "github_issue_number": 123,
             "title": "Test User Story",
             "story_points": 5,
-            "priority": "high"
+            "priority": "high",
         }
         response = client.post("/api/rtm/user-stories/", params=us_data)
 
@@ -178,7 +176,7 @@ class TestUserStoryAPI:
             "user_story_id": "US-00001",
             "epic_id": epic_id,
             "github_issue_number": 123,
-            "title": "Test User Story"
+            "title": "Test User Story",
         }
         client.post("/api/rtm/user-stories/", params=us_data)
 
@@ -198,7 +196,7 @@ class TestUserStoryAPI:
             "user_story_id": "US-00001",
             "epic_id": epic_id,
             "github_issue_number": 123,
-            "title": "Test User Story"
+            "title": "Test User Story",
         }
         client.post("/api/rtm/user-stories/", params=us_data)
 
@@ -216,7 +214,7 @@ class TestUserStoryAPI:
             "user_story_id": "US-00001",
             "epic_id": epic_id,
             "github_issue_number": 123,
-            "title": "Test User Story"
+            "title": "Test User Story",
         }
         client.post("/api/rtm/user-stories/", params=us_data)
 
@@ -238,7 +236,7 @@ class TestTestAPI:
             "test_file_path": "tests/unit/test_example.py",
             "title": "Example Unit Test",
             "epic_id": epic_id,
-            "test_function_name": "test_example_function"
+            "test_function_name": "test_example_function",
         }
         response = client.post("/api/rtm/tests/", params=test_data)
 
@@ -255,7 +253,7 @@ class TestTestAPI:
             "test_type": "unit",
             "test_file_path": "tests/unit/test_example.py",
             "title": "Example Unit Test",
-            "epic_id": epic_id
+            "epic_id": epic_id,
         }
         client.post("/api/rtm/tests/", params=test_data)
 
@@ -275,13 +273,13 @@ class TestTestAPI:
             "test_type": "unit",
             "test_file_path": "tests/unit/test_example.py",
             "title": "Unit Test",
-            "epic_id": epic_id
+            "epic_id": epic_id,
         }
         test_data_2 = {
             "test_type": "integration",
             "test_file_path": "tests/integration/test_api.py",
             "title": "Integration Test",
-            "epic_id": epic_id
+            "epic_id": epic_id,
         }
         client.post("/api/rtm/tests/", params=test_data_1)
         client.post("/api/rtm/tests/", params=test_data_2)
@@ -306,17 +304,16 @@ class TestTestAPI:
             "test_type": "unit",
             "test_file_path": "tests/unit/test_example.py",
             "title": "Example Unit Test",
-            "epic_id": epic_id
+            "epic_id": epic_id,
         }
         create_response = client.post("/api/rtm/tests/", params=test_data)
         test_id = create_response.json()["id"]
 
         # Update execution result
-        execution_data = {
-            "status": "passed",
-            "duration_ms": 150.5
-        }
-        response = client.put(f"/api/rtm/tests/{test_id}/execution", params=execution_data)
+        execution_data = {"status": "passed", "duration_ms": 150.5}
+        response = client.put(
+            f"/api/rtm/tests/{test_id}/execution", params=execution_data
+        )
 
         assert response.status_code == 200
         data = response.json()
@@ -337,7 +334,7 @@ class TestDefectAPI:
             "title": "Test Defect",
             "severity": "high",
             "priority": "critical",
-            "epic_id": epic_id
+            "epic_id": epic_id,
         }
         response = client.post("/api/rtm/defects/", params=defect_data)
 
@@ -354,7 +351,7 @@ class TestDefectAPI:
             "defect_id": "DEF-00001",
             "github_issue_number": 456,
             "title": "Test Defect",
-            "epic_id": epic_id
+            "epic_id": epic_id,
         }
         client.post("/api/rtm/defects/", params=defect_data)
 
@@ -375,14 +372,14 @@ class TestDefectAPI:
             "github_issue_number": 456,
             "title": "Critical Defect",
             "severity": "critical",
-            "epic_id": epic_id
+            "epic_id": epic_id,
         }
         defect_data_2 = {
             "defect_id": "DEF-00002",
             "github_issue_number": 457,
             "title": "Medium Defect",
             "severity": "medium",
-            "epic_id": epic_id
+            "epic_id": epic_id,
         }
         client.post("/api/rtm/defects/", params=defect_data_1)
         client.post("/api/rtm/defects/", params=defect_data_2)
@@ -434,7 +431,7 @@ class TestAnalyticsAPI:
                 "test_type": "unit",
                 "test_file_path": f"tests/unit/test_{i}.py",
                 "title": f"Test {i}",
-                "epic_id": epic_id
+                "epic_id": epic_id,
             }
             client.post("/api/rtm/tests/", params=test_data)
 
@@ -464,7 +461,7 @@ class TestAPIIntegration:
         epic_data = {
             "epic_id": "EP-00001",
             "title": "Full Workflow Epic",
-            "priority": "high"
+            "priority": "high",
         }
         epic_response = client.post("/api/rtm/epics/", params=epic_data)
         epic_id = epic_response.json()["id"]
@@ -475,7 +472,7 @@ class TestAPIIntegration:
             "epic_id": epic_id,
             "github_issue_number": 123,
             "title": "Workflow User Story",
-            "story_points": 8
+            "story_points": 8,
         }
         us_response = client.post("/api/rtm/user-stories/", params=us_data)
         assert us_response.status_code == 200
@@ -485,16 +482,13 @@ class TestAPIIntegration:
             "test_type": "unit",
             "test_file_path": "tests/unit/test_workflow.py",
             "title": "Workflow Test",
-            "epic_id": epic_id
+            "epic_id": epic_id,
         }
         test_response = client.post("/api/rtm/tests/", params=test_data)
         test_id = test_response.json()["id"]
 
         # 4. Update test execution
-        execution_data = {
-            "status": "passed",
-            "duration_ms": 200.0
-        }
+        execution_data = {"status": "passed", "duration_ms": 200.0}
         client.put(f"/api/rtm/tests/{test_id}/execution", params=execution_data)
 
         # 5. Create Defect
@@ -503,7 +497,7 @@ class TestAPIIntegration:
             "github_issue_number": 456,
             "title": "Workflow Defect",
             "severity": "medium",
-            "epic_id": epic_id
+            "epic_id": epic_id,
         }
         defect_response = client.post("/api/rtm/defects/", params=defect_data)
         assert defect_response.status_code == 200

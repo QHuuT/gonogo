@@ -9,7 +9,8 @@ Epic: EP-00005 - RTM Automation
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, List
+from typing import Dict, List, Optional
+
 from . import RTMPlugin
 
 
@@ -66,8 +67,8 @@ class BaseLinkGenerator(RTMPlugin):
         Returns:
             Extracted ID (e.g., '00001')
         """
-        if '-' in reference:
-            return reference.split('-', 1)[1]
+        if "-" in reference:
+            return reference.split("-", 1)[1]
         return reference
 
     def get_priority(self) -> int:
@@ -97,18 +98,18 @@ class GitHubIssueLinkGenerator(BaseLinkGenerator):
 
     def can_handle(self, reference_type: str) -> bool:
         """Handle GitHub issue types."""
-        return reference_type in ['epic', 'user_story', 'defect']
+        return reference_type in ["epic", "user_story", "defect"]
 
     def generate_link(self, reference: str, context: Dict) -> Optional[str]:
         """Generate GitHub issue search link."""
-        config = context.get('config', {})
-        github_config = config.get('github', {})
+        config = context.get("config", {})
+        github_config = config.get("github", {})
 
-        owner = github_config.get('owner', 'QHuuT')
-        repo = github_config.get('repo', 'gonogo')
+        owner = github_config.get("owner", "QHuuT")
+        repo = github_config.get("repo", "gonogo")
 
         # Determine if bold formatting is needed (epics)
-        bold = reference.startswith('EP-')
+        bold = reference.startswith("EP-")
 
         url = f"https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{reference}"
 
@@ -120,7 +121,8 @@ class GitHubIssueLinkGenerator(BaseLinkGenerator):
     def validate_link(self, reference: str, context: Dict) -> bool:
         """Validate GitHub issue ID format."""
         import re
-        pattern = r'^(EP|US|DEF)-\d{5}$'
+
+        pattern = r"^(EP|US|DEF)-\d{5}$"
         return bool(re.match(pattern, reference))
 
 
@@ -141,29 +143,30 @@ class BDDScenarioLinkGenerator(BaseLinkGenerator):
 
     def can_handle(self, reference_type: str) -> bool:
         """Handle BDD scenario references."""
-        return reference_type == 'bdd_scenario'
+        return reference_type == "bdd_scenario"
 
     def generate_link(self, reference: str, context: Dict) -> Optional[str]:
         """Generate BDD scenario link."""
         # Expected format: "feature-name.feature:scenario_name"
-        if ':' not in reference:
+        if ":" not in reference:
             return None
 
-        feature_file, scenario_name = reference.split(':', 1)
+        feature_file, scenario_name = reference.split(":", 1)
 
         # Build relative path
-        rtm_file = context.get('rtm_file', 'docs/traceability/requirements-matrix.md')
+        rtm_file = context.get("rtm_file", "docs/traceability/requirements-matrix.md")
         rtm_dir = os.path.dirname(rtm_file)
 
         # Default BDD features location
-        features_dir = context.get('bdd_features_dir', 'tests/bdd/features')
+        features_dir = context.get("bdd_features_dir", "tests/bdd/features")
         feature_path = os.path.join(features_dir, feature_file)
 
         # Calculate relative path
         import os
+
         try:
             relative_path = os.path.relpath(feature_path, rtm_dir)
-            relative_path = relative_path.replace('\\', '/')
+            relative_path = relative_path.replace("\\", "/")
         except ValueError:
             relative_path = feature_path
 
@@ -171,15 +174,16 @@ class BDDScenarioLinkGenerator(BaseLinkGenerator):
 
     def validate_link(self, reference: str, context: Dict) -> bool:
         """Validate that BDD feature file exists."""
-        if ':' not in reference:
+        if ":" not in reference:
             return False
 
-        feature_file, _ = reference.split(':', 1)
+        feature_file, _ = reference.split(":", 1)
 
-        rtm_file = context.get('rtm_file', 'docs/traceability/requirements-matrix.md')
+        rtm_file = context.get("rtm_file", "docs/traceability/requirements-matrix.md")
         rtm_dir = os.path.dirname(rtm_file)
-        features_dir = context.get('bdd_features_dir', 'tests/bdd/features')
+        features_dir = context.get("bdd_features_dir", "tests/bdd/features")
         feature_path = os.path.join(rtm_dir, features_dir, feature_file)
 
         import os
+
         return os.path.exists(feature_path)
