@@ -423,15 +423,77 @@ test: add unit tests for blog post service
 2. [ ] Check [GitHub Issues](../../issues) for assigned work
 3. [ ] **PLAN**: For any new task, create GitHub issue with full project integration:
    - **📖 Detailed Guide**: See [GitHub Issue Creation Guide](docs/technical/github-issue-creation.md)
-   - **Check existing IDs first**: `gh issue list --limit 50 --state all | grep -E "(EP-|US-|DEF-)"`
+   - **Find next unused ID**: `python tools/find_next_unused_id.py --type user-story` (check database, not GitHub)
+   - **Verify ID availability**: `python tools/find_next_unused_id.py --type user-story --show-gaps` (shows all gaps)
    - **Set up project integration**: `export GONOGO_PROJECT_ID=$(gh project list --owner QHuuT --json number,title | jq -r '.[] | select(.title=="GoNoGo") | .number')`
    - **Create issue + add to project**:
      ```bash
-     ISSUE_URL=$(gh issue create --title "US-XXXXX: Title" --body "**Parent Epic**: EP-XXXXX\n**Dependencies**:\n- Blocks: #X\n- Blocked by: #Y" --label "user-story,priority/medium")
+     NEXT_ID=$(python tools/find_next_unused_id.py --type user-story)
+     ISSUE_URL=$(gh issue create --title "$NEXT_ID: Title" --body "**Parent Epic**: EP-XXXXX\n**Dependencies**:\n- Blocks: #X\n- Blocked by: #Y" --label "user-story,priority/medium")
      gh project item-add $GONOGO_PROJECT_ID --url $ISSUE_URL
      ```
    - **Set hierarchical relationships**: Epic → User Story → Defect
    - **Document dependencies**: "Blocks #X" or "Blocked by #Y" relationships
+
+### **🔢 RTM ID Management Commands**
+```bash
+# Find next unused ID for any entity type
+python tools/find_next_unused_id.py --type user-story   # Next unused US-XXXXX
+python tools/find_next_unused_id.py --type epic        # Next unused EP-XXXXX
+python tools/find_next_unused_id.py --type defect      # Next unused DEF-XXXXX
+
+# Show gaps in ID sequence (helpful for reusing lower numbers)
+python tools/find_next_unused_id.py --type user-story --show-gaps
+# Example output: "Next unused ID: US-00001" (reuses gaps instead of incrementing)
+
+# Database ID verification (check what's actually used in RTM database)
+python tools/rtm-db.py query user-stories --format table    # See all US IDs in database
+python tools/rtm-db.py query epics --format table           # See all EP IDs in database
+python tools/rtm-db.py query defects --format table         # See all DEF IDs in database
+```
+
+### **📊 RTM Report Generation Commands**
+```bash
+# LIVE DATA - Production RTM Reports (uses real project data)
+python tools/rtm_report_generator.py --html              # Generate live RTM report
+# Saves to: quality/reports/dynamic_rtm/rtm_matrix_complete.html
+# Uses: Real epics, user stories, tests, defects from RTM database
+# Features: Interactive test filtering (E2E, Unit, Integration, Security), clickable epic links
+
+# DEMO DATA - Test RTM Reports (uses sample data for development)
+python tools/rtm_demo.py --html                          # Generate demo RTM report
+python tools/rtm_demo.py --populate-test-data            # Add demo data to database
+python tools/rtm_demo.py --reset-to-demo                 # Reset database to demo-only
+# Saves to: quality/reports/dynamic_rtm/rtm_matrix_demo.html
+# Uses: EP-DEMO-XXX, US-DEMO-XXX, etc. sample data
+
+# 🐍 Python-Based RTM Filtering (SERVER-SIDE) ✨
+python tools/rtm_python_filter.py --help                # Show all filtering options
+python tools/rtm_python_filter.py --us-status completed # Filter by user story status
+python tools/rtm_python_filter.py --test-type e2e       # Show only E2E tests (default)
+python tools/rtm_python_filter.py --defect-priority critical  # Show only critical defects
+python tools/rtm_python_filter.py --format html --output filtered.html  # Custom output
+python tools/rtm_python_filter.py --show-stats --verbose # Detailed filtering info
+# Python server-side filtering: Pre-filtered data, CLI automation, faster for large datasets
+
+# 📊 RTM Report Types & Filtering Options
+# 1. STATIC HTML Reports (Client-side JavaScript filtering)
+#    - Generated files work offline, no server needed
+#    - JavaScript filters work in any browser
+#    - Click buttons to filter user stories, tests, defects
+#
+# 2. PYTHON CLI Filtering (Server-side filtering)
+#    - Pre-filtered data generation
+#    - Command-line automation friendly
+#    - Faster for large datasets, more secure
+
+# RTM Database Management
+python tools/rtm-db.py query epics --format table       # View all epics in database
+python tools/rtm-db.py query user-stories --format table # View all user stories
+python tools/rtm-db.py admin health-check               # Verify database integrity
+python tools/import_real_github_data.py --import        # Import from GitHub issues
+```
+
 4. [ ] Review [Development Workflow](docs/technical/development-workflow.md) for task-specific processes
 5. [ ] Check [Requirements Matrix](docs/traceability/requirements-matrix.md) for current status
 6. [ ] Verify [GDPR implications](docs/context/compliance/gdpr-requirements.md) if handling personal data

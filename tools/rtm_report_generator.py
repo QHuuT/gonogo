@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Dynamic RTM Generation Demo Tool
+RTM Report Generator - Live Data
 
-Demonstrates the new dynamic RTM generation and reporting capabilities.
-Provides CLI access to all the new RTM report generation features.
+Generates Requirements Traceability Matrix reports using live data from the RTM database.
+Connects to the production database and creates interactive HTML reports with real project data.
 
 Related Issue: US-00059 - Dynamic RTM generation and reporting
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
@@ -332,6 +332,8 @@ Examples:
                        help='Filter by status')
     parser.add_argument('--priority-filter', type=str,
                        help='Filter by priority')
+    parser.add_argument('--include-demo-data', action='store_true',
+                       help='Include demo epics (EP-DEMO-*) in the report')
 
     args = parser.parse_args()
 
@@ -345,6 +347,8 @@ Examples:
         filters['status'] = args.status_filter
     if args.priority_filter:
         filters['priority'] = args.priority_filter
+    if args.include_demo_data:
+        filters['include_demo_data'] = True
 
     if args.status:
         demo.show_system_status()

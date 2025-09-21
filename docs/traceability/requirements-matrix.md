@@ -13,11 +13,11 @@ This matrix traces all requirements from business needs through implementation a
 
 | Epic ID | Epic Name | User Stories | Total Story Points | Priority | Status |
 |---------|-----------|--------------|-------------------|----------|--------|
-| **EP-00001** | Blog Content Management | US-00001, US-00002 | 8 | High | 📝 Planned |
+| **EP-00001** | Blog Content Management | US-00002 | 5 | High | 📝 Planned |
 | **EP-00002** | GDPR-Compliant Comment System | US-00003, US-00004, US-00005 | 16 | High | 📝 Planned |
 | **EP-00003** | Privacy and Consent Management | US-00006, US-00007, US-00008 | 29 | Critical | 📝 Planned |
 | **EP-00004** | GitHub Workflow Integration | US-00009, US-00010, US-00011, US-00012, US-00013 | 21 | High | ⏳ In Progress |
-| **EP-00005** | Requirements Traceability Matrix Automation | US-00014, US-00015, US-00016, US-00017, US-00051, US-00052, US-00053, US-00054, US-00055, US-00056, US-00057, US-00058, US-00059, US-00060 | 75 | High | ⏳ In Progress (57% Complete - Database Foundation + CLI + Test Integration Complete) |
+| **EP-00005** | Requirements Traceability Matrix Automation | US-00001, US-00014, US-00015, US-00016, US-00017, US-00051, US-00052, US-00053, US-00054, US-00055, US-00056, US-00057, US-00058, US-00059, US-00060, US-00061 | 83 | High | ⏳ In Progress (65% Complete - Database Foundation + CLI + Test Integration + Test Filtering Complete) |
 | **EP-00006** | Test Logging and Reporting | US-00021, US-00022, US-00023, US-00024, US-00025, US-00026, US-00027, US-00028, US-00029, US-00030 | 43 | High | ✅ Done |
 | **EP-00007** | Enhanced Archive Management | US-00032 | 5 | High | 📝 Planned |
 
@@ -135,6 +135,8 @@ This matrix traces all requirements from business needs through implementation a
 | [US-00058: Legacy Script Migration](https://github.com/QHuuT/gonogo/issues/58) | [database-rtm.feature](../../tests/bdd/features/database-rtm.feature) | script_migration, backward_compatibility, deprecation_strategy | [test_legacy_migration_steps.py](../../tests/bdd/step_definitions/test_legacy_migration_steps.py) |
 | [US-00059: Dynamic RTM Generation](https://github.com/QHuuT/gonogo/issues/59) | [database-rtm.feature](../../tests/bdd/features/database-rtm.feature) | dynamic_reports, web_dashboard, api_endpoints | [test_dynamic_reporting_steps.py](../../tests/bdd/step_definitions/test_dynamic_reporting_steps.py) |
 | [US-00060: Documentation Update](https://github.com/QHuuT/gonogo/issues/60) | [database-rtm.feature](../../tests/bdd/features/database-rtm.feature) | documentation_update, user_guides, technical_docs | [test_database_documentation_steps.py](../../tests/bdd/step_definitions/test_database_documentation_steps.py) |
+| [US-00061: Enhanced RTM HTML Report](https://github.com/QHuuT/gonogo/issues/61) | [database-rtm.feature](../../tests/bdd/features/database-rtm.feature) | html_report_enhancement, improved_traceability, interactive_features | [test_rtm_html_report_steps.py](../../tests/bdd/step_definitions/test_rtm_html_report_steps.py) |
+| [US-00001: Enhanced RTM Filtering System](https://github.com/QHuuT/gonogo/issues/65) ✅ **COMPLETED** | [database-rtm.feature](../../tests/bdd/features/database-rtm.feature) | user_story_filtering, test_metrics_dashboard, defect_management, interactive_filtering | [test_rtm_filtering_steps.py](../../tests/bdd/step_definitions/test_rtm_filtering_steps.py) |
 
 ## Implementation Status
 

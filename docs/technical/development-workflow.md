@@ -11,16 +11,21 @@ This document defines the complete development workflow for GoNoGo, integrating 
 ### **Phase 1: Requirements Analysis & GitHub Issue Creation**
 1. **Read CLAUDE.md** for current project state and commands
 2. **Check GitHub Issues** for active epics and user stories
-3. **CREATE GITHUB ISSUE** using templates when planning new tasks:
+3. **CREATE GITHUB ISSUE** using database-first ID assignment and templates:
    ```bash
-   # For new features/epics
-   gh issue create --template epic --title "EP-XXXXX: Feature Name"
+   # Step 1: Get next unused ID from database (not GitHub)
+   NEXT_EPIC_ID=$(python tools/find_next_unused_id.py --type epic)
+   NEXT_US_ID=$(python tools/find_next_unused_id.py --type user-story)
+   NEXT_DEF_ID=$(python tools/find_next_unused_id.py --type defect)
 
-   # For specific requirements
-   gh issue create --template user-story --title "US-XXXXX: Specific Requirement"
+   # Step 2: Create GitHub issue with proper ID
+   gh issue create --template epic --title "$NEXT_EPIC_ID: Feature Name"
+   gh issue create --template user-story --title "$NEXT_US_ID: Specific Requirement"
+   gh issue create --template defect --title "$NEXT_DEF_ID: Bug Description"
 
-   # For bug fixes
-   gh issue create --template defect --title "DEF-XXXXX: Bug Description"
+   # Step 3: Add to GitHub project
+   GONOGO_PROJECT_ID=$(gh project list --owner QHuuT --format json | grep -o '"number":[0-9]*' | grep -o '[0-9]*' | head -1)
+   gh project item-add $GONOGO_PROJECT_ID --url [ISSUE_URL]
    ```
 4. **Review Context** in `docs/context/` for background decisions and compliance
 5. **Review BDD Scenarios** in `tests/bdd/features/`

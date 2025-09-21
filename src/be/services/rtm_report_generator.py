@@ -102,7 +102,14 @@ class RTMReportGenerator:
         return markdown
 
     def generate_html_matrix(self, filters: Dict[str, Any]) -> str:
-        """Generate RTM matrix in HTML format with interactive features."""
+        """Generate RTM matrix in HTML format with Python-based filtering."""
+        # Extract filter parameters
+        epic_filter = filters.get('epic_filter', 'all')
+        us_status_filter = filters.get('us_status_filter', 'all')
+        test_type_filter = filters.get('test_type_filter', 'e2e')  # Default to E2E
+        defect_priority_filter = filters.get('defect_priority_filter', 'all')
+        defect_status_filter = filters.get('defect_status_filter', 'all')
+
         epics = self._get_filtered_epics(filters)
 
         html = """
@@ -144,6 +151,48 @@ class RTMReportGenerator:
         .test-filter-button.active:hover { background: #2980b9; }
         .test-row { transition: opacity 0.3s ease; }
         .test-row.hidden { display: none; }
+        .us-filter-section { margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; }
+        .us-filter-button { padding: 6px 12px; margin: 0 5px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .us-filter-button.active { background: #27ae60; color: white; border-color: #27ae60; }
+        .us-filter-button:hover { background: #e9ecef; }
+        .us-filter-button.active:hover { background: #229954; }
+        .us-row { transition: opacity 0.3s ease; }
+        .us-row.hidden { display: none; }
+        .test-metrics-dashboard { margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .metric-card { background: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .metric-icon { font-size: 24px; margin-bottom: 8px; }
+        .metric-number { font-size: 24px; font-weight: bold; color: #2c3e50; margin-bottom: 4px; }
+        .metric-title { font-size: 12px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; }
+        .test-type-breakdown h5 { margin: 0 0 15px 0; color: #2c3e50; }
+        .test-type-stat { margin-bottom: 12px; }
+        .test-type-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 12px; }
+        .test-type-label { font-weight: bold; text-transform: uppercase; }
+        .test-type-count { color: #7f8c8d; }
+        .test-type-bar { height: 8px; background: #ecf0f1; border-radius: 4px; overflow: hidden; }
+        .test-type-progress { height: 100%; transition: width 0.3s ease; }
+        .no-tests { text-align: center; color: #7f8c8d; font-style: italic; padding: 20px; }
+        .defect-filter-section { margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; }
+        .defect-filter-button { padding: 6px 12px; margin: 0 5px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .defect-filter-button.active { background: #e74c3c; color: white; border-color: #e74c3c; }
+        .defect-filter-button:hover { background: #e9ecef; }
+        .defect-filter-button.active:hover { background: #c0392b; }
+        .defect-row { transition: opacity 0.3s ease; }
+        .defect-row.hidden { display: none; }
+        .priority-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
+        .priority-critical { background: #e74c3c; }
+        .priority-high { background: #f39c12; }
+        .priority-medium { background: #f1c40f; color: #2c3e50; }
+        .priority-low { background: #27ae60; }
+        .defect-status-open { background: #e74c3c; color: white; }
+        .defect-status-in-progress { background: #f39c12; color: white; }
+        .defect-status-resolved { background: #27ae60; color: white; }
+        .defect-status-closed { background: #95a5a6; color: white; }
+        .severity-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; border: 2px solid; }
+        .severity-critical { color: #e74c3c; border-color: #e74c3c; background: #fdedec; }
+        .severity-high { color: #f39c12; border-color: #f39c12; background: #fef9e7; }
+        .severity-medium { color: #f1c40f; border-color: #f1c40f; background: #fcf3cf; }
+        .severity-low { color: #27ae60; border-color: #27ae60; background: #eafaf1; }
         .epic-title-link { color: #f8f9fa !important; text-decoration: none; transition: all 0.2s ease; }
         .epic-title-link:hover { color: #ffd700 !important; text-decoration: underline; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
         .epic-header { cursor: pointer; }
@@ -163,10 +212,10 @@ class RTMReportGenerator:
         }
 
         function filterTestsByType(epicId, testType) {
-            const testTable = document.querySelector(`#epic-${epicId} table:last-of-type tbody`);
+            const testTable = document.querySelector(`#epic-${epicId} .test-filter-section + table tbody`);
             if (!testTable) return;
 
-            const testRows = testTable.querySelectorAll('tr');
+            const testRows = testTable.querySelectorAll('tr.test-row');
             const filterButtons = document.querySelectorAll(`#epic-${epicId} .test-filter-button`);
 
             // Update button states
@@ -179,8 +228,6 @@ class RTMReportGenerator:
 
             // Filter test rows
             testRows.forEach(row => {
-                if (row.children.length === 1) return; // Skip "no tests" row
-
                 const testTypeBadge = row.querySelector('.test-type-badge');
                 if (!testTypeBadge) return;
 
@@ -207,6 +254,88 @@ class RTMReportGenerator:
                     countDisplay.textContent = `Showing all ${totalTests} tests`;
                 } else {
                     countDisplay.textContent = `Showing ${visibleTests} ${testType.toUpperCase()} tests (${totalTests} total)`;
+                }
+            }
+        }
+        function filterUserStoriesByStatus(epicId, status) {
+            const usTable = document.querySelector(`#epic-${epicId} table:first-of-type tbody`);
+            if (!usTable) return;
+            const usRows = usTable.querySelectorAll('.us-row');
+            const filterButtons = document.querySelectorAll(`#epic-${epicId} .us-filter-button`);
+            // Update button states
+            filterButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.usStatus === status) {
+                    btn.classList.add('active');
+                }
+            });
+            // Filter user story rows
+            usRows.forEach(row => {
+                const rowStatus = row.dataset.usStatus;
+                if (status === 'all' || rowStatus === status) {
+                    row.classList.remove('hidden');
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+            // Update user story count display
+            const visibleUsRows = usTable.querySelectorAll('.us-row:not(.hidden)');
+            const totalUs = usRows.length;
+            const visibleUs = visibleUsRows.length;
+            const countDisplay = document.querySelector(`#epic-${epicId} .us-count-display`);
+            if (countDisplay) {
+                if (status === 'all') {
+                    countDisplay.textContent = `Showing all user stories (${totalUs} total)`;
+                } else {
+                    const statusDisplay = status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    countDisplay.textContent = `Showing ${visibleUs} ${statusDisplay} user stories (${totalUs} total)`;
+                }
+            }
+        }
+        function filterDefects(epicId, filterType, filterValue) {
+            const defectTable = document.querySelector(`#epic-${epicId} .defect-filter-section + table tbody`);
+            if (!defectTable) return;
+            const defectRows = defectTable.querySelectorAll('.defect-row');
+            const filterButtons = document.querySelectorAll(`#epic-${epicId} .defect-filter-button`);
+
+            // Update button states
+            filterButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if ((filterType === 'all' && btn.dataset.defectFilter === 'all') ||
+                    btn.dataset.defectFilter === `${filterType}:${filterValue}`) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Filter defect rows
+            defectRows.forEach(row => {
+                let shouldShow = false;
+                if (filterType === 'all') {
+                    shouldShow = true;
+                } else if (filterType === 'priority') {
+                    shouldShow = row.dataset.defectPriority === filterValue;
+                } else if (filterType === 'status') {
+                    shouldShow = row.dataset.defectStatus === filterValue;
+                }
+
+                if (shouldShow) {
+                    row.classList.remove('hidden');
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+
+            // Update defect count display
+            const visibleDefectRows = defectTable.querySelectorAll('.defect-row:not(.hidden)');
+            const totalDefects = defectRows.length;
+            const visibleDefects = visibleDefectRows.length;
+            const countDisplay = document.querySelector(`#epic-${epicId} .defect-count-display`);
+            if (countDisplay) {
+                if (filterType === 'all') {
+                    countDisplay.textContent = `Showing all defects (${totalDefects} total)`;
+                } else {
+                    const filterDisplay = filterValue.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    countDisplay.textContent = `Showing ${visibleDefects} ${filterDisplay} defects (${totalDefects} total)`;
                 }
             }
         }
@@ -274,6 +403,19 @@ class RTMReportGenerator:
 
             epic_title_link = self._render_epic_title_link(epic.epic_id, epic.title, epic.github_issue_number)
             clean_description = self._extract_epic_description(epic.description)
+
+            # Extract metrics for easier use in template
+            metrics = epic_data["metrics"]
+            user_stories_count = metrics["user_stories_count"]
+            completed_points = metrics["completed_story_points"]
+            total_points = metrics["total_story_points"]
+            tests_count = metrics["tests_count"]
+            test_pass_rate = metrics["test_pass_rate"]
+            tests_passed = metrics["tests_passed"]
+            tests_failed = metrics["tests_failed"]
+            tests_not_run = metrics["tests_not_run"]
+            defects_count = metrics["defects_count"]
+
             html += f"""
         <div class="epic-card" data-status="{epic.status}">
             <div class="epic-header" onclick="toggleEpicDetails('{epic.epic_id}')">
@@ -289,28 +431,37 @@ class RTMReportGenerator:
 
                 <div class="test-summary">
                     <div class="metric">
-                        <div class="metric-value">{epic_data["metrics"]["user_stories_count"]}</div>
+                        <div class="metric-value">{user_stories_count}</div>
                         <div class="metric-label">User Stories</div>
                     </div>
                     <div class="metric">
-                        <div class="metric-value">{epic_data["metrics"]["completed_story_points"]}/{epic_data["metrics"]["total_story_points"]}</div>
+                        <div class="metric-value">{completed_points}/{total_points}</div>
                         <div class="metric-label">Story Points</div>
                     </div>
                     <div class="metric">
-                        <div class="metric-value">{epic_data["metrics"]["tests_count"]}</div>
+                        <div class="metric-value">{tests_count}</div>
                         <div class="metric-label">Tests</div>
                     </div>
                     <div class="metric">
-                        <div class="metric-value">{epic_data["metrics"]["test_pass_rate"]:.1f}%</div>
-                        <div class="metric-label">Pass Rate ({epic_data["metrics"]["tests_passed"]}/{epic_data["metrics"]["tests_count"]})</div>
+                        <div class="metric-value">{test_pass_rate:.1f}%</div>
+                        <div class="metric-label">Pass Rate ({tests_passed}/{tests_count})</div>
                     </div>
                     <div class="metric">
-                        <div class="metric-value">{epic_data["metrics"]["defects_count"]}</div>
+                        <div class="metric-value">{defects_count}</div>
                         <div class="metric-label">Defects</div>
                     </div>
                 </div>
 
                 <h4>User Stories</h4>
+                <div class="us-filter-section">
+                    <strong>Filter User Stories:</strong>
+                    <button class="us-filter-button active" data-us-status="all" onclick="filterUserStoriesByStatus('""" + epic.epic_id + """', 'all')">All</button>
+                    <button class="us-filter-button" data-us-status="planned" onclick="filterUserStoriesByStatus('""" + epic.epic_id + """', 'planned')">Planned</button>
+                    <button class="us-filter-button" data-us-status="in_progress" onclick="filterUserStoriesByStatus('""" + epic.epic_id + """', 'in_progress')">In Progress</button>
+                    <button class="us-filter-button" data-us-status="completed" onclick="filterUserStoriesByStatus('""" + epic.epic_id + """', 'completed')">Completed</button>
+                    <button class="us-filter-button" data-us-status="blocked" onclick="filterUserStoriesByStatus('""" + epic.epic_id + """', 'blocked')">Blocked</button>
+                    <span class="us-count-display" style="margin-left: 15px; font-style: italic; color: #7f8c8d;">Showing all user stories</span>
+                </div>
                 <table>
                     <thead>
                         <tr><th>ID</th><th>Title</th><th>Story Points</th><th>Status</th></tr>
@@ -319,18 +470,70 @@ class RTMReportGenerator:
 """
             for us in epic_data["user_stories"]:
                 user_story_link = self._render_user_story_id_link(us["user_story_id"], us.get("github_issue_number"))
+                status_normalized = us["implementation_status"].replace('_', '-')
                 html += f"""
-                        <tr>
+                        <tr class="us-row" data-us-status="{us['implementation_status']}">
                             <td>{user_story_link}</td>
                             <td>{us["title"]}</td>
                             <td>{us["story_points"]}</td>
-                            <td><span class="status-badge status-{us["implementation_status"].replace('_', '-')}">{us["implementation_status"].replace('_', ' ').title()}</span></td>
+                            <td><span class="status-badge status-{status_normalized}">{us["implementation_status"].replace('_', ' ').title()}</span></td>
                         </tr>
 """
 
-            html += """
+            html += f"""
                     </tbody>
                 </table>
+
+                <h4>Test Metrics</h4>
+                <div class="test-metrics-dashboard">
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon">🧪</div>
+                            <div class="metric-content">
+                                <div class="metric-number">{tests_count}</div>
+                                <div class="metric-title">Total Tests</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">✅</div>
+                            <div class="metric-content">
+                                <div class="metric-number">{test_pass_rate:.1f}%</div>
+                                <div class="metric-title">Pass Rate</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">⚡</div>
+                            <div class="metric-content">
+                                <div class="metric-number">{tests_passed}</div>
+                                <div class="metric-title">Passed</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">❌</div>
+                            <div class="metric-content">
+                                <div class="metric-number">{tests_failed}</div>
+                                <div class="metric-title">Failed</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">⏭️</div>
+                            <div class="metric-content">
+                                <div class="metric-number">{tests_not_run}</div>
+                                <div class="metric-title">Not Run</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="test-type-breakdown">
+                        <h5>Test Distribution by Type</h5>
+                        <div class="test-type-stats">"""
+
+            # Add test type breakdown HTML
+            html += self._generate_test_type_breakdown_html(epic_data.get("tests", []))
+
+            html += """
+                        </div>
+                    </div>
+                </div>
 
                 <h4>Test Traceability</h4>
                 <div class="test-filter-section">
@@ -344,7 +547,7 @@ class RTMReportGenerator:
                 </div>
                 <table>
                     <thead>
-                        <tr><th>Test Type</th><th>Test File</th><th>Function/Scenario</th><th>Last Execution</th><th>Status</th><th>Duration</th></tr>
+                        <tr><th>Test Type</th><th>Test File</th><th>Function/Scenario</th><th>Last Execution</th><th>Status</th></tr>
                     </thead>
                     <tbody>
 """
@@ -368,10 +571,6 @@ class RTMReportGenerator:
                 # Get test function or BDD scenario name
                 test_name = test.get("test_function_name") or test.get("bdd_scenario_name", "")
 
-                # Format duration
-                duration = test.get("execution_duration_ms", 0)
-                duration_str = f"{duration}ms" if duration else "-"
-
                 # Status styling
                 status = test.get("last_execution_status", "unknown")
                 status_class = "passed" if status == "passed" else "failed" if status == "failed" else "skipped"
@@ -385,7 +584,6 @@ class RTMReportGenerator:
                             <td>{test_name}</td>
                             <td>{formatted_time}</td>
                             <td><span class="status-badge status-{status_class}">{status_icon} {status.title()}</span></td>
-                            <td>{duration_str}</td>
                         </tr>
 """
 
@@ -393,7 +591,79 @@ class RTMReportGenerator:
             if not epic_data.get("tests", []):
                 html += """
                         <tr>
-                            <td colspan="6" style="text-align: center; color: #7f8c8d; font-style: italic;">No tests available for this epic</td>
+                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No tests available for this epic</td>
+                        </tr>
+"""
+
+            html += """
+                    </tbody>
+                </table>
+
+                <h4>Defect Management</h4>
+                <div class="defect-filter-section">
+                    <strong>Filter Defects:</strong>
+                    <button class="defect-filter-button active" data-defect-filter="all" onclick="filterDefects('""" + epic.epic_id + """', 'all', 'all')">All</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:critical" onclick="filterDefects('""" + epic.epic_id + """', 'priority', 'critical')">Critical</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:high" onclick="filterDefects('""" + epic.epic_id + """', 'priority', 'high')">High Priority</button>
+                    <button class="defect-filter-button" data-defect-filter="status:open" onclick="filterDefects('""" + epic.epic_id + """', 'status', 'open')">Open</button>
+                    <button class="defect-filter-button" data-defect-filter="status:in_progress" onclick="filterDefects('""" + epic.epic_id + """', 'status', 'in_progress')">In Progress</button>
+                    <span class="defect-count-display" style="margin-left: 15px; font-style: italic; color: #7f8c8d;">Showing all defects</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Title</th><th>Priority</th><th>Status</th><th>Severity</th></tr>
+                    </thead>
+                    <tbody>
+"""
+
+            # Add defect information - sorted by priority and unsolved first
+            defects = epic_data.get("defects", [])
+            priority_order = {"critical": 1, "high": 2, "medium": 3, "low": 4}
+            status_order = {"open": 1, "in_progress": 2, "resolved": 3, "closed": 4}
+
+            # Sort: unsolved issues first, then by priority
+            sorted_defects = sorted(defects, key=lambda d: (
+                status_order.get(d.get("status", "open"), 5),
+                priority_order.get(d.get("priority", "medium"), 5)
+            ))
+
+            for defect in sorted_defects:
+                defect_id = defect.get("defect_id", "")
+                title = defect.get("title", "")
+                priority = defect.get("priority", "medium")
+                status = defect.get("status", "open")
+                severity = defect.get("severity", "medium")
+                github_issue = defect.get("github_issue_number")
+
+                # Priority badge styling
+                priority_class = f"priority-{priority}"
+                priority_icon = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🟢"}.get(priority, "⚪")
+
+                # Status badge styling
+                status_class = f"defect-status-{status.replace('_', '-')}"
+                status_icon = {"open": "🆘", "in_progress": "⏳", "resolved": "✅", "closed": "✅"}.get(status, "❓")
+
+                # Severity badge styling
+                severity_class = f"severity-{severity}"
+
+                # Defect ID with GitHub link
+                defect_id_link = f'<a href="https://github.com/QHuuT/gonogo/issues/{github_issue}" target="_blank" title="Open {defect_id} in GitHub"><strong>{defect_id}</strong></a>' if github_issue else f"<strong>{defect_id}</strong>"
+
+                html += f"""
+                        <tr class="defect-row" data-defect-priority="{priority}" data-defect-status="{status}" data-defect-severity="{severity}">
+                            <td>{defect_id_link}</td>
+                            <td>{title}</td>
+                            <td><span class="priority-badge {priority_class}">{priority_icon} {priority.title()}</span></td>
+                            <td><span class="status-badge {status_class}">{status_icon} {status.replace('_', ' ').title()}</span></td>
+                            <td><span class="severity-badge {severity_class}">{severity.title()}</span></td>
+                        </tr>
+"""
+
+            # If no defects, show message
+            if not defects:
+                html += """
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No defects tracked for this epic</td>
                         </tr>
 """
 
@@ -413,7 +683,7 @@ class RTMReportGenerator:
 
     def generate_epic_progress_json(self, include_charts: bool = True) -> Dict[str, Any]:
         """Generate epic progress report in JSON format."""
-        epics = self.db.query(Epic).order_by(Epic.epic_id).all()
+        epics = self._get_filtered_epics({"include_demo_data": False})
 
         report = {
             "metadata": {
@@ -488,6 +758,15 @@ class RTMReportGenerator:
             progress = epic_data["metrics"]["completion_percentage"]
             progress_color = "#27ae60" if progress >= 80 else "#f39c12" if progress >= 50 else "#e74c3c"
 
+            # Extract epic and metrics data for template
+            epic_id = epic_data["epic"]["epic_id"]
+            epic_title = epic_data["epic"]["title"]
+            completed_points = epic_data["metrics"]["completed_story_points"]
+            total_points = epic_data["metrics"]["total_story_points"]
+            user_stories_count = epic_data["metrics"]["user_stories_count"]
+            tests_count = epic_data["metrics"]["tests_count"]
+            test_pass_rate = epic_data["metrics"]["test_pass_rate"]
+
             html += f"""
             <div class="epic-card">
                 <div style="display: flex; align-items: center; margin-bottom: 15px;">
@@ -495,16 +774,16 @@ class RTMReportGenerator:
                         {progress:.0f}%
                     </div>
                     <div style="margin-left: 15px;">
-                        <h3 style="margin: 0;">{epic_data["epic"]["epic_id"]}</h3>
-                        <p style="margin: 5px 0; color: #666;">{epic_data["epic"]["title"]}</p>
+                        <h3 style="margin: 0;">{epic_id}</h3>
+                        <p style="margin: 5px 0; color: #666;">{epic_title}</p>
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
-                    <div><strong>Story Points:</strong> {epic_data["metrics"]["completed_story_points"]}/{epic_data["metrics"]["total_story_points"]}</div>
-                    <div><strong>User Stories:</strong> {epic_data["metrics"]["user_stories_count"]}</div>
-                    <div><strong>Tests:</strong> {epic_data["metrics"]["tests_count"]}</div>
-                    <div><strong>Test Pass Rate:</strong> {epic_data["metrics"]["test_pass_rate"]:.1f}%</div>
+                    <div><strong>Story Points:</strong> {completed_points}/{total_points}</div>
+                    <div><strong>User Stories:</strong> {user_stories_count}</div>
+                    <div><strong>Tests:</strong> {tests_count}</div>
+                    <div><strong>Test Pass Rate:</strong> {test_pass_rate:.1f}%</div>
                 </div>
             </div>
 """
@@ -563,6 +842,10 @@ class RTMReportGenerator:
         """Get epics based on applied filters."""
         query = self.db.query(Epic)
 
+        # Filter out demo data unless explicitly requested
+        if not filters.get("include_demo_data", False):
+            query = query.filter(~Epic.epic_id.like('EP-DEMO-%'))
+
         if filters.get("epic_id"):
             query = query.filter(Epic.epic_id == filters["epic_id"])
         if filters.get("status"):
@@ -589,13 +872,18 @@ class RTMReportGenerator:
         tests_passed = 0
         tests_failed = 0
         tests_skipped = 0
+        tests_not_run = 0
         if tests:
             tests_passed = sum(1 for test in tests if test.last_execution_status == "passed")
             tests_failed = sum(1 for test in tests if test.last_execution_status == "failed")
             tests_skipped = sum(1 for test in tests if test.last_execution_status == "skipped")
-            test_pass_rate = (tests_passed / len(tests)) * 100
+            tests_not_run = sum(1 for test in tests if test.last_execution_status in ["not_run", "pending", None])
+            # Only calculate pass rate for tests that have been executed
+            executed_tests = tests_passed + tests_failed + tests_skipped
+            test_pass_rate = (tests_passed / executed_tests * 100) if executed_tests > 0 else 0
 
-        return {
+        # Build base data
+        epic_data = {
             "epic": epic.to_dict(),
             "user_stories": [us.to_dict() for us in user_stories],
             "tests": [test.to_dict() for test in tests] if filters.get("include_tests", True) else [],
@@ -609,12 +897,27 @@ class RTMReportGenerator:
                 "tests_passed": tests_passed,
                 "tests_failed": tests_failed,
                 "tests_skipped": tests_skipped,
+                "tests_not_run": tests_not_run,
                 "test_pass_rate": test_pass_rate,
                 "defects_count": len(defects),
                 "critical_defects": sum(1 for d in defects if d.severity == "critical"),
                 "open_defects": sum(1 for d in defects if d.status in ["open", "in_progress"]),
             }
         }
+
+        # Apply server-side filtering if filtering parameters are present
+        filter_params = {
+            'us_status_filter': filters.get('us_status_filter'),
+            'test_type_filter': filters.get('test_type_filter'),
+            'defect_priority_filter': filters.get('defect_priority_filter'),
+            'defect_status_filter': filters.get('defect_status_filter')
+        }
+
+        # Only apply filtering if any filter parameters are set
+        if any(v and v != 'all' for v in filter_params.values()):
+            epic_data = self._apply_server_side_filters(epic_data, filter_params)
+
+        return epic_data
 
     def _get_test_counts(self, tests: List[Test]) -> Dict[str, int]:
         """Get test counts by type."""
@@ -623,6 +926,103 @@ class RTMReportGenerator:
             "integration": sum(1 for t in tests if t.test_type == "integration"),
             "bdd": sum(1 for t in tests if t.test_type == "bdd"),
         }
+
+    def _generate_test_type_breakdown_html(self, tests) -> str:
+        """Generate HTML for test type breakdown with visual bars."""
+        if not tests:
+            return '<div class="no-tests">No tests available</div>'
+
+        # Count tests by type - handle both Test objects and dictionaries
+        type_counts = {}
+        for test in tests:
+            if isinstance(test, dict):
+                test_type = test.get("test_type", "unknown").lower()
+            else:
+                test_type = test.test_type.lower()
+            type_counts[test_type] = type_counts.get(test_type, 0) + 1
+
+        total_tests = len(tests)
+        html = ""
+
+        # Define colors for each test type
+        type_colors = {
+            "unit": "#3498db",
+            "integration": "#e74c3c",
+            "e2e": "#f39c12",
+            "security": "#9b59b6",
+            "bdd": "#1abc9c"
+        }
+
+        for test_type, count in sorted(type_counts.items()):
+            percentage = (count / total_tests) * 100
+            color = type_colors.get(test_type, "#95a5a6")
+
+            html += f"""
+                <div class="test-type-stat">
+                    <div class="test-type-header">
+                        <span class="test-type-label">{test_type.upper()}</span>
+                        <span class="test-type-count">{count} ({percentage:.1f}%)</span>
+                    </div>
+                    <div class="test-type-bar">
+                        <div class="test-type-progress" style="width: {percentage}%; background-color: {color};"></div>
+                    </div>
+                </div>
+            """
+
+        return html
+
+    def _get_us_filter_display_text(self, epic_data: Dict[str, Any], us_status_filter: str) -> str:
+        """Generate display text for user story filter."""
+        total_us = len(epic_data.get("user_stories", []))
+        if us_status_filter == 'all':
+            return f"Showing all user stories ({total_us} total)"
+        else:
+            filtered_us = [us for us in epic_data.get("user_stories", [])
+                          if us.get("implementation_status") == us_status_filter]
+            status_display = us_status_filter.replace('_', ' ').title()
+            return f"Showing {len(filtered_us)} {status_display} user stories ({total_us} total)"
+
+    def _apply_server_side_filters(self, epic_data: Dict[str, Any], filters: Dict[str, str]) -> Dict[str, Any]:
+        """Apply server-side filtering to epic data."""
+        filtered_data = epic_data.copy()
+
+        # Filter user stories
+        us_status_filter = filters.get('us_status_filter', 'all')
+        if us_status_filter != 'all':
+            filtered_data["user_stories"] = [
+                us for us in epic_data.get("user_stories", [])
+                if us.get("implementation_status") == us_status_filter
+            ]
+
+        # Filter tests
+        test_type_filter = filters.get('test_type_filter', 'all')
+        if test_type_filter != 'all':
+            filtered_data["tests"] = [
+                test for test in epic_data.get("tests", [])
+                if test.get("test_type", "").lower() == test_type_filter.lower()
+            ]
+
+        # Filter defects
+        defect_priority_filter = filters.get('defect_priority_filter', 'all')
+        defect_status_filter = filters.get('defect_status_filter', 'all')
+
+        filtered_defects = epic_data.get("defects", [])
+
+        if defect_priority_filter and defect_priority_filter != 'all':
+            filtered_defects = [
+                defect for defect in filtered_defects
+                if defect.get("priority", "").lower() == defect_priority_filter.lower()
+            ]
+
+        if defect_status_filter and defect_status_filter != 'all':
+            filtered_defects = [
+                defect for defect in filtered_defects
+                if defect.get("status", "").lower() == defect_status_filter.lower()
+            ]
+
+        filtered_data["defects"] = filtered_defects
+
+        return filtered_data
 
     def _calculate_pass_rate(self, tests: List[Test]) -> float:
         """Calculate test pass rate."""
@@ -776,7 +1176,7 @@ class RTMReportGenerator:
         writer.writerow(['Epic ID', 'Epic Title', 'Status', 'User Stories', 'Story Points', 'Tests', 'Defects'])
 
         # Data
-        epics = self.db.query(Epic).order_by(Epic.epic_id).all()
+        epics = self._get_filtered_epics({"include_demo_data": False})
         for epic in epics:
             user_stories = self.db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
             tests = self.db.query(Test).filter(Test.epic_id == epic.id).all()

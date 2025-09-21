@@ -434,17 +434,25 @@ def generate_dynamic_rtm_matrix(
     epic_filter: Optional[str] = Query(None, description="Filter by epic ID"),
     status_filter: Optional[str] = Query(None, description="Filter by status"),
     priority_filter: Optional[str] = Query(None, description="Filter by priority"),
+    us_status_filter: Optional[str] = Query("all", description="Filter user stories by status: all, planned, in_progress, completed, blocked"),
+    test_type_filter: Optional[str] = Query("e2e", description="Filter tests by type: all, unit, integration, e2e, security"),
+    defect_priority_filter: Optional[str] = Query("all", description="Filter defects by priority: all, critical, high, medium, low"),
+    defect_status_filter: Optional[str] = Query("all", description="Filter defects by status: all, open, in_progress, resolved, closed"),
     include_tests: bool = Query(True, description="Include test coverage"),
     include_defects: bool = Query(True, description="Include defect tracking"),
     db: Session = Depends(get_db),
 ):
-    """Generate dynamic RTM matrix with real-time data."""
+    """Generate dynamic RTM matrix with real-time data and Python-based filtering."""
     generator = RTMReportGenerator(db)
 
     filters = {
         "epic_id": epic_filter,
         "status": status_filter,
         "priority": priority_filter,
+        "us_status_filter": us_status_filter,
+        "test_type_filter": test_type_filter,
+        "defect_priority_filter": defect_priority_filter,
+        "defect_status_filter": defect_status_filter,
         "include_tests": include_tests,
         "include_defects": include_defects,
     }
