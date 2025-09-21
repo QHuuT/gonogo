@@ -457,8 +457,6 @@ def generate_dynamic_rtm_matrix(
         "include_defects": include_defects,
     }
 
-    # DEBUG: Log filters to understand EP-00003 issue
-    print(f"[DEBUG API] Filters being passed: {filters}")
 
     if format == "html":
         content = generator.generate_html_matrix(filters)

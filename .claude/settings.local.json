@@ -24,7 +24,10 @@
       "Bash(isort:*)",
       "Bash(flake8:*)",
       "Bash(chmod:*)",
-      "Bash(alembic upgrade:*)"
+      "Bash(alembic upgrade:*)",
+      "Bash(start \"C:\\repo\\gonogo\\quality\\reports\\dynamic_rtm\\rtm_matrix_complete.html\")",
+      "Bash(PYTHONPATH=. python:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

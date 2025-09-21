@@ -472,8 +472,11 @@
   background: var(--color-bg-secondary);
 }
 
-.rtm-table__row.hidden {
-  display: none;
+.rtm-table__row.hidden,
+.defect-row.hidden,
+.test-row.hidden,
+.us-row.hidden {
+  display: none !important;
 }
 
 /* ===== TYPE AND PRIORITY BADGES ===== */

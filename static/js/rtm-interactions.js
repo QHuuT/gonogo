@@ -192,7 +192,6 @@
 
             // Apply default filter when epic is first expanded
             setTimeout(() => {
-                console.log(`[DEBUG] Epic ${epicId} expanded - applying default filter: ${RTM.config.defaultTestFilter}`);
                 filterTestsByType(epicId, RTM.config.defaultTestFilter);
             }, 100); // Small delay to ensure DOM is ready
         } else {
@@ -241,12 +240,6 @@
     function filterTestsByType(epicId, testType) {
         RTM.state.activeFilters.test = testType;
 
-        // DEBUG: Track filtering for EP-00003
-        if (epicId === 'EP-00003') {
-            console.log(`[DEBUG] filterTestsByType called for EP-00003 with testType: ${testType}`);
-            console.trace('[DEBUG] Call stack:');
-        }
-
         const testTable = document.querySelector(`#epic-${epicId} table[aria-label*="Test Traceability"] tbody`);
         if (!testTable) {
             console.warn(`❌ No test table found for epic ${epicId}`);
@@ -256,12 +249,6 @@
         const testRows = testTable.querySelectorAll('tr.test-row');
         let visibleCount = 0;
 
-        // DEBUG: For EP-00003, show filtering details
-        if (epicId === 'EP-00003') {
-            console.log(`[DEBUG] Found ${testRows.length} test rows for EP-00003`);
-            console.log(`[DEBUG] Filtering with testType: ${testType}`);
-        }
-
         // Update button states
         updateFilterButtonStates(`epic-${epicId}-test`, testType);
 
@@ -269,18 +256,11 @@
         testRows.forEach((row, index) => {
             const testTypeBadge = row.querySelector('.test-type-badge');
             if (!testTypeBadge) {
-                if (epicId === 'EP-00003' && index < 5) {
-                    console.log(`[DEBUG] Row ${index}: No test type badge found`);
-                }
                 return;
             }
 
             const rowTestType = testTypeBadge.textContent.toLowerCase();
             const shouldShow = testType === 'all' || rowTestType === testType.toLowerCase();
-
-            if (epicId === 'EP-00003' && index < 5) {
-                console.log(`[DEBUG] Row ${index}: type='${rowTestType}', filter='${testType}', shouldShow=${shouldShow}`);
-            }
 
             if (shouldShow) {
                 visibleCount++;
@@ -290,10 +270,6 @@
             }
         });
 
-        // DEBUG: Final count for EP-00003
-        if (epicId === 'EP-00003') {
-            console.log(`[DEBUG] EP-00003 filtering complete: ${visibleCount}/${testRows.length} tests visible`);
-        }
 
 
         // Update count display
