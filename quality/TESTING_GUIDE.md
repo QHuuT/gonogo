@@ -10,10 +10,10 @@
 pytest tests/unit/ -v
 
 # Unit tests with defect tracking
-pytest --auto-defects tests/unit/ -v
+python tools/test-db-integration.py run tests --auto-defects --test-type unit
 
 # Full integration test suite
-pytest --sync-tests --link-scenarios --auto-defects tests/ -v
+python tools/test-db-integration.py run tests --sync-tests --link-scenarios --auto-defects
 ```
 
 ### **🛑 Kill Zombie Server Processes (Quick Fix)**
@@ -38,10 +38,11 @@ netstat -ano | findstr :8000
 pip install -e ".[dev]" && pip install jinja2
 
 # 2. Setup RTM database with test discovery
-pytest --sync-tests --link-scenarios --collect-only
+python tools/test-db-integration.py discover tests
+python tools/test-db-integration.py discover scenarios
 
 # 3. Run full test suite
-pytest --auto-defects tests/ -v
+python tools/test-db-integration.py run tests --sync-tests --auto-defects
 ```
 
 ### **🔌 Server Management**
@@ -161,11 +162,13 @@ pytest tests/unit/migrations/ -v                   # Database migration tests
 #### **Unit Testing with Bug Tracking**
 ```bash
 # Unit tests + auto-create defects for failures
-pytest --auto-defects tests/unit/ -v
+python tools/test-db-integration.py run tests --auto-defects --test-type unit
 
-# Focus on specific test type
-pytest --auto-defects tests/unit/models/ -v
-pytest --auto-defects tests/unit/services/ -v
+# Focus on specific areas with defect tracking
+python tools/test-db-integration.py run tests --sync-tests --auto-defects --test-type unit
+
+# Note: Direct pytest --auto-defects flags require plugin setup
+# Use the CLI tool above for reliable RTM integration with defect creation
 ```
 
 #### **⚠️ Update Test Execution WITHOUT Creating Defects**
@@ -174,13 +177,22 @@ pytest --auto-defects tests/unit/services/ -v
 # Updates test execution status/timestamps but skips auto-defect creation
 
 # Update unit test execution status only
-pytest --sync-tests tests/unit/ -v
+python tools/test-db-integration.py run tests --sync-tests --test-type unit
 
 # Update integration test execution status only
-pytest --sync-tests tests/integration/ -v
+python tools/test-db-integration.py run tests --sync-tests --test-type integration
+
+# Update security test execution status only
+python tools/test-db-integration.py run tests --sync-tests --test-type security
+
+# Update e2e test execution status only
+python tools/test-db-integration.py run tests --sync-tests --test-type e2e
 
 # Update full test suite execution status only
-pytest --sync-tests --link-scenarios tests/ -v
+python tools/test-db-integration.py run tests --sync-tests --link-scenarios
+
+# Note: Direct pytest flags (--sync-tests) require plugin setup and may not work
+# Use the CLI tool above for reliable RTM integration
 
 # When to use:
 # - After major refactoring (many expected failures)
