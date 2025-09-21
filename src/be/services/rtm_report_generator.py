@@ -106,7 +106,7 @@ class RTMReportGenerator:
         # Extract filter parameters
         epic_filter = filters.get('epic_filter', 'all')
         us_status_filter = filters.get('us_status_filter', 'all')
-        test_type_filter = filters.get('test_type_filter', 'e2e')  # Default to E2E
+        test_type_filter = filters.get('test_type_filter', 'all')  # Default to all tests
         defect_priority_filter = filters.get('defect_priority_filter', 'all')
         defect_status_filter = filters.get('defect_status_filter', 'all')
 
@@ -265,7 +265,7 @@ class RTMReportGenerator:
             html += f"""
         <!-- Epic Card with Enhanced Design -->
         <article class="epic-card" data-status="{epic.status}" data-epic-id="{epic.epic_id}" aria-labelledby="epic-{epic.epic_id}-title">
-            <header class="epic-header" onclick="toggleEpicDetails('{epic.epic_id}')" role="button" tabindex="0" aria-expanded="false" aria-controls="epic-{epic.epic_id}">
+            <header class="epic-header" role="button" tabindex="0" aria-expanded="false" aria-controls="epic-{epic.epic_id}">
                 <h2 id="epic-{epic.epic_id}-title" class="epic-title-link">
                     {epic_title_link}
                 </h2>

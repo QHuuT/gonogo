@@ -133,12 +133,12 @@
             element.style.opacity = '0';
             element.style.transform = 'translateY(-10px)';
 
-            // Force reflow
-            element.offsetHeight;
-
-            element.style.transition = `opacity ${RTM.config.animationDuration}ms ease, transform ${RTM.config.animationDuration}ms ease`;
-            element.style.opacity = '1';
-            element.style.transform = 'translateY(0)';
+            // Use requestAnimationFrame to avoid forced reflow
+            requestAnimationFrame(() => {
+                element.style.transition = `opacity ${RTM.config.animationDuration}ms ease, transform ${RTM.config.animationDuration}ms ease`;
+                element.style.opacity = '1';
+                element.style.transform = 'translateY(0)';
+            });
         } else {
             element.style.transition = `opacity ${RTM.config.animationDuration}ms ease, transform ${RTM.config.animationDuration}ms ease`;
             element.style.opacity = '0';
