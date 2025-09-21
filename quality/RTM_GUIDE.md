@@ -205,6 +205,254 @@ print('Status labels found:', sorted(all_labels))
 "
 ```
 
+## 🧪 Test Execution Status & Database Updates
+
+### When Test Run Status and Date Are Updated
+
+The RTM system automatically tracks test execution results and timestamps in the database through several mechanisms:
+
+#### 📅 Database Fields Updated
+- **`last_execution_time`**: Timestamp when test was last executed (auto-set to `datetime.now()`)
+- **`last_execution_status`**: Current test status (`passed`, `failed`, `skipped`, `error`, `not_run`)
+- **`execution_duration_ms`**: Test execution time in milliseconds
+- **`execution_count`**: Total number of times test has been executed
+- **`failure_count`**: Number of failed executions
+- **`last_error_message`**: Error message from failed tests (cleared on success)
+
+#### 🔄 Automatic Update Triggers
+
+**1. Pytest Execution with Database Integration**
+```bash
+# Primary method - pytest with database plugin
+pytest --sync-tests --link-scenarios --auto-defects tests/
+
+# The database_pytest_plugin.py automatically:
+# - Records test results via pytest_runtest_logreport() hook
+# - Calls test.update_execution_result() for each test
+# - Updates all fields: status, timestamp, duration, error messages
+```
+
+**2. Enhanced Test Runner Integration**
+```bash
+# Via test-db-integration.py CLI tool
+python tools/test-db-integration.py run tests --sync-tests --auto-defects
+
+# Calls pytest with database integration flags enabled
+# Same update mechanism as above via pytest plugin
+```
+
+**3. Direct Database API Calls**
+```bash
+# Manual test result updates via RTM API
+curl -X POST "http://localhost:8000/api/rtm/tests/{test_id}/execution" \
+  -H "Content-Type: application/json" \
+  -d '{"status": "passed", "duration_ms": 150.5}'
+
+# API endpoint in src/be/api/rtm.py calls test.update_execution_result()
+```
+
+#### 🔍 Update Mechanism Details
+
+**Core Update Method**: `Test.update_execution_result()` in `src/be/models/traceability/test.py`
+
+```python
+def update_execution_result(self, status: str, duration_ms: float = None, error_message: str = None):
+    """Update test execution results."""
+    self.last_execution_time = datetime.now()      # ← Always updated
+    self.last_execution_status = status            # ← Status updated
+    self.execution_count += 1                      # ← Increment counter
+
+    if status == "failed":
+        self.failure_count += 1                    # ← Track failures
+        if error_message:
+            self.last_error_message = error_message
+    else:
+        self.last_error_message = None             # ← Clear on success
+```
+
+**Pytest Integration Hook**: `database_pytest_plugin.py:pytest_runtest_logreport()`
+
+```python
+def pytest_runtest_logreport(self, report):
+    if report.when == "call":  # Only process call phase results
+        test_id = report.nodeid
+        status = self._convert_pytest_status(report.outcome)  # passed/failed/skipped/error
+        duration_ms = getattr(report, "duration", 0) * 1000   # Convert to milliseconds
+
+        # Update database automatically
+        self.test_tracker.record_test_result(test_id, status, duration_ms, error_message)
+```
+
+#### ⚡ Real-Time vs Batch Updates
+
+**Real-Time Updates** (Immediate):
+- Every pytest test execution updates database immediately
+- API calls update database synchronously
+- RTM reports show latest status instantly
+
+**Batch Discovery** (Setup):
+```bash
+# Discover and sync test definitions (not execution results)
+python tools/test-db-integration.py discover tests --dry-run
+python tools/test-db-integration.py discover tests
+```
+
+#### 🎯 Verification Commands
+
+```bash
+# Check test execution status in database
+python -c "
+from be.database import get_db_session
+from be.models.traceability import Test
+db = get_db_session()
+test = db.query(Test).filter(Test.test_file_path.like('%test_example%')).first()
+if test:
+    print(f'Status: {test.last_execution_status}')
+    print(f'Last Run: {test.last_execution_time}')
+    print(f'Executions: {test.execution_count}')
+    print(f'Failures: {test.failure_count}')
+"
+
+# View test execution history
+python tools/rtm-db.py query tests --format table
+```
+
+#### 🔧 Manual Status Updates
+
+For tests that run outside pytest (manual tests, external tools):
+
+```python
+# Direct database update
+from be.database import get_db_session
+from be.models.traceability import Test
+
+db = get_db_session()
+test = db.query(Test).filter(Test.test_file_path == "tests/manual/security_audit.py").first()
+test.update_execution_result("passed", duration_ms=5000.0)
+db.commit()
+```
+
+### 🐛 Auto-Defects: Automatic Bug Tracking from Test Failures
+
+#### What Auto-Defects Does
+
+The `--auto-defects` flag **automatically creates defect records in the RTM database whenever a test fails**:
+
+```bash
+# Without --auto-defects
+pytest tests/
+# Test fails → Only shows failure in console
+
+# With --auto-defects
+pytest --auto-defects tests/
+# Test fails → Creates bug ticket in database automatically
+# Output: 🐛 Created defect DEF-00023 for failed test: tests/unit/test_login.py::test_user_login
+```
+
+#### Auto-Generated Defect Details
+
+| Field | Auto-Generated Value | Example |
+|-------|---------------------|---------|
+| **Defect ID** | `DEF-XXXXX` format | `DEF-00023` |
+| **Title** | `"Test Failure: {test_function}"` | `"Test Failure: test_user_login"` |
+| **Description** | Test file + error message + stack trace | Full debugging context |
+| **Severity** | Auto-determined from error type | `medium` (assertions), `high` (imports), `critical` (security) |
+| **Status** | `open` | Ready for investigation |
+| **Type** | `test_failure` | Distinguishes from manual defects |
+| **Epic Link** | Inherited from failed test | Links to same epic as test |
+| **GitHub Issue** | **Placeholder** (900001+) | **Requires manual creation** |
+
+#### ⚠️ Important: Two-Step GitHub Issue Process
+
+**Step 1: Auto-Defects (Automatic)**
+```bash
+# Run tests with auto-defect creation
+pytest --auto-defects tests/
+
+# Creates database defects with PLACEHOLDER GitHub numbers (900001, 900002, etc.)
+# These are NOT real GitHub issues yet!
+```
+
+**Step 2: GitHub Issue Creation (Manual)**
+```bash
+# Convert database defects to real GitHub issues
+python tools/github_issue_creation_demo.py --dry-run       # Preview what will be created
+python tools/github_issue_creation_demo.py                 # Create actual GitHub issues
+
+# This will:
+# - Find defects with placeholder GitHub numbers (900001+)
+# - Create real GitHub issues with proper numbering
+# - Update database with real GitHub issue numbers
+# - Generate issue templates with full failure context
+```
+
+#### Complete Auto-Defects Workflow
+
+```bash
+# 1. Run tests with full integration including auto-defects
+pytest --sync-tests --link-scenarios --auto-defects tests/
+
+# 2. Check what defects were created
+python tools/rtm-db.py query defects --format table
+
+# 3. Preview GitHub issues to be created from defects
+python tools/github_issue_creation_demo.py --dry-run
+
+# 4. Create real GitHub issues (converts placeholders to real issues)
+python tools/github_issue_creation_demo.py
+
+# 5. Verify in RTM reports
+python tools/rtm_report_generator.py --html
+# Open: quality/reports/dynamic_rtm/rtm_matrix_complete.html
+```
+
+#### Defect Severity Auto-Detection
+
+The system automatically determines defect severity:
+
+```python
+# Assertion failures → medium severity
+AssertionError: Expected True but got False
+
+# Import/dependency issues → high severity
+ModuleNotFoundError: No module named 'requests'
+
+# Security-related failures → critical severity
+AuthenticationError: Invalid credentials
+
+# General failures → low severity
+ValueError: Invalid input format
+```
+
+#### Benefits of Auto-Defects
+
+1. **🔄 Never Miss Failures**: Every test failure becomes a tracked defect
+2. **📋 Full Traceability**: Links failures to tests, epics, and requirements
+3. **⚡ Real-Time Tracking**: Creates defects immediately when tests fail
+4. **📈 Project Visibility**: Failed tests appear in RTM reports as formal defects
+5. **🐛 Rich Context**: Captures full stack traces and error details for debugging
+
+#### Verification Commands
+
+```bash
+# View all auto-created defects
+python tools/rtm-db.py query defects --filter defect_type=test_failure
+
+# Check defects with placeholder GitHub issues (need real issue creation)
+python -c "
+from be.database import get_db_session
+from be.models.traceability import Defect
+db = get_db_session()
+placeholders = db.query(Defect).filter(Defect.github_issue_number >= 900000).all()
+print(f'Defects needing GitHub issues: {len(placeholders)}')
+for d in placeholders[:5]:
+    print(f'  {d.defect_id}: {d.title} (placeholder #{d.github_issue_number})')
+"
+
+# View defects in RTM reports (includes auto-created defects)
+python tools/rtm_report_generator.py --html
+```
+
 ## 📊 Metrics & KPIs
 
 ### Epic Level Metrics
@@ -212,15 +460,16 @@ print('Status labels found:', sorted(all_labels))
 - **User Stories Count**: Total stories in epic
 - **Story Points**: Completed vs Total
 - **Test Coverage**: Number of associated tests
-- **Test Pass Rate**: Percentage of passing tests
+- **Test Pass Rate**: Percentage of passing tests (using `last_execution_status`)
 - **Defect Count**: Open defects needing attention
 
 ### Test Metrics Dashboard
 - **Total Tests**: Across all test types
-- **Pass Rate**: Overall success percentage
-- **Passed Tests**: Successfully executed count
-- **Failed Tests**: Tests requiring attention
-- **Not Run**: Tests pending execution
+- **Pass Rate**: Overall success percentage (calculated from `last_execution_status`)
+- **Passed Tests**: Count where `last_execution_status == "passed"`
+- **Failed Tests**: Count where `last_execution_status == "failed"`
+- **Not Run**: Count where `last_execution_status == "not_run"`
+- **Last Execution**: Most recent `last_execution_time` across all tests
 
 ### Quality Thresholds
 | Metric | Excellent | Good | Needs Attention |
