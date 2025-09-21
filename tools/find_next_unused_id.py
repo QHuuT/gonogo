@@ -10,15 +10,15 @@ Usage:
 
 import argparse
 import re
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from src.be.database import get_db_session
-from src.be.models.traceability import Epic, UserStory, Defect
+from src.be.models.traceability import Defect, Epic, UserStory
 
 
 def get_existing_ids(entity_type: str) -> set[int]:
@@ -74,10 +74,15 @@ def find_next_unused_id(entity_type: str) -> str:
 
 def main():
     parser = argparse.ArgumentParser(description="Find next unused ID for RTM entities")
-    parser.add_argument("--type", choices=["epic", "user-story", "defect"],
-                       required=True, help="Type of entity to find next ID for")
-    parser.add_argument("--show-gaps", action="store_true",
-                       help="Show all gaps in ID sequence")
+    parser.add_argument(
+        "--type",
+        choices=["epic", "user-story", "defect"],
+        required=True,
+        help="Type of entity to find next ID for",
+    )
+    parser.add_argument(
+        "--show-gaps", action="store_true", help="Show all gaps in ID sequence"
+    )
 
     args = parser.parse_args()
 

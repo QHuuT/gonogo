@@ -11,16 +11,16 @@ Usage:
     python tools/archive_management_demo.py
 """
 
+import shutil
 import sys
 import tempfile
-import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from shared.testing.archive_manager import TestArchiveManager, RetentionPolicy
+from shared.testing.archive_manager import RetentionPolicy, TestArchiveManager
 
 
 def create_sample_files(base_path: Path) -> dict:
@@ -33,85 +33,136 @@ def create_sample_files(base_path: Path) -> dict:
     reports_dir.mkdir(parents=True, exist_ok=True)
     logs_dir.mkdir(parents=True, exist_ok=True)
 
-    files_created = {
-        "recent": [],
-        "medium_age": [],
-        "old": [],
-        "very_old": []
-    }
+    files_created = {"recent": [], "medium_age": [], "old": [], "very_old": []}
 
     # Recent files (< 7 days)
     recent_files = [
         (reports_dir / "test_report_latest.html", "HTML Test Report - Latest Run", 0.5),
-        (reports_dir / "coverage_report.json", '{"coverage": 85.2, "timestamp": "2025-09-20"}', 0.1),
-        (logs_dir / "test_execution.log", "INFO: Test execution started\nDEBUG: Loading test cases\nINFO: All tests passed", 0.2),
-        (reports_dir / "failure_summary.json", '{"failures": 0, "total_tests": 150}', 0.05)
+        (
+            reports_dir / "coverage_report.json",
+            '{"coverage": 85.2, "timestamp": "2025-09-20"}',
+            0.1,
+        ),
+        (
+            logs_dir / "test_execution.log",
+            "INFO: Test execution started\nDEBUG: Loading test cases\nINFO: All tests passed",
+            0.2,
+        ),
+        (
+            reports_dir / "failure_summary.json",
+            '{"failures": 0, "total_tests": 150}',
+            0.05,
+        ),
     ]
 
     for file_path, content, age_days in recent_files:
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
 
         # Set file modification time
         age_seconds = age_days * 24 * 3600
         timestamp = datetime.now().timestamp() - age_seconds
         import os
+
         os.utime(file_path, (timestamp, timestamp))
 
         files_created["recent"].append(str(file_path))
 
     # Medium age files (7-30 days) - should be compressed
     medium_files = [
-        (reports_dir / "weekly_test_report.html", "<html><body>Weekly Test Summary - 2 weeks ago</body></html>" * 100, 14),
-        (logs_dir / "integration_tests.log", "Integration test logs from 2 weeks ago\n" * 500, 15),
-        (reports_dir / "performance_analysis.json", '{"performance_data": "large_dataset"}' * 50, 20),
-        (logs_dir / "security_scan.log", "Security scan results - 3 weeks old\n" * 200, 21)
+        (
+            reports_dir / "weekly_test_report.html",
+            "<html><body>Weekly Test Summary - 2 weeks ago</body></html>" * 100,
+            14,
+        ),
+        (
+            logs_dir / "integration_tests.log",
+            "Integration test logs from 2 weeks ago\n" * 500,
+            15,
+        ),
+        (
+            reports_dir / "performance_analysis.json",
+            '{"performance_data": "large_dataset"}' * 50,
+            20,
+        ),
+        (
+            logs_dir / "security_scan.log",
+            "Security scan results - 3 weeks old\n" * 200,
+            21,
+        ),
     ]
 
     for file_path, content, age_days in medium_files:
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
 
         age_seconds = age_days * 24 * 3600
         timestamp = datetime.now().timestamp() - age_seconds
         import os
+
         os.utime(file_path, (timestamp, timestamp))
 
         files_created["medium_age"].append(str(file_path))
 
     # Old files (30-90 days) - should be archived
     old_files = [
-        (reports_dir / "monthly_report_july.html", "<html><body>July Monthly Report</body></html>" * 200, 45),
-        (logs_dir / "debug_session.log", "Debug session from 2 months ago\n" * 1000, 60),
-        (reports_dir / "compliance_check.json", '{"gdpr_compliant": true, "date": "2025-07-01"}', 75),
-        (logs_dir / "performance_benchmark.log", "Performance benchmark - 2.5 months old\n" * 800, 80)
+        (
+            reports_dir / "monthly_report_july.html",
+            "<html><body>July Monthly Report</body></html>" * 200,
+            45,
+        ),
+        (
+            logs_dir / "debug_session.log",
+            "Debug session from 2 months ago\n" * 1000,
+            60,
+        ),
+        (
+            reports_dir / "compliance_check.json",
+            '{"gdpr_compliant": true, "date": "2025-07-01"}',
+            75,
+        ),
+        (
+            logs_dir / "performance_benchmark.log",
+            "Performance benchmark - 2.5 months old\n" * 800,
+            80,
+        ),
     ]
 
     for file_path, content, age_days in old_files:
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
 
         age_seconds = age_days * 24 * 3600
         timestamp = datetime.now().timestamp() - age_seconds
         import os
+
         os.utime(file_path, (timestamp, timestamp))
 
         files_created["old"].append(str(file_path))
 
     # Very old files (> 90 days) - should be deleted
     very_old_files = [
-        (reports_dir / "legacy_report.html", "<html><body>Very old legacy report</body></html>", 120),
-        (logs_dir / "ancient_debug.log", "Ancient debug logs from 4 months ago\n" * 100, 130),
-        (reports_dir / "outdated_metrics.json", '{"old_data": true}', 150)
+        (
+            reports_dir / "legacy_report.html",
+            "<html><body>Very old legacy report</body></html>",
+            120,
+        ),
+        (
+            logs_dir / "ancient_debug.log",
+            "Ancient debug logs from 4 months ago\n" * 100,
+            130,
+        ),
+        (reports_dir / "outdated_metrics.json", '{"old_data": true}', 150),
     ]
 
     for file_path, content, age_days in very_old_files:
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
 
         age_seconds = age_days * 24 * 3600
         timestamp = datetime.now().timestamp() - age_seconds
         import os
+
         os.utime(file_path, (timestamp, timestamp))
 
         files_created["very_old"].append(str(file_path))
@@ -131,7 +182,9 @@ def demonstrate_retention_policies(manager: TestArchiveManager):
     print("Current policies:")
 
     for i, policy in enumerate(manager.policies, 1):
-        print(f"  {i}. {policy.file_pattern}: keep {policy.retention_days} days, compress after {policy.compress_after_days} days")
+        print(
+            f"  {i}. {policy.file_pattern}: keep {policy.retention_days} days, compress after {policy.compress_after_days} days"
+        )
 
     # Show dry run first
     print(f"\n*** DRY RUN - What would happen:")
@@ -143,10 +196,12 @@ def demonstrate_retention_policies(manager: TestArchiveManager):
     print(f"  Files to delete: {dry_results['deleted_files']}")
     print(f"  Estimated space savings: {dry_results['space_saved_mb']:.1f} MB")
 
-    if dry_results['actions']:
+    if dry_results["actions"]:
         print(f"\n  Sample actions:")
-        for action in dry_results['actions'][:5]:  # Show first 5
-            print(f"    [{action['type'].upper()}] {Path(action['file']).name} - {action['reason']}")
+        for action in dry_results["actions"][:5]:  # Show first 5
+            print(
+                f"    [{action['type'].upper()}] {Path(action['file']).name} - {action['reason']}"
+            )
 
     return dry_results
 
@@ -162,7 +217,9 @@ def demonstrate_storage_metrics(manager: TestArchiveManager):
     print(f"  Total size: {metrics.total_size_mb:.1f} MB")
     print(f"  Compressed files: {metrics.compressed_files}")
     print(f"  Compression savings: {metrics.compression_savings_mb:.1f} MB")
-    print(f"  Old files (>30 days): {metrics.old_files_count} ({metrics.old_files_size_mb:.1f} MB)")
+    print(
+        f"  Old files (>30 days): {metrics.old_files_count} ({metrics.old_files_size_mb:.1f} MB)"
+    )
 
     if metrics.recommendations:
         print(f"\n  Optimization recommendations:")
@@ -188,9 +245,9 @@ def demonstrate_compression_and_archiving(manager: TestArchiveManager):
     print(f"  Files deleted: {live_results['deleted_files']}")
     print(f"  Space saved: {live_results['space_saved_mb']:.1f} MB")
 
-    if live_results['errors']:
+    if live_results["errors"]:
         print(f"\n  Errors encountered:")
-        for error in live_results['errors']:
+        for error in live_results["errors"]:
             print(f"    - {error}")
 
     return live_results
@@ -236,8 +293,7 @@ def demonstrate_bundle_creation(manager: TestArchiveManager):
     try:
         # Create a bundle of all JSON reports
         bundle_path = manager.create_archive_bundle(
-            file_patterns=["reports/*.json"],
-            bundle_name="json_reports_backup"
+            file_patterns=["reports/*.json"], bundle_name="json_reports_backup"
         )
 
         bundle_size = bundle_path.stat().st_size / 1024
@@ -336,7 +392,9 @@ def main():
             final_metrics = manager.generate_storage_metrics()
             print(f"  Final total size: {final_metrics.total_size_mb:.1f} MB")
             print(f"  Compressed files: {final_metrics.compressed_files}")
-            print(f"  Space saved through compression: {final_metrics.compression_savings_mb:.1f} MB")
+            print(
+                f"  Space saved through compression: {final_metrics.compression_savings_mb:.1f} MB"
+            )
 
             print(f"\nDemo completed successfully!")
             print(f"Archive location: {manager.archive_base}")
@@ -353,6 +411,7 @@ def main():
         except Exception as e:
             print(f"Demo failed: {e}")
             import traceback
+
             traceback.print_exc()
             return 1
 

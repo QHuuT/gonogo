@@ -9,10 +9,10 @@ Related Issue: US-00059 - Dynamic RTM generation and reporting
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
-import sys
 import os
-from pathlib import Path
+import sys
 from datetime import datetime, timedelta
+from pathlib import Path
 
 # Add src to Python path
 src_path = Path(__file__).parent.parent / "src"
@@ -20,7 +20,8 @@ sys.path.insert(0, str(src_path))
 
 try:
     from be.database import get_db_session
-    from be.models.traceability import Epic, UserStory, Test, Defect
+    from be.models.traceability import Defect, Epic, Test, UserStory
+
     DATABASE_AVAILABLE = True
 except ImportError as e:
     print(f"Error: Database modules not available: {e}")
@@ -54,7 +55,7 @@ def populate_sample_data():
             business_value="Provides core value proposition for blog visitors",
             priority="high",
             status="completed",
-            created_at=datetime.utcnow() - timedelta(days=30)
+            created_at=datetime.utcnow() - timedelta(days=30),
         )
         db.add(epic1)
         db.flush()
@@ -67,7 +68,7 @@ def populate_sample_data():
             business_value="Enables user engagement while maintaining GDPR compliance",
             priority="high",
             status="in_progress",
-            created_at=datetime.utcnow() - timedelta(days=25)
+            created_at=datetime.utcnow() - timedelta(days=25),
         )
         db.add(epic2)
         db.flush()
@@ -80,7 +81,7 @@ def populate_sample_data():
             business_value="Legal compliance and user trust",
             priority="critical",
             status="planned",
-            created_at=datetime.utcnow() - timedelta(days=20)
+            created_at=datetime.utcnow() - timedelta(days=20),
         )
         db.add(epic3)
         db.flush()
@@ -93,7 +94,7 @@ def populate_sample_data():
             business_value="Streamlined development workflow and automated project management",
             priority="high",
             status="in_progress",
-            created_at=datetime.utcnow() - timedelta(days=18)
+            created_at=datetime.utcnow() - timedelta(days=18),
         )
         db.add(epic4)
         db.flush()
@@ -106,7 +107,7 @@ def populate_sample_data():
             business_value="Improved project visibility and automated compliance tracking",
             priority="high",
             status="in_progress",
-            created_at=datetime.utcnow() - timedelta(days=15)
+            created_at=datetime.utcnow() - timedelta(days=15),
         )
         db.add(epic5)
         db.flush()
@@ -119,7 +120,7 @@ def populate_sample_data():
             business_value="Improved development efficiency and quality assurance",
             priority="high",
             status="completed",
-            created_at=datetime.utcnow() - timedelta(days=12)
+            created_at=datetime.utcnow() - timedelta(days=12),
         )
         db.add(epic6)
         db.flush()
@@ -132,7 +133,7 @@ def populate_sample_data():
             business_value="Optimized storage management and system performance",
             priority="high",
             status="planned",
-            created_at=datetime.utcnow() - timedelta(days=8)
+            created_at=datetime.utcnow() - timedelta(days=8),
         )
         db.add(epic7)
         db.flush()
@@ -149,7 +150,7 @@ def populate_sample_data():
             story_points=5,
             priority="high",
             implementation_status="completed",
-            created_at=datetime.utcnow() - timedelta(days=28)
+            created_at=datetime.utcnow() - timedelta(days=28),
         )
         db.add(us1)
 
@@ -162,7 +163,7 @@ def populate_sample_data():
             story_points=3,
             priority="medium",
             implementation_status="completed",
-            created_at=datetime.utcnow() - timedelta(days=26)
+            created_at=datetime.utcnow() - timedelta(days=26),
         )
         db.add(us2)
 
@@ -176,7 +177,7 @@ def populate_sample_data():
             story_points=8,
             priority="high",
             implementation_status="in_progress",
-            created_at=datetime.utcnow() - timedelta(days=24)
+            created_at=datetime.utcnow() - timedelta(days=24),
         )
         db.add(us3)
 
@@ -189,7 +190,7 @@ def populate_sample_data():
             story_points=5,
             priority="medium",
             implementation_status="planned",
-            created_at=datetime.utcnow() - timedelta(days=22)
+            created_at=datetime.utcnow() - timedelta(days=22),
         )
         db.add(us4)
 
@@ -203,7 +204,7 @@ def populate_sample_data():
             story_points=8,
             priority="high",
             implementation_status="completed",
-            created_at=datetime.utcnow() - timedelta(days=12)
+            created_at=datetime.utcnow() - timedelta(days=12),
         )
         db.add(us5)
 
@@ -216,7 +217,7 @@ def populate_sample_data():
             story_points=5,
             priority="medium",
             implementation_status="completed",
-            created_at=datetime.utcnow() - timedelta(days=14)
+            created_at=datetime.utcnow() - timedelta(days=14),
         )
         db.add(us6)
 
@@ -230,7 +231,7 @@ def populate_sample_data():
             story_points=8,
             priority="high",
             implementation_status="completed",
-            created_at=datetime.utcnow() - timedelta(days=10)
+            created_at=datetime.utcnow() - timedelta(days=10),
         )
         db.add(us7)
 
@@ -243,7 +244,7 @@ def populate_sample_data():
             story_points=13,
             priority="high",
             implementation_status="completed",
-            created_at=datetime.utcnow() - timedelta(days=8)
+            created_at=datetime.utcnow() - timedelta(days=8),
         )
         db.add(us8)
 
@@ -256,7 +257,7 @@ def populate_sample_data():
             story_points=5,
             priority="high",
             implementation_status="planned",
-            created_at=datetime.utcnow() - timedelta(days=6)
+            created_at=datetime.utcnow() - timedelta(days=6),
         )
         db.add(us9)
 
@@ -270,7 +271,7 @@ def populate_sample_data():
             story_points=8,
             priority="high",
             implementation_status="completed",
-            created_at=datetime.utcnow() - timedelta(days=10)
+            created_at=datetime.utcnow() - timedelta(days=10),
         )
         db.add(us10)
 
@@ -283,7 +284,7 @@ def populate_sample_data():
             story_points=5,
             priority="medium",
             implementation_status="completed",
-            created_at=datetime.utcnow() - timedelta(days=8)
+            created_at=datetime.utcnow() - timedelta(days=8),
         )
         db.add(us11)
 
@@ -297,7 +298,7 @@ def populate_sample_data():
             story_points=5,
             priority="medium",
             implementation_status="planned",
-            created_at=datetime.utcnow() - timedelta(days=6)
+            created_at=datetime.utcnow() - timedelta(days=6),
         )
         db.add(us12)
 
@@ -310,7 +311,7 @@ def populate_sample_data():
             story_points=8,
             priority="low",
             implementation_status="planned",
-            created_at=datetime.utcnow() - timedelta(days=4)
+            created_at=datetime.utcnow() - timedelta(days=4),
         )
         db.add(us13)
 
@@ -328,7 +329,7 @@ def populate_sample_data():
             last_execution_status="passed",
             last_execution_time=datetime.utcnow() - timedelta(hours=2),
             execution_duration_ms=150.5,
-            created_at=datetime.utcnow() - timedelta(days=25)
+            created_at=datetime.utcnow() - timedelta(days=25),
         )
         db.add(test1)
 
@@ -341,7 +342,7 @@ def populate_sample_data():
             last_execution_status="passed",
             last_execution_time=datetime.utcnow() - timedelta(hours=3),
             execution_duration_ms=890.2,
-            created_at=datetime.utcnow() - timedelta(days=24)
+            created_at=datetime.utcnow() - timedelta(days=24),
         )
         db.add(test2)
 
@@ -354,7 +355,7 @@ def populate_sample_data():
             last_execution_status="passed",
             last_execution_time=datetime.utcnow() - timedelta(hours=1),
             execution_duration_ms=2100.8,
-            created_at=datetime.utcnow() - timedelta(days=23)
+            created_at=datetime.utcnow() - timedelta(days=23),
         )
         db.add(test3)
 
@@ -369,7 +370,7 @@ def populate_sample_data():
             last_execution_time=datetime.utcnow() - timedelta(hours=4),
             execution_duration_ms=75.3,
             last_error_message="AssertionError: GDPR consent validation failed",
-            created_at=datetime.utcnow() - timedelta(days=20)
+            created_at=datetime.utcnow() - timedelta(days=20),
         )
         db.add(test4)
 
@@ -382,7 +383,7 @@ def populate_sample_data():
             last_execution_status="passed",
             last_execution_time=datetime.utcnow() - timedelta(hours=2),
             execution_duration_ms=456.7,
-            created_at=datetime.utcnow() - timedelta(days=19)
+            created_at=datetime.utcnow() - timedelta(days=19),
         )
         db.add(test5)
 
@@ -396,7 +397,7 @@ def populate_sample_data():
             last_execution_status="passed",
             last_execution_time=datetime.utcnow() - timedelta(hours=1),
             execution_duration_ms=890.5,
-            created_at=datetime.utcnow() - timedelta(days=10)
+            created_at=datetime.utcnow() - timedelta(days=10),
         )
         db.add(test6)
 
@@ -409,7 +410,7 @@ def populate_sample_data():
             last_execution_status="passed",
             last_execution_time=datetime.utcnow() - timedelta(hours=2),
             execution_duration_ms=156.3,
-            created_at=datetime.utcnow() - timedelta(days=8)
+            created_at=datetime.utcnow() - timedelta(days=8),
         )
         db.add(test7)
 
@@ -423,7 +424,7 @@ def populate_sample_data():
             last_execution_status="passed",
             last_execution_time=datetime.utcnow() - timedelta(minutes=30),
             execution_duration_ms=234.1,
-            created_at=datetime.utcnow() - timedelta(days=5)
+            created_at=datetime.utcnow() - timedelta(days=5),
         )
         db.add(test8)
 
@@ -436,7 +437,7 @@ def populate_sample_data():
             last_execution_status="passed",
             last_execution_time=datetime.utcnow() - timedelta(minutes=45),
             execution_duration_ms=1200.5,
-            created_at=datetime.utcnow() - timedelta(days=4)
+            created_at=datetime.utcnow() - timedelta(days=4),
         )
         db.add(test9)
 
@@ -449,7 +450,7 @@ def populate_sample_data():
             last_execution_status="skipped",
             last_execution_time=datetime.utcnow() - timedelta(minutes=15),
             last_error_message="Dashboard tests require web driver",
-            created_at=datetime.utcnow() - timedelta(days=3)
+            created_at=datetime.utcnow() - timedelta(days=3),
         )
         db.add(test10)
 
@@ -463,7 +464,7 @@ def populate_sample_data():
             last_execution_status="passed",
             last_execution_time=datetime.utcnow() - timedelta(hours=3),
             execution_duration_ms=345.2,
-            created_at=datetime.utcnow() - timedelta(days=8)
+            created_at=datetime.utcnow() - timedelta(days=8),
         )
         db.add(test11)
 
@@ -476,7 +477,7 @@ def populate_sample_data():
             last_execution_status="passed",
             last_execution_time=datetime.utcnow() - timedelta(hours=1),
             execution_duration_ms=1890.7,
-            created_at=datetime.utcnow() - timedelta(days=6)
+            created_at=datetime.utcnow() - timedelta(days=6),
         )
         db.add(test12)
 
@@ -490,7 +491,7 @@ def populate_sample_data():
             last_execution_status="passed",
             last_execution_time=datetime.utcnow() - timedelta(hours=4),
             execution_duration_ms=234.5,
-            created_at=datetime.utcnow() - timedelta(days=5)
+            created_at=datetime.utcnow() - timedelta(days=5),
         )
         db.add(test13)
 
@@ -510,7 +511,7 @@ def populate_sample_data():
             epic_id=epic2.id,
             test_id=test4.id,
             is_security_issue=True,
-            created_at=datetime.utcnow() - timedelta(days=2)
+            created_at=datetime.utcnow() - timedelta(days=2),
         )
         db.add(defect1)
 
@@ -524,7 +525,7 @@ def populate_sample_data():
             status="in_progress",
             epic_id=epic1.id,
             is_security_issue=False,
-            created_at=datetime.utcnow() - timedelta(days=5)
+            created_at=datetime.utcnow() - timedelta(days=5),
         )
         db.add(defect2)
 
@@ -538,7 +539,7 @@ def populate_sample_data():
             status="planned",
             epic_id=epic5.id,
             is_security_issue=False,
-            created_at=datetime.utcnow() - timedelta(days=1)
+            created_at=datetime.utcnow() - timedelta(days=1),
         )
         db.add(defect3)
 
@@ -552,7 +553,7 @@ def populate_sample_data():
             status="open",
             epic_id=epic2.id,
             is_security_issue=True,
-            created_at=datetime.utcnow() - timedelta(hours=6)
+            created_at=datetime.utcnow() - timedelta(hours=6),
         )
         db.add(defect4)
 
@@ -567,7 +568,7 @@ def populate_sample_data():
             epic_id=epic4.id,
             test_id=test6.id,
             is_security_issue=False,
-            created_at=datetime.utcnow() - timedelta(hours=12)
+            created_at=datetime.utcnow() - timedelta(hours=12),
         )
         db.add(defect5)
 
@@ -604,26 +605,37 @@ def show_sample_data_summary():
 
         epics = db.query(Epic).all()
         for epic in epics:
-            user_stories = db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
+            user_stories = (
+                db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
+            )
             tests = db.query(Test).filter(Test.epic_id == epic.id).all()
             defects = db.query(Defect).filter(Defect.epic_id == epic.id).all()
 
             total_points = sum(us.story_points for us in user_stories)
-            completed_points = sum(us.story_points for us in user_stories
-                                 if us.implementation_status in ["completed", "done"])
-            completion = (completed_points / total_points * 100) if total_points > 0 else 0
+            completed_points = sum(
+                us.story_points
+                for us in user_stories
+                if us.implementation_status in ["completed", "done"]
+            )
+            completion = (
+                (completed_points / total_points * 100) if total_points > 0 else 0
+            )
 
             print(f"\n{epic.epic_id}: {epic.title}")
             print(f"  Status: {epic.status} | Priority: {epic.priority}")
             print(f"  User Stories: {len(user_stories)} ({total_points} points)")
-            print(f"  Completion: {completion:.1f}% ({completed_points}/{total_points} points)")
+            print(
+                f"  Completion: {completion:.1f}% ({completed_points}/{total_points} points)"
+            )
             print(f"  Tests: {len(tests)} | Defects: {len(defects)}")
 
             if tests:
                 passed = sum(1 for t in tests if t.last_execution_status == "passed")
                 failed = sum(1 for t in tests if t.last_execution_status == "failed")
                 skipped = sum(1 for t in tests if t.last_execution_status == "skipped")
-                print(f"  Test Results: {passed} passed, {failed} failed, {skipped} skipped")
+                print(
+                    f"  Test Results: {passed} passed, {failed} failed, {skipped} skipped"
+                )
 
     except Exception as e:
         print(f"[ERROR] Error showing summary: {e}")
@@ -634,11 +646,15 @@ def show_sample_data_summary():
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Populate RTM database with sample data")
-    parser.add_argument("--populate", action="store_true",
-                       help="Populate database with sample data")
-    parser.add_argument("--summary", action="store_true",
-                       help="Show summary of existing data")
+    parser = argparse.ArgumentParser(
+        description="Populate RTM database with sample data"
+    )
+    parser.add_argument(
+        "--populate", action="store_true", help="Populate database with sample data"
+    )
+    parser.add_argument(
+        "--summary", action="store_true", help="Show summary of existing data"
+    )
 
     args = parser.parse_args()
 

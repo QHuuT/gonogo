@@ -12,9 +12,10 @@ Features tested:
 - CSS selector correctness
 """
 
-import pytest
-from unittest.mock import MagicMock, patch
 import json
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 class TestRTMFilterFunctionality:
@@ -28,7 +29,9 @@ class TestRTMFilterFunctionality:
     def test_filter_tests_by_type_selector(self):
         """Test that filterTestsByType uses correct CSS selectors."""
         # Expected selector after our fix
-        expected_selector = f'#epic-{self.sample_epic_id} table[aria-label*="Test Traceability"] tbody'
+        expected_selector = (
+            f'#epic-{self.sample_epic_id} table[aria-label*="Test Traceability"] tbody'
+        )
 
         # This test verifies the selector pattern matches our HTML structure
         assert "Test Traceability" in expected_selector
@@ -38,7 +41,9 @@ class TestRTMFilterFunctionality:
     def test_filter_user_stories_by_status_selector(self):
         """Test that filterUserStoriesByStatus uses correct CSS selectors."""
         # Expected selector after our fix
-        expected_selector = f'#epic-{self.sample_epic_id} table[aria-label*="User Stories"] tbody'
+        expected_selector = (
+            f'#epic-{self.sample_epic_id} table[aria-label*="User Stories"] tbody'
+        )
 
         # This test verifies the selector pattern matches our HTML structure
         assert "User Stories" in expected_selector
@@ -48,7 +53,9 @@ class TestRTMFilterFunctionality:
     def test_filter_defects_selector(self):
         """Test that filterDefects uses correct CSS selectors."""
         # Expected selector (unchanged as it was already correct)
-        expected_selector = f'#epic-{self.sample_epic_id} .defect-filter-section + table tbody'
+        expected_selector = (
+            f"#epic-{self.sample_epic_id} .defect-filter-section + table tbody"
+        )
 
         # This test verifies the selector pattern matches our HTML structure
         assert ".defect-filter-section" in expected_selector
@@ -63,11 +70,11 @@ class TestRTMFilterFunctionality:
         assert filter_group.endswith("-defect")
 
         # Extract epic ID correctly
-        epic_id = filter_group.replace('-defect', '').replace('epic-', '')
+        epic_id = filter_group.replace("-defect", "").replace("epic-", "")
         assert epic_id == self.sample_epic_id
 
         # Expected selector for defect buttons
-        expected_selector = f'#epic-{epic_id} .defect-filter-button'
+        expected_selector = f"#epic-{epic_id} .defect-filter-button"
         assert ".defect-filter-button" in expected_selector
 
     def test_update_filter_button_states_standard_handling(self):
@@ -104,7 +111,9 @@ class TestRTMFilterFunctionality:
         # Button data attributes that should be used for button state management
         test_button_attributes = ["data-test-type", "data-filter-group"]
         us_button_attributes = ["data-us-status", "data-filter-group"]
-        defect_button_attributes = ["data-defect-filter"]  # No data-filter-group for defects
+        defect_button_attributes = [
+            "data-defect-filter"
+        ]  # No data-filter-group for defects
 
         # Verify expected button attributes
         assert "data-filter-group" in test_button_attributes
@@ -122,7 +131,7 @@ class TestRTMFilterFunctionality:
             ".filter-button",
             ".defect-filter-button",
             ".filter-button--active",
-            ".active"
+            ".active",
         ]
 
         # Verify all expected classes are defined
@@ -166,7 +175,7 @@ class TestRTMFilterFunctionality:
         # Scenarios that should generate console warnings
         warning_scenarios = [
             "Table not found for epic",
-            "No filter buttons found for group"
+            "No filter buttons found for group",
         ]
 
         # Verify warning messages are descriptive
@@ -179,7 +188,7 @@ class TestRTMFilterFunctionality:
         # Test that selectors work for different epic IDs
         test_selector = f'#epic-{epic_id} table[aria-label*="Test Traceability"] tbody'
         us_selector = f'#epic-{epic_id} table[aria-label*="User Stories"] tbody'
-        defect_selector = f'#epic-{epic_id} .defect-filter-section + table tbody'
+        defect_selector = f"#epic-{epic_id} .defect-filter-section + table tbody"
 
         # Verify selectors contain correct epic ID
         assert epic_id in test_selector
@@ -202,7 +211,7 @@ class TestRTMFilterFunctionality:
             ".test-count-display",
             ".us-count-display",
             ".defect-count-display",
-            ".filter-count"
+            ".filter-count",
         ]
 
         # Verify count display classes are defined
@@ -220,12 +229,12 @@ class TestRTMFilterFunctionality:
         # Table selectors
         test_table = f'{epic_container} table[aria-label*="Test Traceability"] tbody'
         us_table = f'{epic_container} table[aria-label*="User Stories"] tbody'
-        defect_table = f'{epic_container} .defect-filter-section + table tbody'
+        defect_table = f"{epic_container} .defect-filter-section + table tbody"
 
         # Button selectors
         test_buttons = f'[data-filter-group="epic-{epic_id}-test"]'
         us_buttons = f'[data-filter-group="epic-{epic_id}-us"]'
-        defect_buttons = f'{epic_container} .defect-filter-button'
+        defect_buttons = f"{epic_container} .defect-filter-button"
 
         # Row selectors
         test_rows = ".test-row"
@@ -234,9 +243,15 @@ class TestRTMFilterFunctionality:
 
         # Verify all selectors are valid strings
         selectors = [
-            test_table, us_table, defect_table,
-            test_buttons, us_buttons, defect_buttons,
-            test_rows, us_rows, defect_rows
+            test_table,
+            us_table,
+            defect_table,
+            test_buttons,
+            us_buttons,
+            defect_buttons,
+            test_rows,
+            us_rows,
+            defect_rows,
         ]
 
         for selector in selectors:
@@ -254,7 +269,7 @@ class TestRTMFilterRegression:
         filter_functions = [
             "filterTestsByType",
             "filterUserStoriesByStatus",
-            "filterDefects"
+            "filterDefects",
         ]
 
         # Verify function names are distinct

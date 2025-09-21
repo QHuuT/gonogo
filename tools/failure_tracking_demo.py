@@ -11,18 +11,21 @@ Usage:
     python tools/failure_tracking_demo.py
 """
 
-import sys
 import random
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from shared.testing.failure_tracker import (
-    FailureTracker, TestFailure, FailureCategory, FailureSeverity
-)
 from shared.testing.failure_reporter import FailureReporter
+from shared.testing.failure_tracker import (
+    FailureCategory,
+    FailureSeverity,
+    FailureTracker,
+    TestFailure,
+)
 
 
 def create_sample_failures(tracker: FailureTracker, num_failures: int = 20):
@@ -38,17 +41,45 @@ def create_sample_failures(tracker: FailureTracker, num_failures: int = 20):
         "tests/integration/test_api_endpoints.py",
         "tests/integration/test_database.py",
         "tests/security/test_input_validation.py",
-        "tests/e2e/test_user_workflow.py"
+        "tests/e2e/test_user_workflow.py",
     ]
 
     sample_errors = [
-        ("AssertionError: expected 5 but got 3", "assert response.status_code == 200", FailureCategory.ASSERTION_ERROR),
-        ("UnicodeEncodeError: 'charmap' codec can't encode character 'DONE:'", "tempfile writing", FailureCategory.UNICODE_ERROR),
-        ("ModuleNotFoundError: No module named 'nonexistent_module'", "import statement", FailureCategory.IMPORT_ERROR),
-        ("TimeoutError: operation timed out after 30 seconds", "database connection", FailureCategory.TIMEOUT_ERROR),
-        ("ConnectionError: Failed to connect to database", "postgresql connection", FailureCategory.DATABASE_ERROR),
-        ("PermissionError: Access denied to file", "file operations", FailureCategory.PERMISSION_ERROR),
-        ("ValueError: invalid literal for int()", "data conversion", FailureCategory.UNKNOWN_ERROR),
+        (
+            "AssertionError: expected 5 but got 3",
+            "assert response.status_code == 200",
+            FailureCategory.ASSERTION_ERROR,
+        ),
+        (
+            "UnicodeEncodeError: 'charmap' codec can't encode character 'DONE:'",
+            "tempfile writing",
+            FailureCategory.UNICODE_ERROR,
+        ),
+        (
+            "ModuleNotFoundError: No module named 'nonexistent_module'",
+            "import statement",
+            FailureCategory.IMPORT_ERROR,
+        ),
+        (
+            "TimeoutError: operation timed out after 30 seconds",
+            "database connection",
+            FailureCategory.TIMEOUT_ERROR,
+        ),
+        (
+            "ConnectionError: Failed to connect to database",
+            "postgresql connection",
+            FailureCategory.DATABASE_ERROR,
+        ),
+        (
+            "PermissionError: Access denied to file",
+            "file operations",
+            FailureCategory.PERMISSION_ERROR,
+        ),
+        (
+            "ValueError: invalid literal for int()",
+            "data conversion",
+            FailureCategory.UNKNOWN_ERROR,
+        ),
     ]
 
     session_ids = [f"session_{i}" for i in range(1, 6)]
@@ -83,8 +114,8 @@ def create_sample_failures(tracker: FailureTracker, num_failures: int = 20):
             metadata={
                 "duration": random.uniform(0.1, 5.0),
                 "retry_count": random.randint(0, 3),
-                "test_type": random.choice(["unit", "integration", "security", "e2e"])
-            }
+                "test_type": random.choice(["unit", "integration", "security", "e2e"]),
+            },
         )
 
         # Set custom timing
@@ -110,7 +141,7 @@ def create_sample_failures(tracker: FailureTracker, num_failures: int = 20):
                     stack_trace=failure.stack_trace,
                     category=failure.category,
                     session_id=random.choice(session_ids),
-                    execution_mode=random.choice(execution_modes)
+                    execution_mode=random.choice(execution_modes),
                 )
                 duplicate_failure.first_seen = duplicate_time
                 duplicate_failure.last_seen = duplicate_time
@@ -147,7 +178,9 @@ def demonstrate_analysis(tracker: FailureTracker):
     patterns = tracker.detect_patterns()
     for pattern in patterns:
         print(f"   • {pattern.description}")
-        print(f"     Occurrences: {pattern.occurrences} | Impact: {pattern.impact_score:.1f}")
+        print(
+            f"     Occurrences: {pattern.occurrences} | Impact: {pattern.impact_score:.1f}"
+        )
         print(f"     Affected tests: {len(pattern.affected_tests)}")
 
     return stats, top_failing, patterns
@@ -164,7 +197,9 @@ def generate_reports(tracker: FailureTracker):
     output_dir.mkdir(parents=True, exist_ok=True)
 
     summary_report = reporter.generate_daily_summary()
-    print(f"DONE: Daily summary report generated: quality/reports/failure_summary_daily.json")
+    print(
+        f"DONE: Daily summary report generated: quality/reports/failure_summary_daily.json"
+    )
 
     # Generate HTML report
     html_report_path = reporter.generate_html_failure_report()
@@ -212,6 +247,7 @@ def main():
     except Exception as e:
         print(f"Demo failed: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

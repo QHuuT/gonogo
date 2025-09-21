@@ -104,9 +104,19 @@
             return;
         }
 
-        const countDisplay = document.querySelector(`#epic-${epicId} .${className}`);
+        // Updated selectors for new collapsible structure
+        let countDisplay;
+        if (filterType === 'defect') {
+            countDisplay = document.querySelector(`#defects-${epicId} .${className}`);
+        } else if (filterType === 'test') {
+            countDisplay = document.querySelector(`#tests-${epicId} .${className}`);
+        } else if (filterType === 'userStory') {
+            countDisplay = document.querySelector(`#user-stories-${epicId} .${className}`);
+        } else {
+            countDisplay = document.querySelector(`#epic-${epicId} .${className}`);
+        }
         if (!countDisplay) {
-            console.warn(`❌ No count display found for ${filterType} in epic ${epicId}`);
+            // Silently return if element not found - might be loading asynchronously
             return;
         }
 
@@ -254,7 +264,7 @@
 
         // Filter test rows with animation
         testRows.forEach((row, index) => {
-            const testTypeBadge = row.querySelector('.test-type-badge');
+            const testTypeBadge = row.querySelector('.badge--test-type');
             if (!testTypeBadge) {
                 return;
             }
@@ -274,6 +284,9 @@
 
         // Update count display
         updateFilterCount(epicId, 'test', visibleCount, testRows.length);
+
+        // Show/hide empty state
+        toggleEmptyState(testTable, visibleCount);
 
         // Announce results
         announceToScreenReader(`Filtered tests to show ${visibleCount} ${testType} tests`);
@@ -309,6 +322,9 @@
 
         // Update count display
         updateFilterCount(epicId, 'userStory', visibleCount, usRows.length);
+
+        // Show/hide empty state
+        toggleEmptyState(usTable, visibleCount);
     }
 
     /**
@@ -317,7 +333,7 @@
     function filterDefects(epicId, filterType, filterValue) {
         RTM.state.activeFilters.defect = `${filterType}:${filterValue}`;
 
-        const defectTable = document.querySelector(`#epic-${epicId} .defect-filter-section + table tbody`);
+        const defectTable = document.querySelector(`#defects-${epicId} .rtm-table__body`);
         if (!defectTable) {
             console.warn(`❌ No defect table found for epic ${epicId}`);
             return;
@@ -356,6 +372,9 @@
 
         // Update count display
         updateFilterCount(epicId, 'defect', visibleCount, defectRows.length);
+
+        // Show/hide empty state
+        toggleEmptyState(defectTable, visibleCount);
     }
 
     /**
@@ -375,6 +394,22 @@
                 btn.setAttribute('aria-pressed', 'false');
             }
         });
+    }
+
+    /**
+     * Toggle empty state visibility based on visible count
+     * @param {Element} tableBody - The table body element
+     * @param {number} visibleCount - Number of visible rows
+     */
+    function toggleEmptyState(tableBody, visibleCount) {
+        const emptyStateRow = tableBody.querySelector('.empty-state-row');
+        if (!emptyStateRow) return;
+
+        if (visibleCount === 0) {
+            emptyStateRow.style.display = 'table-row';
+        } else {
+            emptyStateRow.style.display = 'none';
+        }
     }
 
     // ===== SEARCH FUNCTIONALITY =====
@@ -813,12 +848,131 @@
 
     // ===== GLOBAL FUNCTION EXPOSURE =====
 
-    // Expose functions to global scope for HTML onclick handlers
+        // ===== CLIPBOARD UTILITIES =====
+
+    /**
+     * Copy text to clipboard with user feedback
+     * @param {string} text - Text to copy to clipboard
+     * @param {Element} buttonElement - Button element that was clicked (optional)
+     */
+    function copyToClipboard(text, buttonElement = null) {
+
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                // Use modern Clipboard API
+                navigator.clipboard.writeText(text).then(() => {
+                    showCopyFeedback(buttonElement);
+                }).catch(err => {
+                    console.warn('Failed to copy using Clipboard API:', err);
+                    fallbackCopyToClipboard(text, buttonElement);
+                });
+            } else {
+                // Fallback for older browsers or non-secure contexts
+                fallbackCopyToClipboard(text, buttonElement);
+            }
+        } catch (err) {
+            console.error('Copy to clipboard failed:', err);
+            showCopyFeedback(buttonElement);
+        }
+    }
+
+    /**
+     * Fallback copy method for older browsers
+     * @param {string} text - Text to copy
+     * @param {Element} buttonElement - The button that was clicked
+     */
+    function fallbackCopyToClipboard(text, buttonElement = null) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                showCopyFeedback(buttonElement);
+            } else {
+                showCopyFeedback(buttonElement);
+            }
+        } catch (err) {
+            console.error('Fallback copy failed:', err);
+            showCopyFeedback(buttonElement);
+        } finally {
+            document.body.removeChild(textArea);
+        }
+    }
+
+    /**
+     * Show temporary feedback message for copy operation
+     * @param {string} message - Message to display
+     */
+    function showCopyFeedback(message) {
+        // Create temporary toast message
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--color-primary, #3498db);
+            color: var(--color-primary-contrast, white);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 10000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            animation: fadeInOut 2s ease-in-out;
+        `;
+
+        document.body.appendChild(toast);
+
+        // Remove after animation
+        setTimeout(() => {
+            if (toast.parentNode) {
+                document.body.removeChild(toast);
+            }
+        }, 2000);
+    }
+
+    /**
+     * Show visual feedback on copy button with text change
+     * @param {Element} buttonElement - The button that was clicked
+     */
+    function showCopyFeedback(buttonElement = null) {
+        if (buttonElement) {
+            const textElement = buttonElement.querySelector('.copy-btn__text');
+
+            if (textElement) {
+                // Change text to "COPIED" and add success styling
+                textElement.textContent = 'COPIED';
+                buttonElement.classList.add('copy-success');
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    textElement.textContent = 'COPY';
+                    buttonElement.classList.remove('copy-success');
+                }, 2000);
+            } else {
+                // Fallback for buttons without text element
+                buttonElement.classList.add('copy-success');
+                setTimeout(() => {
+                    buttonElement.classList.remove('copy-success');
+                }, 2000);
+            }
+        }
+    }
+
+// Expose functions to global scope for HTML onclick handlers
     window.toggleEpicDetails = toggleEpicDetails;
     window.filterByStatus = filterByStatus;
     window.filterTestsByType = filterTestsByType;
     window.filterUserStoriesByStatus = filterUserStoriesByStatus;
     window.filterDefects = filterDefects;
+    window.copyToClipboard = copyToClipboard;
 
     // ===== EVENT LISTENERS =====
 

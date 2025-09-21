@@ -14,16 +14,16 @@ Usage:
     python tools/archive_cleanup.py --search "test_report"
 """
 
-import sys
 import argparse
 import json
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from shared.testing.archive_manager import TestArchiveManager, StorageMetrics
+from shared.testing.archive_manager import StorageMetrics, TestArchiveManager
 
 
 def apply_retention_policies(manager: TestArchiveManager, dry_run: bool = True):
@@ -40,22 +40,22 @@ def apply_retention_policies(manager: TestArchiveManager, dry_run: bool = True):
     print(f"  Files deleted: {results['deleted_files']}")
     print(f"  Space saved: {results['space_saved_mb']:.1f} MB")
 
-    if results['errors']:
+    if results["errors"]:
         print(f"\nErrors encountered:")
-        for error in results['errors']:
+        for error in results["errors"]:
             print(f"  - {error}")
 
-    if results['actions']:
+    if results["actions"]:
         print(f"\nActions {'that would be ' if dry_run else ''}taken:")
-        for action in results['actions'][:20]:  # Show first 20 actions
+        for action in results["actions"][:20]:  # Show first 20 actions
             print(f"  [{action['type'].upper()}] {action['file']}")
             print(f"    Reason: {action['reason']}")
-            if 'space_saved_mb' in action:
+            if "space_saved_mb" in action:
                 print(f"    Space saved: {action['space_saved_mb']:.1f} MB")
-            if 'archive_path' in action:
+            if "archive_path" in action:
                 print(f"    Archived to: {action['archive_path']}")
 
-        if len(results['actions']) > 20:
+        if len(results["actions"]) > 20:
             print(f"  ... and {len(results['actions']) - 20} more actions")
 
     return results
@@ -95,11 +95,7 @@ def search_archives(manager: TestArchiveManager, query: str, file_type: str = No
         print(f"File type filter: {file_type}")
     print("=" * 60)
 
-    results = manager.search_archives(
-        query=query,
-        file_type=file_type,
-        limit=50
-    )
+    results = manager.search_archives(query=query, file_type=file_type, limit=50)
 
     if not results:
         print("No archived items found matching the criteria.")
@@ -111,7 +107,9 @@ def search_archives(manager: TestArchiveManager, query: str, file_type: str = No
         print(f"   Original: {item.original_path}")
         print(f"   Archive: {item.archive_path}")
         print(f"   Type: {item.file_type}")
-        print(f"   Size: {item.original_size / 1024:.1f} KB -> {item.compressed_size / 1024:.1f} KB")
+        print(
+            f"   Size: {item.original_size / 1024:.1f} KB -> {item.compressed_size / 1024:.1f} KB"
+        )
         print(f"   Compression: {(1 - item.compression_ratio) * 100:.1f}%")
         print(f"   Created: {item.created_date.strftime('%Y-%m-%d %H:%M')}")
         print(f"   Archived: {item.archived_date.strftime('%Y-%m-%d %H:%M')}")
@@ -159,7 +157,11 @@ def configure_policies(manager: TestArchiveManager, config_file: str = None):
         print(f"   Retention: {policy.retention_days} days")
         print(f"   Compress after: {policy.compress_after_days} days")
         print(f"   Archive location: {policy.archive_location}")
-        print(f"   Max size: {policy.max_size_mb} MB" if policy.max_size_mb else "   Max size: unlimited")
+        print(
+            f"   Max size: {policy.max_size_mb} MB"
+            if policy.max_size_mb
+            else "   Max size: unlimited"
+        )
         print(f"   Enabled: {policy.enabled}")
         print()
 
@@ -190,7 +192,7 @@ python tools/archive_cleanup.py --apply --quiet
 """
 
     script_path = manager.base_path / "archive_cleanup.sh"
-    with open(script_path, 'w') as f:
+    with open(script_path, "w") as f:
         f.write(script_content)
 
     print(f"Cleanup script generated: {script_path}")
@@ -203,7 +205,9 @@ python tools/archive_cleanup.py --apply --quiet
     return script_path
 
 
-def restore_file(manager: TestArchiveManager, archive_path: str, destination: str = None):
+def restore_file(
+    manager: TestArchiveManager, archive_path: str, destination: str = None
+):
     """Restore a file from archive."""
     print(f"Restoring file from archive: {archive_path}")
     if destination:
@@ -231,39 +235,63 @@ def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(description="Test Archive Management Tool")
 
-    parser.add_argument('--dry-run', action='store_true',
-                       help='Show what would be done without making changes')
-    parser.add_argument('--apply', action='store_true',
-                       help='Apply retention policies and make actual changes')
-    parser.add_argument('--metrics', action='store_true',
-                       help='Show storage metrics and recommendations')
-    parser.add_argument('--search', type=str,
-                       help='Search archived items')
-    parser.add_argument('--file-type', type=str,
-                       help='Filter search by file type (e.g., .html, .log)')
-    parser.add_argument('--bundle', type=str,
-                       help='Create archive bundle with given name')
-    parser.add_argument('--patterns', nargs='+',
-                       help='File patterns for bundle creation')
-    parser.add_argument('--configure', action='store_true',
-                       help='Show and configure retention policies')
-    parser.add_argument('--config-file', type=str,
-                       help='Import configuration from JSON file')
-    parser.add_argument('--schedule', type=str, default="0 2 * * *",
-                       help='Generate cleanup script with cron schedule')
-    parser.add_argument('--restore', type=str,
-                       help='Restore file from archive path')
-    parser.add_argument('--destination', type=str,
-                       help='Destination for restored file')
-    parser.add_argument('--base-path', type=str,
-                       help='Base path for archive operations')
-    parser.add_argument('--quiet', action='store_true',
-                       help='Reduce output verbosity')
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be done without making changes",
+    )
+    parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="Apply retention policies and make actual changes",
+    )
+    parser.add_argument(
+        "--metrics",
+        action="store_true",
+        help="Show storage metrics and recommendations",
+    )
+    parser.add_argument("--search", type=str, help="Search archived items")
+    parser.add_argument(
+        "--file-type", type=str, help="Filter search by file type (e.g., .html, .log)"
+    )
+    parser.add_argument(
+        "--bundle", type=str, help="Create archive bundle with given name"
+    )
+    parser.add_argument(
+        "--patterns", nargs="+", help="File patterns for bundle creation"
+    )
+    parser.add_argument(
+        "--configure", action="store_true", help="Show and configure retention policies"
+    )
+    parser.add_argument(
+        "--config-file", type=str, help="Import configuration from JSON file"
+    )
+    parser.add_argument(
+        "--schedule",
+        type=str,
+        default="0 2 * * *",
+        help="Generate cleanup script with cron schedule",
+    )
+    parser.add_argument("--restore", type=str, help="Restore file from archive path")
+    parser.add_argument("--destination", type=str, help="Destination for restored file")
+    parser.add_argument(
+        "--base-path", type=str, help="Base path for archive operations"
+    )
+    parser.add_argument("--quiet", action="store_true", help="Reduce output verbosity")
 
     args = parser.parse_args()
 
-    if not any([args.dry_run, args.apply, args.metrics, args.search, args.bundle,
-               args.configure, args.restore]):
+    if not any(
+        [
+            args.dry_run,
+            args.apply,
+            args.metrics,
+            args.search,
+            args.bundle,
+            args.configure,
+            args.restore,
+        ]
+    ):
         parser.print_help()
         return 1
 
@@ -308,6 +336,7 @@ def main():
         print(f"Error: {e}")
         if not args.quiet:
             import traceback
+
             traceback.print_exc()
         return 1
 

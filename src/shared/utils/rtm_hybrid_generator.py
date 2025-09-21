@@ -14,7 +14,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from .rtm_link_generator import RTMLinkGenerator as BaseLinkGenerator, RTMValidationResult, RTMLink
+from .rtm_link_generator import (
+    RTMLink,
+)
+from .rtm_link_generator import RTMLinkGenerator as BaseLinkGenerator
+from .rtm_link_generator import (
+    RTMValidationResult,
+)
 
 
 @dataclass
@@ -54,7 +60,7 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
         try:
             # Try to import database modules
             from be.database import get_db_session
-            from be.models.traceability import Epic, UserStory, Test, Defect
+            from be.models.traceability import Defect, Epic, Test, UserStory
 
             # Try to connect to database
             db = get_db_session()
@@ -84,16 +90,23 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                     print("Warning: Database not available, falling back to file mode")
                     self._effective_mode = "file"
                 else:
-                    raise RuntimeError("Database mode requested but database not available")
+                    raise RuntimeError(
+                        "Database mode requested but database not available"
+                    )
         else:  # auto mode
-            if self.hybrid_config.prefer_database and self._check_database_availability():
+            if (
+                self.hybrid_config.prefer_database
+                and self._check_database_availability()
+            ):
                 self._effective_mode = "database"
             else:
                 self._effective_mode = "file"
 
         return self._effective_mode
 
-    def validate_rtm_links(self, rtm_file_path: Optional[str] = None) -> RTMValidationResult:
+    def validate_rtm_links(
+        self, rtm_file_path: Optional[str] = None
+    ) -> RTMValidationResult:
         """
         Validate RTM links using the appropriate mode.
 
@@ -113,11 +126,13 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                 rtm_file_path = self.hybrid_config.rtm_file_path
             return super().validate_rtm_links(rtm_file_path)
 
-    def _validate_database_rtm(self, rtm_file_path: Optional[str] = None) -> RTMValidationResult:
+    def _validate_database_rtm(
+        self, rtm_file_path: Optional[str] = None
+    ) -> RTMValidationResult:
         """Validate RTM using database as source of truth."""
         try:
             from be.database import get_db_session
-            from be.models.traceability import Epic, UserStory, Test, Defect
+            from be.models.traceability import Defect, Epic, Test, UserStory
 
             db = get_db_session()
 
@@ -138,7 +153,7 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                         text=epic.epic_id,
                         url=github_link,
                         type="epic",
-                        valid=self._validate_github_issue_exists(epic.epic_id)
+                        valid=self._validate_github_issue_exists(epic.epic_id),
                     )
                     result.total_links += 1
                     if link.valid:
@@ -154,13 +169,15 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                         text=us.user_story_id,
                         url=github_link,
                         type="user_story",
-                        valid=self._validate_github_issue_exists(us.user_story_id)
+                        valid=self._validate_github_issue_exists(us.user_story_id),
                     )
                     result.total_links += 1
                     if link.valid:
                         result.valid_links += 1
                     else:
-                        link.error_message = f"GitHub issue {us.user_story_id} not found"
+                        link.error_message = (
+                            f"GitHub issue {us.user_story_id} not found"
+                        )
                         result.invalid_links.append(link)
 
                 # Validate Test file links
@@ -171,17 +188,21 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                             text=test.test_file_path,
                             url=test.test_file_path,
                             type="file",
-                            valid=file_exists
+                            valid=file_exists,
                         )
                         result.total_links += 1
                         if link.valid:
                             result.valid_links += 1
                         else:
-                            link.error_message = f"Test file {test.test_file_path} not found"
+                            link.error_message = (
+                                f"Test file {test.test_file_path} not found"
+                            )
                             result.invalid_links.append(link)
 
                 # Add success message
-                result.warnings.append(f"Database RTM validation complete - using database as source of truth")
+                result.warnings.append(
+                    f"Database RTM validation complete - using database as source of truth"
+                )
 
                 return result
 
@@ -215,7 +236,7 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
         """Validate that GitHub issue exists (simplified check)."""
         # For now, assume GitHub issues exist if they follow proper format
         # In a full implementation, this could use GitHub API to verify
-        return bool(re.match(r'^(EP|US|DEF)-\d{5}$', issue_id))
+        return bool(re.match(r"^(EP|US|DEF)-\d{5}$", issue_id))
 
     def get_mode_info(self) -> Dict[str, Any]:
         """Get information about current operational mode."""
@@ -227,7 +248,7 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
             "effective_mode": effective_mode,
             "database_available": database_available,
             "fallback_enabled": self.hybrid_config.fallback_enabled,
-            "prefer_database": self.hybrid_config.prefer_database
+            "prefer_database": self.hybrid_config.prefer_database,
         }
 
     def export_database_to_rtm_file(self, output_path: str) -> bool:
@@ -241,7 +262,7 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
 
         try:
             from be.database import get_db_session
-            from be.models.traceability import Epic, UserStory, Test, Defect
+            from be.models.traceability import Defect, Epic, Test, UserStory
 
             db = get_db_session()
 
@@ -251,7 +272,7 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
 
                 # Write to file
                 Path(output_path).parent.mkdir(parents=True, exist_ok=True)
-                with open(output_path, 'w', encoding='utf-8') as f:
+                with open(output_path, "w", encoding="utf-8") as f:
                     f.write(content)
 
                 return True
@@ -265,7 +286,7 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
 
     def _generate_rtm_file_content(self, db) -> str:
         """Generate RTM file content from database data."""
-        from be.models.traceability import Epic, UserStory, Test, Defect
+        from be.models.traceability import Defect, Epic, Test, UserStory
 
         # This is a simplified implementation - a full version would generate
         # the complete RTM file format with all sections
@@ -284,9 +305,15 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
         # Add epics
         epics = db.query(Epic).all()
         for epic in epics:
-            user_stories = db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
+            user_stories = (
+                db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
+            )
             us_list = ", ".join([us.user_story_id for us in user_stories])
-            status = "✅ Done" if epic.status == "done" else "⏳ In Progress" if epic.status == "in_progress" else "📝 Planned"
+            status = (
+                "✅ Done"
+                if epic.status == "done"
+                else "⏳ In Progress" if epic.status == "in_progress" else "📝 Planned"
+            )
 
             content += f"| [**{epic.epic_id}**](https://github.com/{self.github_owner}/{self.github_repo}/issues?q=is%3Aissue+{epic.epic_id}) | {epic.title} | {us_list} | {status} |\n"
 

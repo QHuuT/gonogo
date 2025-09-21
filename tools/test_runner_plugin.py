@@ -14,10 +14,11 @@ Usage:
     pytest --mode=detailed --type=all
 """
 
-import pytest
 import os
-from typing import List, Optional
 from pathlib import Path
+from typing import List, Optional
+
+import pytest
 
 
 def pytest_addoption(parser):
@@ -30,7 +31,7 @@ def pytest_addoption(parser):
         default="standard",
         choices=["silent", "standard", "verbose", "detailed"],
         help="Test execution mode: silent (minimal output), standard (default), "
-             "verbose (detailed output), detailed (maximum debugging info)"
+        "verbose (detailed output), detailed (maximum debugging info)",
     )
 
     # Test type filtering options
@@ -39,7 +40,7 @@ def pytest_addoption(parser):
         action="store",
         default="all",
         choices=["unit", "integration", "security", "e2e", "bdd", "all"],
-        help="Test type to run: unit, integration, security, e2e, bdd, or all"
+        help="Test type to run: unit, integration, security, e2e, bdd, or all",
     )
 
 
@@ -75,7 +76,7 @@ def _configure_test_paths(config, test_type: str):
         "integration": [project_root / "tests" / "integration"],
         "security": [project_root / "tests" / "security"],
         "e2e": [project_root / "tests" / "e2e"],
-        "bdd": [project_root / "tests" / "bdd"]
+        "bdd": [project_root / "tests" / "bdd"],
     }
 
     if test_type in test_dirs:
@@ -153,11 +154,11 @@ def pytest_sessionfinish(session, exitstatus):
 
 def _print_test_summary(session, exitstatus):
     """Print detailed test summary for verbose modes."""
-    if hasattr(session, 'testscollected'):
+    if hasattr(session, "testscollected"):
         total_tests = session.testscollected
         print(f"Total tests collected: {total_tests}")
 
-    if hasattr(session, 'testsfailed'):
+    if hasattr(session, "testsfailed"):
         failed_tests = session.testsfailed
         if failed_tests > 0:
             print(f"Failed tests: {failed_tests}")
@@ -168,7 +169,7 @@ def _print_test_summary(session, exitstatus):
         2: "Test execution was interrupted",
         3: "Internal error occurred",
         4: "pytest command line usage error",
-        5: "No tests collected"
+        5: "No tests collected",
     }
 
     status_message = exit_codes.get(exitstatus, f"Unknown exit code: {exitstatus}")
@@ -182,7 +183,7 @@ def _print_test_summary(session, exitstatus):
 # Marker definitions for use in tests
 pytest_markers = [
     "detailed: marks tests for detailed debugging mode",
-    "test_type: categorizes tests by type (unit, integration, etc.)"
+    "test_type: categorizes tests by type (unit, integration, etc.)",
 ]
 
 

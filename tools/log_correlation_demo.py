@@ -11,8 +11,8 @@ Usage:
     python tools/log_correlation_demo.py
 """
 
-import sys
 import json
+import sys
 import tempfile
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -20,9 +20,9 @@ from pathlib import Path
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from shared.testing.failure_tracker import FailureTracker, TestFailure, FailureCategory
-from shared.testing.log_failure_correlator import LogFailureCorrelator
 from shared.logging.logger import LogEntry, StructuredLogger
+from shared.testing.failure_tracker import FailureCategory, FailureTracker, TestFailure
+from shared.testing.log_failure_correlator import LogFailureCorrelator
 
 
 class MockStructuredLogger:
@@ -60,71 +60,81 @@ def create_sample_logs_and_failures(correlator: LogFailureCorrelator) -> list[in
     test_id_1 = "test-scenario-1-uuid"
 
     # Setup phase logs
-    mock_logger.add_log(LogEntry(
-        timestamp=(base_time - timedelta(minutes=5)).isoformat(),
-        level="INFO",
-        message="Test session started",
-        tags=["session_lifecycle", "start"],
-        metadata={"pytest_version": "7.4.0", "session_id": "session-123"}
-    ))
+    mock_logger.add_log(
+        LogEntry(
+            timestamp=(base_time - timedelta(minutes=5)).isoformat(),
+            level="INFO",
+            message="Test session started",
+            tags=["session_lifecycle", "start"],
+            metadata={"pytest_version": "7.4.0", "session_id": "session-123"},
+        )
+    )
 
-    mock_logger.add_log(LogEntry(
-        timestamp=(base_time - timedelta(minutes=3)).isoformat(),
-        level="INFO",
-        message="Test setup: initializing database fixtures",
-        test_id=test_id_1,
-        test_name="test_user_authentication",
-        tags=["setup", "test_lifecycle"],
-        metadata={
-            "environment": "test",
-            "python_version": "3.13.0",
-            "platform": "Windows",
-            "working_directory": "C:/repo/gonogo",
-            "test_data": {"username": "testuser", "password": "secure123"}
-        }
-    ))
+    mock_logger.add_log(
+        LogEntry(
+            timestamp=(base_time - timedelta(minutes=3)).isoformat(),
+            level="INFO",
+            message="Test setup: initializing database fixtures",
+            test_id=test_id_1,
+            test_name="test_user_authentication",
+            tags=["setup", "test_lifecycle"],
+            metadata={
+                "environment": "test",
+                "python_version": "3.13.0",
+                "platform": "Windows",
+                "working_directory": "C:/repo/gonogo",
+                "test_data": {"username": "testuser", "password": "secure123"},
+            },
+        )
+    )
 
     # Execution phase logs
-    mock_logger.add_log(LogEntry(
-        timestamp=(base_time - timedelta(minutes=2)).isoformat(),
-        level="INFO",
-        message="Executing authentication test with test user",
-        test_id=test_id_1,
-        test_name="test_user_authentication",
-        tags=["execution"],
-        metadata={
-            "test_input": {"username": "testuser", "expected_role": "user"},
-            "database_state": "clean",
-            "fixture_data": "loaded"
-        }
-    ))
+    mock_logger.add_log(
+        LogEntry(
+            timestamp=(base_time - timedelta(minutes=2)).isoformat(),
+            level="INFO",
+            message="Executing authentication test with test user",
+            test_id=test_id_1,
+            test_name="test_user_authentication",
+            tags=["execution"],
+            metadata={
+                "test_input": {"username": "testuser", "expected_role": "user"},
+                "database_state": "clean",
+                "fixture_data": "loaded",
+            },
+        )
+    )
 
-    mock_logger.add_log(LogEntry(
-        timestamp=(base_time - timedelta(minutes=1)).isoformat(),
-        level="ERROR",
-        message="Authentication test failed: role mismatch",
-        test_id=test_id_1,
-        test_name="test_user_authentication",
-        test_status="failed",
-        duration_ms=1250.75,
-        tags=["failure", "assertion"],
-        metadata={
-            "actual_value": "admin",
-            "expected_value": "user",
-            "comparison_type": "role_comparison"
-        }
-    ))
+    mock_logger.add_log(
+        LogEntry(
+            timestamp=(base_time - timedelta(minutes=1)).isoformat(),
+            level="ERROR",
+            message="Authentication test failed: role mismatch",
+            test_id=test_id_1,
+            test_name="test_user_authentication",
+            test_status="failed",
+            duration_ms=1250.75,
+            tags=["failure", "assertion"],
+            metadata={
+                "actual_value": "admin",
+                "expected_value": "user",
+                "comparison_type": "role_comparison",
+            },
+        )
+    )
 
     # Teardown phase logs
-    mock_logger.add_log(LogEntry(
-        timestamp=base_time.isoformat(),
-        level="INFO",
-        message="Test teardown: cleaning database fixtures",
-        test_id=test_id_1,
-        test_name="test_user_authentication",
-        tags=["teardown", "test_lifecycle"],
-        metadata={"cleanup_status": "completed", "fixtures_removed": True}
-    ))
+    mock_logger.add_log(
+        LogEntry(
+            timestamp=base_time.isoformat(),
+            level="INFO",
+            message="Test teardown: cleaning database fixtures",
+            test_id=test_id_1,
+            test_name="test_user_authentication",
+            tags=["teardown", "test_lifecycle"],
+            metadata={"cleanup_status": "completed", "fixtures_removed": True},
+        )
+    )
 
     # Create corresponding failure
     failure_1 = TestFailure(
@@ -136,7 +146,7 @@ def create_sample_logs_and_failures(correlator: LogFailureCorrelator) -> list[in
     assert user.role == 'user'
 AssertionError: expected role 'user' but got 'admin'""",
         category=FailureCategory.ASSERTION_ERROR,
-        metadata={"test_type": "unit", "duration": 1250.75, "retry_count": 0}
+        metadata={"test_type": "unit", "duration": 1250.75, "retry_count": 0},
     )
     failure_1.last_seen = base_time
 
@@ -147,35 +157,39 @@ AssertionError: expected role 'user' but got 'admin'""",
     print("  Scenario 2: Import error with environment debugging")
     test_id_2 = "test-scenario-2-uuid"
 
-    mock_logger.add_log(LogEntry(
-        timestamp=(base_time + timedelta(minutes=1)).isoformat(),
-        level="INFO",
-        message="Test setup: checking module imports",
-        test_id=test_id_2,
-        test_name="test_gdpr_service_initialization",
-        tags=["setup", "imports"],
-        metadata={
-            "python_path": ["C:/repo/gonogo/src", "C:/repo/gonogo"],
-            "virtual_env": "active",
-            "installed_packages": ["fastapi", "sqlalchemy", "pytest"]
-        }
-    ))
+    mock_logger.add_log(
+        LogEntry(
+            timestamp=(base_time + timedelta(minutes=1)).isoformat(),
+            level="INFO",
+            message="Test setup: checking module imports",
+            test_id=test_id_2,
+            test_name="test_gdpr_service_initialization",
+            tags=["setup", "imports"],
+            metadata={
+                "python_path": ["C:/repo/gonogo/src", "C:/repo/gonogo"],
+                "virtual_env": "active",
+                "installed_packages": ["fastapi", "sqlalchemy", "pytest"],
+            },
+        )
+    )
 
-    mock_logger.add_log(LogEntry(
-        timestamp=(base_time + timedelta(minutes=2)).isoformat(),
-        level="ERROR",
-        message="Module import failed: gdpr_compliance module not found",
-        test_id=test_id_2,
-        test_name="test_gdpr_service_initialization",
-        test_status="failed",
-        duration_ms=50.0,
-        tags=["failure", "import"],
-        metadata={
-            "missing_module": "gdpr_compliance",
-            "import_path": "src.security.gdpr.gdpr_compliance",
-            "sys_path": ["C:/repo/gonogo/src", "C:/repo/gonogo"]
-        }
-    ))
+    mock_logger.add_log(
+        LogEntry(
+            timestamp=(base_time + timedelta(minutes=2)).isoformat(),
+            level="ERROR",
+            message="Module import failed: gdpr_compliance module not found",
+            test_id=test_id_2,
+            test_name="test_gdpr_service_initialization",
+            test_status="failed",
+            duration_ms=50.0,
+            tags=["failure", "import"],
+            metadata={
+                "missing_module": "gdpr_compliance",
+                "import_path": "src.security.gdpr.gdpr_compliance",
+                "sys_path": ["C:/repo/gonogo/src", "C:/repo/gonogo"],
+            },
+        )
+    )
 
     failure_2 = TestFailure(
         test_id=test_id_2,
@@ -185,7 +199,7 @@ AssertionError: expected role 'user' but got 'admin'""",
         stack_trace="""tests/unit/test_gdpr_service.py:12 in <module>
     from src.security.gdpr.gdpr_compliance import GDPRService
 ModuleNotFoundError: No module named 'gdpr_compliance'""",
-        category=FailureCategory.IMPORT_ERROR
+        category=FailureCategory.IMPORT_ERROR,
     )
     failure_2.last_seen = base_time + timedelta(minutes=2)
 
@@ -196,49 +210,55 @@ ModuleNotFoundError: No module named 'gdpr_compliance'""",
     print("  Scenario 3: Timeout error with performance analysis")
     test_id_3 = "test-scenario-3-uuid"
 
-    mock_logger.add_log(LogEntry(
-        timestamp=(base_time + timedelta(minutes=5)).isoformat(),
-        level="INFO",
-        message="Database integration test started",
-        test_id=test_id_3,
-        test_name="test_database_heavy_query",
-        tags=["integration", "database"],
-        metadata={
-            "database_url": "sqlite:///test.db",
-            "connection_pool_size": 5,
-            "timeout_setting": 30
-        }
-    ))
+    mock_logger.add_log(
+        LogEntry(
+            timestamp=(base_time + timedelta(minutes=5)).isoformat(),
+            level="INFO",
+            message="Database integration test started",
+            test_id=test_id_3,
+            test_name="test_database_heavy_query",
+            tags=["integration", "database"],
+            metadata={
+                "database_url": "sqlite:///test.db",
+                "connection_pool_size": 5,
+                "timeout_setting": 30,
+            },
+        )
+    )
 
-    mock_logger.add_log(LogEntry(
-        timestamp=(base_time + timedelta(minutes=6)).isoformat(),
-        level="WARNING",
-        message="Database query taking longer than expected",
-        test_id=test_id_3,
-        test_name="test_database_heavy_query",
-        tags=["performance", "database"],
-        metadata={
-            "query_duration_ms": 25000,
-            "expected_max_ms": 5000,
-            "query_type": "complex_join"
-        }
-    ))
+    mock_logger.add_log(
+        LogEntry(
+            timestamp=(base_time + timedelta(minutes=6)).isoformat(),
+            level="WARNING",
+            message="Database query taking longer than expected",
+            test_id=test_id_3,
+            test_name="test_database_heavy_query",
+            tags=["performance", "database"],
+            metadata={
+                "query_duration_ms": 25000,
+                "expected_max_ms": 5000,
+                "query_type": "complex_join",
+            },
+        )
+    )
 
-    mock_logger.add_log(LogEntry(
-        timestamp=(base_time + timedelta(minutes=7)).isoformat(),
-        level="ERROR",
-        message="Database operation timed out after 30 seconds",
-        test_id=test_id_3,
-        test_name="test_database_heavy_query",
-        test_status="failed",
-        duration_ms=30000,
-        tags=["failure", "timeout"],
-        metadata={
-            "timeout_limit_ms": 30000,
-            "operation": "SELECT with complex JOIN",
-            "rows_processed": 0
-        }
-    ))
+    mock_logger.add_log(
+        LogEntry(
+            timestamp=(base_time + timedelta(minutes=7)).isoformat(),
+            level="ERROR",
+            message="Database operation timed out after 30 seconds",
+            test_id=test_id_3,
+            test_name="test_database_heavy_query",
+            test_status="failed",
+            duration_ms=30000,
+            tags=["failure", "timeout"],
+            metadata={
+                "timeout_limit_ms": 30000,
+                "operation": "SELECT with complex JOIN",
+                "rows_processed": 0,
+            },
+        )
+    )
 
     failure_3 = TestFailure(
         test_id=test_id_3,
@@ -248,7 +268,7 @@ ModuleNotFoundError: No module named 'gdpr_compliance'""",
         stack_trace="""tests/integration/test_database.py:78 in test_database_heavy_query
     result = db.execute(complex_query).fetchall()
 TimeoutError: Database operation timed out after 30 seconds""",
-        category=FailureCategory.TIMEOUT_ERROR
+        category=FailureCategory.TIMEOUT_ERROR,
     )
     failure_3.last_seen = base_time + timedelta(minutes=7)
 
@@ -259,7 +279,9 @@ TimeoutError: Database operation timed out after 30 seconds""",
     return failure_ids
 
 
-def demonstrate_correlation_analysis(correlator: LogFailureCorrelator, failure_ids: list[int]):
+def demonstrate_correlation_analysis(
+    correlator: LogFailureCorrelator, failure_ids: list[int]
+):
     """Demonstrate correlation analysis capabilities."""
     print("\n*** Analyzing log-failure correlations...")
 
@@ -267,7 +289,9 @@ def demonstrate_correlation_analysis(correlator: LogFailureCorrelator, failure_i
         print(f"\n*** Failure {i} Analysis:")
 
         # Get failure context
-        context = correlator.correlate_failure_with_logs(failure_id, time_window_minutes=15)
+        context = correlator.correlate_failure_with_logs(
+            failure_id, time_window_minutes=15
+        )
 
         if context:
             print(f"   Test: {context.test_name}")
@@ -290,7 +314,9 @@ def demonstrate_correlation_analysis(correlator: LogFailureCorrelator, failure_i
             print(f"   No correlation found for failure {failure_id}")
 
 
-def demonstrate_reproduction_guides(correlator: LogFailureCorrelator, failure_ids: list[int]):
+def demonstrate_reproduction_guides(
+    correlator: LogFailureCorrelator, failure_ids: list[int]
+):
     """Demonstrate reproduction guide generation."""
     print("\n*** Generating failure reproduction guides...")
 
@@ -303,13 +329,13 @@ def demonstrate_reproduction_guides(correlator: LogFailureCorrelator, failure_id
         script = correlator.generate_failure_reproduction_script(failure_id)
         if script:
             script_path = output_dir / f"reproduction_script_{failure_id}.py"
-            with open(script_path, 'w', encoding='utf-8') as f:
+            with open(script_path, "w", encoding="utf-8") as f:
                 f.write(script)
 
             print(f"   Generated: {script_path}")
 
             # Show preview of script
-            lines = script.split('\n')
+            lines = script.split("\n")
             print("   Preview:")
             for line in lines[:10]:  # Show first 10 lines
                 print(f"     {line}")
@@ -351,11 +377,15 @@ def generate_reports(correlator: LogFailureCorrelator):
     print(f"   JSON report generated: {report_path}")
 
     # Validate report content
-    with open(report_path, 'r', encoding='utf-8') as f:
+    with open(report_path, "r", encoding="utf-8") as f:
         report = json.load(f)
 
-    print(f"   Report contains {len(report['failure_contexts'])} detailed failure contexts")
-    print(f"   Correlation metadata includes {len(report['correlation_metadata']['correlation_strategies'])} strategies")
+    print(
+        f"   Report contains {len(report['failure_contexts'])} detailed failure contexts"
+    )
+    print(
+        f"   Correlation metadata includes {len(report['correlation_metadata']['correlation_strategies'])} strategies"
+    )
 
     return report_path
 
@@ -366,7 +396,7 @@ def main():
     print("=" * 50)
 
     # Initialize correlator with temporary database
-    with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as f:
+    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
         db_path = Path(f.name)
 
     try:
@@ -407,6 +437,7 @@ def main():
     except Exception as e:
         print(f"Demo failed: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

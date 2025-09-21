@@ -119,6 +119,39 @@ class UserStory(TraceabilityBase):
         if github_data.get("body"):
             self.description = github_data["body"]
 
+    def get_github_derived_status(self) -> str:
+        """Calculate implementation status from GitHub issue state and labels."""
+        # If issue is closed, it's completed
+        if self.github_issue_state and self.github_issue_state.lower() == "closed":
+            return "completed"
+
+        # If issue is open, check for status/x labels
+        if self.github_labels:
+            labels_str = self.github_labels.lower()
+
+            # Check for status/x format labels
+            if "status/in-progress" in labels_str:
+                return "in_progress"
+            elif "status/blocked" in labels_str:
+                return "blocked"
+            elif "status/in-review" in labels_str:
+                return "in_review"
+            elif "status/testing" in labels_str:
+                return "in_review"  # testing = in_review
+            elif "status/todo" in labels_str:
+                return "todo"
+            elif "status/planned" in labels_str:
+                return "planned"
+            elif "status/ready" in labels_str:
+                return "planned"  # ready = planned
+            elif "status/backlog" in labels_str:
+                return "planned"  # backlog = planned
+            elif "status/done" in labels_str or "status/completed" in labels_str:
+                return "completed"
+
+        # Default for open issues without status/ labels
+        return "planned"
+
     def calculate_test_coverage(self) -> dict:
         """Calculate test coverage metrics."""
         if not self.tests:
@@ -152,7 +185,7 @@ class UserStory(TraceabilityBase):
                 "business_value": self.business_value,
                 "priority": self.priority,
                 "sprint": self.sprint,
-                "implementation_status": self.implementation_status,
+                "implementation_status": self.get_github_derived_status(),  # Use GitHub-derived status instead of database status
                 "has_bdd_scenarios": self.has_bdd_scenarios,
                 "affects_gdpr": self.affects_gdpr,
                 "gdpr_considerations": self.gdpr_considerations,

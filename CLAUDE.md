@@ -141,6 +141,16 @@ python tools/rtm-db.py github sync-status                 # Show recent GitHub s
 python tools/rtm-db.py github sync --issue-number 55      # Sync specific issue (when implemented)
 python tools/rtm-db.py github sync --dry-run              # Preview sync operations
 
+# GitHub-Database Sync Manager (NEW - Comprehensive GitHub Status Sync)
+python tools/github_sync_manager.py --help                # Show all sync options and usage
+python tools/github_sync_manager.py --dry-run             # Preview all sync operations without applying changes
+python tools/github_sync_manager.py --epic EP-00005       # Sync only specific epic (user stories and defects)
+python tools/github_sync_manager.py --since 2024-01-01    # Sync only issues updated since specified date
+python tools/github_sync_manager.py --validate            # Validate current sync status without changes
+python tools/github_sync_manager.py --progress-report     # Generate epic progress report after sync
+python tools/github_sync_manager.py --quiet               # Run sync with minimal output
+python tools/github_sync_manager.py                       # Full comprehensive sync of all entities
+
 # RTM Test-Database Integration CLI (NEW - Test Execution Integration)
 python tools/test-db-integration.py --help               # Show all available commands
 

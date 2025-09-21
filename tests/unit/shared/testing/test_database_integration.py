@@ -9,14 +9,15 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 
 import tempfile
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
+
 import pytest
 
 from src.shared.testing.database_integration import (
-    TestDiscovery,
+    BDDScenarioParser,
     TestDatabaseSync,
+    TestDiscovery,
     TestExecutionTracker,
-    BDDScenarioParser
 )
 
 
@@ -59,8 +60,13 @@ class TestTestDiscovery:
 
     def test_generate_test_title(self):
         """Test test title generation from function names."""
-        assert self.discovery._generate_test_title("test_user_login") == "Test: User Login"
-        assert self.discovery._generate_test_title("test_epic_progress_calculation") == "Test: Epic Progress Calculation"
+        assert (
+            self.discovery._generate_test_title("test_user_login") == "Test: User Login"
+        )
+        assert (
+            self.discovery._generate_test_title("test_epic_progress_calculation")
+            == "Test: Epic Progress Calculation"
+        )
 
     def test_analyze_test_file_with_references(self):
         """Test analyzing a test file with Epic/US references."""
@@ -78,19 +84,19 @@ def test_user_story_linking():
     """Test for US-00057."""
     pass
 '''
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as tmp:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as tmp:
             tmp.write(test_content)
             tmp.flush()
             tmp_path = Path(tmp.name)
 
         try:
-            test_metadata = self.discovery._analyze_test_file(tmp_path, 'unit')
+            test_metadata = self.discovery._analyze_test_file(tmp_path, "unit")
 
             assert len(test_metadata) == 2
-            assert test_metadata[0]['test_function_name'] == 'test_database_integration'
-            assert test_metadata[0]['test_type'] == 'unit'
-            assert 'EP-00057' in test_metadata[0]['epic_references']
-            assert 'US-00057' in test_metadata[0]['user_story_references']
+            assert test_metadata[0]["test_function_name"] == "test_database_integration"
+            assert test_metadata[0]["test_type"] == "unit"
+            assert "EP-00057" in test_metadata[0]["epic_references"]
+            assert "US-00057" in test_metadata[0]["user_story_references"]
 
         finally:
             try:
@@ -105,18 +111,18 @@ def test_simple_function():
     """Simple test without references."""
     assert True
 '''
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as tmp:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as tmp:
             tmp.write(test_content)
             tmp.flush()
             tmp_path = Path(tmp.name)
 
         try:
-            test_metadata = self.discovery._analyze_test_file(tmp_path, 'unit')
+            test_metadata = self.discovery._analyze_test_file(tmp_path, "unit")
 
             assert len(test_metadata) == 1
-            assert test_metadata[0]['test_function_name'] == 'test_simple_function'
-            assert test_metadata[0]['epic_references'] == []
-            assert test_metadata[0]['user_story_references'] == []
+            assert test_metadata[0]["test_function_name"] == "test_simple_function"
+            assert test_metadata[0]["epic_references"] == []
+            assert test_metadata[0]["user_story_references"] == []
 
         finally:
             try:
@@ -124,24 +130,26 @@ def test_simple_function():
             except (PermissionError, FileNotFoundError):
                 pass  # Windows may lock the file, ignore cleanup errors
 
-    @patch('src.shared.testing.database_integration.Path.glob')
+    @patch("src.shared.testing.database_integration.Path.glob")
     def test_discover_tests(self, mock_glob):
         """Test test discovery functionality."""
         # Mock test files
         mock_test_file = Mock()
         mock_test_file.is_file.return_value = True
-        mock_test_file.name = 'test_example.py'
-        mock_test_file.relative_to.return_value = Path('tests/unit/test_example.py')
+        mock_test_file.name = "test_example.py"
+        mock_test_file.relative_to.return_value = Path("tests/unit/test_example.py")
 
         mock_glob.return_value = [mock_test_file]
 
-        with patch.object(self.discovery, '_analyze_test_file') as mock_analyze:
-            mock_analyze.return_value = [{
-                'test_file_path': 'tests/unit/test_example.py',
-                'test_function_name': 'test_example',
-                'test_type': 'unit',
-                'epic_references': ['EP-00057']
-            }]
+        with patch.object(self.discovery, "_analyze_test_file") as mock_analyze:
+            mock_analyze.return_value = [
+                {
+                    "test_file_path": "tests/unit/test_example.py",
+                    "test_function_name": "test_example",
+                    "test_type": "unit",
+                    "epic_references": ["EP-00057"],
+                }
+            ]
 
             tests = self.discovery.discover_tests()
 
@@ -157,48 +165,50 @@ class TestTestDatabaseSync:
         self.sync = TestDatabaseSync()
         self.mock_db = Mock()
 
-    @patch('src.shared.testing.database_integration.get_db_session')
+    @patch("src.shared.testing.database_integration.get_db_session")
     def test_create_or_update_test_new(self, mock_get_db):
         """Test creating a new test record."""
         mock_get_db.return_value = self.mock_db
         self.mock_db.query.return_value.filter.return_value.first.return_value = None
 
         test_data = {
-            'test_file_path': 'tests/unit/test_example.py',
-            'test_function_name': 'test_example',
-            'test_type': 'unit',
-            'title': 'Test: Example',
-            'line_number': 10,
-            'bdd_scenario_name': None
+            "test_file_path": "tests/unit/test_example.py",
+            "test_function_name": "test_example",
+            "test_type": "unit",
+            "title": "Test: Example",
+            "line_number": 10,
+            "bdd_scenario_name": None,
         }
 
         result = self.sync._create_or_update_test(self.mock_db, test_data)
 
-        assert result == 'created'
+        assert result == "created"
         self.mock_db.add.assert_called_once()
 
-    @patch('src.shared.testing.database_integration.get_db_session')
+    @patch("src.shared.testing.database_integration.get_db_session")
     def test_create_or_update_test_existing(self, mock_get_db):
         """Test updating an existing test record."""
         mock_get_db.return_value = self.mock_db
         mock_existing_test = Mock()
-        self.mock_db.query.return_value.filter.return_value.first.return_value = mock_existing_test
+        self.mock_db.query.return_value.filter.return_value.first.return_value = (
+            mock_existing_test
+        )
 
         test_data = {
-            'test_file_path': 'tests/unit/test_example.py',
-            'test_function_name': 'test_example',
-            'test_type': 'unit',
-            'title': 'Test: Example Updated',
-            'bdd_scenario_name': None
+            "test_file_path": "tests/unit/test_example.py",
+            "test_function_name": "test_example",
+            "test_type": "unit",
+            "title": "Test: Example Updated",
+            "bdd_scenario_name": None,
         }
 
         result = self.sync._create_or_update_test(self.mock_db, test_data)
 
-        assert result == 'updated'
-        assert mock_existing_test.title == 'Test: Example Updated'
+        assert result == "updated"
+        assert mock_existing_test.title == "Test: Example Updated"
         self.mock_db.add.assert_not_called()
 
-    @patch('src.shared.testing.database_integration.get_db_session')
+    @patch("src.shared.testing.database_integration.get_db_session")
     def test_link_test_to_epic_success(self, mock_get_db):
         """Test successfully linking test to Epic."""
         mock_get_db.return_value = self.mock_db
@@ -208,28 +218,26 @@ class TestTestDatabaseSync:
         mock_epic.id = 1
         self.mock_db.query.return_value.filter.return_value.first.side_effect = [
             mock_epic,  # Epic found
-            Mock()      # Test found
+            Mock(),  # Test found
         ]
 
         test_data = {
-            'test_file_path': 'tests/unit/test_example.py',
-            'test_function_name': 'test_example',
-            'epic_references': ['EP-00057']
+            "test_file_path": "tests/unit/test_example.py",
+            "test_function_name": "test_example",
+            "epic_references": ["EP-00057"],
         }
 
         result = self.sync._link_test_to_epic(self.mock_db, test_data)
 
         assert result is True
 
-    @patch('src.shared.testing.database_integration.get_db_session')
+    @patch("src.shared.testing.database_integration.get_db_session")
     def test_link_test_to_epic_no_epic(self, mock_get_db):
         """Test linking test to Epic when Epic doesn't exist."""
         mock_get_db.return_value = self.mock_db
         self.mock_db.query.return_value.filter.return_value.first.return_value = None
 
-        test_data = {
-            'epic_references': ['EP-99999']
-        }
+        test_data = {"epic_references": ["EP-99999"]}
 
         result = self.sync._link_test_to_epic(self.mock_db, test_data)
 
@@ -246,7 +254,9 @@ class TestTestExecutionTracker:
 
     def test_start_and_end_session(self):
         """Test session management."""
-        with patch('src.shared.testing.database_integration.get_db_session') as mock_get_db:
+        with patch(
+            "src.shared.testing.database_integration.get_db_session"
+        ) as mock_get_db:
             mock_get_db.return_value = self.mock_db
 
             self.tracker.start_test_session()
@@ -262,22 +272,21 @@ class TestTestExecutionTracker:
         self.tracker.db_session = self.mock_db
 
         mock_test = Mock()
-        self.mock_db.query.return_value.filter.return_value.first.return_value = mock_test
+        self.mock_db.query.return_value.filter.return_value.first.return_value = (
+            mock_test
+        )
 
         result = self.tracker.record_test_result(
-            'tests/unit/test_example.py::test_function',
-            'passed',
-            150.5
+            "tests/unit/test_example.py::test_function", "passed", 150.5
         )
 
         assert result is True
-        mock_test.update_execution_result.assert_called_once_with('passed', 150.5, None)
+        mock_test.update_execution_result.assert_called_once_with("passed", 150.5, None)
 
     def test_record_test_result_no_session(self):
         """Test recording test result without session."""
         result = self.tracker.record_test_result(
-            'tests/unit/test_example.py::test_function',
-            'passed'
+            "tests/unit/test_example.py::test_function", "passed"
         )
 
         assert result is False
@@ -286,7 +295,7 @@ class TestTestExecutionTracker:
         """Test recording test result with invalid test ID."""
         self.tracker.db_session = self.mock_db
 
-        result = self.tracker.record_test_result('invalid_test_id', 'passed')
+        result = self.tracker.record_test_result("invalid_test_id", "passed")
 
         assert result is False
 
@@ -305,28 +314,39 @@ class TestTestExecutionTracker:
 
         # Set up side effects for the two different queries
         def mock_query_side_effect(model):
-            if 'Test' in str(model):
-                return Mock(filter=Mock(return_value=Mock(first=Mock(return_value=mock_test))))
+            if "Test" in str(model):
+                return Mock(
+                    filter=Mock(return_value=Mock(first=Mock(return_value=mock_test)))
+                )
             else:  # Defect query
                 return mock_defect_count_query
 
         self.mock_db.query.side_effect = mock_query_side_effect
 
         defect_id = self.tracker.create_defect_from_failure(
-            'tests/unit/test_example.py::test_function',
-            'AssertionError: Test failed',
-            'Traceback...'
+            "tests/unit/test_example.py::test_function",
+            "AssertionError: Test failed",
+            "Traceback...",
         )
 
-        assert defect_id == 'DEF-00006'
+        assert defect_id == "DEF-00006"
         self.mock_db.add.assert_called_once()
 
     def test_determine_failure_severity(self):
         """Test failure severity determination."""
-        assert self.tracker._determine_failure_severity('AssertionError: test failed') == 'medium'
-        assert self.tracker._determine_failure_severity('ImportError: module not found') == 'high'
-        assert self.tracker._determine_failure_severity('Security validation failed') == 'critical'
-        assert self.tracker._determine_failure_severity('Unknown error') == 'low'
+        assert (
+            self.tracker._determine_failure_severity("AssertionError: test failed")
+            == "medium"
+        )
+        assert (
+            self.tracker._determine_failure_severity("ImportError: module not found")
+            == "high"
+        )
+        assert (
+            self.tracker._determine_failure_severity("Security validation failed")
+            == "critical"
+        )
+        assert self.tracker._determine_failure_severity("Unknown error") == "low"
 
 
 class TestBDDScenarioParser:
@@ -390,16 +410,16 @@ Feature: Test Integration
     When linking occurs
     Then tests are linked
 """
-        feature_file = Path.cwd() / 'tests/bdd/features/test_integration.feature'
+        feature_file = Path.cwd() / "tests/bdd/features/test_integration.feature"
         scenarios = self.parser._parse_feature_content(feature_file, content)
 
         assert len(scenarios) == 2
-        assert scenarios[0]['scenario_name'] == 'Basic test discovery'
-        assert scenarios[1]['scenario_name'] == 'Epic linking'
-        assert 'US-00057' in scenarios[0]['user_story_references']
-        assert 'US-00057' in scenarios[1]['user_story_references']
+        assert scenarios[0]["scenario_name"] == "Basic test discovery"
+        assert scenarios[1]["scenario_name"] == "Epic linking"
+        assert "US-00057" in scenarios[0]["user_story_references"]
+        assert "US-00057" in scenarios[1]["user_story_references"]
 
-    @patch('src.shared.testing.database_integration.get_db_session')
+    @patch("src.shared.testing.database_integration.get_db_session")
     def test_link_scenario_to_user_story_success(self, mock_get_db):
         """Test successfully linking scenario to User Story."""
         mock_db = Mock()
@@ -410,14 +430,14 @@ Feature: Test Integration
         mock_user_story.epic_id = 1
         mock_db.query.return_value.filter.return_value.first.side_effect = [
             mock_user_story,  # User Story found
-            None              # Test doesn't exist
+            None,  # Test doesn't exist
         ]
 
         scenario = {
-            'feature_file': 'tests/bdd/features/test.feature',
-            'scenario_name': 'Test Scenario',
-            'line_number': 10,
-            'user_story_references': ['US-00057']
+            "feature_file": "tests/bdd/features/test.feature",
+            "scenario_name": "Test Scenario",
+            "line_number": 10,
+            "user_story_references": ["US-00057"],
         }
 
         result = self.parser._link_scenario_to_user_story(mock_db, scenario)
@@ -425,16 +445,14 @@ Feature: Test Integration
         assert result is True
         mock_db.add.assert_called_once()
 
-    @patch('src.shared.testing.database_integration.get_db_session')
+    @patch("src.shared.testing.database_integration.get_db_session")
     def test_link_scenario_to_user_story_no_user_story(self, mock_get_db):
         """Test linking scenario when User Story doesn't exist."""
         mock_db = Mock()
         mock_get_db.return_value = mock_db
         mock_db.query.return_value.filter.return_value.first.return_value = None
 
-        scenario = {
-            'user_story_references': ['US-99999']
-        }
+        scenario = {"user_story_references": ["US-99999"]}
 
         result = self.parser._link_scenario_to_user_story(mock_db, scenario)
 
@@ -444,40 +462,42 @@ Feature: Test Integration
 class TestIntegrationWorkflow:
     """Test complete integration workflow."""
 
-    @patch('src.shared.testing.database_integration.get_db_session')
-    @patch('src.shared.testing.database_integration.TestDiscovery.discover_tests')
+    @patch("src.shared.testing.database_integration.get_db_session")
+    @patch("src.shared.testing.database_integration.TestDiscovery.discover_tests")
     def test_full_sync_workflow(self, mock_discover, mock_get_db):
         """Test complete test discovery and sync workflow."""
         mock_db = Mock()
         mock_get_db.return_value = mock_db
 
         # Mock discovered tests
-        mock_discover.return_value = [{
-            'test_file_path': 'tests/unit/test_example.py',
-            'test_function_name': 'test_example',
-            'test_type': 'unit',
-            'title': 'Test: Example',
-            'line_number': 10,
-            'epic_references': ['EP-00057'],
-            'user_story_references': [],
-            'defect_references': [],
-            'bdd_scenario_name': None
-        }]
+        mock_discover.return_value = [
+            {
+                "test_file_path": "tests/unit/test_example.py",
+                "test_function_name": "test_example",
+                "test_type": "unit",
+                "title": "Test: Example",
+                "line_number": 10,
+                "epic_references": ["EP-00057"],
+                "user_story_references": [],
+                "defect_references": [],
+                "bdd_scenario_name": None,
+            }
+        ]
 
         # Mock database queries
         mock_db.query.return_value.filter.return_value.first.side_effect = [
-            None,    # Test doesn't exist (create)
+            None,  # Test doesn't exist (create)
             Mock(),  # Epic exists (link)
-            Mock()   # Test exists for linking
+            Mock(),  # Test exists for linking
         ]
 
         sync = TestDatabaseSync()
         stats = sync.sync_tests_to_database()
 
-        assert stats['discovered'] == 1
-        assert stats['created'] == 1
-        assert stats['linked_to_epics'] == 1
-        assert stats['errors'] == 0
+        assert stats["discovered"] == 1
+        assert stats["created"] == 1
+        assert stats["linked_to_epics"] == 1
+        assert stats["errors"] == 0
 
     def test_pytest_plugin_integration(self):
         """Test integration with pytest plugin."""

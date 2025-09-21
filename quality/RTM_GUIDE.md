@@ -118,6 +118,93 @@ Each epic is displayed as an interactive card with:
 - **Reduced Motion**: Respects user motion preferences
 - **High Contrast**: Supports high contrast mode
 
+## 🏷️ GitHub Status Mapping
+
+The RTM system automatically derives implementation status from GitHub issue states and labels. This ensures real-time synchronization between GitHub project management and RTM reporting.
+
+### Status Detection Logic
+
+1. **Closed Issues**: Always mapped to `completed` regardless of labels
+2. **Open Issues**: Status derived from `status/x` labels
+3. **Fallback**: Open issues without status labels default to `planned`
+
+### GitHub Label → RTM Status Mapping
+
+| GitHub Label | RTM Status | Description |
+|--------------|------------|-------------|
+| `status/done` | `completed` | Work finished and verified |
+| `status/completed` | `completed` | Alternative completion label |
+| `status/in-progress` | `in_progress` | Currently being worked on |
+| `status/blocked` | `blocked` | Cannot proceed due to dependencies |
+| `status/in-review` | `in_review` | Under review/testing |
+| `status/testing` | `in_review` | Being tested (mapped to in_review) |
+| `status/todo` | `todo` | Ready to start work |
+| `status/planned` | `planned` | Planned for future work |
+| `status/ready` | `planned` | Ready to work (mapped to planned) |
+| `status/backlog` | `planned` | In backlog (mapped to planned) |
+
+### Implementation Details
+
+#### Database Synchronization
+```bash
+# Import GitHub data with labels
+python tools/import_real_github_data.py --import
+
+# Verify status mapping
+python -c "
+from be.database import get_db_session
+from be.models.traceability import UserStory
+db = get_db_session()
+us = db.query(UserStory).filter(UserStory.user_story_id == 'US-00058').first()
+print(f'Status: {us.get_github_derived_status()}')
+"
+```
+
+#### Status Calculation Priority
+1. **Closed State Check**: `github_issue_state.lower() == "closed"` → `completed`
+2. **Label Analysis**: Parse `status/x` labels from `github_labels` field
+3. **Default Mapping**: Open issues without status labels → `planned`
+
+#### Code Location
+- **Model Method**: `src/be/models/traceability/user_story.py:get_github_derived_status()`
+- **Import Tool**: `tools/import_real_github_data.py` (populates `github_labels` field)
+- **Usage**: RTM reports use `to_dict()` which calls `get_github_derived_status()`
+
+### Troubleshooting Status Issues
+
+#### Common Problems
+```bash
+# 1. Status shows as "planned" instead of expected status
+# Check if labels are imported correctly:
+python -c "
+from be.database import get_db_session
+from be.models.traceability import UserStory
+db = get_db_session()
+us = db.query(UserStory).filter(UserStory.user_story_id == 'US-XXXXX').first()
+print(f'GitHub State: {us.github_issue_state}')
+print(f'GitHub Labels: {us.github_labels}')
+print(f'Derived Status: {us.get_github_derived_status()}')
+"
+
+# 2. Re-import GitHub data if labels are missing:
+python tools/import_real_github_data.py --import
+
+# 3. Verify all status labels in system:
+python -c "
+from be.database import get_db_session
+from be.models.traceability import UserStory
+db = get_db_session()
+all_labels = set()
+for us in db.query(UserStory).all():
+    if us.github_labels and 'status/' in us.github_labels:
+        labels = eval(us.github_labels)
+        for label_dict in labels:
+            if 'name' in label_dict and 'status/' in label_dict['name']:
+                all_labels.add(label_dict['name'])
+print('Status labels found:', sorted(all_labels))
+"
+```
+
 ## 📊 Metrics & KPIs
 
 ### Epic Level Metrics

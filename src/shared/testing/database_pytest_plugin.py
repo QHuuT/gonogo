@@ -14,7 +14,11 @@ from typing import Dict, Optional
 
 import pytest
 
-from .database_integration import TestDatabaseSync, TestExecutionTracker, BDDScenarioParser
+from .database_integration import (
+    BDDScenarioParser,
+    TestDatabaseSync,
+    TestExecutionTracker,
+)
 from .pytest_integration import FailureTrackingPlugin
 
 
@@ -28,11 +32,11 @@ class DatabaseIntegrationPlugin:
         self.bdd_parser = BDDScenarioParser()
         self.session_start_time = None
         self.session_stats = {
-            'tests_discovered': 0,
-            'tests_synced': 0,
-            'scenarios_linked': 0,
-            'defects_created': 0,
-            'execution_results_recorded': 0
+            "tests_discovered": 0,
+            "tests_synced": 0,
+            "scenarios_linked": 0,
+            "defects_created": 0,
+            "execution_results_recorded": 0,
         }
 
     def pytest_sessionstart(self, session):
@@ -42,22 +46,32 @@ class DatabaseIntegrationPlugin:
 
         try:
             # Sync discovered tests to database
-            if hasattr(session.config.option, 'sync_tests') and session.config.option.sync_tests:
+            if (
+                hasattr(session.config.option, "sync_tests")
+                and session.config.option.sync_tests
+            ):
                 print("🔄 Syncing discovered tests to database...")
                 sync_stats = self.test_sync.sync_tests_to_database()
-                self.session_stats.update({
-                    'tests_discovered': sync_stats['discovered'],
-                    'tests_synced': sync_stats['created'] + sync_stats['updated']
-                })
+                self.session_stats.update(
+                    {
+                        "tests_discovered": sync_stats["discovered"],
+                        "tests_synced": sync_stats["created"] + sync_stats["updated"],
+                    }
+                )
                 print(f"   Discovered: {sync_stats['discovered']} tests")
-                print(f"   Created: {sync_stats['created']}, Updated: {sync_stats['updated']}")
+                print(
+                    f"   Created: {sync_stats['created']}, Updated: {sync_stats['updated']}"
+                )
                 print(f"   Linked to Epics: {sync_stats['linked_to_epics']}")
 
             # Link BDD scenarios to User Stories
-            if hasattr(session.config.option, 'link_scenarios') and session.config.option.link_scenarios:
+            if (
+                hasattr(session.config.option, "link_scenarios")
+                and session.config.option.link_scenarios
+            ):
                 print("🔗 Linking BDD scenarios to User Stories...")
                 bdd_stats = self.bdd_parser.link_scenarios_to_user_stories()
-                self.session_stats['scenarios_linked'] = bdd_stats['scenarios_linked']
+                self.session_stats["scenarios_linked"] = bdd_stats["scenarios_linked"]
                 print(f"   Scenarios linked: {bdd_stats['scenarios_linked']}")
 
         except Exception as e:
@@ -68,16 +82,24 @@ class DatabaseIntegrationPlugin:
         if report.when == "call":  # Only process call phase results
             test_id = report.nodeid
             status = self._convert_pytest_status(report.outcome)
-            duration_ms = getattr(report, 'duration', 0) * 1000  # Convert to milliseconds
+            duration_ms = (
+                getattr(report, "duration", 0) * 1000
+            )  # Convert to milliseconds
 
             error_message = None
             if report.outcome == "failed":
-                error_message = str(report.longrepr.reprcrash.message) if report.longrepr and hasattr(report.longrepr, 'reprcrash') else "Unknown error"
+                error_message = (
+                    str(report.longrepr.reprcrash.message)
+                    if report.longrepr and hasattr(report.longrepr, "reprcrash")
+                    else "Unknown error"
+                )
 
             # Record test result
             try:
-                if self.test_tracker.record_test_result(test_id, status, duration_ms, error_message):
-                    self.session_stats['execution_results_recorded'] += 1
+                if self.test_tracker.record_test_result(
+                    test_id, status, duration_ms, error_message
+                ):
+                    self.session_stats["execution_results_recorded"] += 1
 
                 # Create defect for failures
                 if report.outcome == "failed":
@@ -86,8 +108,10 @@ class DatabaseIntegrationPlugin:
                         test_id, error_message, stack_trace
                     )
                     if defect_id:
-                        self.session_stats['defects_created'] += 1
-                        print(f"🐛 Created defect {defect_id} for failed test: {test_id}")
+                        self.session_stats["defects_created"] += 1
+                        print(
+                            f"🐛 Created defect {defect_id} for failed test: {test_id}"
+                        )
 
             except Exception as e:
                 print(f"Warning: Failed to record test result for {test_id}: {e}")
@@ -98,16 +122,20 @@ class DatabaseIntegrationPlugin:
             self.test_tracker.end_test_session()
 
             # Generate summary
-            session_duration = (datetime.utcnow() - self.session_start_time).total_seconds()
+            session_duration = (
+                datetime.utcnow() - self.session_start_time
+            ).total_seconds()
             print(f"\n📊 Database Integration Summary:")
             print(f"   Session duration: {session_duration:.1f}s")
             print(f"   Tests discovered: {self.session_stats['tests_discovered']}")
             print(f"   Tests synced to DB: {self.session_stats['tests_synced']}")
-            print(f"   Execution results recorded: {self.session_stats['execution_results_recorded']}")
+            print(
+                f"   Execution results recorded: {self.session_stats['execution_results_recorded']}"
+            )
             print(f"   BDD scenarios linked: {self.session_stats['scenarios_linked']}")
             print(f"   Defects created: {self.session_stats['defects_created']}")
 
-            if self.session_stats['defects_created'] > 0:
+            if self.session_stats["defects_created"] > 0:
                 print(f"   ⚠️  New defects require attention in RTM database")
 
         except Exception as e:
@@ -116,12 +144,12 @@ class DatabaseIntegrationPlugin:
     def _convert_pytest_status(self, outcome: str) -> str:
         """Convert pytest outcome to database test status."""
         status_mapping = {
-            'passed': 'passed',
-            'failed': 'failed',
-            'skipped': 'skipped',
-            'error': 'error'
+            "passed": "passed",
+            "failed": "failed",
+            "skipped": "skipped",
+            "error": "error",
         }
-        return status_mapping.get(outcome, 'unknown')
+        return status_mapping.get(outcome, "unknown")
 
 
 def pytest_addoption(parser):
@@ -131,25 +159,25 @@ def pytest_addoption(parser):
         "--sync-tests",
         action="store_true",
         default=False,
-        help="Sync discovered tests to database before execution"
+        help="Sync discovered tests to database before execution",
     )
     group.addoption(
         "--link-scenarios",
         action="store_true",
         default=False,
-        help="Link BDD scenarios to User Stories in database"
+        help="Link BDD scenarios to User Stories in database",
     )
     group.addoption(
         "--auto-defects",
         action="store_true",
         default=False,
-        help="Automatically create defects from test failures"
+        help="Automatically create defects from test failures",
     )
 
 
 def pytest_configure(config):
     """Register the database integration plugin with pytest."""
-    if not hasattr(config, '_database_integration_plugin'):
+    if not hasattr(config, "_database_integration_plugin"):
         plugin = DatabaseIntegrationPlugin()
         config.pluginmanager.register(plugin, "database_integration")
         config._database_integration_plugin = plugin
@@ -170,11 +198,13 @@ class EnhancedTestRunner:
         import sys
 
         cmd = [
-            sys.executable, "-m", "pytest",
+            sys.executable,
+            "-m",
+            "pytest",
             "--sync-tests",
             "--link-scenarios",
             "--auto-defects",
-            "-v"
+            "-v",
         ]
 
         try:
@@ -202,7 +232,7 @@ class EnhancedTestRunner:
             print(f"   Tests linked to Epics: {stats['linked_to_epics']}")
             print(f"   Errors: {stats['errors']}")
 
-            return stats['errors'] == 0
+            return stats["errors"] == 0
 
         except Exception as e:
             print(f"Error during test discovery and sync: {e}")
@@ -225,7 +255,7 @@ class EnhancedTestRunner:
             print(f"   User Stories updated: {stats['user_stories_updated']}")
             print(f"   Errors: {stats['errors']}")
 
-            return stats['errors'] == 0
+            return stats["errors"] == 0
 
         except Exception as e:
             print(f"Error during BDD scenario linking: {e}")
@@ -237,11 +267,13 @@ def main():
     """Command line interface for database integration utilities."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="RTM Database Test Integration Utilities")
+    parser = argparse.ArgumentParser(
+        description="RTM Database Test Integration Utilities"
+    )
     parser.add_argument(
         "command",
         choices=["discover", "link-scenarios", "run-with-sync"],
-        help="Command to execute"
+        help="Command to execute",
     )
 
     args = parser.parse_args()

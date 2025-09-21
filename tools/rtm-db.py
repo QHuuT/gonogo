@@ -19,8 +19,8 @@ from typing import Any, Dict, List, Optional
 
 import click
 from rich.console import Console
-from rich.table import Table
 from rich.progress import track
+from rich.table import Table
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -31,19 +31,18 @@ from be.database import get_db_session
 from be.models.traceability import Defect, Epic, GitHubSync, Test, UserStory
 from be.services.rtm_parser import RTMDataMigrator
 
-
 console = Console()
 
 
 @click.group()
-@click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
-@click.option('--database-url', help='Override database URL')
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
+@click.option("--database-url", help="Override database URL")
 @click.pass_context
 def cli(ctx, verbose, database_url):
     """RTM Database Management CLI - Manage traceability data with command-line tools."""
     ctx.ensure_object(dict)
-    ctx.obj['verbose'] = verbose
-    ctx.obj['database_url'] = database_url
+    ctx.obj["verbose"] = verbose
+    ctx.obj["database_url"] = database_url
 
     if verbose:
         console.print("[blue]RTM Database CLI - Verbose mode enabled[/blue]")
@@ -57,12 +56,18 @@ def entities():
 
 
 @entities.command()
-@click.option('--epic-id', required=True, help='Epic ID (e.g., EP-00005)')
-@click.option('--title', required=True, help='Epic title')
-@click.option('--description', help='Epic description')
-@click.option('--business-value', help='Business value statement')
-@click.option('--priority', default='medium', help='Priority: critical, high, medium, low')
-@click.option('--status', default='planned', help='Status: planned, in_progress, completed, blocked')
+@click.option("--epic-id", required=True, help="Epic ID (e.g., EP-00005)")
+@click.option("--title", required=True, help="Epic title")
+@click.option("--description", help="Epic description")
+@click.option("--business-value", help="Business value statement")
+@click.option(
+    "--priority", default="medium", help="Priority: critical, high, medium, low"
+)
+@click.option(
+    "--status",
+    default="planned",
+    help="Status: planned, in_progress, completed, blocked",
+)
 @click.pass_context
 def create_epic(ctx, epic_id, title, description, business_value, priority, status):
     """Create a new Epic."""
@@ -80,13 +85,13 @@ def create_epic(ctx, epic_id, title, description, business_value, priority, stat
             description=description,
             business_value=business_value,
             priority=priority,
-            status=status
+            status=status,
         )
         db.add(epic)
         db.commit()
 
         console.print(f"[green]Created Epic {epic_id}: {title}[/green]")
-        if ctx.obj['verbose']:
+        if ctx.obj["verbose"]:
             console.print(f"Priority: {priority}, Status: {status}")
 
     except IntegrityError as e:
@@ -97,15 +102,26 @@ def create_epic(ctx, epic_id, title, description, business_value, priority, stat
 
 
 @entities.command()
-@click.option('--user-story-id', required=True, help='User Story ID (e.g., US-00055)')
-@click.option('--epic-id', required=True, help='Parent Epic ID (e.g., EP-00005)')
-@click.option('--github-issue', type=int, required=True, help='GitHub issue number')
-@click.option('--title', required=True, help='User Story title')
-@click.option('--description', help='User Story description')
-@click.option('--story-points', type=int, default=0, help='Story points estimate')
-@click.option('--priority', default='medium', help='Priority: critical, high, medium, low')
+@click.option("--user-story-id", required=True, help="User Story ID (e.g., US-00055)")
+@click.option("--epic-id", required=True, help="Parent Epic ID (e.g., EP-00005)")
+@click.option("--github-issue", type=int, required=True, help="GitHub issue number")
+@click.option("--title", required=True, help="User Story title")
+@click.option("--description", help="User Story description")
+@click.option("--story-points", type=int, default=0, help="Story points estimate")
+@click.option(
+    "--priority", default="medium", help="Priority: critical, high, medium, low"
+)
 @click.pass_context
-def create_user_story(ctx, user_story_id, epic_id, github_issue, title, description, story_points, priority):
+def create_user_story(
+    ctx,
+    user_story_id,
+    epic_id,
+    github_issue,
+    title,
+    description,
+    story_points,
+    priority,
+):
     """Create a new User Story."""
     db = get_db_session()
     try:
@@ -116,9 +132,13 @@ def create_user_story(ctx, user_story_id, epic_id, github_issue, title, descript
             return
 
         # Check if user story already exists
-        existing = db.query(UserStory).filter(UserStory.user_story_id == user_story_id).first()
+        existing = (
+            db.query(UserStory).filter(UserStory.user_story_id == user_story_id).first()
+        )
         if existing:
-            console.print(f"[red]Error: User Story {user_story_id} already exists[/red]")
+            console.print(
+                f"[red]Error: User Story {user_story_id} already exists[/red]"
+            )
             return
 
         user_story = UserStory(
@@ -128,14 +148,16 @@ def create_user_story(ctx, user_story_id, epic_id, github_issue, title, descript
             title=title,
             description=description,
             story_points=story_points,
-            priority=priority
+            priority=priority,
         )
         db.add(user_story)
         db.commit()
 
         console.print(f"[green]Created User Story {user_story_id}: {title}[/green]")
-        if ctx.obj['verbose']:
-            console.print(f"Epic: {epic_id}, GitHub Issue: #{github_issue}, Points: {story_points}")
+        if ctx.obj["verbose"]:
+            console.print(
+                f"Epic: {epic_id}, GitHub Issue: #{github_issue}, Points: {story_points}"
+            )
 
     except IntegrityError as e:
         db.rollback()
@@ -145,12 +167,16 @@ def create_user_story(ctx, user_story_id, epic_id, github_issue, title, descript
 
 
 @entities.command()
-@click.option('--test-type', required=True, help='Test type: unit, integration, e2e, security, bdd')
-@click.option('--test-file', required=True, help='Test file path')
-@click.option('--title', required=True, help='Test title')
-@click.option('--epic-id', help='Optional Epic ID to link to')
-@click.option('--function-name', help='Test function name')
-@click.option('--bdd-scenario', help='BDD scenario name')
+@click.option(
+    "--test-type",
+    required=True,
+    help="Test type: unit, integration, e2e, security, bdd",
+)
+@click.option("--test-file", required=True, help="Test file path")
+@click.option("--title", required=True, help="Test title")
+@click.option("--epic-id", help="Optional Epic ID to link to")
+@click.option("--function-name", help="Test function name")
+@click.option("--bdd-scenario", help="BDD scenario name")
 @click.pass_context
 def create_test(ctx, test_type, test_file, title, epic_id, function_name, bdd_scenario):
     """Create a new Test record."""
@@ -170,13 +196,13 @@ def create_test(ctx, test_type, test_file, title, epic_id, function_name, bdd_sc
             title=title,
             epic_id=epic_db_id,
             test_function_name=function_name,
-            bdd_scenario_name=bdd_scenario
+            bdd_scenario_name=bdd_scenario,
         )
         db.add(test)
         db.commit()
 
         console.print(f"[green]Created Test: {title}[/green]")
-        if ctx.obj['verbose']:
+        if ctx.obj["verbose"]:
             console.print(f"Type: {test_type}, File: {test_file}")
 
     except IntegrityError as e:
@@ -194,9 +220,9 @@ def query():
 
 
 @query.command()
-@click.option('--format', default='table', help='Output format: table, json')
-@click.option('--status', help='Filter by status')
-@click.option('--priority', help='Filter by priority')
+@click.option("--format", default="table", help="Output format: table, json")
+@click.option("--status", help="Filter by status")
+@click.option("--priority", help="Filter by priority")
 @click.pass_context
 def epics(ctx, format, status, priority):
     """List all Epics with optional filtering."""
@@ -211,7 +237,7 @@ def epics(ctx, format, status, priority):
 
         epics_list = query_obj.all()
 
-        if format == 'json':
+        if format == "json":
             data = [epic.to_dict() for epic in epics_list]
             console.print(json.dumps(data, indent=2, default=str))
         else:
@@ -228,7 +254,7 @@ def epics(ctx, format, status, priority):
                     epic.title[:50] + "..." if len(epic.title) > 50 else epic.title,
                     epic.status,
                     epic.priority,
-                    f"{epic.completion_percentage or 0:.1f}%"
+                    f"{epic.completion_percentage or 0:.1f}%",
                 )
 
             console.print(table)
@@ -239,9 +265,9 @@ def epics(ctx, format, status, priority):
 
 
 @query.command()
-@click.option('--epic-id', help='Filter by Epic ID')
-@click.option('--status', help='Filter by implementation status')
-@click.option('--format', default='table', help='Output format: table, json')
+@click.option("--epic-id", help="Filter by Epic ID")
+@click.option("--status", help="Filter by implementation status")
+@click.option("--format", default="table", help="Output format: table, json")
 @click.pass_context
 def user_stories(ctx, epic_id, status, format):
     """List User Stories with optional filtering."""
@@ -262,7 +288,7 @@ def user_stories(ctx, epic_id, status, format):
 
         user_stories_list = query_obj.all()
 
-        if format == 'json':
+        if format == "json":
             data = [us.to_dict() for us in user_stories_list]
             console.print(json.dumps(data, indent=2, default=str))
         else:
@@ -287,19 +313,21 @@ def user_stories(ctx, epic_id, status, format):
                     epic_name,
                     us.implementation_status,
                     str(us.story_points),
-                    f"#{us.github_issue_number}" if us.github_issue_number else "N/A"
+                    f"#{us.github_issue_number}" if us.github_issue_number else "N/A",
                 )
 
             console.print(table)
-            console.print(f"\n[blue]Total User Stories: {len(user_stories_list)}[/blue]")
+            console.print(
+                f"\n[blue]Total User Stories: {len(user_stories_list)}[/blue]"
+            )
 
     finally:
         db.close()
 
 
 @query.command()
-@click.argument('epic_id')
-@click.option('--format', default='table', help='Output format: table, json')
+@click.argument("epic_id")
+@click.option("--format", default="table", help="Output format: table, json")
 @click.pass_context
 def epic_progress(ctx, epic_id, format):
     """Show detailed progress for a specific Epic."""
@@ -317,32 +345,41 @@ def epic_progress(ctx, epic_id, format):
         # Calculate metrics
         total_story_points = sum(us.story_points for us in user_stories)
         completed_story_points = sum(
-            us.story_points for us in user_stories
-            if us.implementation_status in ['done', 'completed']
+            us.story_points
+            for us in user_stories
+            if us.implementation_status in ["done", "completed"]
         )
 
         test_pass_rate = 0.0
         if tests:
-            passed_tests = sum(1 for test in tests if test.last_execution_status == 'passed')
+            passed_tests = sum(
+                1 for test in tests if test.last_execution_status == "passed"
+            )
             test_pass_rate = (passed_tests / len(tests)) * 100
 
-        critical_defects = sum(1 for defect in defects if defect.severity == 'critical')
-        open_defects = sum(1 for defect in defects if defect.status in ['open', 'in_progress'])
+        critical_defects = sum(1 for defect in defects if defect.severity == "critical")
+        open_defects = sum(
+            1 for defect in defects if defect.status in ["open", "in_progress"]
+        )
 
-        if format == 'json':
+        if format == "json":
             data = {
-                'epic': epic.to_dict(),
-                'metrics': {
-                    'total_story_points': total_story_points,
-                    'completed_story_points': completed_story_points,
-                    'completion_percentage': (completed_story_points / total_story_points * 100) if total_story_points > 0 else 0,
-                    'user_stories_count': len(user_stories),
-                    'tests_count': len(tests),
-                    'test_pass_rate': test_pass_rate,
-                    'defects_count': len(defects),
-                    'critical_defects': critical_defects,
-                    'open_defects': open_defects
-                }
+                "epic": epic.to_dict(),
+                "metrics": {
+                    "total_story_points": total_story_points,
+                    "completed_story_points": completed_story_points,
+                    "completion_percentage": (
+                        (completed_story_points / total_story_points * 100)
+                        if total_story_points > 0
+                        else 0
+                    ),
+                    "user_stories_count": len(user_stories),
+                    "tests_count": len(tests),
+                    "test_pass_rate": test_pass_rate,
+                    "defects_count": len(defects),
+                    "critical_defects": critical_defects,
+                    "open_defects": open_defects,
+                },
             }
             console.print(json.dumps(data, indent=2, default=str))
         else:
@@ -356,11 +393,23 @@ def epic_progress(ctx, epic_id, format):
             metrics_table.add_column("Metric", style="cyan")
             metrics_table.add_column("Value", style="white")
 
-            completion_pct = (completed_story_points / total_story_points * 100) if total_story_points > 0 else 0
-            metrics_table.add_row("Story Points", f"{completed_story_points}/{total_story_points} ({completion_pct:.1f}%)")
+            completion_pct = (
+                (completed_story_points / total_story_points * 100)
+                if total_story_points > 0
+                else 0
+            )
+            metrics_table.add_row(
+                "Story Points",
+                f"{completed_story_points}/{total_story_points} ({completion_pct:.1f}%)",
+            )
             metrics_table.add_row("User Stories", str(len(user_stories)))
-            metrics_table.add_row("Tests", f"{len(tests)} (pass rate: {test_pass_rate:.1f}%)")
-            metrics_table.add_row("Defects", f"{len(defects)} ({critical_defects} critical, {open_defects} open)")
+            metrics_table.add_row(
+                "Tests", f"{len(tests)} (pass rate: {test_pass_rate:.1f}%)"
+            )
+            metrics_table.add_row(
+                "Defects",
+                f"{len(defects)} ({critical_defects} critical, {open_defects} open)",
+            )
 
             console.print(metrics_table)
 
@@ -376,8 +425,10 @@ def data():
 
 
 @data.command()
-@click.argument('file_path')
-@click.option('--dry-run', is_flag=True, help='Show what would be imported without making changes')
+@click.argument("file_path")
+@click.option(
+    "--dry-run", is_flag=True, help="Show what would be imported without making changes"
+)
 @click.pass_context
 def import_rtm(ctx, file_path, dry_run):
     """Import RTM data from markdown file."""
@@ -404,41 +455,44 @@ def import_rtm(ctx, file_path, dry_run):
 
     except Exception as e:
         console.print(f"[red]Import failed: {e}[/red]")
-        if ctx.obj['verbose']:
+        if ctx.obj["verbose"]:
             import traceback
+
             console.print(traceback.format_exc())
 
 
 @data.command()
-@click.option('--output', default='rtm_export.json', help='Output file path')
-@click.option('--format', default='json', help='Export format: json, markdown')
-@click.option('--include-tests', is_flag=True, help='Include test data in export')
+@click.option("--output", default="rtm_export.json", help="Output file path")
+@click.option("--format", default="json", help="Export format: json, markdown")
+@click.option("--include-tests", is_flag=True, help="Include test data in export")
 @click.pass_context
 def export(ctx, output, format, include_tests):
     """Export RTM data to file."""
     db = get_db_session()
     try:
         data = {
-            'epics': [epic.to_dict() for epic in db.query(Epic).all()],
-            'user_stories': [us.to_dict() for us in db.query(UserStory).all()],
-            'defects': [defect.to_dict() for defect in db.query(Defect).all()],
-            'export_timestamp': datetime.utcnow().isoformat()
+            "epics": [epic.to_dict() for epic in db.query(Epic).all()],
+            "user_stories": [us.to_dict() for us in db.query(UserStory).all()],
+            "defects": [defect.to_dict() for defect in db.query(Defect).all()],
+            "export_timestamp": datetime.utcnow().isoformat(),
         }
 
         if include_tests:
-            data['tests'] = [test.to_dict() for test in db.query(Test).all()]
+            data["tests"] = [test.to_dict() for test in db.query(Test).all()]
 
-        if format == 'json':
-            with open(output, 'w') as f:
+        if format == "json":
+            with open(output, "w") as f:
                 json.dump(data, f, indent=2, default=str)
-        elif format == 'markdown':
+        elif format == "markdown":
             # TODO: Implement markdown export format
             console.print("[yellow]Markdown export not yet implemented[/yellow]")
             return
 
         console.print(f"[green]Exported RTM data to {output}[/green]")
-        if ctx.obj['verbose']:
-            console.print(f"Exported {len(data['epics'])} epics, {len(data['user_stories'])} user stories")
+        if ctx.obj["verbose"]:
+            console.print(
+                f"Exported {len(data['epics'])} epics, {len(data['user_stories'])} user stories"
+            )
 
     finally:
         db.close()
@@ -496,7 +550,7 @@ def health_check(ctx):
 
 
 @admin.command()
-@click.option('--fix', is_flag=True, help='Automatically fix issues')
+@click.option("--fix", is_flag=True, help="Automatically fix issues")
 @click.pass_context
 def validate(ctx, fix):
     """Validate data integrity and relationships."""
@@ -507,12 +561,18 @@ def validate(ctx, fix):
         # Check for missing Epic references
         orphaned_us = db.query(UserStory).filter(UserStory.epic_id.is_(None)).all()
         if orphaned_us:
-            issues.append(f"Found {len(orphaned_us)} User Stories without Epic reference")
+            issues.append(
+                f"Found {len(orphaned_us)} User Stories without Epic reference"
+            )
 
         # Check for invalid GitHub issue numbers
-        invalid_gh_issues = db.query(UserStory).filter(UserStory.github_issue_number.is_(None)).all()
+        invalid_gh_issues = (
+            db.query(UserStory).filter(UserStory.github_issue_number.is_(None)).all()
+        )
         if invalid_gh_issues:
-            issues.append(f"Found {len(invalid_gh_issues)} User Stories without GitHub issue number")
+            issues.append(
+                f"Found {len(invalid_gh_issues)} User Stories without GitHub issue number"
+            )
 
         # Check for duplicate entity IDs
         epic_ids = [epic.epic_id for epic in db.query(Epic).all()]
@@ -538,12 +598,14 @@ def validate(ctx, fix):
 
 
 @admin.command()
-@click.option('--confirm', is_flag=True, help='Confirm deletion of all data')
+@click.option("--confirm", is_flag=True, help="Confirm deletion of all data")
 @click.pass_context
 def reset(ctx, confirm):
     """Reset database (delete all RTM data)."""
     if not confirm:
-        console.print("[red]This will delete ALL RTM data. Use --confirm to proceed.[/red]")
+        console.print(
+            "[red]This will delete ALL RTM data. Use --confirm to proceed.[/red]"
+        )
         return
 
     db = get_db_session()
@@ -573,14 +635,18 @@ def github():
 
 
 @github.command()
-@click.option('--issue-number', type=int, help='Sync specific issue number')
-@click.option('--dry-run', is_flag=True, help='Show what would be synced without making changes')
+@click.option("--issue-number", type=int, help="Sync specific issue number")
+@click.option(
+    "--dry-run", is_flag=True, help="Show what would be synced without making changes"
+)
 @click.pass_context
 def sync(ctx, issue_number, dry_run):
     """Sync database with GitHub issues."""
     # TODO: Implement GitHub sync functionality
     # This would integrate with the GitHub Actions workflow logic
-    console.print("[yellow]GitHub sync not yet implemented - use GitHub Actions workflow[/yellow]")
+    console.print(
+        "[yellow]GitHub sync not yet implemented - use GitHub Actions workflow[/yellow]"
+    )
 
 
 @github.command()
@@ -607,12 +673,20 @@ def sync_status(ctx):
         table.add_column("Errors", style="red")
 
         for sync in recent_syncs:
-            status_color = "green" if sync.sync_status == 'completed' else "red"
+            status_color = "green" if sync.sync_status == "completed" else "red"
             table.add_row(
                 str(sync.github_issue_number),
                 f"[{status_color}]{sync.sync_status}[/{status_color}]",
-                sync.last_sync_time.strftime('%Y-%m-%d %H:%M:%S') if sync.last_sync_time else 'N/A',
-                sync.sync_errors[:50] + "..." if sync.sync_errors and len(sync.sync_errors) > 50 else sync.sync_errors or 'None'
+                (
+                    sync.last_sync_time.strftime("%Y-%m-%d %H:%M:%S")
+                    if sync.last_sync_time
+                    else "N/A"
+                ),
+                (
+                    sync.sync_errors[:50] + "..."
+                    if sync.sync_errors and len(sync.sync_errors) > 50
+                    else sync.sync_errors or "None"
+                ),
             )
 
         console.print(table)
@@ -621,5 +695,5 @@ def sync_status(ctx):
         db.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

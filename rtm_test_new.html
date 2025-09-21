@@ -1,0 +1,2369 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Dynamic RTM Matrix - GoNoGo</title>
+
+    <!-- Design System and Component Styles -->
+    <link rel="stylesheet" href="/static/css/design-system.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/rtm-components.css">
+
+    <!-- Accessibility and SEO Meta Tags -->
+    <meta name="description" content="Requirements Traceability Matrix for GoNoGo project - Interactive dashboard showing epic progress, user stories, tests, and defects">
+    <meta name="keywords" content="RTM, requirements, traceability, matrix, GoNoGo, project management">
+    <meta name="author" content="GoNoGo Project Team">
+    <link rel="canonical" href="/rtm/matrix">
+
+    <!-- Favicon and Touch Icons -->
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png">
+
+    <!-- Performance Optimizations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+
+    <!-- Open Graph Meta Tags for Social Sharing -->
+    <meta property="og:title" content="RTM Matrix - GoNoGo Project">
+    <meta property="og:description" content="Interactive Requirements Traceability Matrix dashboard">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="/rtm/matrix">
+
+    <!-- Skip Link for Accessibility -->
+    <style>
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            padding: var(--space-sm) var(--space-base);
+            border-radius: var(--radius-base);
+            text-decoration: none;
+            z-index: var(--z-tooltip);
+            transition: top var(--transition-fast);
+        }
+        .skip-link:focus {
+            top: 6px;
+        }
+    </style>
+
+    <!-- Enhanced RTM Interactive Features -->
+    <script src="/static/js/rtm-interactions.js" defer></script>
+</head>
+<body>
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Enhanced Page Header -->
+    <header class="page-header" role="banner">
+        <div class="page-header__content">
+            <h1 class="page-header__title">🎯 Requirements Traceability Matrix</h1>
+            <p class="page-header__subtitle">Interactive dashboard for GoNoGo project requirements tracking</p>
+            <div class="page-header__meta">
+                <div class="page-header__meta-item">
+                    <span class="page-header__meta-icon">📅</span>
+                    <span>Generated: 2025-09-21 17:25:35 UTC</span>
+                </div>
+                <div class="page-header__meta-item">
+                    <span class="page-header__meta-icon">📊</span>
+                    <span>Total Epics: 7</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main id="main-content" class="rtm-container" role="main">
+
+        <!-- Enhanced Filter Toolbar -->
+        <div class="filter-toolbar" role="toolbar" aria-label="RTM Filters">
+            <!-- TEMPORARILY DISABLED: Search feature needs proper implementation
+            <div class="filter-group">
+                <label class="filter-group__label" for="rtm-search">Search:</label>
+                <div class="search-box">
+                    <span class="search-box__icon">🔍</span>
+                    <input
+                        type="text"
+                        id="rtm-search"
+                        class="search-box__input"
+                        placeholder="Search epics, user stories, tests, or defects..."
+                        aria-label="Search RTM content"
+                    >
+                    <button class="search-box__clear" id="clear-search" type="button" aria-label="Clear search">✕</button>
+                </div>
+            </div>
+            -->
+
+            <div class="filter-group">
+                <span class="filter-group__label">Epic Status:</span>
+                <div class="filter-group__controls">
+                    <button class="filter-button filter-button--active" onclick="filterByStatus('all')" data-filter-group="epic-status" data-filter-value="all">All</button>
+                    <button class="filter-button" onclick="filterByStatus('planned')" data-filter-group="epic-status" data-filter-value="planned">📝 Planned</button>
+                    <button class="filter-button" onclick="filterByStatus('in_progress')" data-filter-group="epic-status" data-filter-value="in_progress">⏳ In Progress</button>
+                    <button class="filter-button" onclick="filterByStatus('completed')" data-filter-group="epic-status" data-filter-value="completed">✅ Completed</button>
+                    <button class="filter-button" onclick="filterByStatus('blocked')" data-filter-group="epic-status" data-filter-value="blocked">🚫 Blocked</button>
+                </div>
+            </div>
+
+            <div class="export-toolbar">
+                <button class="export-button" data-export-format="csv" title="Export to CSV">
+                    <span class="export-button__icon">📄</span>
+                    CSV
+                </button>
+                <button class="export-button" data-export-format="json" title="Export to JSON">
+                    <span class="export-button__icon">📋</span>
+                    JSON
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Results Count -->
+        <div class="search-results-count" style="display: none;" role="status" aria-live="polite"></div>
+
+        <!-- Section Separator -->
+        <div class="section-separator">
+            <span class="section-separator__content">Epic Progress Overview</span>
+        </div>
+
+        <!-- Epic Card with Enhanced Design -->
+        <article class="epic-card" data-status="planned" data-epic-id="EP-00001" aria-labelledby="epic-EP-00001-title">
+            <header class="epic-header" onclick="toggleEpicDetails('EP-00001')" role="button" tabindex="0" aria-expanded="false" aria-controls="epic-EP-00001">
+                <div class="epic-header-grid">
+                    <h2 id="epic-EP-00001-title" class="epic-title">
+                        EP-00001: Blog Content Management
+                    </h2>
+                    <div class="epic-github-section">
+                        
+                <a href="https://github.com/QHuuT/gonogo/issues/62" target="_blank" class="github-link-button" title="Open EP-00001 in GitHub">
+                    <span class="github-link-icon">🔗</span>
+                    <span class="github-link-text">GitHub</span>
+                </a>
+            
+                    </div>
+                    <div class="epic-arrow-section">
+                        <!-- Collapse arrow will be added via CSS ::after -->
+                    </div>
+                </div>
+                <span class="status-badge status-badge--planned" aria-label="Epic status: Planned">
+                    Planned
+                </span>
+            </header>
+
+            <div class="epic-content" id="epic-EP-00001" aria-labelledby="epic-EP-00001-title" style="display: none;">
+                <!-- Epic Description -->
+                <section class="epic-description" aria-label="Epic Description">
+                    <h3 class="sr-only">Description</h3>
+                    <p>As a blog visitor<br>I want to easily access and navigate blog content<br>So that I can read posts without barriers and discover relevant content<br><br>Provides the foundational blog functionality for content viewing and navigation.</p>
+                </section>
+
+                <!-- Epic Progress with Enhanced Visual Design -->
+                <section class="epic-progress" aria-label="Epic Progress">
+                    <h3 class="sr-only">Progress</h3>
+                    <div class="epic-progress__label">
+                        <span>Progress</span>
+                        <span><strong>0.0% Complete</strong></span>
+                    </div>
+                    <div class="epic-progress__bar" role="progressbar" aria-valuenow="0.0" aria-valuemin="0" aria-valuemax="100" aria-label="Epic completion progress">
+                        <div class="epic-progress__fill" style="width: 0.0%"></div>
+                    </div>
+                </section>
+
+                <!-- Enhanced Metrics Dashboard -->
+                <section class="metrics-dashboard" aria-label="Epic Metrics Overview">
+                    <h3 class="metrics-dashboard__title">📊 Overview Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card metric-card--info" aria-label="User Stories count">
+                            <span class="metric-card__icon">📋</span>
+                            <div class="metric-card__number">1</div>
+                            <div class="metric-card__label">User Stories</div>
+                            <div class="metric-card__description">Total stories in epic</div>
+                        </div>
+                        <div class="metric-card metric-card--info" aria-label="Story Points progress">
+                            <span class="metric-card__icon">⭐</span>
+                            <div class="metric-card__number">0/2</div>
+                            <div class="metric-card__label">Story Points</div>
+                            <div class="metric-card__description">Completed vs Total</div>
+                        </div>
+                        <div class="metric-card metric-card--success" aria-label="Tests count">
+                            <span class="metric-card__icon">🧪</span>
+                            <div class="metric-card__number">27</div>
+                            <div class="metric-card__label">Tests</div>
+                            <div class="metric-card__description">Total test cases</div>
+                        </div>
+                        <div class="metric-card metric-card--danger" aria-label="Test pass rate">
+                            <span class="metric-card__icon">✅</span>
+                            <div class="metric-card__number">0.0%</div>
+                            <div class="metric-card__label">Pass Rate</div>
+                            <div class="metric-card__description">0 passed, 0 failed, 27 not run</div>
+                        </div>
+                        <div class="metric-card metric-card--success" aria-label="Defects count">
+                            <span class="metric-card__icon">🐛</span>
+                            <div class="metric-card__number">0</div>
+                            <div class="metric-card__label">Defects</div>
+                            <div class="metric-card__description">Open issues to resolve</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- User Stories Collapsible Section -->
+                <section class="collapsible" aria-label="User Stories">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="user-stories-EP-00001">
+                        <h3 class="collapsible__title">📋 User Stories (1)</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="user-stories-EP-00001">
+                        <div class="collapsible__body">
+                            <!-- User Stories Filter Section -->
+                            <div class="filter-section" role="group" aria-label="User Stories Filters">
+                                <h4 class="filter-section__title">Filter User Stories:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--us filter-button--active"
+                                            data-us-status="all"
+                                            data-filter-group="epic-EP-00001-us"
+                                            data-filter-value="all"
+                                            onclick="filterUserStoriesByStatus('EP-00001', 'all')"
+                                            aria-pressed="true">All</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="planned"
+                                            data-filter-group="epic-EP-00001-us"
+                                            data-filter-value="planned"
+                                            onclick="filterUserStoriesByStatus('EP-00001', 'planned')"
+                                            aria-pressed="false">📝 Planned</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="in_progress"
+                                            data-filter-group="epic-EP-00001-us"
+                                            data-filter-value="in_progress"
+                                            onclick="filterUserStoriesByStatus('EP-00001', 'in_progress')"
+                                            aria-pressed="false">⏳ In Progress</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="completed"
+                                            data-filter-group="epic-EP-00001-us"
+                                            data-filter-value="completed"
+                                            onclick="filterUserStoriesByStatus('EP-00001', 'completed')"
+                                            aria-pressed="false">✅ Completed</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="blocked"
+                                            data-filter-group="epic-EP-00001-us"
+                                            data-filter-value="blocked"
+                                            onclick="filterUserStoriesByStatus('EP-00001', 'blocked')"
+                                            aria-pressed="false">🚫 Blocked</button>
+                                </div>
+                                <div class="us-count-display filter-count" role="status" aria-live="polite">Showing all user stories</div>
+                            </div>
+
+                            <!-- User Stories Table -->
+                            <table class="rtm-table" role="table" aria-label="User Stories for EP-00001">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Story Points</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/2" target="_blank" style="color: #3498db; text-decoration: none;">US-00009</a></td>
+                                        <td>GitHub Issue Template Integration</td>
+                                        <td>2</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tests Collapsible Section -->
+                <section class="collapsible" aria-label="Tests">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="tests-EP-00001">
+                        <h3 class="collapsible__title">🧪 Test Coverage (27)</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="tests-EP-00001">
+                        <div class="collapsible__body">
+                            <!-- Enhanced Test Metrics Dashboard -->
+                            <div class="metrics-dashboard">
+                                <h4 class="metrics-dashboard__title">📊 Test Metrics</h4>
+                                <div class="metrics-grid">
+                                    <div class="metric-card metric-card--info" aria-label="Total tests count">
+                                        <span class="metric-card__icon">🧪</span>
+                                        <div class="metric-card__number">27</div>
+                                        <div class="metric-card__label">Total Tests</div>
+                                        <div class="metric-card__description">Across all test types</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Test pass rate">
+                                        <span class="metric-card__icon">✅</span>
+                                        <div class="metric-card__number">0.0%</div>
+                                        <div class="metric-card__label">Pass Rate</div>
+                                        <div class="metric-card__description">Overall success rate</div>
+                                    </div>
+                                    <div class="metric-card metric-card--success" aria-label="Passed tests">
+                                        <span class="metric-card__icon">⚡</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Passed</div>
+                                        <div class="metric-card__description">Successfully executed</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Failed tests">
+                                        <span class="metric-card__icon">❌</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Failed</div>
+                                        <div class="metric-card__description">Need attention</div>
+                                    </div>
+                                    <div class="metric-card metric-card--warning" aria-label="Tests not run">
+                                        <span class="metric-card__icon">⏭️</span>
+                                        <div class="metric-card__number">27</div>
+                                        <div class="metric-card__label">Not Run</div>
+                                        <div class="metric-card__description">Pending execution</div>
+                                    </div>
+                                </div>
+
+                                <!-- Test Type Breakdown -->
+                                <div class="test-breakdown">
+                                    <h5 class="test-breakdown__title">Test Distribution by Type</h5><div class="no-tests">No tests available</div>
+                                </div>
+                            </div>
+
+                            <!-- Test Filter Section -->
+                            <div class="filter-section" role="group" aria-label="Test Filters">
+                                <h4 class="filter-section__title">Filter Tests:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--test filter-button--active"
+                                            data-test-type="e2e"
+                                            data-filter-group="epic-EP-00001-test"
+                                            data-filter-value="e2e"
+                                            onclick="filterTestsByType('EP-00001', 'e2e')"
+                                            aria-pressed="true">🔄 E2E Only</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="unit"
+                                            data-filter-group="epic-EP-00001-test"
+                                            data-filter-value="unit"
+                                            onclick="filterTestsByType('EP-00001', 'unit')"
+                                            aria-pressed="false">⚗️ Unit</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="integration"
+                                            data-filter-group="epic-EP-00001-test"
+                                            data-filter-value="integration"
+                                            onclick="filterTestsByType('EP-00001', 'integration')"
+                                            aria-pressed="false">🔗 Integration</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="security"
+                                            data-filter-group="epic-EP-00001-test"
+                                            data-filter-value="security"
+                                            onclick="filterTestsByType('EP-00001', 'security')"
+                                            aria-pressed="false">🛡️ Security</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="all"
+                                            data-filter-group="epic-EP-00001-test"
+                                            data-filter-value="all"
+                                            onclick="filterTestsByType('EP-00001', 'all')"
+                                            aria-pressed="false">📋 All Tests</button>
+                                </div>
+                                <div class="test-count-display filter-count" role="status" aria-live="polite">Showing E2E tests only</div>
+                            </div>
+
+                            <!-- Test Traceability Table -->
+                            <table class="rtm-table" role="table" aria-label="Test Traceability for EP-00001">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">Test Type</th><th scope="col">Test File</th><th scope="col">Function/Scenario</th><th scope="col">Last Execution</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
+
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No tests available for this epic</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+                <h4>Defect Management</h4>
+                <div class="defect-filter-section">
+                    <strong>Filter Defects:</strong>
+                    <button class="defect-filter-button active" data-defect-filter="all" onclick="filterDefects('EP-00001', 'all', 'all')">All</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:critical" onclick="filterDefects('EP-00001', 'priority', 'critical')">Critical</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:high" onclick="filterDefects('EP-00001', 'priority', 'high')">High Priority</button>
+                    <button class="defect-filter-button" data-defect-filter="status:open" onclick="filterDefects('EP-00001', 'status', 'open')">Open</button>
+                    <button class="defect-filter-button" data-defect-filter="status:in_progress" onclick="filterDefects('EP-00001', 'status', 'in_progress')">In Progress</button>
+                    <span class="defect-count-display" style="margin-left: 15px; font-style: italic; color: #7f8c8d;">Showing all defects</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Title</th><th>Priority</th><th>Status</th><th>Severity</th></tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No defects tracked for this epic</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</article>
+
+        <!-- Epic Card with Enhanced Design -->
+        <article class="epic-card" data-status="planned" data-epic-id="EP-00002" aria-labelledby="epic-EP-00002-title">
+            <header class="epic-header" onclick="toggleEpicDetails('EP-00002')" role="button" tabindex="0" aria-expanded="false" aria-controls="epic-EP-00002">
+                <div class="epic-header-grid">
+                    <h2 id="epic-EP-00002-title" class="epic-title">
+                        EP-00002: GDPR-Compliant Comment System
+                    </h2>
+                    <div class="epic-github-section">
+                        
+                <a href="https://github.com/QHuuT/gonogo/issues/63" target="_blank" class="github-link-button" title="Open EP-00002 in GitHub">
+                    <span class="github-link-icon">🔗</span>
+                    <span class="github-link-text">GitHub</span>
+                </a>
+            
+                    </div>
+                    <div class="epic-arrow-section">
+                        <!-- Collapse arrow will be added via CSS ::after -->
+                    </div>
+                </div>
+                <span class="status-badge status-badge--planned" aria-label="Epic status: Planned">
+                    Planned
+                </span>
+            </header>
+
+            <div class="epic-content" id="epic-EP-00002" aria-labelledby="epic-EP-00002-title" style="display: none;">
+                <!-- Epic Description -->
+                <section class="epic-description" aria-label="Epic Description">
+                    <h3 class="sr-only">Description</h3>
+                    <p>As a blog visitor<br>I want to submit and view comments while maintaining full GDPR compliance<br>So that I can engage with content while having my privacy rights protected<br><br>Privacy-compliant comment system with comprehensive consent management and data protection.</p>
+                </section>
+
+                <!-- Epic Progress with Enhanced Visual Design -->
+                <section class="epic-progress" aria-label="Epic Progress">
+                    <h3 class="sr-only">Progress</h3>
+                    <div class="epic-progress__label">
+                        <span>Progress</span>
+                        <span><strong>0.0% Complete</strong></span>
+                    </div>
+                    <div class="epic-progress__bar" role="progressbar" aria-valuenow="0.0" aria-valuemin="0" aria-valuemax="100" aria-label="Epic completion progress">
+                        <div class="epic-progress__fill" style="width: 0.0%"></div>
+                    </div>
+                </section>
+
+                <!-- Enhanced Metrics Dashboard -->
+                <section class="metrics-dashboard" aria-label="Epic Metrics Overview">
+                    <h3 class="metrics-dashboard__title">📊 Overview Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card metric-card--info" aria-label="User Stories count">
+                            <span class="metric-card__icon">📋</span>
+                            <div class="metric-card__number">5</div>
+                            <div class="metric-card__label">User Stories</div>
+                            <div class="metric-card__description">Total stories in epic</div>
+                        </div>
+                        <div class="metric-card metric-card--info" aria-label="Story Points progress">
+                            <span class="metric-card__icon">⭐</span>
+                            <div class="metric-card__number">0/15</div>
+                            <div class="metric-card__label">Story Points</div>
+                            <div class="metric-card__description">Completed vs Total</div>
+                        </div>
+                        <div class="metric-card metric-card--info" aria-label="Tests count">
+                            <span class="metric-card__icon">🧪</span>
+                            <div class="metric-card__number">0</div>
+                            <div class="metric-card__label">Tests</div>
+                            <div class="metric-card__description">Total test cases</div>
+                        </div>
+                        <div class="metric-card metric-card--danger" aria-label="Test pass rate">
+                            <span class="metric-card__icon">✅</span>
+                            <div class="metric-card__number">0.0%</div>
+                            <div class="metric-card__label">Pass Rate</div>
+                            <div class="metric-card__description">0 passed, 0 failed, 0 not run</div>
+                        </div>
+                        <div class="metric-card metric-card--success" aria-label="Defects count">
+                            <span class="metric-card__icon">🐛</span>
+                            <div class="metric-card__number">0</div>
+                            <div class="metric-card__label">Defects</div>
+                            <div class="metric-card__description">Open issues to resolve</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- User Stories Collapsible Section -->
+                <section class="collapsible" aria-label="User Stories">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="user-stories-EP-00002">
+                        <h3 class="collapsible__title">📋 User Stories (5)</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="user-stories-EP-00002">
+                        <div class="collapsible__body">
+                            <!-- User Stories Filter Section -->
+                            <div class="filter-section" role="group" aria-label="User Stories Filters">
+                                <h4 class="filter-section__title">Filter User Stories:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--us filter-button--active"
+                                            data-us-status="all"
+                                            data-filter-group="epic-EP-00002-us"
+                                            data-filter-value="all"
+                                            onclick="filterUserStoriesByStatus('EP-00002', 'all')"
+                                            aria-pressed="true">All</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="planned"
+                                            data-filter-group="epic-EP-00002-us"
+                                            data-filter-value="planned"
+                                            onclick="filterUserStoriesByStatus('EP-00002', 'planned')"
+                                            aria-pressed="false">📝 Planned</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="in_progress"
+                                            data-filter-group="epic-EP-00002-us"
+                                            data-filter-value="in_progress"
+                                            onclick="filterUserStoriesByStatus('EP-00002', 'in_progress')"
+                                            aria-pressed="false">⏳ In Progress</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="completed"
+                                            data-filter-group="epic-EP-00002-us"
+                                            data-filter-value="completed"
+                                            onclick="filterUserStoriesByStatus('EP-00002', 'completed')"
+                                            aria-pressed="false">✅ Completed</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="blocked"
+                                            data-filter-group="epic-EP-00002-us"
+                                            data-filter-value="blocked"
+                                            onclick="filterUserStoriesByStatus('EP-00002', 'blocked')"
+                                            aria-pressed="false">🚫 Blocked</button>
+                                </div>
+                                <div class="us-count-display filter-count" role="status" aria-live="polite">Showing all user stories</div>
+                            </div>
+
+                            <!-- User Stories Table -->
+                            <table class="rtm-table" role="table" aria-label="User Stories for EP-00002">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Story Points</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/11" target="_blank" style="color: #3498db; text-decoration: none;">US-00017</a></td>
+                                        <td>Comprehensive testing and extensibility framework</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/10" target="_blank" style="color: #3498db; text-decoration: none;">US-00016</a></td>
+                                        <td>GitHub Action for automated RTM validation</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/9" target="_blank" style="color: #3498db; text-decoration: none;">US-00015</a></td>
+                                        <td>Automated RTM link generation and validation</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/8" target="_blank" style="color: #3498db; text-decoration: none;">US-00014</a></td>
+                                        <td>Document RTM link management process</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/6" target="_blank" style="color: #3498db; text-decoration: none;">US-00013</a></td>
+                                        <td>Auto-detect environment information for defect reports</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tests Collapsible Section -->
+                <section class="collapsible" aria-label="Tests">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="tests-EP-00002">
+                        <h3 class="collapsible__title">🧪 Test Coverage (0)</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="tests-EP-00002">
+                        <div class="collapsible__body">
+                            <!-- Enhanced Test Metrics Dashboard -->
+                            <div class="metrics-dashboard">
+                                <h4 class="metrics-dashboard__title">📊 Test Metrics</h4>
+                                <div class="metrics-grid">
+                                    <div class="metric-card metric-card--info" aria-label="Total tests count">
+                                        <span class="metric-card__icon">🧪</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Total Tests</div>
+                                        <div class="metric-card__description">Across all test types</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Test pass rate">
+                                        <span class="metric-card__icon">✅</span>
+                                        <div class="metric-card__number">0.0%</div>
+                                        <div class="metric-card__label">Pass Rate</div>
+                                        <div class="metric-card__description">Overall success rate</div>
+                                    </div>
+                                    <div class="metric-card metric-card--success" aria-label="Passed tests">
+                                        <span class="metric-card__icon">⚡</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Passed</div>
+                                        <div class="metric-card__description">Successfully executed</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Failed tests">
+                                        <span class="metric-card__icon">❌</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Failed</div>
+                                        <div class="metric-card__description">Need attention</div>
+                                    </div>
+                                    <div class="metric-card metric-card--warning" aria-label="Tests not run">
+                                        <span class="metric-card__icon">⏭️</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Not Run</div>
+                                        <div class="metric-card__description">Pending execution</div>
+                                    </div>
+                                </div>
+
+                                <!-- Test Type Breakdown -->
+                                <div class="test-breakdown">
+                                    <h5 class="test-breakdown__title">Test Distribution by Type</h5><div class="no-tests">No tests available</div>
+                                </div>
+                            </div>
+
+                            <!-- Test Filter Section -->
+                            <div class="filter-section" role="group" aria-label="Test Filters">
+                                <h4 class="filter-section__title">Filter Tests:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--test filter-button--active"
+                                            data-test-type="e2e"
+                                            data-filter-group="epic-EP-00002-test"
+                                            data-filter-value="e2e"
+                                            onclick="filterTestsByType('EP-00002', 'e2e')"
+                                            aria-pressed="true">🔄 E2E Only</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="unit"
+                                            data-filter-group="epic-EP-00002-test"
+                                            data-filter-value="unit"
+                                            onclick="filterTestsByType('EP-00002', 'unit')"
+                                            aria-pressed="false">⚗️ Unit</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="integration"
+                                            data-filter-group="epic-EP-00002-test"
+                                            data-filter-value="integration"
+                                            onclick="filterTestsByType('EP-00002', 'integration')"
+                                            aria-pressed="false">🔗 Integration</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="security"
+                                            data-filter-group="epic-EP-00002-test"
+                                            data-filter-value="security"
+                                            onclick="filterTestsByType('EP-00002', 'security')"
+                                            aria-pressed="false">🛡️ Security</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="all"
+                                            data-filter-group="epic-EP-00002-test"
+                                            data-filter-value="all"
+                                            onclick="filterTestsByType('EP-00002', 'all')"
+                                            aria-pressed="false">📋 All Tests</button>
+                                </div>
+                                <div class="test-count-display filter-count" role="status" aria-live="polite">Showing E2E tests only</div>
+                            </div>
+
+                            <!-- Test Traceability Table -->
+                            <table class="rtm-table" role="table" aria-label="Test Traceability for EP-00002">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">Test Type</th><th scope="col">Test File</th><th scope="col">Function/Scenario</th><th scope="col">Last Execution</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
+
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No tests available for this epic</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+                <h4>Defect Management</h4>
+                <div class="defect-filter-section">
+                    <strong>Filter Defects:</strong>
+                    <button class="defect-filter-button active" data-defect-filter="all" onclick="filterDefects('EP-00002', 'all', 'all')">All</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:critical" onclick="filterDefects('EP-00002', 'priority', 'critical')">Critical</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:high" onclick="filterDefects('EP-00002', 'priority', 'high')">High Priority</button>
+                    <button class="defect-filter-button" data-defect-filter="status:open" onclick="filterDefects('EP-00002', 'status', 'open')">Open</button>
+                    <button class="defect-filter-button" data-defect-filter="status:in_progress" onclick="filterDefects('EP-00002', 'status', 'in_progress')">In Progress</button>
+                    <span class="defect-count-display" style="margin-left: 15px; font-style: italic; color: #7f8c8d;">Showing all defects</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Title</th><th>Priority</th><th>Status</th><th>Severity</th></tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No defects tracked for this epic</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</article>
+
+        <!-- Epic Card with Enhanced Design -->
+        <article class="epic-card" data-status="planned" data-epic-id="EP-00003" aria-labelledby="epic-EP-00003-title">
+            <header class="epic-header" onclick="toggleEpicDetails('EP-00003')" role="button" tabindex="0" aria-expanded="false" aria-controls="epic-EP-00003">
+                <div class="epic-header-grid">
+                    <h2 id="epic-EP-00003-title" class="epic-title">
+                        EP-00003: Privacy and Consent Management
+                    </h2>
+                    <div class="epic-github-section">
+                        
+                <a href="https://github.com/QHuuT/gonogo/issues/64" target="_blank" class="github-link-button" title="Open EP-00003 in GitHub">
+                    <span class="github-link-icon">🔗</span>
+                    <span class="github-link-text">GitHub</span>
+                </a>
+            
+                    </div>
+                    <div class="epic-arrow-section">
+                        <!-- Collapse arrow will be added via CSS ::after -->
+                    </div>
+                </div>
+                <span class="status-badge status-badge--planned" aria-label="Epic status: Planned">
+                    Planned
+                </span>
+            </header>
+
+            <div class="epic-content" id="epic-EP-00003" aria-labelledby="epic-EP-00003-title" style="display: none;">
+                <!-- Epic Description -->
+                <section class="epic-description" aria-label="Epic Description">
+                    <h3 class="sr-only">Description</h3>
+                    <p>As a website visitor<br>I want comprehensive privacy controls and transparent consent management<br>So that my personal data is processed only with my explicit consent and I can exercise my GDPR rights<br><br>Complete GDPR compliance framework with consent management, privacy rights implementation, and automated data protection.</p>
+                </section>
+
+                <!-- Epic Progress with Enhanced Visual Design -->
+                <section class="epic-progress" aria-label="Epic Progress">
+                    <h3 class="sr-only">Progress</h3>
+                    <div class="epic-progress__label">
+                        <span>Progress</span>
+                        <span><strong>0.0% Complete</strong></span>
+                    </div>
+                    <div class="epic-progress__bar" role="progressbar" aria-valuenow="0.0" aria-valuemin="0" aria-valuemax="100" aria-label="Epic completion progress">
+                        <div class="epic-progress__fill" style="width: 0%"></div>
+                    </div>
+                </section>
+
+                <!-- Enhanced Metrics Dashboard -->
+                <section class="metrics-dashboard" aria-label="Epic Metrics Overview">
+                    <h3 class="metrics-dashboard__title">📊 Overview Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card metric-card--info" aria-label="User Stories count">
+                            <span class="metric-card__icon">📋</span>
+                            <div class="metric-card__number">0</div>
+                            <div class="metric-card__label">User Stories</div>
+                            <div class="metric-card__description">Total stories in epic</div>
+                        </div>
+                        <div class="metric-card metric-card--success" aria-label="Story Points progress">
+                            <span class="metric-card__icon">⭐</span>
+                            <div class="metric-card__number">0/0</div>
+                            <div class="metric-card__label">Story Points</div>
+                            <div class="metric-card__description">Completed vs Total</div>
+                        </div>
+                        <div class="metric-card metric-card--success" aria-label="Tests count">
+                            <span class="metric-card__icon">🧪</span>
+                            <div class="metric-card__number">91</div>
+                            <div class="metric-card__label">Tests</div>
+                            <div class="metric-card__description">Total test cases</div>
+                        </div>
+                        <div class="metric-card metric-card--danger" aria-label="Test pass rate">
+                            <span class="metric-card__icon">✅</span>
+                            <div class="metric-card__number">0.0%</div>
+                            <div class="metric-card__label">Pass Rate</div>
+                            <div class="metric-card__description">0 passed, 0 failed, 91 not run</div>
+                        </div>
+                        <div class="metric-card metric-card--danger" aria-label="Defects count">
+                            <span class="metric-card__icon">🐛</span>
+                            <div class="metric-card__number">9</div>
+                            <div class="metric-card__label">Defects</div>
+                            <div class="metric-card__description">Open issues to resolve</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- User Stories Collapsible Section -->
+                <section class="collapsible" aria-label="User Stories">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="user-stories-EP-00003">
+                        <h3 class="collapsible__title">📋 User Stories (0)</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="user-stories-EP-00003">
+                        <div class="collapsible__body">
+                            <!-- User Stories Filter Section -->
+                            <div class="filter-section" role="group" aria-label="User Stories Filters">
+                                <h4 class="filter-section__title">Filter User Stories:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--us filter-button--active"
+                                            data-us-status="all"
+                                            data-filter-group="epic-EP-00003-us"
+                                            data-filter-value="all"
+                                            onclick="filterUserStoriesByStatus('EP-00003', 'all')"
+                                            aria-pressed="true">All</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="planned"
+                                            data-filter-group="epic-EP-00003-us"
+                                            data-filter-value="planned"
+                                            onclick="filterUserStoriesByStatus('EP-00003', 'planned')"
+                                            aria-pressed="false">📝 Planned</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="in_progress"
+                                            data-filter-group="epic-EP-00003-us"
+                                            data-filter-value="in_progress"
+                                            onclick="filterUserStoriesByStatus('EP-00003', 'in_progress')"
+                                            aria-pressed="false">⏳ In Progress</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="completed"
+                                            data-filter-group="epic-EP-00003-us"
+                                            data-filter-value="completed"
+                                            onclick="filterUserStoriesByStatus('EP-00003', 'completed')"
+                                            aria-pressed="false">✅ Completed</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="blocked"
+                                            data-filter-group="epic-EP-00003-us"
+                                            data-filter-value="blocked"
+                                            onclick="filterUserStoriesByStatus('EP-00003', 'blocked')"
+                                            aria-pressed="false">🚫 Blocked</button>
+                                </div>
+                                <div class="us-count-display filter-count" role="status" aria-live="polite">Showing all user stories</div>
+                            </div>
+
+                            <!-- User Stories Table -->
+                            <table class="rtm-table" role="table" aria-label="User Stories for EP-00003">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Story Points</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tests Collapsible Section -->
+                <section class="collapsible" aria-label="Tests">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="tests-EP-00003">
+                        <h3 class="collapsible__title">🧪 Test Coverage (91)</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="tests-EP-00003">
+                        <div class="collapsible__body">
+                            <!-- Enhanced Test Metrics Dashboard -->
+                            <div class="metrics-dashboard">
+                                <h4 class="metrics-dashboard__title">📊 Test Metrics</h4>
+                                <div class="metrics-grid">
+                                    <div class="metric-card metric-card--info" aria-label="Total tests count">
+                                        <span class="metric-card__icon">🧪</span>
+                                        <div class="metric-card__number">91</div>
+                                        <div class="metric-card__label">Total Tests</div>
+                                        <div class="metric-card__description">Across all test types</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Test pass rate">
+                                        <span class="metric-card__icon">✅</span>
+                                        <div class="metric-card__number">0.0%</div>
+                                        <div class="metric-card__label">Pass Rate</div>
+                                        <div class="metric-card__description">Overall success rate</div>
+                                    </div>
+                                    <div class="metric-card metric-card--success" aria-label="Passed tests">
+                                        <span class="metric-card__icon">⚡</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Passed</div>
+                                        <div class="metric-card__description">Successfully executed</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Failed tests">
+                                        <span class="metric-card__icon">❌</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Failed</div>
+                                        <div class="metric-card__description">Need attention</div>
+                                    </div>
+                                    <div class="metric-card metric-card--warning" aria-label="Tests not run">
+                                        <span class="metric-card__icon">⏭️</span>
+                                        <div class="metric-card__number">91</div>
+                                        <div class="metric-card__label">Not Run</div>
+                                        <div class="metric-card__description">Pending execution</div>
+                                    </div>
+                                </div>
+
+                                <!-- Test Type Breakdown -->
+                                <div class="test-breakdown">
+                                    <h5 class="test-breakdown__title">Test Distribution by Type</h5>
+                <div class="test-type-stat">
+                    <div class="test-type-header">
+                        <span class="test-type-label">E2E</span>
+                        <span class="test-type-count">6 (100.0%)</span>
+                    </div>
+                    <div class="test-type-bar">
+                        <div class="test-type-progress" style="width: 100.0%; background-color: #f39c12;"></div>
+                    </div>
+                </div>
+            
+                                </div>
+                            </div>
+
+                            <!-- Test Filter Section -->
+                            <div class="filter-section" role="group" aria-label="Test Filters">
+                                <h4 class="filter-section__title">Filter Tests:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--test filter-button--active"
+                                            data-test-type="e2e"
+                                            data-filter-group="epic-EP-00003-test"
+                                            data-filter-value="e2e"
+                                            onclick="filterTestsByType('EP-00003', 'e2e')"
+                                            aria-pressed="true">🔄 E2E Only</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="unit"
+                                            data-filter-group="epic-EP-00003-test"
+                                            data-filter-value="unit"
+                                            onclick="filterTestsByType('EP-00003', 'unit')"
+                                            aria-pressed="false">⚗️ Unit</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="integration"
+                                            data-filter-group="epic-EP-00003-test"
+                                            data-filter-value="integration"
+                                            onclick="filterTestsByType('EP-00003', 'integration')"
+                                            aria-pressed="false">🔗 Integration</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="security"
+                                            data-filter-group="epic-EP-00003-test"
+                                            data-filter-value="security"
+                                            onclick="filterTestsByType('EP-00003', 'security')"
+                                            aria-pressed="false">🛡️ Security</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="all"
+                                            data-filter-group="epic-EP-00003-test"
+                                            data-filter-value="all"
+                                            onclick="filterTestsByType('EP-00003', 'all')"
+                                            aria-pressed="false">📋 All Tests</button>
+                                </div>
+                                <div class="test-count-display filter-count" role="status" aria-live="polite">Showing E2E tests only</div>
+                            </div>
+
+                            <!-- Test Traceability Table -->
+                            <table class="rtm-table" role="table" aria-label="Test Traceability for EP-00003">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">Test Type</th><th scope="col">Test File</th><th scope="col">Function/Scenario</th><th scope="col">Last Execution</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
+
+                        <tr class="test-row" data-test-type="e2e">
+                            <td><span class="test-type-badge">E2E</span></td>
+                            <td><code style="font-size: 12px;">tests\e2e\test_blog_workflow.py</code></td>
+                            <td>test_basic_blog_access_workflow</td>
+                            <td>Never</td>
+                            <td><span class="status-badge status-skipped">⏭️ Not_Run</span></td>
+                        </tr>
+
+                        <tr class="test-row" data-test-type="e2e">
+                            <td><span class="test-type-badge">E2E</span></td>
+                            <td><code style="font-size: 12px;">tests\e2e\test_blog_workflow.py</code></td>
+                            <td>test_gdpr_consent_and_data_request_flow</td>
+                            <td>Never</td>
+                            <td><span class="status-badge status-skipped">⏭️ Not_Run</span></td>
+                        </tr>
+
+                        <tr class="test-row" data-test-type="e2e">
+                            <td><span class="test-type-badge">E2E</span></td>
+                            <td><code style="font-size: 12px;">tests\e2e\test_blog_workflow.py</code></td>
+                            <td>test_security_headers_across_endpoints</td>
+                            <td>Never</td>
+                            <td><span class="status-badge status-skipped">⏭️ Not_Run</span></td>
+                        </tr>
+
+                        <tr class="test-row" data-test-type="e2e">
+                            <td><span class="test-type-badge">E2E</span></td>
+                            <td><code style="font-size: 12px;">tests\e2e\test_blog_workflow.py</code></td>
+                            <td>test_gdpr_data_lifecycle_complete_flow</td>
+                            <td>Never</td>
+                            <td><span class="status-badge status-skipped">⏭️ Not_Run</span></td>
+                        </tr>
+
+                        <tr class="test-row" data-test-type="e2e">
+                            <td><span class="test-type-badge">E2E</span></td>
+                            <td><code style="font-size: 12px;">tests\e2e\test_blog_workflow.py</code></td>
+                            <td>test_compliance_monitoring_workflow</td>
+                            <td>Never</td>
+                            <td><span class="status-badge status-skipped">⏭️ Not_Run</span></td>
+                        </tr>
+
+                        <tr class="test-row" data-test-type="e2e">
+                            <td><span class="test-type-badge">E2E</span></td>
+                            <td><code style="font-size: 12px;">tests\e2e\test_blog_workflow.py</code></td>
+                            <td>test_error_handling_across_workflows</td>
+                            <td>Never</td>
+                            <td><span class="status-badge status-skipped">⏭️ Not_Run</span></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+                <h4>Defect Management</h4>
+                <div class="defect-filter-section">
+                    <strong>Filter Defects:</strong>
+                    <button class="defect-filter-button active" data-defect-filter="all" onclick="filterDefects('EP-00003', 'all', 'all')">All</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:critical" onclick="filterDefects('EP-00003', 'priority', 'critical')">Critical</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:high" onclick="filterDefects('EP-00003', 'priority', 'high')">High Priority</button>
+                    <button class="defect-filter-button" data-defect-filter="status:open" onclick="filterDefects('EP-00003', 'status', 'open')">Open</button>
+                    <button class="defect-filter-button" data-defect-filter="status:in_progress" onclick="filterDefects('EP-00003', 'status', 'in_progress')">In Progress</button>
+                    <span class="defect-count-display" style="margin-left: 15px; font-style: italic; color: #7f8c8d;">Showing all defects</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Title</th><th>Priority</th><th>Status</th><th>Severity</th></tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="defect-row" data-defect-priority="critical" data-defect-status="in_progress" data-defect-severity="critical">
+                            <td><a href="https://github.com/QHuuT/gonogo/issues/4" target="_blank" title="Open DEF-00001 in GitHub"><strong>DEF-00001</strong></a></td>
+                            <td>Labels are not calculated again upon issue edition</td>
+                            <td><span class="priority-badge priority-critical">🔴 Critical</span></td>
+                            <td><span class="status-badge defect-status-in-progress">⏳ In Progress</span></td>
+                            <td><span class="severity-badge severity-critical">Critical</span></td>
+                        </tr>
+
+                        <tr class="defect-row" data-defect-priority="high" data-defect-status="planned" data-defect-severity="high">
+                            <td><a href="https://github.com/QHuuT/gonogo/issues/33" target="_blank" title="Open DEF-00007 in GitHub"><strong>DEF-00007</strong></a></td>
+                            <td>RTM test regression - Namespace collision reappears in full test suite context</td>
+                            <td><span class="priority-badge priority-high">🟠 High</span></td>
+                            <td><span class="status-badge defect-status-planned">❓ Planned</span></td>
+                            <td><span class="severity-badge severity-high">High</span></td>
+                        </tr>
+
+                        <tr class="defect-row" data-defect-priority="high" data-defect-status="planned" data-defect-severity="high">
+                            <td><a href="https://github.com/QHuuT/gonogo/issues/32" target="_blank" title="Open DEF-00006 in GitHub"><strong>DEF-00006</strong></a></td>
+                            <td>Relative import error in log_failure_correlator.py - ImportError when loaded via importlib</td>
+                            <td><span class="priority-badge priority-high">🟠 High</span></td>
+                            <td><span class="status-badge defect-status-planned">❓ Planned</span></td>
+                            <td><span class="severity-badge severity-high">High</span></td>
+                        </tr>
+
+                        <tr class="defect-row" data-defect-priority="high" data-defect-status="planned" data-defect-severity="high">
+                            <td><a href="https://github.com/QHuuT/gonogo/issues/31" target="_blank" title="Open DEF-00005 in GitHub"><strong>DEF-00005</strong></a></td>
+                            <td>Import error in test_failure_tracker.py - Module 'shared.testing.failure_tracker' not found</td>
+                            <td><span class="priority-badge priority-high">🟠 High</span></td>
+                            <td><span class="status-badge defect-status-planned">❓ Planned</span></td>
+                            <td><span class="severity-badge severity-high">High</span></td>
+                        </tr>
+
+                        <tr class="defect-row" data-defect-priority="high" data-defect-status="planned" data-defect-severity="high">
+                            <td><a href="https://github.com/QHuuT/gonogo/issues/30" target="_blank" title="Open DEF-00004 in GitHub"><strong>DEF-00004</strong></a></td>
+                            <td>ModuleNotFoundError blocking EP-00006 testing - Missing RTM link generator module</td>
+                            <td><span class="priority-badge priority-high">🟠 High</span></td>
+                            <td><span class="status-badge defect-status-planned">❓ Planned</span></td>
+                            <td><span class="severity-badge severity-high">High</span></td>
+                        </tr>
+
+                        <tr class="defect-row" data-defect-priority="high" data-defect-status="planned" data-defect-severity="high">
+                            <td><a href="https://github.com/QHuuT/gonogo/issues/28" target="_blank" title="Open DEF-00003 in GitHub"><strong>DEF-00003</strong></a></td>
+                            <td>Missing pytest execution modes and Python path configuration</td>
+                            <td><span class="priority-badge priority-high">🟠 High</span></td>
+                            <td><span class="status-badge defect-status-planned">❓ Planned</span></td>
+                            <td><span class="severity-badge severity-high">High</span></td>
+                        </tr>
+
+                        <tr class="defect-row" data-defect-priority="high" data-defect-status="planned" data-defect-severity="high">
+                            <td><a href="https://github.com/QHuuT/gonogo/issues/12" target="_blank" title="Open DEF-00002 in GitHub"><strong>DEF-00002</strong></a></td>
+                            <td>RTM GitHub issue links redirect to search filters instead of direct issues</td>
+                            <td><span class="priority-badge priority-high">🟠 High</span></td>
+                            <td><span class="status-badge defect-status-planned">❓ Planned</span></td>
+                            <td><span class="severity-badge severity-high">High</span></td>
+                        </tr>
+
+                        <tr class="defect-row" data-defect-priority="medium" data-defect-status="planned" data-defect-severity="medium">
+                            <td><a href="https://github.com/QHuuT/gonogo/issues/36" target="_blank" title="Open DEF-00009 in GitHub"><strong>DEF-00009</strong></a></td>
+                            <td>Test Results Overview chart is empty in generated reports</td>
+                            <td><span class="priority-badge priority-medium">🟡 Medium</span></td>
+                            <td><span class="status-badge defect-status-planned">❓ Planned</span></td>
+                            <td><span class="severity-badge severity-medium">Medium</span></td>
+                        </tr>
+
+                        <tr class="defect-row" data-defect-priority="medium" data-defect-status="planned" data-defect-severity="medium">
+                            <td><a href="https://github.com/QHuuT/gonogo/issues/35" target="_blank" title="Open DEF-00008 in GitHub"><strong>DEF-00008</strong></a></td>
+                            <td>Report generator processes log entries but produces 0 test results</td>
+                            <td><span class="priority-badge priority-medium">🟡 Medium</span></td>
+                            <td><span class="status-badge defect-status-planned">❓ Planned</span></td>
+                            <td><span class="severity-badge severity-medium">Medium</span></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</article>
+
+        <!-- Epic Card with Enhanced Design -->
+        <article class="epic-card" data-status="in_progress" data-epic-id="EP-00004" aria-labelledby="epic-EP-00004-title">
+            <header class="epic-header" onclick="toggleEpicDetails('EP-00004')" role="button" tabindex="0" aria-expanded="false" aria-controls="epic-EP-00004">
+                <div class="epic-header-grid">
+                    <h2 id="epic-EP-00004-title" class="epic-title">
+                        EP-00004: EP-00004 : GitHub Workflow Integration
+                    </h2>
+                    <div class="epic-github-section">
+                        
+                <a href="https://github.com/QHuuT/gonogo/issues/1" target="_blank" class="github-link-button" title="Open EP-00004 in GitHub">
+                    <span class="github-link-icon">🔗</span>
+                    <span class="github-link-text">GitHub</span>
+                </a>
+            
+                    </div>
+                    <div class="epic-arrow-section">
+                        <!-- Collapse arrow will be added via CSS ::after -->
+                    </div>
+                </div>
+                <span class="status-badge status-badge--in-progress" aria-label="Epic status: In Progress">
+                    In Progress
+                </span>
+            </header>
+
+            <div class="epic-content" id="epic-EP-00004" aria-labelledby="epic-EP-00004-title" style="display: none;">
+                <!-- Epic Description -->
+                <section class="epic-description" aria-label="Epic Description">
+                    <h3 class="sr-only">Description</h3>
+                    <p>As a developer<br>We want to sync issues created in github with relevant documentation in the repo<br>So that our project is well documented with traceability and stable documentation</p>
+                </section>
+
+                <!-- Epic Progress with Enhanced Visual Design -->
+                <section class="epic-progress" aria-label="Epic Progress">
+                    <h3 class="sr-only">Progress</h3>
+                    <div class="epic-progress__label">
+                        <span>Progress</span>
+                        <span><strong>0.0% Complete</strong></span>
+                    </div>
+                    <div class="epic-progress__bar" role="progressbar" aria-valuenow="0.0" aria-valuemin="0" aria-valuemax="100" aria-label="Epic completion progress">
+                        <div class="epic-progress__fill" style="width: 0.0%"></div>
+                    </div>
+                </section>
+
+                <!-- Enhanced Metrics Dashboard -->
+                <section class="metrics-dashboard" aria-label="Epic Metrics Overview">
+                    <h3 class="metrics-dashboard__title">📊 Overview Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card metric-card--info" aria-label="User Stories count">
+                            <span class="metric-card__icon">📋</span>
+                            <div class="metric-card__number">1</div>
+                            <div class="metric-card__label">User Stories</div>
+                            <div class="metric-card__description">Total stories in epic</div>
+                        </div>
+                        <div class="metric-card metric-card--info" aria-label="Story Points progress">
+                            <span class="metric-card__icon">⭐</span>
+                            <div class="metric-card__number">0/3</div>
+                            <div class="metric-card__label">Story Points</div>
+                            <div class="metric-card__description">Completed vs Total</div>
+                        </div>
+                        <div class="metric-card metric-card--info" aria-label="Tests count">
+                            <span class="metric-card__icon">🧪</span>
+                            <div class="metric-card__number">0</div>
+                            <div class="metric-card__label">Tests</div>
+                            <div class="metric-card__description">Total test cases</div>
+                        </div>
+                        <div class="metric-card metric-card--danger" aria-label="Test pass rate">
+                            <span class="metric-card__icon">✅</span>
+                            <div class="metric-card__number">0.0%</div>
+                            <div class="metric-card__label">Pass Rate</div>
+                            <div class="metric-card__description">0 passed, 0 failed, 0 not run</div>
+                        </div>
+                        <div class="metric-card metric-card--success" aria-label="Defects count">
+                            <span class="metric-card__icon">🐛</span>
+                            <div class="metric-card__number">0</div>
+                            <div class="metric-card__label">Defects</div>
+                            <div class="metric-card__description">Open issues to resolve</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- User Stories Collapsible Section -->
+                <section class="collapsible" aria-label="User Stories">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="user-stories-EP-00004">
+                        <h3 class="collapsible__title">📋 User Stories (1)</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="user-stories-EP-00004">
+                        <div class="collapsible__body">
+                            <!-- User Stories Filter Section -->
+                            <div class="filter-section" role="group" aria-label="User Stories Filters">
+                                <h4 class="filter-section__title">Filter User Stories:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--us filter-button--active"
+                                            data-us-status="all"
+                                            data-filter-group="epic-EP-00004-us"
+                                            data-filter-value="all"
+                                            onclick="filterUserStoriesByStatus('EP-00004', 'all')"
+                                            aria-pressed="true">All</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="planned"
+                                            data-filter-group="epic-EP-00004-us"
+                                            data-filter-value="planned"
+                                            onclick="filterUserStoriesByStatus('EP-00004', 'planned')"
+                                            aria-pressed="false">📝 Planned</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="in_progress"
+                                            data-filter-group="epic-EP-00004-us"
+                                            data-filter-value="in_progress"
+                                            onclick="filterUserStoriesByStatus('EP-00004', 'in_progress')"
+                                            aria-pressed="false">⏳ In Progress</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="completed"
+                                            data-filter-group="epic-EP-00004-us"
+                                            data-filter-value="completed"
+                                            onclick="filterUserStoriesByStatus('EP-00004', 'completed')"
+                                            aria-pressed="false">✅ Completed</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="blocked"
+                                            data-filter-group="epic-EP-00004-us"
+                                            data-filter-value="blocked"
+                                            onclick="filterUserStoriesByStatus('EP-00004', 'blocked')"
+                                            aria-pressed="false">🚫 Blocked</button>
+                                </div>
+                                <div class="us-count-display filter-count" role="status" aria-live="polite">Showing all user stories</div>
+                            </div>
+
+                            <!-- User Stories Table -->
+                            <table class="rtm-table" role="table" aria-label="User Stories for EP-00004">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Story Points</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/37" target="_blank" style="color: #3498db; text-decoration: none;">US-00033</a></td>
+                                        <td>GitHub Actions automation for issue management and epic linking</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tests Collapsible Section -->
+                <section class="collapsible" aria-label="Tests">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="tests-EP-00004">
+                        <h3 class="collapsible__title">🧪 Test Coverage (0)</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="tests-EP-00004">
+                        <div class="collapsible__body">
+                            <!-- Enhanced Test Metrics Dashboard -->
+                            <div class="metrics-dashboard">
+                                <h4 class="metrics-dashboard__title">📊 Test Metrics</h4>
+                                <div class="metrics-grid">
+                                    <div class="metric-card metric-card--info" aria-label="Total tests count">
+                                        <span class="metric-card__icon">🧪</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Total Tests</div>
+                                        <div class="metric-card__description">Across all test types</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Test pass rate">
+                                        <span class="metric-card__icon">✅</span>
+                                        <div class="metric-card__number">0.0%</div>
+                                        <div class="metric-card__label">Pass Rate</div>
+                                        <div class="metric-card__description">Overall success rate</div>
+                                    </div>
+                                    <div class="metric-card metric-card--success" aria-label="Passed tests">
+                                        <span class="metric-card__icon">⚡</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Passed</div>
+                                        <div class="metric-card__description">Successfully executed</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Failed tests">
+                                        <span class="metric-card__icon">❌</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Failed</div>
+                                        <div class="metric-card__description">Need attention</div>
+                                    </div>
+                                    <div class="metric-card metric-card--warning" aria-label="Tests not run">
+                                        <span class="metric-card__icon">⏭️</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Not Run</div>
+                                        <div class="metric-card__description">Pending execution</div>
+                                    </div>
+                                </div>
+
+                                <!-- Test Type Breakdown -->
+                                <div class="test-breakdown">
+                                    <h5 class="test-breakdown__title">Test Distribution by Type</h5><div class="no-tests">No tests available</div>
+                                </div>
+                            </div>
+
+                            <!-- Test Filter Section -->
+                            <div class="filter-section" role="group" aria-label="Test Filters">
+                                <h4 class="filter-section__title">Filter Tests:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--test filter-button--active"
+                                            data-test-type="e2e"
+                                            data-filter-group="epic-EP-00004-test"
+                                            data-filter-value="e2e"
+                                            onclick="filterTestsByType('EP-00004', 'e2e')"
+                                            aria-pressed="true">🔄 E2E Only</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="unit"
+                                            data-filter-group="epic-EP-00004-test"
+                                            data-filter-value="unit"
+                                            onclick="filterTestsByType('EP-00004', 'unit')"
+                                            aria-pressed="false">⚗️ Unit</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="integration"
+                                            data-filter-group="epic-EP-00004-test"
+                                            data-filter-value="integration"
+                                            onclick="filterTestsByType('EP-00004', 'integration')"
+                                            aria-pressed="false">🔗 Integration</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="security"
+                                            data-filter-group="epic-EP-00004-test"
+                                            data-filter-value="security"
+                                            onclick="filterTestsByType('EP-00004', 'security')"
+                                            aria-pressed="false">🛡️ Security</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="all"
+                                            data-filter-group="epic-EP-00004-test"
+                                            data-filter-value="all"
+                                            onclick="filterTestsByType('EP-00004', 'all')"
+                                            aria-pressed="false">📋 All Tests</button>
+                                </div>
+                                <div class="test-count-display filter-count" role="status" aria-live="polite">Showing E2E tests only</div>
+                            </div>
+
+                            <!-- Test Traceability Table -->
+                            <table class="rtm-table" role="table" aria-label="Test Traceability for EP-00004">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">Test Type</th><th scope="col">Test File</th><th scope="col">Function/Scenario</th><th scope="col">Last Execution</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
+
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No tests available for this epic</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+                <h4>Defect Management</h4>
+                <div class="defect-filter-section">
+                    <strong>Filter Defects:</strong>
+                    <button class="defect-filter-button active" data-defect-filter="all" onclick="filterDefects('EP-00004', 'all', 'all')">All</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:critical" onclick="filterDefects('EP-00004', 'priority', 'critical')">Critical</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:high" onclick="filterDefects('EP-00004', 'priority', 'high')">High Priority</button>
+                    <button class="defect-filter-button" data-defect-filter="status:open" onclick="filterDefects('EP-00004', 'status', 'open')">Open</button>
+                    <button class="defect-filter-button" data-defect-filter="status:in_progress" onclick="filterDefects('EP-00004', 'status', 'in_progress')">In Progress</button>
+                    <span class="defect-count-display" style="margin-left: 15px; font-style: italic; color: #7f8c8d;">Showing all defects</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Title</th><th>Priority</th><th>Status</th><th>Severity</th></tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No defects tracked for this epic</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</article>
+
+        <!-- Epic Card with Enhanced Design -->
+        <article class="epic-card" data-status="planned" data-epic-id="EP-00005" aria-labelledby="epic-EP-00005-title">
+            <header class="epic-header" onclick="toggleEpicDetails('EP-00005')" role="button" tabindex="0" aria-expanded="false" aria-controls="epic-EP-00005">
+                <div class="epic-header-grid">
+                    <h2 id="epic-EP-00005-title" class="epic-title">
+                        EP-00005: Requirements Traceability Matrix Automation
+                    </h2>
+                    <div class="epic-github-section">
+                        
+                <a href="https://github.com/QHuuT/gonogo/issues/7" target="_blank" class="github-link-button" title="Open EP-00005 in GitHub">
+                    <span class="github-link-icon">🔗</span>
+                    <span class="github-link-text">GitHub</span>
+                </a>
+            
+                    </div>
+                    <div class="epic-arrow-section">
+                        <!-- Collapse arrow will be added via CSS ::after -->
+                    </div>
+                </div>
+                <span class="status-badge status-badge--planned" aria-label="Epic status: Planned">
+                    Planned
+                </span>
+            </header>
+
+            <div class="epic-content" id="epic-EP-00005" aria-labelledby="epic-EP-00005-title" style="display: none;">
+                <!-- Epic Description -->
+                <section class="epic-description" aria-label="Epic Description">
+                    <h3 class="sr-only">Description</h3>
+                    <p>As a project maintainer  <br>I want automated RTM link generation and validation with database-driven architecture  <br>So that documentation stays accurate and navigable with advanced reporting capabilities</p>
+                </section>
+
+                <!-- Epic Progress with Enhanced Visual Design -->
+                <section class="epic-progress" aria-label="Epic Progress">
+                    <h3 class="sr-only">Progress</h3>
+                    <div class="epic-progress__label">
+                        <span>Progress</span>
+                        <span><strong>0.0% Complete</strong></span>
+                    </div>
+                    <div class="epic-progress__bar" role="progressbar" aria-valuenow="0.0" aria-valuemin="0" aria-valuemax="100" aria-label="Epic completion progress">
+                        <div class="epic-progress__fill" style="width: 0.0%"></div>
+                    </div>
+                </section>
+
+                <!-- Enhanced Metrics Dashboard -->
+                <section class="metrics-dashboard" aria-label="Epic Metrics Overview">
+                    <h3 class="metrics-dashboard__title">📊 Overview Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card metric-card--info" aria-label="User Stories count">
+                            <span class="metric-card__icon">📋</span>
+                            <div class="metric-card__number">12</div>
+                            <div class="metric-card__label">User Stories</div>
+                            <div class="metric-card__description">Total stories in epic</div>
+                        </div>
+                        <div class="metric-card metric-card--info" aria-label="Story Points progress">
+                            <span class="metric-card__icon">⭐</span>
+                            <div class="metric-card__number">0/36</div>
+                            <div class="metric-card__label">Story Points</div>
+                            <div class="metric-card__description">Completed vs Total</div>
+                        </div>
+                        <div class="metric-card metric-card--success" aria-label="Tests count">
+                            <span class="metric-card__icon">🧪</span>
+                            <div class="metric-card__number">246</div>
+                            <div class="metric-card__label">Tests</div>
+                            <div class="metric-card__description">Total test cases</div>
+                        </div>
+                        <div class="metric-card metric-card--danger" aria-label="Test pass rate">
+                            <span class="metric-card__icon">✅</span>
+                            <div class="metric-card__number">0.0%</div>
+                            <div class="metric-card__label">Pass Rate</div>
+                            <div class="metric-card__description">0 passed, 0 failed, 246 not run</div>
+                        </div>
+                        <div class="metric-card metric-card--success" aria-label="Defects count">
+                            <span class="metric-card__icon">🐛</span>
+                            <div class="metric-card__number">0</div>
+                            <div class="metric-card__label">Defects</div>
+                            <div class="metric-card__description">Open issues to resolve</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- User Stories Collapsible Section -->
+                <section class="collapsible" aria-label="User Stories">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="user-stories-EP-00005">
+                        <h3 class="collapsible__title">📋 User Stories (12)</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="user-stories-EP-00005">
+                        <div class="collapsible__body">
+                            <!-- User Stories Filter Section -->
+                            <div class="filter-section" role="group" aria-label="User Stories Filters">
+                                <h4 class="filter-section__title">Filter User Stories:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--us filter-button--active"
+                                            data-us-status="all"
+                                            data-filter-group="epic-EP-00005-us"
+                                            data-filter-value="all"
+                                            onclick="filterUserStoriesByStatus('EP-00005', 'all')"
+                                            aria-pressed="true">All</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="planned"
+                                            data-filter-group="epic-EP-00005-us"
+                                            data-filter-value="planned"
+                                            onclick="filterUserStoriesByStatus('EP-00005', 'planned')"
+                                            aria-pressed="false">📝 Planned</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="in_progress"
+                                            data-filter-group="epic-EP-00005-us"
+                                            data-filter-value="in_progress"
+                                            onclick="filterUserStoriesByStatus('EP-00005', 'in_progress')"
+                                            aria-pressed="false">⏳ In Progress</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="completed"
+                                            data-filter-group="epic-EP-00005-us"
+                                            data-filter-value="completed"
+                                            onclick="filterUserStoriesByStatus('EP-00005', 'completed')"
+                                            aria-pressed="false">✅ Completed</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="blocked"
+                                            data-filter-group="epic-EP-00005-us"
+                                            data-filter-value="blocked"
+                                            onclick="filterUserStoriesByStatus('EP-00005', 'blocked')"
+                                            aria-pressed="false">🚫 Blocked</button>
+                                </div>
+                                <div class="us-count-display filter-count" role="status" aria-live="polite">Showing all user stories</div>
+                            </div>
+
+                            <!-- User Stories Table -->
+                            <table class="rtm-table" role="table" aria-label="User Stories for EP-00005">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Story Points</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
+
+                                    <tr class="rtm-table__row us-row" data-us-status="in_progress">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/65" target="_blank" style="color: #3498db; text-decoration: none;">US-00001</a></td>
+                                        <td>Enhanced RTM filtering system with user story status, test metrics, and defect management</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--in-progress">In Progress</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="blocked">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/61" target="_blank" style="color: #3498db; text-decoration: none;">US-00061</a></td>
+                                        <td>Enhanced RTM HTML report with improved traceability</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--blocked">Blocked</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/60" target="_blank" style="color: #3498db; text-decoration: none;">US-00060</a></td>
+                                        <td>Comprehensive documentation update for database RTM</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/59" target="_blank" style="color: #3498db; text-decoration: none;">US-00059</a></td>
+                                        <td>Dynamic RTM generation and reporting</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/58" target="_blank" style="color: #3498db; text-decoration: none;">US-00058</a></td>
+                                        <td>Legacy script migration and deprecation</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/57" target="_blank" style="color: #3498db; text-decoration: none;">US-00057</a></td>
+                                        <td>Test execution integration with database</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/56" target="_blank" style="color: #3498db; text-decoration: none;">US-00056</a></td>
+                                        <td>GitHub Actions database integration</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/55" target="_blank" style="color: #3498db; text-decoration: none;">US-00055</a></td>
+                                        <td>CLI tools for database RTM management</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="blocked">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/54" target="_blank" style="color: #3498db; text-decoration: none;">US-00054</a></td>
+                                        <td>Database models and migration foundation</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--blocked">Blocked</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="blocked">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/53" target="_blank" style="color: #3498db; text-decoration: none;">US-00053</a></td>
+                                        <td>GitHub integration impact analysis</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--blocked">Blocked</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/52" target="_blank" style="color: #3498db; text-decoration: none;">US-00052</a></td>
+                                        <td>Database schema design for traceability relationships</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/51" target="_blank" style="color: #3498db; text-decoration: none;">US-00051</a></td>
+                                        <td>Requirements analysis and impact assessment for database RTM migration</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tests Collapsible Section -->
+                <section class="collapsible" aria-label="Tests">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="tests-EP-00005">
+                        <h3 class="collapsible__title">🧪 Test Coverage (246)</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="tests-EP-00005">
+                        <div class="collapsible__body">
+                            <!-- Enhanced Test Metrics Dashboard -->
+                            <div class="metrics-dashboard">
+                                <h4 class="metrics-dashboard__title">📊 Test Metrics</h4>
+                                <div class="metrics-grid">
+                                    <div class="metric-card metric-card--info" aria-label="Total tests count">
+                                        <span class="metric-card__icon">🧪</span>
+                                        <div class="metric-card__number">246</div>
+                                        <div class="metric-card__label">Total Tests</div>
+                                        <div class="metric-card__description">Across all test types</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Test pass rate">
+                                        <span class="metric-card__icon">✅</span>
+                                        <div class="metric-card__number">0.0%</div>
+                                        <div class="metric-card__label">Pass Rate</div>
+                                        <div class="metric-card__description">Overall success rate</div>
+                                    </div>
+                                    <div class="metric-card metric-card--success" aria-label="Passed tests">
+                                        <span class="metric-card__icon">⚡</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Passed</div>
+                                        <div class="metric-card__description">Successfully executed</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Failed tests">
+                                        <span class="metric-card__icon">❌</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Failed</div>
+                                        <div class="metric-card__description">Need attention</div>
+                                    </div>
+                                    <div class="metric-card metric-card--warning" aria-label="Tests not run">
+                                        <span class="metric-card__icon">⏭️</span>
+                                        <div class="metric-card__number">246</div>
+                                        <div class="metric-card__label">Not Run</div>
+                                        <div class="metric-card__description">Pending execution</div>
+                                    </div>
+                                </div>
+
+                                <!-- Test Type Breakdown -->
+                                <div class="test-breakdown">
+                                    <h5 class="test-breakdown__title">Test Distribution by Type</h5><div class="no-tests">No tests available</div>
+                                </div>
+                            </div>
+
+                            <!-- Test Filter Section -->
+                            <div class="filter-section" role="group" aria-label="Test Filters">
+                                <h4 class="filter-section__title">Filter Tests:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--test filter-button--active"
+                                            data-test-type="e2e"
+                                            data-filter-group="epic-EP-00005-test"
+                                            data-filter-value="e2e"
+                                            onclick="filterTestsByType('EP-00005', 'e2e')"
+                                            aria-pressed="true">🔄 E2E Only</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="unit"
+                                            data-filter-group="epic-EP-00005-test"
+                                            data-filter-value="unit"
+                                            onclick="filterTestsByType('EP-00005', 'unit')"
+                                            aria-pressed="false">⚗️ Unit</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="integration"
+                                            data-filter-group="epic-EP-00005-test"
+                                            data-filter-value="integration"
+                                            onclick="filterTestsByType('EP-00005', 'integration')"
+                                            aria-pressed="false">🔗 Integration</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="security"
+                                            data-filter-group="epic-EP-00005-test"
+                                            data-filter-value="security"
+                                            onclick="filterTestsByType('EP-00005', 'security')"
+                                            aria-pressed="false">🛡️ Security</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="all"
+                                            data-filter-group="epic-EP-00005-test"
+                                            data-filter-value="all"
+                                            onclick="filterTestsByType('EP-00005', 'all')"
+                                            aria-pressed="false">📋 All Tests</button>
+                                </div>
+                                <div class="test-count-display filter-count" role="status" aria-live="polite">Showing E2E tests only</div>
+                            </div>
+
+                            <!-- Test Traceability Table -->
+                            <table class="rtm-table" role="table" aria-label="Test Traceability for EP-00005">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">Test Type</th><th scope="col">Test File</th><th scope="col">Function/Scenario</th><th scope="col">Last Execution</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
+
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No tests available for this epic</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+                <h4>Defect Management</h4>
+                <div class="defect-filter-section">
+                    <strong>Filter Defects:</strong>
+                    <button class="defect-filter-button active" data-defect-filter="all" onclick="filterDefects('EP-00005', 'all', 'all')">All</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:critical" onclick="filterDefects('EP-00005', 'priority', 'critical')">Critical</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:high" onclick="filterDefects('EP-00005', 'priority', 'high')">High Priority</button>
+                    <button class="defect-filter-button" data-defect-filter="status:open" onclick="filterDefects('EP-00005', 'status', 'open')">Open</button>
+                    <button class="defect-filter-button" data-defect-filter="status:in_progress" onclick="filterDefects('EP-00005', 'status', 'in_progress')">In Progress</button>
+                    <span class="defect-count-display" style="margin-left: 15px; font-style: italic; color: #7f8c8d;">Showing all defects</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Title</th><th>Priority</th><th>Status</th><th>Severity</th></tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No defects tracked for this epic</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</article>
+
+        <!-- Epic Card with Enhanced Design -->
+        <article class="epic-card" data-status="planned" data-epic-id="EP-00006" aria-labelledby="epic-EP-00006-title">
+            <header class="epic-header" onclick="toggleEpicDetails('EP-00006')" role="button" tabindex="0" aria-expanded="false" aria-controls="epic-EP-00006">
+                <div class="epic-header-grid">
+                    <h2 id="epic-EP-00006-title" class="epic-title">
+                        EP-00006: GitHub Project Management Integration
+                    </h2>
+                    <div class="epic-github-section">
+                        
+                <a href="https://github.com/QHuuT/gonogo/issues/13" target="_blank" class="github-link-button" title="Open EP-00006 in GitHub">
+                    <span class="github-link-icon">🔗</span>
+                    <span class="github-link-text">GitHub</span>
+                </a>
+            
+                    </div>
+                    <div class="epic-arrow-section">
+                        <!-- Collapse arrow will be added via CSS ::after -->
+                    </div>
+                </div>
+                <span class="status-badge status-badge--planned" aria-label="Epic status: Planned">
+                    Planned
+                </span>
+            </header>
+
+            <div class="epic-content" id="epic-EP-00006" aria-labelledby="epic-EP-00006-title" style="display: none;">
+                <!-- Epic Description -->
+                <section class="epic-description" aria-label="Epic Description">
+                    <h3 class="sr-only">Description</h3>
+                    <p>Comprehensive GitHub project management integration with hierarchical traceability, dependency tracking, and automated workflows.</p>
+                </section>
+
+                <!-- Epic Progress with Enhanced Visual Design -->
+                <section class="epic-progress" aria-label="Epic Progress">
+                    <h3 class="sr-only">Progress</h3>
+                    <div class="epic-progress__label">
+                        <span>Progress</span>
+                        <span><strong>0.0% Complete</strong></span>
+                    </div>
+                    <div class="epic-progress__bar" role="progressbar" aria-valuenow="0.0" aria-valuemin="0" aria-valuemax="100" aria-label="Epic completion progress">
+                        <div class="epic-progress__fill" style="width: 0.0%"></div>
+                    </div>
+                </section>
+
+                <!-- Enhanced Metrics Dashboard -->
+                <section class="metrics-dashboard" aria-label="Epic Metrics Overview">
+                    <h3 class="metrics-dashboard__title">📊 Overview Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card metric-card--info" aria-label="User Stories count">
+                            <span class="metric-card__icon">📋</span>
+                            <div class="metric-card__number">15</div>
+                            <div class="metric-card__label">User Stories</div>
+                            <div class="metric-card__description">Total stories in epic</div>
+                        </div>
+                        <div class="metric-card metric-card--info" aria-label="Story Points progress">
+                            <span class="metric-card__icon">⭐</span>
+                            <div class="metric-card__number">0/45</div>
+                            <div class="metric-card__label">Story Points</div>
+                            <div class="metric-card__description">Completed vs Total</div>
+                        </div>
+                        <div class="metric-card metric-card--info" aria-label="Tests count">
+                            <span class="metric-card__icon">🧪</span>
+                            <div class="metric-card__number">0</div>
+                            <div class="metric-card__label">Tests</div>
+                            <div class="metric-card__description">Total test cases</div>
+                        </div>
+                        <div class="metric-card metric-card--danger" aria-label="Test pass rate">
+                            <span class="metric-card__icon">✅</span>
+                            <div class="metric-card__number">0.0%</div>
+                            <div class="metric-card__label">Pass Rate</div>
+                            <div class="metric-card__description">0 passed, 0 failed, 0 not run</div>
+                        </div>
+                        <div class="metric-card metric-card--success" aria-label="Defects count">
+                            <span class="metric-card__icon">🐛</span>
+                            <div class="metric-card__number">0</div>
+                            <div class="metric-card__label">Defects</div>
+                            <div class="metric-card__description">Open issues to resolve</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- User Stories Collapsible Section -->
+                <section class="collapsible" aria-label="User Stories">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="user-stories-EP-00006">
+                        <h3 class="collapsible__title">📋 User Stories (15)</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="user-stories-EP-00006">
+                        <div class="collapsible__body">
+                            <!-- User Stories Filter Section -->
+                            <div class="filter-section" role="group" aria-label="User Stories Filters">
+                                <h4 class="filter-section__title">Filter User Stories:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--us filter-button--active"
+                                            data-us-status="all"
+                                            data-filter-group="epic-EP-00006-us"
+                                            data-filter-value="all"
+                                            onclick="filterUserStoriesByStatus('EP-00006', 'all')"
+                                            aria-pressed="true">All</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="planned"
+                                            data-filter-group="epic-EP-00006-us"
+                                            data-filter-value="planned"
+                                            onclick="filterUserStoriesByStatus('EP-00006', 'planned')"
+                                            aria-pressed="false">📝 Planned</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="in_progress"
+                                            data-filter-group="epic-EP-00006-us"
+                                            data-filter-value="in_progress"
+                                            onclick="filterUserStoriesByStatus('EP-00006', 'in_progress')"
+                                            aria-pressed="false">⏳ In Progress</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="completed"
+                                            data-filter-group="epic-EP-00006-us"
+                                            data-filter-value="completed"
+                                            onclick="filterUserStoriesByStatus('EP-00006', 'completed')"
+                                            aria-pressed="false">✅ Completed</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="blocked"
+                                            data-filter-group="epic-EP-00006-us"
+                                            data-filter-value="blocked"
+                                            onclick="filterUserStoriesByStatus('EP-00006', 'blocked')"
+                                            aria-pressed="false">🚫 Blocked</button>
+                                </div>
+                                <div class="us-count-display filter-count" role="status" aria-live="polite">Showing all user stories</div>
+                            </div>
+
+                            <!-- User Stories Table -->
+                            <table class="rtm-table" role="table" aria-label="User Stories for EP-00006">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Story Points</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/34" target="_blank" style="color: #3498db; text-decoration: none;">US-00032</a></td>
+                                        <td>Enhanced archive management with current report tracking and automated cleanup</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/29" target="_blank" style="color: #3498db; text-decoration: none;">US-00031</a></td>
+                                        <td>Complete test runner plugin integration and fix Unicode encoding issues</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/27" target="_blank" style="color: #3498db; text-decoration: none;">US-00030</a></td>
+                                        <td>GDPR sanitization strategy</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/26" target="_blank" style="color: #3498db; text-decoration: none;">US-00029</a></td>
+                                        <td>Documentation and user guides</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/25" target="_blank" style="color: #3498db; text-decoration: none;">US-00028</a></td>
+                                        <td>Test report archiving system</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/24" target="_blank" style="color: #3498db; text-decoration: none;">US-00027</a></td>
+                                        <td>GitHub issue creation integration</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/23" target="_blank" style="color: #3498db; text-decoration: none;">US-00026</a></td>
+                                        <td>Log-failure association system</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/22" target="_blank" style="color: #3498db; text-decoration: none;">US-00025</a></td>
+                                        <td>Test failure tracking and reporting</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/21" target="_blank" style="color: #3498db; text-decoration: none;">US-00024</a></td>
+                                        <td>Coverage statistics integration</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/20" target="_blank" style="color: #3498db; text-decoration: none;">US-00023</a></td>
+                                        <td>HTML report generation system</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/19" target="_blank" style="color: #3498db; text-decoration: none;">US-00022</a></td>
+                                        <td>Structured logging system</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/18" target="_blank" style="color: #3498db; text-decoration: none;">US-00021</a></td>
+                                        <td>Test runner with execution modes</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/16" target="_blank" style="color: #3498db; text-decoration: none;">US-00020</a></td>
+                                        <td>GitHub Project Management Automation Tool</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/15" target="_blank" style="color: #3498db; text-decoration: none;">US-00019</a></td>
+                                        <td>Comprehensive GitHub Issue Creation Guide</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                    <tr class="rtm-table__row us-row" data-us-status="planned">
+                                        <td><a href="https://github.com/QHuuT/gonogo/issues/14" target="_blank" style="color: #3498db; text-decoration: none;">US-00018</a></td>
+                                        <td>Enhanced CLAUDE.md GitHub-First Protocol</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-badge--planned">Planned</span></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tests Collapsible Section -->
+                <section class="collapsible" aria-label="Tests">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="tests-EP-00006">
+                        <h3 class="collapsible__title">🧪 Test Coverage (0)</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="tests-EP-00006">
+                        <div class="collapsible__body">
+                            <!-- Enhanced Test Metrics Dashboard -->
+                            <div class="metrics-dashboard">
+                                <h4 class="metrics-dashboard__title">📊 Test Metrics</h4>
+                                <div class="metrics-grid">
+                                    <div class="metric-card metric-card--info" aria-label="Total tests count">
+                                        <span class="metric-card__icon">🧪</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Total Tests</div>
+                                        <div class="metric-card__description">Across all test types</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Test pass rate">
+                                        <span class="metric-card__icon">✅</span>
+                                        <div class="metric-card__number">0.0%</div>
+                                        <div class="metric-card__label">Pass Rate</div>
+                                        <div class="metric-card__description">Overall success rate</div>
+                                    </div>
+                                    <div class="metric-card metric-card--success" aria-label="Passed tests">
+                                        <span class="metric-card__icon">⚡</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Passed</div>
+                                        <div class="metric-card__description">Successfully executed</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Failed tests">
+                                        <span class="metric-card__icon">❌</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Failed</div>
+                                        <div class="metric-card__description">Need attention</div>
+                                    </div>
+                                    <div class="metric-card metric-card--warning" aria-label="Tests not run">
+                                        <span class="metric-card__icon">⏭️</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Not Run</div>
+                                        <div class="metric-card__description">Pending execution</div>
+                                    </div>
+                                </div>
+
+                                <!-- Test Type Breakdown -->
+                                <div class="test-breakdown">
+                                    <h5 class="test-breakdown__title">Test Distribution by Type</h5><div class="no-tests">No tests available</div>
+                                </div>
+                            </div>
+
+                            <!-- Test Filter Section -->
+                            <div class="filter-section" role="group" aria-label="Test Filters">
+                                <h4 class="filter-section__title">Filter Tests:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--test filter-button--active"
+                                            data-test-type="e2e"
+                                            data-filter-group="epic-EP-00006-test"
+                                            data-filter-value="e2e"
+                                            onclick="filterTestsByType('EP-00006', 'e2e')"
+                                            aria-pressed="true">🔄 E2E Only</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="unit"
+                                            data-filter-group="epic-EP-00006-test"
+                                            data-filter-value="unit"
+                                            onclick="filterTestsByType('EP-00006', 'unit')"
+                                            aria-pressed="false">⚗️ Unit</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="integration"
+                                            data-filter-group="epic-EP-00006-test"
+                                            data-filter-value="integration"
+                                            onclick="filterTestsByType('EP-00006', 'integration')"
+                                            aria-pressed="false">🔗 Integration</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="security"
+                                            data-filter-group="epic-EP-00006-test"
+                                            data-filter-value="security"
+                                            onclick="filterTestsByType('EP-00006', 'security')"
+                                            aria-pressed="false">🛡️ Security</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="all"
+                                            data-filter-group="epic-EP-00006-test"
+                                            data-filter-value="all"
+                                            onclick="filterTestsByType('EP-00006', 'all')"
+                                            aria-pressed="false">📋 All Tests</button>
+                                </div>
+                                <div class="test-count-display filter-count" role="status" aria-live="polite">Showing E2E tests only</div>
+                            </div>
+
+                            <!-- Test Traceability Table -->
+                            <table class="rtm-table" role="table" aria-label="Test Traceability for EP-00006">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">Test Type</th><th scope="col">Test File</th><th scope="col">Function/Scenario</th><th scope="col">Last Execution</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
+
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No tests available for this epic</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+                <h4>Defect Management</h4>
+                <div class="defect-filter-section">
+                    <strong>Filter Defects:</strong>
+                    <button class="defect-filter-button active" data-defect-filter="all" onclick="filterDefects('EP-00006', 'all', 'all')">All</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:critical" onclick="filterDefects('EP-00006', 'priority', 'critical')">Critical</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:high" onclick="filterDefects('EP-00006', 'priority', 'high')">High Priority</button>
+                    <button class="defect-filter-button" data-defect-filter="status:open" onclick="filterDefects('EP-00006', 'status', 'open')">Open</button>
+                    <button class="defect-filter-button" data-defect-filter="status:in_progress" onclick="filterDefects('EP-00006', 'status', 'in_progress')">In Progress</button>
+                    <span class="defect-count-display" style="margin-left: 15px; font-style: italic; color: #7f8c8d;">Showing all defects</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Title</th><th>Priority</th><th>Status</th><th>Severity</th></tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No defects tracked for this epic</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</article>
+
+        <!-- Epic Card with Enhanced Design -->
+        <article class="epic-card" data-status="in_progress" data-epic-id="EP-00007" aria-labelledby="epic-EP-00007-title">
+            <header class="epic-header" onclick="toggleEpicDetails('EP-00007')" role="button" tabindex="0" aria-expanded="false" aria-controls="epic-EP-00007">
+                <div class="epic-header-grid">
+                    <h2 id="epic-EP-00007-title" class="epic-title">
+                        EP-00007: Test logging and reporting
+                    </h2>
+                    <div class="epic-github-section">
+                        
+                <a href="https://github.com/QHuuT/gonogo/issues/17" target="_blank" class="github-link-button" title="Open EP-00007 in GitHub">
+                    <span class="github-link-icon">🔗</span>
+                    <span class="github-link-text">GitHub</span>
+                </a>
+            
+                    </div>
+                    <div class="epic-arrow-section">
+                        <!-- Collapse arrow will be added via CSS ::after -->
+                    </div>
+                </div>
+                <span class="status-badge status-badge--in-progress" aria-label="Epic status: In Progress">
+                    In Progress
+                </span>
+            </header>
+
+            <div class="epic-content" id="epic-EP-00007" aria-labelledby="epic-EP-00007-title" style="display: none;">
+                <!-- Epic Description -->
+                <section class="epic-description" aria-label="Epic Description">
+                    <h3 class="sr-only">Description</h3>
+                    <p>As a developer<br>I want to store output, logs and test report<br>So that debbugging and test is more safe and accurate</p>
+                </section>
+
+                <!-- Epic Progress with Enhanced Visual Design -->
+                <section class="epic-progress" aria-label="Epic Progress">
+                    <h3 class="sr-only">Progress</h3>
+                    <div class="epic-progress__label">
+                        <span>Progress</span>
+                        <span><strong>0.0% Complete</strong></span>
+                    </div>
+                    <div class="epic-progress__bar" role="progressbar" aria-valuenow="0.0" aria-valuemin="0" aria-valuemax="100" aria-label="Epic completion progress">
+                        <div class="epic-progress__fill" style="width: 0%"></div>
+                    </div>
+                </section>
+
+                <!-- Enhanced Metrics Dashboard -->
+                <section class="metrics-dashboard" aria-label="Epic Metrics Overview">
+                    <h3 class="metrics-dashboard__title">📊 Overview Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card metric-card--info" aria-label="User Stories count">
+                            <span class="metric-card__icon">📋</span>
+                            <div class="metric-card__number">0</div>
+                            <div class="metric-card__label">User Stories</div>
+                            <div class="metric-card__description">Total stories in epic</div>
+                        </div>
+                        <div class="metric-card metric-card--success" aria-label="Story Points progress">
+                            <span class="metric-card__icon">⭐</span>
+                            <div class="metric-card__number">0/0</div>
+                            <div class="metric-card__label">Story Points</div>
+                            <div class="metric-card__description">Completed vs Total</div>
+                        </div>
+                        <div class="metric-card metric-card--info" aria-label="Tests count">
+                            <span class="metric-card__icon">🧪</span>
+                            <div class="metric-card__number">0</div>
+                            <div class="metric-card__label">Tests</div>
+                            <div class="metric-card__description">Total test cases</div>
+                        </div>
+                        <div class="metric-card metric-card--danger" aria-label="Test pass rate">
+                            <span class="metric-card__icon">✅</span>
+                            <div class="metric-card__number">0.0%</div>
+                            <div class="metric-card__label">Pass Rate</div>
+                            <div class="metric-card__description">0 passed, 0 failed, 0 not run</div>
+                        </div>
+                        <div class="metric-card metric-card--success" aria-label="Defects count">
+                            <span class="metric-card__icon">🐛</span>
+                            <div class="metric-card__number">0</div>
+                            <div class="metric-card__label">Defects</div>
+                            <div class="metric-card__description">Open issues to resolve</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- User Stories Collapsible Section -->
+                <section class="collapsible" aria-label="User Stories">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="user-stories-EP-00007">
+                        <h3 class="collapsible__title">📋 User Stories (0)</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="user-stories-EP-00007">
+                        <div class="collapsible__body">
+                            <!-- User Stories Filter Section -->
+                            <div class="filter-section" role="group" aria-label="User Stories Filters">
+                                <h4 class="filter-section__title">Filter User Stories:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--us filter-button--active"
+                                            data-us-status="all"
+                                            data-filter-group="epic-EP-00007-us"
+                                            data-filter-value="all"
+                                            onclick="filterUserStoriesByStatus('EP-00007', 'all')"
+                                            aria-pressed="true">All</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="planned"
+                                            data-filter-group="epic-EP-00007-us"
+                                            data-filter-value="planned"
+                                            onclick="filterUserStoriesByStatus('EP-00007', 'planned')"
+                                            aria-pressed="false">📝 Planned</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="in_progress"
+                                            data-filter-group="epic-EP-00007-us"
+                                            data-filter-value="in_progress"
+                                            onclick="filterUserStoriesByStatus('EP-00007', 'in_progress')"
+                                            aria-pressed="false">⏳ In Progress</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="completed"
+                                            data-filter-group="epic-EP-00007-us"
+                                            data-filter-value="completed"
+                                            onclick="filterUserStoriesByStatus('EP-00007', 'completed')"
+                                            aria-pressed="false">✅ Completed</button>
+                                    <button class="filter-button filter-button--us"
+                                            data-us-status="blocked"
+                                            data-filter-group="epic-EP-00007-us"
+                                            data-filter-value="blocked"
+                                            onclick="filterUserStoriesByStatus('EP-00007', 'blocked')"
+                                            aria-pressed="false">🚫 Blocked</button>
+                                </div>
+                                <div class="us-count-display filter-count" role="status" aria-live="polite">Showing all user stories</div>
+                            </div>
+
+                            <!-- User Stories Table -->
+                            <table class="rtm-table" role="table" aria-label="User Stories for EP-00007">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Story Points</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tests Collapsible Section -->
+                <section class="collapsible" aria-label="Tests">
+                    <button class="collapsible__header" type="button" aria-expanded="true" aria-controls="tests-EP-00007">
+                        <h3 class="collapsible__title">🧪 Test Coverage (0)</h3>
+                        <span class="collapsible__icon">▼</span>
+                    </button>
+                    <div class="collapsible__content collapsible__content--expanded" id="tests-EP-00007">
+                        <div class="collapsible__body">
+                            <!-- Enhanced Test Metrics Dashboard -->
+                            <div class="metrics-dashboard">
+                                <h4 class="metrics-dashboard__title">📊 Test Metrics</h4>
+                                <div class="metrics-grid">
+                                    <div class="metric-card metric-card--info" aria-label="Total tests count">
+                                        <span class="metric-card__icon">🧪</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Total Tests</div>
+                                        <div class="metric-card__description">Across all test types</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Test pass rate">
+                                        <span class="metric-card__icon">✅</span>
+                                        <div class="metric-card__number">0.0%</div>
+                                        <div class="metric-card__label">Pass Rate</div>
+                                        <div class="metric-card__description">Overall success rate</div>
+                                    </div>
+                                    <div class="metric-card metric-card--success" aria-label="Passed tests">
+                                        <span class="metric-card__icon">⚡</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Passed</div>
+                                        <div class="metric-card__description">Successfully executed</div>
+                                    </div>
+                                    <div class="metric-card metric-card--danger" aria-label="Failed tests">
+                                        <span class="metric-card__icon">❌</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Failed</div>
+                                        <div class="metric-card__description">Need attention</div>
+                                    </div>
+                                    <div class="metric-card metric-card--warning" aria-label="Tests not run">
+                                        <span class="metric-card__icon">⏭️</span>
+                                        <div class="metric-card__number">0</div>
+                                        <div class="metric-card__label">Not Run</div>
+                                        <div class="metric-card__description">Pending execution</div>
+                                    </div>
+                                </div>
+
+                                <!-- Test Type Breakdown -->
+                                <div class="test-breakdown">
+                                    <h5 class="test-breakdown__title">Test Distribution by Type</h5><div class="no-tests">No tests available</div>
+                                </div>
+                            </div>
+
+                            <!-- Test Filter Section -->
+                            <div class="filter-section" role="group" aria-label="Test Filters">
+                                <h4 class="filter-section__title">Filter Tests:</h4>
+                                <div class="filter-section__buttons">
+                                    <button class="filter-button filter-button--test filter-button--active"
+                                            data-test-type="e2e"
+                                            data-filter-group="epic-EP-00007-test"
+                                            data-filter-value="e2e"
+                                            onclick="filterTestsByType('EP-00007', 'e2e')"
+                                            aria-pressed="true">🔄 E2E Only</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="unit"
+                                            data-filter-group="epic-EP-00007-test"
+                                            data-filter-value="unit"
+                                            onclick="filterTestsByType('EP-00007', 'unit')"
+                                            aria-pressed="false">⚗️ Unit</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="integration"
+                                            data-filter-group="epic-EP-00007-test"
+                                            data-filter-value="integration"
+                                            onclick="filterTestsByType('EP-00007', 'integration')"
+                                            aria-pressed="false">🔗 Integration</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="security"
+                                            data-filter-group="epic-EP-00007-test"
+                                            data-filter-value="security"
+                                            onclick="filterTestsByType('EP-00007', 'security')"
+                                            aria-pressed="false">🛡️ Security</button>
+                                    <button class="filter-button filter-button--test"
+                                            data-test-type="all"
+                                            data-filter-group="epic-EP-00007-test"
+                                            data-filter-value="all"
+                                            onclick="filterTestsByType('EP-00007', 'all')"
+                                            aria-pressed="false">📋 All Tests</button>
+                                </div>
+                                <div class="test-count-display filter-count" role="status" aria-live="polite">Showing E2E tests only</div>
+                            </div>
+
+                            <!-- Test Traceability Table -->
+                            <table class="rtm-table" role="table" aria-label="Test Traceability for EP-00007">
+                                <thead class="rtm-table__header">
+                                    <tr><th scope="col">Test Type</th><th scope="col">Test File</th><th scope="col">Function/Scenario</th><th scope="col">Last Execution</th><th scope="col">Status</th></tr>
+                                </thead>
+                                <tbody class="rtm-table__body">
+
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No tests available for this epic</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+                <h4>Defect Management</h4>
+                <div class="defect-filter-section">
+                    <strong>Filter Defects:</strong>
+                    <button class="defect-filter-button active" data-defect-filter="all" onclick="filterDefects('EP-00007', 'all', 'all')">All</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:critical" onclick="filterDefects('EP-00007', 'priority', 'critical')">Critical</button>
+                    <button class="defect-filter-button" data-defect-filter="priority:high" onclick="filterDefects('EP-00007', 'priority', 'high')">High Priority</button>
+                    <button class="defect-filter-button" data-defect-filter="status:open" onclick="filterDefects('EP-00007', 'status', 'open')">Open</button>
+                    <button class="defect-filter-button" data-defect-filter="status:in_progress" onclick="filterDefects('EP-00007', 'status', 'in_progress')">In Progress</button>
+                    <span class="defect-count-display" style="margin-left: 15px; font-style: italic; color: #7f8c8d;">Showing all defects</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Title</th><th>Priority</th><th>Status</th><th>Severity</th></tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No defects tracked for this epic</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</article>
+
+    </div>
+</body>
+</html>

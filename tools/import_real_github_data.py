@@ -9,13 +9,13 @@ Related Issue: US-00061 - Enhanced RTM HTML report with improved traceability
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
-import sys
-import os
 import json
+import os
 import subprocess
-from pathlib import Path
+import sys
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 # Add src to Python path
 src_path = Path(__file__).parent.parent / "src"
@@ -23,8 +23,9 @@ sys.path.insert(0, str(src_path))
 
 try:
     from be.database import get_db_session
-    from be.models.traceability import Epic, UserStory, Test, Defect
+    from be.models.traceability import Defect, Epic, Test, UserStory
     from shared.testing.database_integration import TestDiscovery
+
     DATABASE_AVAILABLE = True
 except ImportError as e:
     print(f"Error: Database modules not available: {e}")
@@ -59,13 +60,20 @@ class GitHubDataImporter:
 
             # Get all issues (open and closed)
             cmd = [
-                "gh", "issue", "list",
-                "--limit", "100",
-                "--state", "all",
-                "--json", "number,title,body,state,labels,assignees,createdAt,updatedAt"
+                "gh",
+                "issue",
+                "list",
+                "--limit",
+                "100",
+                "--state",
+                "all",
+                "--json",
+                "number,title,body,state,labels,assignees,createdAt,updatedAt",
             ]
 
-            result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', check=True)
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, encoding="utf-8", check=True
+            )
 
             if not result.stdout:
                 print("[ERROR] No data returned from GitHub CLI")
@@ -104,9 +112,9 @@ class GitHubDataImporter:
 
         # Look for EP-XXXXX pattern in title (handle various formats)
         epic_patterns = [
-            r'EP-(\d{5})',  # EP-00001
-            r'EP-(\d{4})',  # EP-0001
-            r'EP-(\d{3})',  # EP-001
+            r"EP-(\d{5})",  # EP-00001
+            r"EP-(\d{4})",  # EP-0001
+            r"EP-(\d{3})",  # EP-001
         ]
 
         for pattern in epic_patterns:
@@ -131,7 +139,7 @@ class GitHubDataImporter:
         import re
 
         # Look for US-XXXXX pattern in title
-        us_match = re.search(r'US-(\d{5})', title)
+        us_match = re.search(r"US-(\d{5})", title)
         if us_match:
             return f"US-{us_match.group(1)}"
 
@@ -142,7 +150,7 @@ class GitHubDataImporter:
         import re
 
         # Look for DEF-XXXXX pattern in title
-        def_match = re.search(r'DEF-(\d{5})', title)
+        def_match = re.search(r"DEF-(\d{5})", title)
         if def_match:
             return f"DEF-{def_match.group(1)}"
 
@@ -191,9 +199,9 @@ class GitHubDataImporter:
 
         # Look for story points pattern
         sp_patterns = [
-            r'story\s*points?\s*[:\-]?\s*(\d+)',
-            r'points?\s*[:\-]?\s*(\d+)',
-            r'sp\s*[:\-]?\s*(\d+)',
+            r"story\s*points?\s*[:\-]?\s*(\d+)",
+            r"points?\s*[:\-]?\s*(\d+)",
+            r"sp\s*[:\-]?\s*(\d+)",
         ]
 
         for pattern in sp_patterns:
@@ -217,8 +225,11 @@ class GitHubDataImporter:
 
     def import_epics(self) -> Dict[str, int]:
         """Import epics from GitHub issues."""
-        epic_issues = [issue for issue in self.github_issues
-                      if self.parse_issue_type(issue.get("labels", [])) == "epic"]
+        epic_issues = [
+            issue
+            for issue in self.github_issues
+            if self.parse_issue_type(issue.get("labels", [])) == "epic"
+        ]
 
         print(f"Importing {len(epic_issues)} epics...")
         epic_mapping = {}  # epic_id -> database id
@@ -247,10 +258,16 @@ class GitHubDataImporter:
                 description=issue.get("body", "")[:500] if issue.get("body") else "",
                 business_value="Imported from GitHub",
                 priority=self.get_priority_from_labels(issue.get("labels", [])),
-                status=self.get_status_from_state_and_labels(issue["state"], issue.get("labels", [])),
+                status=self.get_status_from_state_and_labels(
+                    issue["state"], issue.get("labels", [])
+                ),
                 github_issue_number=issue["number"],
-                created_at=datetime.fromisoformat(issue["createdAt"].replace('Z', '+00:00')),
-                updated_at=datetime.fromisoformat(issue["updatedAt"].replace('Z', '+00:00'))
+                created_at=datetime.fromisoformat(
+                    issue["createdAt"].replace("Z", "+00:00")
+                ),
+                updated_at=datetime.fromisoformat(
+                    issue["updatedAt"].replace("Z", "+00:00")
+                ),
             )
 
             self.db_session.add(epic)
@@ -265,15 +282,20 @@ class GitHubDataImporter:
 
     def import_user_stories(self, epic_mapping: Dict[str, int]):
         """Import user stories from GitHub issues."""
-        us_issues = [issue for issue in self.github_issues
-                    if self.parse_issue_type(issue.get("labels", [])) == "user-story"]
+        us_issues = [
+            issue
+            for issue in self.github_issues
+            if self.parse_issue_type(issue.get("labels", [])) == "user-story"
+        ]
 
         print(f"Importing {len(us_issues)} user stories...")
 
         for issue in us_issues:
             us_id = self.extract_user_story_id(issue["title"], issue.get("body", ""))
             if not us_id:
-                print(f"[WARNING] Could not extract user story ID from: {issue['title']}")
+                print(
+                    f"[WARNING] Could not extract user story ID from: {issue['title']}"
+                )
                 continue
 
             # Try to find parent epic from body
@@ -283,7 +305,8 @@ class GitHubDataImporter:
 
             # Look for parent epic reference
             import re
-            epic_match = re.search(r'Parent Epic.*?EP-(\d{5})', body, re.IGNORECASE)
+
+            epic_match = re.search(r"Parent Epic.*?EP-(\d{5})", body, re.IGNORECASE)
             if epic_match:
                 epic_id = f"EP-{epic_match.group(1)}"
                 epic_db_id = epic_mapping.get(epic_id)
@@ -291,7 +314,7 @@ class GitHubDataImporter:
             # If no epic found, assign to a default epic or skip
             if not epic_db_id:
                 # Try to assign based on user story number ranges
-                us_number = int(us_id.split('-')[1])
+                us_number = int(us_id.split("-")[1])
                 if us_number <= 10:
                     epic_db_id = epic_mapping.get("EP-00001")  # Blog
                 elif us_number <= 20:
@@ -308,7 +331,9 @@ class GitHubDataImporter:
                     epic_db_id = epic_mapping.get("EP-00007")  # Archive
 
                 if not epic_db_id and epic_mapping:
-                    epic_db_id = list(epic_mapping.values())[0]  # fallback to first epic
+                    epic_db_id = list(epic_mapping.values())[
+                        0
+                    ]  # fallback to first epic
 
             if not epic_db_id:
                 print(f"[WARNING] No epic found for {us_id}, skipping")
@@ -318,13 +343,25 @@ class GitHubDataImporter:
                 user_story_id=us_id,
                 epic_id=epic_db_id,
                 github_issue_number=issue["number"],
+                github_issue_state=issue[
+                    "state"
+                ],  # Store GitHub state for proper status calculation
+                github_labels=str(
+                    issue.get("labels", [])
+                ),  # Store GitHub labels for status calculation
                 title=issue["title"].replace(f"{us_id}: ", ""),
                 description=issue.get("body", "")[:500] if issue.get("body") else "",
                 story_points=self.extract_story_points(issue.get("body", "")),
                 priority=self.get_priority_from_labels(issue.get("labels", [])),
-                implementation_status=self.get_status_from_state_and_labels(issue["state"], issue.get("labels", [])),
-                created_at=datetime.fromisoformat(issue["createdAt"].replace('Z', '+00:00')),
-                updated_at=datetime.fromisoformat(issue["updatedAt"].replace('Z', '+00:00'))
+                implementation_status=self.get_status_from_state_and_labels(
+                    issue["state"], issue.get("labels", [])
+                ),
+                created_at=datetime.fromisoformat(
+                    issue["createdAt"].replace("Z", "+00:00")
+                ),
+                updated_at=datetime.fromisoformat(
+                    issue["updatedAt"].replace("Z", "+00:00")
+                ),
             )
 
             self.db_session.add(user_story)
@@ -335,8 +372,11 @@ class GitHubDataImporter:
 
     def import_defects(self, epic_mapping: Dict[str, int]):
         """Import defects from GitHub issues."""
-        defect_issues = [issue for issue in self.github_issues
-                        if self.parse_issue_type(issue.get("labels", [])) == "defect"]
+        defect_issues = [
+            issue
+            for issue in self.github_issues
+            if self.parse_issue_type(issue.get("labels", [])) == "defect"
+        ]
 
         if not defect_issues:
             print("No defects found in GitHub issues")
@@ -368,12 +408,20 @@ class GitHubDataImporter:
                 description=issue.get("body", "")[:500] if issue.get("body") else "",
                 severity=self.get_priority_from_labels(issue.get("labels", [])),
                 priority=self.get_priority_from_labels(issue.get("labels", [])),
-                status=self.get_status_from_state_and_labels(issue["state"], issue.get("labels", [])),
+                status=self.get_status_from_state_and_labels(
+                    issue["state"], issue.get("labels", [])
+                ),
                 epic_id=epic_db_id,
-                is_security_issue=any("security" in label.get("name", "").lower()
-                                    for label in issue.get("labels", [])),
-                created_at=datetime.fromisoformat(issue["createdAt"].replace('Z', '+00:00')),
-                updated_at=datetime.fromisoformat(issue["updatedAt"].replace('Z', '+00:00'))
+                is_security_issue=any(
+                    "security" in label.get("name", "").lower()
+                    for label in issue.get("labels", [])
+                ),
+                created_at=datetime.fromisoformat(
+                    issue["createdAt"].replace("Z", "+00:00")
+                ),
+                updated_at=datetime.fromisoformat(
+                    issue["updatedAt"].replace("Z", "+00:00")
+                ),
             )
 
             self.db_session.add(defect)
@@ -400,7 +448,7 @@ class GitHubDataImporter:
 
             for test_info in discovered_tests:
                 # Extract epic ID from test metadata if available
-                epic_references = test_info.get('epic_references', [])
+                epic_references = test_info.get("epic_references", [])
                 epic_db_id = None
 
                 # Try to find epic based on references in test
@@ -419,22 +467,26 @@ class GitHubDataImporter:
 
                 # Create test record
                 test = Test(
-                    test_type=test_info['test_type'],
-                    test_file_path=test_info['test_file_path'],
-                    test_function_name=test_info.get('test_function_name'),
-                    bdd_feature_file=test_info.get('bdd_feature_file'),
-                    bdd_scenario_name=test_info.get('bdd_scenario_name'),
+                    test_type=test_info["test_type"],
+                    test_file_path=test_info["test_file_path"],
+                    test_function_name=test_info.get("test_function_name"),
+                    bdd_feature_file=test_info.get("bdd_feature_file"),
+                    bdd_scenario_name=test_info.get("bdd_scenario_name"),
                     epic_id=epic_db_id,
-                    title=test_info.get('title', f"Test: {test_info['test_file_path']}"),
+                    title=test_info.get(
+                        "title", f"Test: {test_info['test_file_path']}"
+                    ),
                     description=f"{test_info['test_type']} test: {test_info.get('test_function_name', 'unknown')}",
-                    last_execution_status='not_run',
-                    test_priority='medium',
-                    is_automated=True
+                    last_execution_status="not_run",
+                    test_priority="medium",
+                    is_automated=True,
                 )
 
                 self.db_session.add(test)
                 imported_count += 1
-                print(f"  {test_info['test_type']}: {test_info['test_file_path']} -> {test_info.get('test_function_name', 'unknown')}")
+                print(
+                    f"  {test_info['test_type']}: {test_info['test_file_path']} -> {test_info.get('test_function_name', 'unknown')}"
+                )
 
             self.db_session.commit()
             print(f"[OK] Imported {imported_count} tests")
@@ -489,11 +541,20 @@ def main():
     """CLI entry point."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Import real GitHub data into RTM database")
-    parser.add_argument('--import', action='store_true', dest='do_import',
-                       help='Import real GitHub issues into database')
-    parser.add_argument('--dry-run', action='store_true',
-                       help='Show what would be imported without making changes')
+    parser = argparse.ArgumentParser(
+        description="Import real GitHub data into RTM database"
+    )
+    parser.add_argument(
+        "--import",
+        action="store_true",
+        dest="do_import",
+        help="Import real GitHub issues into database",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be imported without making changes",
+    )
 
     args = parser.parse_args()
 
@@ -521,5 +582,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

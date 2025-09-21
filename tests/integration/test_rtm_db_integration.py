@@ -41,10 +41,7 @@ class TestRTMDatabaseCLIIntegration:
         """Run CLI command and return result."""
         cmd = ["python", "tools/rtm-db.py"] + list(args)
         result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            cwd=Path(__file__).parent.parent.parent
+            cmd, capture_output=True, text=True, cwd=Path(__file__).parent.parent.parent
         )
         return result
 
@@ -64,11 +61,16 @@ class TestRTMDatabaseCLIIntegration:
         """Test creating and querying an Epic."""
         # Create epic
         result = self.run_cli_command(
-            "entities", "create-epic",
-            "--epic-id", "EP-INT-01",
-            "--title", "Integration Test Epic",
-            "--priority", "high",
-            "--description", "Test epic for integration testing"
+            "entities",
+            "create-epic",
+            "--epic-id",
+            "EP-INT-01",
+            "--title",
+            "Integration Test Epic",
+            "--priority",
+            "high",
+            "--description",
+            "Test epic for integration testing",
         )
         assert result.returncode == 0
         assert "Created Epic EP-INT-01" in result.stdout
@@ -88,29 +90,36 @@ class TestRTMDatabaseCLIIntegration:
     def test_create_user_story_with_epic(self):
         """Test creating User Story linked to Epic."""
         # Create parent epic first
-        epic = Epic(
-            epic_id="EP-INT-02",
-            title="Parent Epic",
-            priority="medium"
-        )
+        epic = Epic(epic_id="EP-INT-02", title="Parent Epic", priority="medium")
         self.db.add(epic)
         self.db.commit()
 
         # Create user story via CLI
         result = self.run_cli_command(
-            "entities", "create-user-story",
-            "--user-story-id", "US-INT-01",
-            "--epic-id", "EP-INT-02",
-            "--github-issue", "123",
-            "--title", "Integration Test User Story",
-            "--story-points", "5",
-            "--priority", "high"
+            "entities",
+            "create-user-story",
+            "--user-story-id",
+            "US-INT-01",
+            "--epic-id",
+            "EP-INT-02",
+            "--github-issue",
+            "123",
+            "--title",
+            "Integration Test User Story",
+            "--story-points",
+            "5",
+            "--priority",
+            "high",
         )
         assert result.returncode == 0
         assert "Created User Story US-INT-01" in result.stdout
 
         # Verify user story exists and is linked to epic
-        user_story = self.db.query(UserStory).filter(UserStory.user_story_id == "US-INT-01").first()
+        user_story = (
+            self.db.query(UserStory)
+            .filter(UserStory.user_story_id == "US-INT-01")
+            .first()
+        )
         assert user_story is not None
         assert user_story.epic_id == epic.id
         assert user_story.story_points == 5
@@ -129,7 +138,7 @@ class TestRTMDatabaseCLIIntegration:
             github_issue_number=456,
             title="Progress Test User Story",
             story_points=8,
-            implementation_status="done"
+            implementation_status="done",
         )
         self.db.add(user_story)
         self.db.commit()
@@ -169,13 +178,13 @@ class TestRTMDatabaseCLIIntegration:
             user_story_id="US-EXPORT-01",
             epic_id=epic.id,
             github_issue_number=789,
-            title="Export Test User Story"
+            title="Export Test User Story",
         )
         self.db.add(user_story)
         self.db.commit()
 
         # Export data to temporary file
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as tmp:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json") as tmp:
             result = self.run_cli_command("data", "export", "--output", tmp.name)
             assert result.returncode == 0
             assert f"Exported RTM data to {tmp.name}" in result.stdout
@@ -184,14 +193,14 @@ class TestRTMDatabaseCLIIntegration:
             tmp_path = Path(tmp.name)
             assert tmp_path.exists()
 
-            with open(tmp_path, 'r') as f:
+            with open(tmp_path, "r") as f:
                 export_data = json.load(f)
-                assert 'epics' in export_data
-                assert 'user_stories' in export_data
-                assert 'export_timestamp' in export_data
-                assert len(export_data['epics']) == 1
-                assert len(export_data['user_stories']) == 1
-                assert export_data['epics'][0]['epic_id'] == "EP-EXPORT-01"
+                assert "epics" in export_data
+                assert "user_stories" in export_data
+                assert "export_timestamp" in export_data
+                assert len(export_data["epics"]) == 1
+                assert len(export_data["user_stories"]) == 1
+                assert export_data["epics"][0]["epic_id"] == "EP-EXPORT-01"
 
             # Cleanup
             tmp_path.unlink()
@@ -207,7 +216,7 @@ class TestRTMDatabaseCLIIntegration:
             user_story_id="US-VALID-01",
             epic_id=epic.id,
             github_issue_number=999,
-            title="Valid User Story"
+            title="Valid User Story",
         )
         self.db.add(user_story)
         self.db.commit()
@@ -226,9 +235,12 @@ class TestRTMDatabaseCLIIntegration:
 
         # Try to create duplicate via CLI
         result = self.run_cli_command(
-            "entities", "create-epic",
-            "--epic-id", "EP-DUP-01",
-            "--title", "Another Epic"
+            "entities",
+            "create-epic",
+            "--epic-id",
+            "EP-DUP-01",
+            "--title",
+            "Another Epic",
         )
         assert result.returncode == 0
         assert "Epic EP-DUP-01 already exists" in result.stdout
@@ -236,11 +248,16 @@ class TestRTMDatabaseCLIIntegration:
     def test_user_story_epic_not_found(self):
         """Test error handling when parent Epic not found."""
         result = self.run_cli_command(
-            "entities", "create-user-story",
-            "--user-story-id", "US-ORPHAN-01",
-            "--epic-id", "EP-NONEXISTENT",
-            "--github-issue", "999",
-            "--title", "Orphan User Story"
+            "entities",
+            "create-user-story",
+            "--user-story-id",
+            "US-ORPHAN-01",
+            "--epic-id",
+            "EP-NONEXISTENT",
+            "--github-issue",
+            "999",
+            "--title",
+            "Orphan User Story",
         )
         assert result.returncode == 0
         assert "Epic EP-NONEXISTENT not found" in result.stdout
@@ -249,10 +266,14 @@ class TestRTMDatabaseCLIIntegration:
         """Test verbose output mode."""
         result = self.run_cli_command(
             "--verbose",
-            "entities", "create-epic",
-            "--epic-id", "EP-VERBOSE-01",
-            "--title", "Verbose Test Epic",
-            "--priority", "medium"
+            "entities",
+            "create-epic",
+            "--epic-id",
+            "EP-VERBOSE-01",
+            "--title",
+            "Verbose Test Epic",
+            "--priority",
+            "medium",
         )
         assert result.returncode == 0
         assert "Created Epic EP-VERBOSE-01" in result.stdout

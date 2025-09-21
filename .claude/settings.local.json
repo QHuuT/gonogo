@@ -1,33 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python:*)",
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(tree:*)",
-      "Bash(git add:*)",
-      "Bash(gh issue create:*)",
-      "Bash(gh issue list:*)",
-      "Bash(gh auth:*)",
-      "Bash(gh project list:*)",
-      "Bash(gh project item-add:*)",
-      "Bash(gh issue close:*)",
-      "Bash(pip install:*)",
-      "Bash(gh issue view:*)",
-      "Bash(pytest:*)",
-      "Bash(mkdir:*)",
-      "Bash(gh issue reopen:*)",
-      "Bash(gh run view:*)",
-      "Bash(gh run list:*)",
-      "Bash(gh issue edit:*)",
-      "Bash(black:*)",
-      "Bash(isort:*)",
-      "Bash(flake8:*)",
-      "Bash(chmod:*)",
-      "Bash(alembic upgrade:*)",
-      "Bash(start \"C:\\repo\\gonogo\\quality\\reports\\dynamic_rtm\\rtm_matrix_complete.html\")",
-      "Bash(PYTHONPATH=. python:*)",
-      "Bash(curl:*)"
+      "Bash(PYTHONPATH=src python:*)"
     ],
     "deny": [],
     "ask": []

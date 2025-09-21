@@ -17,7 +17,7 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 import argparse
 import sys
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 # Add project root to Python path for imports
 project_root = Path(__file__).parent.parent
@@ -51,65 +51,104 @@ Python-based filtering advantages:
   - Better accessibility
   - Easier testing and automation
   - More secure (no client-side filtering)
-        """
+        """,
     )
 
     # Output format
-    parser.add_argument('--format', choices=['html', 'json', 'markdown'], default='html',
-                       help='Output format (default: html)')
-    parser.add_argument('--output', type=str,
-                       help='Output file path (default: quality/reports/rtm_python_filtered.{format})')
+    parser.add_argument(
+        "--format",
+        choices=["html", "json", "markdown"],
+        default="html",
+        help="Output format (default: html)",
+    )
+    parser.add_argument(
+        "--output",
+        type=str,
+        help="Output file path (default: quality/reports/rtm_python_filtered.{format})",
+    )
 
     # Epic filters
-    parser.add_argument('--epic-filter', type=str,
-                       help='Filter by epic ID (e.g., EP-00001)')
-    parser.add_argument('--epic-status', type=str,
-                       help='Filter by epic status (planned, in_progress, completed)')
-    parser.add_argument('--epic-priority', type=str,
-                       help='Filter by epic priority (low, medium, high, critical)')
+    parser.add_argument(
+        "--epic-filter", type=str, help="Filter by epic ID (e.g., EP-00001)"
+    )
+    parser.add_argument(
+        "--epic-status",
+        type=str,
+        help="Filter by epic status (planned, in_progress, completed)",
+    )
+    parser.add_argument(
+        "--epic-priority",
+        type=str,
+        help="Filter by epic priority (low, medium, high, critical)",
+    )
 
     # User Story filters
-    parser.add_argument('--us-status', choices=['all', 'planned', 'in_progress', 'completed', 'blocked'],
-                       default='all', help='Filter user stories by status (default: all)')
+    parser.add_argument(
+        "--us-status",
+        choices=["all", "planned", "in_progress", "completed", "blocked"],
+        default="all",
+        help="Filter user stories by status (default: all)",
+    )
 
     # Test filters
-    parser.add_argument('--test-type', choices=['all', 'unit', 'integration', 'e2e', 'security', 'bdd'],
-                       default='e2e', help='Filter tests by type (default: e2e - shows least clutter)')
+    parser.add_argument(
+        "--test-type",
+        choices=["all", "unit", "integration", "e2e", "security", "bdd"],
+        default="e2e",
+        help="Filter tests by type (default: e2e - shows least clutter)",
+    )
 
     # Defect filters
-    parser.add_argument('--defect-priority', choices=['all', 'critical', 'high', 'medium', 'low'],
-                       default='all', help='Filter defects by priority (default: all)')
-    parser.add_argument('--defect-status', choices=['all', 'open', 'in_progress', 'resolved', 'closed'],
-                       default='all', help='Filter defects by status (default: all)')
+    parser.add_argument(
+        "--defect-priority",
+        choices=["all", "critical", "high", "medium", "low"],
+        default="all",
+        help="Filter defects by priority (default: all)",
+    )
+    parser.add_argument(
+        "--defect-status",
+        choices=["all", "open", "in_progress", "resolved", "closed"],
+        default="all",
+        help="Filter defects by status (default: all)",
+    )
 
     # Include/exclude sections
-    parser.add_argument('--no-tests', action='store_true',
-                       help='Exclude test coverage section')
-    parser.add_argument('--no-defects', action='store_true',
-                       help='Exclude defect tracking section')
+    parser.add_argument(
+        "--no-tests", action="store_true", help="Exclude test coverage section"
+    )
+    parser.add_argument(
+        "--no-defects", action="store_true", help="Exclude defect tracking section"
+    )
 
     # Display options
-    parser.add_argument('--show-stats', action='store_true',
-                       help='Show filtering statistics before generating report')
-    parser.add_argument('--verbose', action='store_true',
-                       help='Show detailed processing information')
-    parser.add_argument('--include-demo-data', action='store_true',
-                       help='Include demo epics (EP-DEMO-*) in the report')
+    parser.add_argument(
+        "--show-stats",
+        action="store_true",
+        help="Show filtering statistics before generating report",
+    )
+    parser.add_argument(
+        "--verbose", action="store_true", help="Show detailed processing information"
+    )
+    parser.add_argument(
+        "--include-demo-data",
+        action="store_true",
+        help="Include demo epics (EP-DEMO-*) in the report",
+    )
 
     args = parser.parse_args()
 
     # Build filters dictionary
     filters = {
-        'epic_id': args.epic_filter,
-        'status': args.epic_status,
-        'priority': args.epic_priority,
-        'us_status_filter': args.us_status,
-        'test_type_filter': args.test_type,
-        'defect_priority_filter': args.defect_priority,
-        'defect_status_filter': args.defect_status,
-        'include_tests': not args.no_tests,
-        'include_defects': not args.no_defects,
-        'include_demo_data': args.include_demo_data,
+        "epic_id": args.epic_filter,
+        "status": args.epic_status,
+        "priority": args.epic_priority,
+        "us_status_filter": args.us_status,
+        "test_type_filter": args.test_type,
+        "defect_priority_filter": args.defect_priority,
+        "defect_status_filter": args.defect_status,
+        "include_tests": not args.no_tests,
+        "include_defects": not args.no_defects,
+        "include_demo_data": args.include_demo_data,
     }
 
     # Remove None values
@@ -137,12 +176,13 @@ Python-based filtering advantages:
         if args.verbose:
             print(f"Generating {args.format.upper()} report with Python filtering...")
 
-        if args.format == 'html':
+        if args.format == "html":
             content = generator.generate_html_matrix(filters)
-        elif args.format == 'json':
+        elif args.format == "json":
             import json
+
             content = json.dumps(generator.generate_json_matrix(filters), indent=2)
-        elif args.format == 'markdown':
+        elif args.format == "markdown":
             content = generator.generate_markdown_matrix(filters)
 
         # Determine output path
@@ -154,7 +194,7 @@ Python-based filtering advantages:
             output_path = output_dir / f"rtm_python_filtered.{args.format}"
 
         # Save report
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(content)
 
         print(f"Python-filtered RTM report saved to: {output_path}")
@@ -168,7 +208,7 @@ Python-based filtering advantages:
         print(f"Error generating report: {e}")
         return 1
     finally:
-        if 'db' in locals():
+        if "db" in locals():
             db.close()
 
     return 0
@@ -177,21 +217,21 @@ Python-based filtering advantages:
 def get_filtering_stats(generator, filters: Dict[str, Any]) -> Dict[str, Any]:
     """Get statistics about the filtering operation."""
     # Get all data without filters
-    all_filters = {'include_tests': True, 'include_defects': True}
+    all_filters = {"include_tests": True, "include_defects": True}
     all_data = generator.generate_json_matrix(all_filters)
 
     # Get filtered data
     filtered_data = generator.generate_json_matrix(filters)
 
     return {
-        'Total Epics': len(all_data['epics']),
-        'Filtered Epics': len(filtered_data['epics']),
-        'User Story Filter': filters.get('us_status_filter', 'all'),
-        'Test Type Filter': filters.get('test_type_filter', 'e2e'),
-        'Defect Priority Filter': filters.get('defect_priority_filter', 'all'),
-        'Defect Status Filter': filters.get('defect_status_filter', 'all'),
-        'Tests Included': filters.get('include_tests', True),
-        'Defects Included': filters.get('include_defects', True),
+        "Total Epics": len(all_data["epics"]),
+        "Filtered Epics": len(filtered_data["epics"]),
+        "User Story Filter": filters.get("us_status_filter", "all"),
+        "Test Type Filter": filters.get("test_type_filter", "e2e"),
+        "Defect Priority Filter": filters.get("defect_priority_filter", "all"),
+        "Defect Status Filter": filters.get("defect_status_filter", "all"),
+        "Tests Included": filters.get("include_tests", True),
+        "Defects Included": filters.get("include_defects", True),
     }
 
 

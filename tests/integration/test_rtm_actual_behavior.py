@@ -2,10 +2,12 @@
 ACTUAL behavioral test for RTM filter regression
 Tests that clicking filter buttons ACTUALLY filters without collapsing epics
 """
+
+import re
+from urllib.parse import parse_qs, urlparse
+
 import pytest
 import requests
-import re
-from urllib.parse import urlparse, parse_qs
 
 
 class TestRTMActualBehavior:
@@ -28,11 +30,16 @@ class TestRTMActualBehavior:
         assert original_response.status_code == 200
 
         # Test clicking "planned" status filter - simulate the JavaScript redirect
-        filtered_response = requests.get(f"{self.RTM_URL}?format=html&status_filter=planned")
+        filtered_response = requests.get(
+            f"{self.RTM_URL}?format=html&status_filter=planned"
+        )
         assert filtered_response.status_code == 200
 
         # Verify URL actually contains the filter parameter
-        assert "status_filter=planned" in filtered_response.url or "status_filter=planned" in filtered_response.request.url
+        assert (
+            "status_filter=planned" in filtered_response.url
+            or "status_filter=planned" in filtered_response.request.url
+        )
         print("OK Status filter redirects to correct URL")
 
     def test_clicking_defect_filter_actually_filters(self):
@@ -40,17 +47,27 @@ class TestRTMActualBehavior:
         self.check_server_running()
 
         # Test defect priority filter - simulate filterDefects('EP-00001', 'priority', 'critical')
-        filtered_response = requests.get(f"{self.RTM_URL}?format=html&defect_priority_filter=critical")
+        filtered_response = requests.get(
+            f"{self.RTM_URL}?format=html&defect_priority_filter=critical"
+        )
         assert filtered_response.status_code == 200
 
         # Verify filtering worked by checking the content changed
-        assert "defect_priority_filter=critical" in filtered_response.url or "defect_priority_filter=critical" in str(filtered_response.request.url)
+        assert (
+            "defect_priority_filter=critical" in filtered_response.url
+            or "defect_priority_filter=critical" in str(filtered_response.request.url)
+        )
         print("OK Defect priority filter redirects to correct URL")
 
         # Test defect status filter - simulate filterDefects('EP-00001', 'status', 'open')
-        filtered_response2 = requests.get(f"{self.RTM_URL}?format=html&defect_status_filter=open")
+        filtered_response2 = requests.get(
+            f"{self.RTM_URL}?format=html&defect_status_filter=open"
+        )
         assert filtered_response2.status_code == 200
-        assert "defect_status_filter=open" in filtered_response2.url or "defect_status_filter=open" in str(filtered_response2.request.url)
+        assert (
+            "defect_status_filter=open" in filtered_response2.url
+            or "defect_status_filter=open" in str(filtered_response2.request.url)
+        )
         print("OK Defect status filter redirects to correct URL")
 
     def test_epic_headers_still_have_toggle_functionality(self):
@@ -65,16 +82,24 @@ class TestRTMActualBehavior:
         # Epic toggle handlers should still be present even when filters are active
         epic_toggle_pattern = r'onclick="toggleEpicDetails\(\'(EP-\d+)\'\)"'
         epic_matches = re.findall(epic_toggle_pattern, html_content)
-        assert len(epic_matches) > 0, "Epic toggle handlers missing when filters are active"
-        print(f"OK Epic toggle handlers present with filters: {len(epic_matches)} epics")
+        assert (
+            len(epic_matches) > 0
+        ), "Epic toggle handlers missing when filters are active"
+        print(
+            f"OK Epic toggle handlers present with filters: {len(epic_matches)} epics"
+        )
 
         # Epic headers should NOT contain filter onclick handlers
         epic_header_pattern = r'<header[^>]*class="epic-header"[^>]*onclick="toggleEpicDetails[^>]*>(.*?)</header>'
         epic_headers = re.findall(epic_header_pattern, html_content, re.DOTALL)
 
         for header_content in epic_headers:
-            assert 'filterDefects' not in header_content, "filterDefects found in epic header - will cause collapse!"
-            assert 'filterByStatus' not in header_content, "filterByStatus found in epic header - will cause collapse!"
+            assert (
+                "filterDefects" not in header_content
+            ), "filterDefects found in epic header - will cause collapse!"
+            assert (
+                "filterByStatus" not in header_content
+            ), "filterByStatus found in epic header - will cause collapse!"
 
         print("OK Epic headers don't contain filter buttons")
 
@@ -83,7 +108,9 @@ class TestRTMActualBehavior:
         self.check_server_running()
 
         # Apply a filter first
-        filtered_response = requests.get(f"{self.RTM_URL}?format=html&defect_priority_filter=critical")
+        filtered_response = requests.get(
+            f"{self.RTM_URL}?format=html&defect_priority_filter=critical"
+        )
         assert "defect_priority_filter=critical" in str(filtered_response.request.url)
 
         # Simulate clicking 'All' button - filterDefects('EP-00001', 'all', 'all')
@@ -121,19 +148,27 @@ class TestRTMActualBehavior:
         html_content = response.text
 
         # Check specific defect filter button onclick handlers
-        critical_button_pattern = r'onclick="filterDefects\(\'EP-\d+\',\s*\'priority\',\s*\'critical\'\)"'
+        critical_button_pattern = (
+            r'onclick="filterDefects\(\'EP-\d+\',\s*\'priority\',\s*\'critical\'\)"'
+        )
         critical_buttons = re.findall(critical_button_pattern, html_content)
         assert len(critical_buttons) > 0, "No critical priority filter buttons found"
 
-        open_button_pattern = r'onclick="filterDefects\(\'EP-\d+\',\s*\'status\',\s*\'open\'\)"'
+        open_button_pattern = (
+            r'onclick="filterDefects\(\'EP-\d+\',\s*\'status\',\s*\'open\'\)"'
+        )
         open_buttons = re.findall(open_button_pattern, html_content)
         assert len(open_buttons) > 0, "No open status filter buttons found"
 
-        all_button_pattern = r'onclick="filterDefects\(\'EP-\d+\',\s*\'all\',\s*\'all\'\)"'
+        all_button_pattern = (
+            r'onclick="filterDefects\(\'EP-\d+\',\s*\'all\',\s*\'all\'\)"'
+        )
         all_buttons = re.findall(all_button_pattern, html_content)
         assert len(all_buttons) > 0, "No 'all' filter buttons found"
 
-        print(f"OK Found filter buttons: {len(critical_buttons)} critical, {len(open_buttons)} open, {len(all_buttons)} all")
+        print(
+            f"OK Found filter buttons: {len(critical_buttons)} critical, {len(open_buttons)} open, {len(all_buttons)} all"
+        )
 
     def test_regression_scenario_specifically(self):
         """Test the exact scenario that was reported as broken"""
@@ -150,12 +185,14 @@ class TestRTMActualBehavior:
         assert len(defect_buttons) > 0, "No defect filter buttons found in HTML"
 
         epic_id, filter_type, filter_value, button_text = defect_buttons[0]
-        print(f"Testing defect filter button: '{button_text}' -> filterDefects('{epic_id}', '{filter_type}', '{filter_value}')")
+        print(
+            f"Testing defect filter button: '{button_text}' -> filterDefects('{epic_id}', '{filter_type}', '{filter_value}')"
+        )
 
         # Simulate the JavaScript function call
-        if filter_type == 'priority':
+        if filter_type == "priority":
             expected_param = f"defect_priority_filter={filter_value}"
-        elif filter_type == 'status':
+        elif filter_type == "status":
             expected_param = f"defect_status_filter={filter_value}"
         else:
             expected_param = "no_defect_filters"
@@ -170,17 +207,23 @@ class TestRTMActualBehavior:
 
         # Critical test: Verify epic toggle buttons are SEPARATE from filter buttons
         # Find epic header with toggle
-        epic_header_pattern = f'<header[^>]*onclick="toggleEpicDetails\(\'{epic_id}\'\)"[^>]*>(.*?)</header>'
+        epic_header_pattern = f"<header[^>]*onclick=\"toggleEpicDetails\('{epic_id}'\)\"[^>]*>(.*?)</header>"
         epic_header_match = re.search(epic_header_pattern, html_content, re.DOTALL)
 
         if epic_header_match:
             epic_header_content = epic_header_match.group(1)
             # The epic header should NOT contain any filter button onclick handlers
-            assert 'filterDefects' not in epic_header_content, f"REGRESSION: filterDefects found in epic {epic_id} header!"
-            assert 'filterByStatus' not in epic_header_content, f"REGRESSION: filterByStatus found in epic {epic_id} header!"
+            assert (
+                "filterDefects" not in epic_header_content
+            ), f"REGRESSION: filterDefects found in epic {epic_id} header!"
+            assert (
+                "filterByStatus" not in epic_header_content
+            ), f"REGRESSION: filterByStatus found in epic {epic_id} header!"
             print(f"OK Epic {epic_id} header is clean - no filter buttons inside it")
 
-        print("OK Regression test passed - filters and epic toggles are properly separated")
+        print(
+            "OK Regression test passed - filters and epic toggles are properly separated"
+        )
 
 
 def test_actual_filter_behavior():

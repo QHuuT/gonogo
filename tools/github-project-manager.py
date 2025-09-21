@@ -15,12 +15,12 @@ Usage:
     python tools/github-project-manager.py --validate-dependencies
 """
 
-import subprocess
-import json
 import argparse
+import json
+import subprocess
 import sys
-from typing import Dict, List, Optional, Tuple
 from pathlib import Path
+from typing import Dict, List, Optional, Tuple
 
 
 class GitHubProjectManager:
@@ -37,25 +37,27 @@ class GitHubProjectManager:
         """Initialize and get project ID."""
         try:
             # Check if we have project access
-            result = subprocess.run([
-                'gh', 'auth', 'status'
-            ], capture_output=True, text=True)
+            result = subprocess.run(
+                ["gh", "auth", "status"], capture_output=True, text=True
+            )
 
-            if 'project' not in result.stdout:
+            if "project" not in result.stdout:
                 print("⚠️  Warning: GitHub CLI doesn't have 'project' scope.")
                 print("   Run: gh auth refresh -s project -h github.com")
                 return
 
             # Get project ID
-            result = subprocess.run([
-                'gh', 'project', 'list', '--owner', self.owner,
-                '--format', 'json'
-            ], capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                ["gh", "project", "list", "--owner", self.owner, "--format", "json"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
 
             projects = json.loads(result.stdout)
             for project in projects:
-                if project['title'] == self.project_name:
-                    self.project_id = project['number']
+                if project["title"] == self.project_name:
+                    self.project_id = project["number"]
                     break
 
             if not self.project_id:
@@ -78,10 +80,12 @@ class GitHubProjectManager:
             issue_url = f"https://github.com/{self.owner}/gonogo/issues/{issue_number}"
 
             # Add to project
-            result = subprocess.run([
-                'gh', 'project', 'item-add', str(self.project_id),
-                '--url', issue_url
-            ], capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                ["gh", "project", "item-add", str(self.project_id), "--url", issue_url],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
 
             print(f"✅ Issue #{issue_number} added to project '{self.project_name}'")
             return True
@@ -93,10 +97,19 @@ class GitHubProjectManager:
     def get_issue_details(self, issue_number: int) -> Optional[Dict]:
         """Get issue details from GitHub."""
         try:
-            result = subprocess.run([
-                'gh', 'issue', 'view', str(issue_number),
-                '--json', 'number,title,body,labels,state'
-            ], capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                [
+                    "gh",
+                    "issue",
+                    "view",
+                    str(issue_number),
+                    "--json",
+                    "number,title,body,labels,state",
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
 
             return json.loads(result.stdout)
 
@@ -107,15 +120,15 @@ class GitHubProjectManager:
     def extract_priority_from_labels(self, labels: List[Dict]) -> Optional[str]:
         """Extract priority from issue labels."""
         priority_map = {
-            'priority/critical': 'Critical',
-            'priority/high': 'High',
-            'priority/medium': 'Medium',
-            'priority/low': 'Low'
+            "priority/critical": "Critical",
+            "priority/high": "High",
+            "priority/medium": "Medium",
+            "priority/low": "Low",
         }
 
         for label in labels:
-            if label['name'] in priority_map:
-                return priority_map[label['name']]
+            if label["name"] in priority_map:
+                return priority_map[label["name"]]
 
         return None
 
@@ -123,15 +136,15 @@ class GitHubProjectManager:
         """Extract parent relationship from issue body."""
         import re
 
-        if issue_type == 'user-story':
+        if issue_type == "user-story":
             # Look for "Parent Epic: EP-XXXXX" or "Epic: EP-XXXXX"
-            pattern = r'(?:Parent Epic|Epic):\s*(EP-\d{5})'
+            pattern = r"(?:Parent Epic|Epic):\s*(EP-\d{5})"
             match = re.search(pattern, body, re.IGNORECASE)
             return match.group(1) if match else None
 
-        elif issue_type == 'defect':
+        elif issue_type == "defect":
             # Look for "Parent User Story: US-XXXXX"
-            pattern = r'Parent User Story:\s*(US-\d{5})'
+            pattern = r"Parent User Story:\s*(US-\d{5})"
             match = re.search(pattern, body, re.IGNORECASE)
             return match.group(1) if match else None
 
@@ -141,26 +154,22 @@ class GitHubProjectManager:
         """Extract dependency relationships from issue body."""
         import re
 
-        dependencies = {
-            'blocks': [],
-            'blocked_by': [],
-            'related': []
-        }
+        dependencies = {"blocks": [], "blocked_by": [], "related": []}
 
         # Look for dependency patterns
-        blocks_pattern = r'Blocks:\s*([#\d,\s]+)'
-        blocked_by_pattern = r'Blocked by:\s*([#\d,\s]+)'
-        related_pattern = r'Related to:\s*([#\d,\s]+)'
+        blocks_pattern = r"Blocks:\s*([#\d,\s]+)"
+        blocked_by_pattern = r"Blocked by:\s*([#\d,\s]+)"
+        related_pattern = r"Related to:\s*([#\d,\s]+)"
 
         def extract_issue_numbers(text: str) -> List[str]:
             """Extract issue numbers from text like '#12, #13'."""
-            numbers = re.findall(r'#(\d+)', text)
+            numbers = re.findall(r"#(\d+)", text)
             return [f"#{num}" for num in numbers]
 
         for pattern, key in [
-            (blocks_pattern, 'blocks'),
-            (blocked_by_pattern, 'blocked_by'),
-            (related_pattern, 'related')
+            (blocks_pattern, "blocks"),
+            (blocked_by_pattern, "blocked_by"),
+            (related_pattern, "related"),
         ]:
             match = re.search(pattern, body, re.IGNORECASE)
             if match:
@@ -174,20 +183,30 @@ class GitHubProjectManager:
             return []
 
         try:
-            result = subprocess.run([
-                'gh', 'project', 'item-list', str(self.project_id),
-                '--format', 'json'
-            ], capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                [
+                    "gh",
+                    "project",
+                    "item-list",
+                    str(self.project_id),
+                    "--format",
+                    "json",
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
 
             data = json.loads(result.stdout)
-            return data.get('items', [])
+            return data.get("items", [])
 
         except subprocess.CalledProcessError as e:
             print(f"❌ Error getting project items: {e}")
             return []
 
-    def update_project_item_fields(self, issue_number: int, priority: str,
-                                 parent: Optional[str] = None) -> bool:
+    def update_project_item_fields(
+        self, issue_number: int, priority: str, parent: Optional[str] = None
+    ) -> bool:
         """Update project item fields."""
         if not self.project_id:
             return False
@@ -198,8 +217,8 @@ class GitHubProjectManager:
             item_id = None
 
             for item in items:
-                if (item.get('content', {}).get('number') == issue_number):
-                    item_id = item.get('id')
+                if item.get("content", {}).get("number") == issue_number:
+                    item_id = item.get("id")
                     break
 
             if not item_id:
@@ -208,22 +227,40 @@ class GitHubProjectManager:
 
             # Update priority
             if priority:
-                subprocess.run([
-                    'gh', 'project', 'item-edit',
-                    '--id', item_id,
-                    '--field', 'Priority',
-                    '--value', priority
-                ], check=True)
+                subprocess.run(
+                    [
+                        "gh",
+                        "project",
+                        "item-edit",
+                        "--id",
+                        item_id,
+                        "--field",
+                        "Priority",
+                        "--value",
+                        priority,
+                    ],
+                    check=True,
+                )
 
             # Update parent relationship
             if parent:
-                field_name = "Epic Parent" if parent.startswith('EP-') else "User Story Parent"
-                subprocess.run([
-                    'gh', 'project', 'item-edit',
-                    '--id', item_id,
-                    '--field', field_name,
-                    '--value', parent
-                ], check=True)
+                field_name = (
+                    "Epic Parent" if parent.startswith("EP-") else "User Story Parent"
+                )
+                subprocess.run(
+                    [
+                        "gh",
+                        "project",
+                        "item-edit",
+                        "--id",
+                        item_id,
+                        "--field",
+                        field_name,
+                        "--value",
+                        parent,
+                    ],
+                    check=True,
+                )
 
             print(f"✅ Updated project fields for issue #{issue_number}")
             return True
@@ -243,9 +280,9 @@ class GitHubProjectManager:
 
         # Determine issue type
         issue_type = None
-        for label in issue['labels']:
-            if label['name'] in ['epic', 'user-story', 'defect']:
-                issue_type = label['name']
+        for label in issue["labels"]:
+            if label["name"] in ["epic", "user-story", "defect"]:
+                issue_type = label["name"]
                 break
 
         if not issue_type:
@@ -257,9 +294,9 @@ class GitHubProjectManager:
             return False
 
         # Extract metadata
-        priority = self.extract_priority_from_labels(issue['labels'])
-        parent = self.extract_parent_from_body(issue['body'], issue_type)
-        dependencies = self.extract_dependencies_from_body(issue['body'])
+        priority = self.extract_priority_from_labels(issue["labels"])
+        parent = self.extract_parent_from_body(issue["body"], issue_type)
+        dependencies = self.extract_dependencies_from_body(issue["body"])
 
         # Update project fields
         if priority or parent:
@@ -280,10 +317,22 @@ class GitHubProjectManager:
 
         # Get all GitHub issues
         try:
-            result = subprocess.run([
-                'gh', 'issue', 'list', '--limit', '100', '--state', 'all',
-                '--json', 'number,title,labels'
-            ], capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                [
+                    "gh",
+                    "issue",
+                    "list",
+                    "--limit",
+                    "100",
+                    "--state",
+                    "all",
+                    "--json",
+                    "number,title,labels",
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
 
             github_issues = json.loads(result.stdout)
 
@@ -293,21 +342,23 @@ class GitHubProjectManager:
         # Get project items
         project_items = self.get_project_items()
         project_issue_numbers = {
-            item.get('content', {}).get('number')
+            item.get("content", {}).get("number")
             for item in project_items
-            if item.get('content', {}).get('number')
+            if item.get("content", {}).get("number")
         }
 
         # Check for issues not in project
         for issue in github_issues:
-            issue_number = issue['number']
+            issue_number = issue["number"]
             has_type_label = any(
-                label['name'] in ['epic', 'user-story', 'defect']
-                for label in issue['labels']
+                label["name"] in ["epic", "user-story", "defect"]
+                for label in issue["labels"]
             )
 
             if has_type_label and issue_number not in project_issue_numbers:
-                issues.append(f"Issue #{issue_number} has type label but not in project")
+                issues.append(
+                    f"Issue #{issue_number} has type label but not in project"
+                )
 
         return issues
 
@@ -317,23 +368,35 @@ class GitHubProjectManager:
         print("=" * 50)
 
         try:
-            result = subprocess.run([
-                'gh', 'issue', 'list', '--limit', '100', '--state', 'all',
-                '--json', 'number,title,body,labels'
-            ], capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                [
+                    "gh",
+                    "issue",
+                    "list",
+                    "--limit",
+                    "100",
+                    "--state",
+                    "all",
+                    "--json",
+                    "number,title,body,labels",
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
 
             issues = json.loads(result.stdout)
 
             dependency_graph = {}
             for issue in issues:
-                number = issue['number']
-                title = issue['title']
-                deps = self.extract_dependencies_from_body(issue['body'])
+                number = issue["number"]
+                title = issue["title"]
+                deps = self.extract_dependencies_from_body(issue["body"])
 
                 if any(deps.values()):
                     dependency_graph[f"#{number}"] = {
-                        'title': title,
-                        'dependencies': deps
+                        "title": title,
+                        "dependencies": deps,
                     }
 
             if not dependency_graph:
@@ -342,7 +405,7 @@ class GitHubProjectManager:
 
             for issue_ref, data in dependency_graph.items():
                 print(f"\n{issue_ref}: {data['title']}")
-                for dep_type, dep_list in data['dependencies'].items():
+                for dep_type, dep_list in data["dependencies"].items():
                     if dep_list:
                         print(f"  {dep_type}: {', '.join(dep_list)}")
 
@@ -352,19 +415,23 @@ class GitHubProjectManager:
 
 def main():
     """CLI entry point."""
-    parser = argparse.ArgumentParser(description='GitHub Project Manager')
-    parser.add_argument('--associate-issue', type=int,
-                       help='Associate issue number with project')
-    parser.add_argument('--sync-issue', type=int,
-                       help='Sync issue with all project metadata')
-    parser.add_argument('--validate-consistency', action='store_true',
-                       help='Validate project consistency')
-    parser.add_argument('--dependency-report', action='store_true',
-                       help='Generate dependency report')
-    parser.add_argument('--project-name', default='GoNoGo',
-                       help='GitHub project name')
-    parser.add_argument('--owner', default='QHuuT',
-                       help='GitHub owner/organization')
+    parser = argparse.ArgumentParser(description="GitHub Project Manager")
+    parser.add_argument(
+        "--associate-issue", type=int, help="Associate issue number with project"
+    )
+    parser.add_argument(
+        "--sync-issue", type=int, help="Sync issue with all project metadata"
+    )
+    parser.add_argument(
+        "--validate-consistency",
+        action="store_true",
+        help="Validate project consistency",
+    )
+    parser.add_argument(
+        "--dependency-report", action="store_true", help="Generate dependency report"
+    )
+    parser.add_argument("--project-name", default="GoNoGo", help="GitHub project name")
+    parser.add_argument("--owner", default="QHuuT", help="GitHub owner/organization")
 
     args = parser.parse_args()
 
@@ -391,10 +458,16 @@ def main():
     if args.dependency_report:
         manager.generate_dependency_report()
 
-    if not any([args.associate_issue, args.sync_issue, args.validate_consistency,
-               args.dependency_report]):
+    if not any(
+        [
+            args.associate_issue,
+            args.sync_issue,
+            args.validate_consistency,
+            args.dependency_report,
+        ]
+    ):
         parser.print_help()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

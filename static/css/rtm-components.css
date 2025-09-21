@@ -105,33 +105,43 @@
 }
 
 .epic-card[data-status="planned"] {
-  border-left: 4px solid var(--color-warning);
+  border-left: 8px solid var(--color-warning);
 }
 
 .epic-card[data-status="in_progress"] {
-  border-left: 4px solid var(--color-primary);
+  border-left: 8px solid var(--color-primary);
 }
 
 .epic-card[data-status="completed"] {
-  border-left: 4px solid var(--color-success);
+  border-left: 8px solid var(--color-success);
 }
 
 .epic-card[data-status="blocked"] {
-  border-left: 4px solid var(--color-danger);
+  border-left: 8px solid var(--color-danger);
 }
 
 /* Epic Header */
 .epic-header {
-  background: var(--color-primary);
+  background: var(--color-text-secondary);
   color: var(--color-primary-contrast);
   padding: var(--space-lg);
   cursor: pointer;
   transition: background-color var(--transition-base);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.epic-header__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: var(--space-2xl); /* Make space for the arrow */
 }
 
 .epic-header:hover {
-  background: var(--color-primary-dark);
+  background: var(--color-text-muted);
 }
 
 .epic-header:focus {
@@ -143,8 +153,10 @@
   content: "▼";
   position: absolute;
   right: var(--space-lg);
-  top: 50%;
+  top: 50%; /* Vertically center relative to entire header */
   transform: translateY(-50%);
+  line-height: 1;
+  font-size: var(--font-size-lg);
   transition: transform var(--transition-base);
 }
 
@@ -152,8 +164,10 @@
   content: "▶";
   position: absolute;
   right: var(--space-lg);
-  top: 50%;
+  top: 50%; /* Vertically center relative to entire header */
   transform: translateY(-50%);
+  line-height: 1;
+  font-size: var(--font-size-lg);
   transition: transform var(--transition-base);
 }
 
@@ -202,7 +216,9 @@
 
 /* Epic Progress Bar */
 .epic-progress {
-  margin-top: var(--space-base);
+  margin-top: var(--space-xs); /* Reduced height/spacing */
+  width: 100%; /* Take full header width */
+  padding-right: var(--space-3xl); /* Space for arrow */
 }
 
 .epic-progress__label {
@@ -210,14 +226,17 @@
   justify-content: space-between;
   margin-bottom: var(--space-xs);
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold); /* More visible */
+  color: rgba(255, 255, 255, 0.9); /* High contrast against dark header */
 }
 
 .epic-progress__bar {
-  background: var(--color-bg-tertiary);
-  height: 8px;
-  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.2); /* Light transparent background for contrast */
+  height: 8px; /* Reasonable height */
+  border-radius: var(--radius-base);
   overflow: hidden;
+  width: 100%; /* Take full width of container */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle light border */
 }
 
 .epic-progress__fill {
@@ -244,39 +263,6 @@
   100% { transform: translateX(100%); }
 }
 
-/* ===== STATUS BADGES ===== */
-
-.status-badge {
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.status-badge--planned {
-  background: var(--color-warning);
-  color: var(--color-primary-contrast);
-}
-
-.status-badge--in-progress {
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
-}
-
-.status-badge--completed {
-  background: var(--color-success);
-  color: var(--color-primary-contrast);
-}
-
-.status-badge--blocked {
-  background: var(--color-danger);
-  color: var(--color-primary-contrast);
-}
 
 /* ===== METRICS DASHBOARD ===== */
 
@@ -432,14 +418,275 @@
 
 /* ===== DATA TABLES ===== */
 
+/* Table container */
+.rtm-table-container {
+  margin-top: var(--space-lg);
+  border-radius: var(--radius-base);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Collapsible bodies */
+.collapsible__body {
+  /* Removed overflow-x: auto to prevent unwanted horizontal scrolling */
+}
+
+
 .rtm-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: var(--space-lg);
   background: var(--color-bg-primary);
   border-radius: var(--radius-base);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  table-layout: fixed; /* Fixed layout prevents column width changes on filtering */
+}
+
+/* ===== USER STORIES TABLE (4 columns) ===== */
+/* ID | Title | Story Points | Status */
+table[aria-label*="User Stories"] th:nth-child(1),
+table[aria-label*="User Stories"] td:nth-child(1) {
+  width: 100px; /* ID column */
+}
+
+table[aria-label*="User Stories"] th:nth-child(2),
+table[aria-label*="User Stories"] td:nth-child(2) {
+  width: auto; /* Title column - takes remaining space */
+  min-width: 400px;
+  max-width: 600px;
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--font-weight-medium);
+}
+
+table[aria-label*="User Stories"] th:nth-child(3),
+table[aria-label*="User Stories"] td:nth-child(3) {
+  width: 120px; /* Story Points column - increased for single-line display */
+  text-align: center;
+}
+
+table[aria-label*="User Stories"] th:nth-child(4),
+table[aria-label*="User Stories"] td:nth-child(4) {
+  width: 140px; /* Status column */
+}
+
+/* ===== TEST TABLE (5 columns) ===== */
+/* Test Type | Function/Scenario | Last Execution | Status | File Path */
+table[aria-label*="Test Traceability"] th:nth-child(1),
+table[aria-label*="Test Traceability"] td:nth-child(1) {
+  width: 110px; /* Test Type column - increased for "INTEGRATION" badge */
+}
+
+table[aria-label*="Test Traceability"] th:nth-child(2),
+table[aria-label*="Test Traceability"] td:nth-child(2) {
+  width: auto; /* Function/Scenario column - takes remaining space */
+  min-width: 350px;
+  max-width: 550px;
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--font-weight-medium);
+}
+
+table[aria-label*="Test Traceability"] th:nth-child(3),
+table[aria-label*="Test Traceability"] td:nth-child(3) {
+  width: 140px; /* Last Execution column */
+}
+
+table[aria-label*="Test Traceability"] th:nth-child(4),
+table[aria-label*="Test Traceability"] td:nth-child(4) {
+  width: 110px; /* Status column */
+}
+
+table[aria-label*="Test Traceability"] th:nth-child(5),
+table[aria-label*="Test Traceability"] td:nth-child(5) {
+  width: 120px; /* File Path column - increased for single-line display */
+}
+
+/* ===== DEFECTS TABLE (5 columns) ===== */
+/* ID | Title | Priority | Status | Severity */
+table[aria-label*="Defect"] th:nth-child(1),
+table[aria-label*="Defect"] td:nth-child(1) {
+  width: 120px; /* ID column - increased for single-line display */
+}
+
+table[aria-label*="Defects"] th:nth-child(1),
+table[aria-label*="Defects"] td:nth-child(1) {
+  width: 120px; /* ID column - increased for single-line display */
+}
+
+table[aria-label*="Defect"] th:nth-child(2),
+table[aria-label*="Defect"] td:nth-child(2),
+table[aria-label*="Defects"] th:nth-child(2),
+table[aria-label*="Defects"] td:nth-child(2) {
+  width: auto; /* Title column - takes remaining space */
+  min-width: 350px;
+  max-width: 550px;
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--font-weight-medium);
+}
+
+table[aria-label*="Defect"] th:nth-child(3),
+table[aria-label*="Defect"] td:nth-child(3),
+table[aria-label*="Defects"] th:nth-child(3),
+table[aria-label*="Defects"] td:nth-child(3) {
+  width: 120px; /* Priority column */
+}
+
+table[aria-label*="Defect"] th:nth-child(4),
+table[aria-label*="Defect"] td:nth-child(4),
+table[aria-label*="Defects"] th:nth-child(4),
+table[aria-label*="Defects"] td:nth-child(4) {
+  width: 140px; /* Status column */
+}
+
+table[aria-label*="Defect"] th:nth-child(5),
+table[aria-label*="Defect"] td:nth-child(5),
+table[aria-label*="Defects"] th:nth-child(5),
+table[aria-label*="Defects"] td:nth-child(5) {
+  width: 120px; /* Severity column */
+}
+
+/* Enhanced styling for content cells that need priority display */
+.function-cell {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  padding-right: var(--space-base);
+}
+
+/* File path container with copy button and feedback */
+.file-path-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  max-width: 100%;
+  position: relative;
+}
+
+/* Function/Scenario cell with truncation */
+.function-cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 250px;
+}
+
+.copy-btn {
+  background: none;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 10px;
+  color: var(--color-text-muted);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  min-width: 45px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-btn__text {
+  font-weight: var(--font-weight-semibold);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+}
+
+.copy-btn:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border-color: var(--color-primary);
+}
+
+.copy-btn:active {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+/* Copy success animation */
+.copy-btn.copy-success {
+  background: var(--color-success) !important;
+  color: var(--color-primary-contrast) !important;
+  border-color: var(--color-success) !important;
+  animation: copySuccess 1.2s ease-in-out;
+}
+
+.copy-btn.copy-success .copy-btn__text {
+  font-weight: var(--font-weight-bold);
+}
+
+@keyframes copySuccess {
+  0% {
+    background: #2196f3;
+    box-shadow: 0 0 20px rgba(33, 150, 243, 0.5);
+  }
+  50% {
+    background: #1976d2;
+    box-shadow: 0 0 30px rgba(33, 150, 243, 0.7);
+  }
+  100% {
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-light);
+    box-shadow: none;
+  }
+}
+
+/* Copy feedback styling */
+.copy-feedback {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--color-success);
+  color: var(--color-primary-contrast);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  z-index: 10;
+  margin-left: 4px;
+  animation: copyFeedback 1.2s ease-in-out;
+}
+
+@keyframes copyFeedback {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%);
+  }
+  10%, 90% {
+    opacity: 1;
+    transform: translateY(-50%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%);
+  }
+}
+
+/* Toast animation for copy feedback */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  20%, 80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 }
 
 .rtm-table__header {
@@ -464,12 +711,35 @@
   vertical-align: top;
 }
 
+/* Exception for center-aligned elements that should stay centered */
+.file-path-container,
+.copy-btn {
+  text-align: center !important;
+}
+
 .rtm-table__row {
-  transition: background-color var(--transition-fast);
+  transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .rtm-table__row:hover {
   background: var(--color-bg-secondary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced hover for specific row types */
+.test-row:hover {
+  background: rgba(52, 152, 219, 0.05);
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.15);
+}
+
+.us-row:hover {
+  background: rgba(46, 204, 113, 0.05);
+  box-shadow: 0 2px 8px rgba(46, 204, 113, 0.15);
+}
+
+.defect-row:hover {
+  background: rgba(231, 76, 60, 0.05);
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.15);
 }
 
 .rtm-table__row.hidden,
@@ -491,91 +761,133 @@
   text-transform: uppercase;
 }
 
-.priority-badge {
+/* ===== UNIFIED BADGE SYSTEM ===== */
+
+/* Base badge styling - consistent across all badge types */
+.badge {
+  display: inline-flex;
+  align-items: center;
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-full);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
-  color: var(--color-primary-contrast);
   text-transform: uppercase;
+  border: 1px solid transparent;
+  transition: all var(--transition-base);
 }
 
-.priority-badge--critical {
-  background: var(--color-danger);
+/* Status badges - solid backgrounds */
+.badge--status {
+  color: var(--color-primary-contrast);
 }
 
-.priority-badge--high {
+.badge--status-planned {
   background: var(--color-warning);
 }
 
-.priority-badge--medium {
+.badge--status-in-progress {
+  background: var(--color-primary);
+}
+
+.badge--status-completed {
+  background: var(--color-success);
+}
+
+.badge--status-blocked {
+  background: var(--color-danger);
+}
+
+.badge--status-active {
+  background: #2ecc71; /* Green for active status with high contrast */
+  color: #ffffff;
+}
+
+.badge--status-in-review {
+  background: var(--color-info);
+}
+
+.badge--status-open {
+  background: var(--color-danger);
+}
+
+.badge--status-resolved {
+  background: var(--color-success);
+}
+
+.badge--status-closed {
+  background: var(--color-text-light);
+}
+
+.badge--status-passed {
+  background: var(--color-success);
+}
+
+.badge--status-failed {
+  background: var(--color-danger);
+}
+
+.badge--status-skipped {
+  background: var(--color-warning);
+}
+
+/* Priority badges - solid backgrounds */
+.badge--priority {
+  color: var(--color-primary-contrast);
+}
+
+.badge--priority-critical {
+  background: var(--color-danger);
+}
+
+.badge--priority-high {
+  background: var(--color-warning);
+}
+
+.badge--priority-medium {
   background: #f1c40f;
   color: var(--color-text-primary);
 }
 
-.priority-badge--low {
+.badge--priority-low {
   background: var(--color-success);
 }
 
-/* Defect status badges */
-.defect-status-badge {
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary-contrast);
-  text-transform: uppercase;
-}
-
-.defect-status-badge--open {
-  background: var(--color-danger);
-}
-
-.defect-status-badge--in-progress {
-  background: var(--color-warning);
-}
-
-.defect-status-badge--resolved {
-  background: var(--color-success);
-}
-
-.defect-status-badge--closed {
-  background: var(--color-text-light);
-}
-
-/* Severity badges */
-.severity-badge {
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
+/* Severity badges - outlined with light backgrounds */
+.badge--severity {
   border: 2px solid;
   background: var(--color-bg-primary);
 }
 
-.severity-badge--critical {
+.badge--severity-critical {
   color: var(--color-danger);
   border-color: var(--color-danger);
   background: #fdedec;
 }
 
-.severity-badge--high {
+.badge--severity-high {
   color: var(--color-warning);
   border-color: var(--color-warning);
   background: #fef9e7;
 }
 
-.severity-badge--medium {
+.badge--severity-medium {
   color: #f1c40f;
   border-color: #f1c40f;
   background: #fcf3cf;
 }
 
-.severity-badge--low {
+.badge--severity-low {
   color: var(--color-success);
   border-color: var(--color-success);
   background: #eafaf1;
 }
+
+/* Test type badges - simple solid background */
+.badge--test-type {
+  background: var(--color-info);
+  color: var(--color-primary-contrast);
+}
+
 
 /* ===== TEST TYPE BREAKDOWN ===== */
 

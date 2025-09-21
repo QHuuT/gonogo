@@ -8,11 +8,11 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 Architecture Decision: ADR-003 - Hybrid GitHub + Database RTM Architecture
 """
 
-from typing import List, Optional
-from datetime import datetime
 import json
+from datetime import datetime
+from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Response, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import and_, func
@@ -434,10 +434,21 @@ def generate_dynamic_rtm_matrix(
     epic_filter: Optional[str] = Query(None, description="Filter by epic ID"),
     status_filter: Optional[str] = Query(None, description="Filter by status"),
     priority_filter: Optional[str] = Query(None, description="Filter by priority"),
-    us_status_filter: Optional[str] = Query("all", description="Filter user stories by status: all, planned, in_progress, completed, blocked"),
-    test_type_filter: Optional[str] = Query("all", description="Filter tests by type: all, unit, integration, e2e, security"),
-    defect_priority_filter: Optional[str] = Query("all", description="Filter defects by priority: all, critical, high, medium, low"),
-    defect_status_filter: Optional[str] = Query("all", description="Filter defects by status: all, open, in_progress, resolved, closed"),
+    us_status_filter: Optional[str] = Query(
+        "all",
+        description="Filter user stories by status: all, planned, in_progress, completed, blocked",
+    ),
+    test_type_filter: Optional[str] = Query(
+        "all", description="Filter tests by type: all, unit, integration, e2e, security"
+    ),
+    defect_priority_filter: Optional[str] = Query(
+        "all",
+        description="Filter defects by priority: all, critical, high, medium, low",
+    ),
+    defect_status_filter: Optional[str] = Query(
+        "all",
+        description="Filter defects by status: all, open, in_progress, resolved, closed",
+    ),
     include_tests: bool = Query(True, description="Include test coverage"),
     include_defects: bool = Query(True, description="Include defect tracking"),
     db: Session = Depends(get_db),
@@ -456,7 +467,6 @@ def generate_dynamic_rtm_matrix(
         "include_tests": include_tests,
         "include_defects": include_defects,
     }
-
 
     if format == "html":
         content = generator.generate_html_matrix(filters)
@@ -532,44 +542,53 @@ def generate_defect_analysis_report(
 def get_dashboard_data(db: Session = Depends(get_db)):
     """Get real-time data for RTM dashboard widgets."""
     # Epic status distribution
-    epic_status_query = db.query(
-        Epic.status, func.count(Epic.id).label('count')
-    ).group_by(Epic.status).all()
+    epic_status_query = (
+        db.query(Epic.status, func.count(Epic.id).label("count"))
+        .group_by(Epic.status)
+        .all()
+    )
 
     epic_status = {status: count for status, count in epic_status_query}
 
     # User story progress
-    us_status_query = db.query(
-        UserStory.implementation_status, func.count(UserStory.id).label('count')
-    ).group_by(UserStory.implementation_status).all()
+    us_status_query = (
+        db.query(
+            UserStory.implementation_status, func.count(UserStory.id).label("count")
+        )
+        .group_by(UserStory.implementation_status)
+        .all()
+    )
 
     us_status = {status: count for status, count in us_status_query}
 
     # Test execution summary
-    test_status_query = db.query(
-        Test.last_execution_status, func.count(Test.id).label('count')
-    ).group_by(Test.last_execution_status).all()
+    test_status_query = (
+        db.query(Test.last_execution_status, func.count(Test.id).label("count"))
+        .group_by(Test.last_execution_status)
+        .all()
+    )
 
     test_status = {status: count for status, count in test_status_query}
 
     # Defect severity distribution
-    defect_severity_query = db.query(
-        Defect.severity, func.count(Defect.id).label('count')
-    ).group_by(Defect.severity).all()
+    defect_severity_query = (
+        db.query(Defect.severity, func.count(Defect.id).label("count"))
+        .group_by(Defect.severity)
+        .all()
+    )
 
     defect_severity = {severity: count for severity, count in defect_severity_query}
 
     # Recent activity (last 7 days)
     from datetime import datetime, timedelta
+
     recent_date = datetime.utcnow() - timedelta(days=7)
 
-    recent_tests = db.query(Test).filter(
-        Test.last_execution_timestamp >= recent_date
-    ).count()
+    recent_tests = (
+        db.query(Test).filter(Test.last_execution_timestamp >= recent_date).count()
+    )
 
-    recent_defects = db.query(Defect).filter(
-        Defect.created_at >= recent_date
-    ).count()
+    recent_defects = db.query(Defect).filter(Defect.created_at >= recent_date).count()
 
     return {
         "timestamp": datetime.utcnow().isoformat(),
@@ -586,7 +605,7 @@ def get_dashboard_data(db: Session = Depends(get_db)):
             "total_user_stories": db.query(UserStory).count(),
             "total_tests": db.query(Test).count(),
             "total_defects": db.query(Defect).count(),
-        }
+        },
     }
 
 
@@ -606,10 +625,12 @@ def export_report(
     elif report_type == "test-summary":
         content, media_type, filename = generator.export_test_summary(format)
     else:
-        raise HTTPException(status_code=400, detail=f"Unknown report type: {report_type}")
+        raise HTTPException(
+            status_code=400, detail=f"Unknown report type: {report_type}"
+        )
 
     return Response(
         content=content,
         media_type=media_type,
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
     )

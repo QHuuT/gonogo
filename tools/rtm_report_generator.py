@@ -9,13 +9,13 @@ Related Issue: US-00059 - Dynamic RTM generation and reporting
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
-import sys
-import os
-import json
-import asyncio
 import argparse
+import asyncio
+import json
+import os
+import sys
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 # Add src to Python path
 src_path = Path(__file__).parent.parent / "src"
@@ -23,8 +23,9 @@ sys.path.insert(0, str(src_path))
 
 try:
     from be.database import get_db_session
-    from be.models.traceability import Epic, UserStory, Test, Defect
+    from be.models.traceability import Defect, Epic, Test, UserStory
     from be.services.rtm_report_generator import RTMReportGenerator
+
     DATABASE_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: Database modules not available: {e}")
@@ -159,7 +160,7 @@ class DynamicRTMDemo:
                     "total_user_stories": self.db_session.query(UserStory).count(),
                     "total_tests": self.db_session.query(Test).count(),
                     "total_defects": self.db_session.query(Defect).count(),
-                }
+                },
             }
 
             print("Dashboard Data Structure:")
@@ -180,25 +181,33 @@ class DynamicRTMDemo:
         print("=" * 50)
 
         try:
-            progress_report = self.report_generator.generate_epic_progress_json(include_charts=True)
+            progress_report = self.report_generator.generate_epic_progress_json(
+                include_charts=True
+            )
 
             print("Epic Progress Report Structure:")
             print(f"Generated at: {progress_report['metadata']['generated_at']}")
             print(f"Total epics: {progress_report['metadata']['total_epics']}")
 
-            if progress_report['epic_progress']:
+            if progress_report["epic_progress"]:
                 print("\nFirst Epic Details:")
-                first_epic = progress_report['epic_progress'][0]
+                first_epic = progress_report["epic_progress"][0]
                 print(f"Epic ID: {first_epic['epic']['epic_id']}")
                 print(f"Title: {first_epic['epic']['title']}")
-                print(f"Completion: {first_epic['metrics']['completion_percentage']:.1f}%")
+                print(
+                    f"Completion: {first_epic['metrics']['completion_percentage']:.1f}%"
+                )
                 print(f"User Stories: {first_epic['metrics']['user_stories_count']}")
                 print(f"Tests: {first_epic['metrics']['tests_count']}")
                 print(f"Test Pass Rate: {first_epic['metrics']['test_pass_rate']:.1f}%")
 
             print(f"\nOverall Summary:")
-            print(f"Overall completion: {progress_report['summary']['overall_completion']:.1f}%")
-            print(f"Total story points: {progress_report['summary']['total_story_points']}")
+            print(
+                f"Overall completion: {progress_report['summary']['overall_completion']:.1f}%"
+            )
+            print(
+                f"Total story points: {progress_report['summary']['total_story_points']}"
+            )
 
         except Exception as e:
             print(f"[ERROR] Epic progress demo failed: {e}")
@@ -212,8 +221,8 @@ class DynamicRTMDemo:
         output_dir.mkdir(parents=True, exist_ok=True)
 
         output_path = output_dir / filename
-        with open(output_path, 'w', encoding='utf-8') as f:
-            if filename.endswith('.json'):
+        with open(output_path, "w", encoding="utf-8") as f:
+            if filename.endswith(".json"):
                 if isinstance(content, dict):
                     json.dump(content, f, indent=2)
                 else:
@@ -244,7 +253,7 @@ class DynamicRTMDemo:
         # JSON Report
         print("Generating JSON RTM matrix...")
         json_report = self.generate_json_report()
-        if 'error' not in json_report:
+        if "error" not in json_report:
             self.save_report(json_report, "rtm_matrix_sample.json")
         else:
             print(f"[ERROR] JSON report failed: {json_report['error']}")
@@ -265,7 +274,9 @@ class DynamicRTMDemo:
         else:
             print("[ERROR] HTML report failed: Database not available")
 
-        print("\n[OK] Demo completed! Check quality/reports/dynamic_rtm/ for generated files.")
+        print(
+            "\n[OK] Demo completed! Check quality/reports/dynamic_rtm/ for generated files."
+        )
 
     def show_api_examples(self):
         """Show API endpoint examples."""
@@ -293,9 +304,13 @@ class DynamicRTMDemo:
 
         print("\nFiltering examples:")
         print(f"  Filter by Epic: {base_url}/reports/matrix?epic_filter=EP-00005")
-        print(f"  Filter by Status: {base_url}/reports/matrix?status_filter=in_progress")
+        print(
+            f"  Filter by Status: {base_url}/reports/matrix?status_filter=in_progress"
+        )
         print(f"  Filter by Priority: {base_url}/reports/matrix?priority_filter=high")
-        print(f"  Multiple filters: {base_url}/reports/matrix?status_filter=in_progress&include_tests=true")
+        print(
+            f"  Multiple filters: {base_url}/reports/matrix?status_filter=in_progress&include_tests=true"
+        )
 
 
 def main():
@@ -311,29 +326,27 @@ Examples:
   python tools/dynamic_rtm_demo.py --markdown         # Generate Markdown report only
   python tools/dynamic_rtm_demo.py --html             # Generate HTML report only
   python tools/dynamic_rtm_demo.py --api-examples     # Show API endpoint examples
-        """
+        """,
     )
 
-    parser.add_argument('--status', action='store_true',
-                       help='Show RTM system status')
-    parser.add_argument('--demo', action='store_true',
-                       help='Run comprehensive demo')
-    parser.add_argument('--json', action='store_true',
-                       help='Generate JSON report only')
-    parser.add_argument('--markdown', action='store_true',
-                       help='Generate Markdown report only')
-    parser.add_argument('--html', action='store_true',
-                       help='Generate HTML report only')
-    parser.add_argument('--api-examples', action='store_true',
-                       help='Show API endpoint examples')
-    parser.add_argument('--epic-filter', type=str,
-                       help='Filter by epic ID')
-    parser.add_argument('--status-filter', type=str,
-                       help='Filter by status')
-    parser.add_argument('--priority-filter', type=str,
-                       help='Filter by priority')
-    parser.add_argument('--include-demo-data', action='store_true',
-                       help='Include demo epics (EP-DEMO-*) in the report')
+    parser.add_argument("--status", action="store_true", help="Show RTM system status")
+    parser.add_argument("--demo", action="store_true", help="Run comprehensive demo")
+    parser.add_argument("--json", action="store_true", help="Generate JSON report only")
+    parser.add_argument(
+        "--markdown", action="store_true", help="Generate Markdown report only"
+    )
+    parser.add_argument("--html", action="store_true", help="Generate HTML report only")
+    parser.add_argument(
+        "--api-examples", action="store_true", help="Show API endpoint examples"
+    )
+    parser.add_argument("--epic-filter", type=str, help="Filter by epic ID")
+    parser.add_argument("--status-filter", type=str, help="Filter by status")
+    parser.add_argument("--priority-filter", type=str, help="Filter by priority")
+    parser.add_argument(
+        "--include-demo-data",
+        action="store_true",
+        help="Include demo epics (EP-DEMO-*) in the report",
+    )
 
     args = parser.parse_args()
 
@@ -342,13 +355,13 @@ Examples:
     # Build filters from command line args
     filters = {}
     if args.epic_filter:
-        filters['epic_id'] = args.epic_filter
+        filters["epic_id"] = args.epic_filter
     if args.status_filter:
-        filters['status'] = args.status_filter
+        filters["status"] = args.status_filter
     if args.priority_filter:
-        filters['priority'] = args.priority_filter
+        filters["priority"] = args.priority_filter
     if args.include_demo_data:
-        filters['include_demo_data'] = True
+        filters["include_demo_data"] = True
 
     if args.status:
         demo.show_system_status()
@@ -356,7 +369,7 @@ Examples:
         demo.run_comprehensive_demo()
     elif args.json:
         report = demo.generate_json_report(filters)
-        if 'error' in report:
+        if "error" in report:
             print(f"[ERROR] {report['error']}")
         else:
             # Use descriptive filename based on filters
@@ -395,5 +408,5 @@ Examples:
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

@@ -12,8 +12,8 @@ Usage:
     python tools/github_issue_creation_demo.py --create-issues
 """
 
-import sys
 import argparse
+import sys
 import tempfile
 from datetime import datetime
 from pathlib import Path
@@ -21,9 +21,9 @@ from pathlib import Path
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from shared.testing.failure_tracker import FailureTracker, TestFailure, FailureCategory
-from shared.testing.log_failure_correlator import LogFailureCorrelator
+from shared.testing.failure_tracker import FailureCategory, FailureTracker, TestFailure
 from shared.testing.github_issue_creator import TestFailureIssueCreator
+from shared.testing.log_failure_correlator import LogFailureCorrelator
 
 
 def create_sample_failures_for_demo(failure_tracker: FailureTracker) -> list[int]:
@@ -45,7 +45,7 @@ AssertionError: Authentication bypass detected - critical security vulnerability
   Actual: False
   Context: User with invalid credentials gained access""",
         category=FailureCategory.ASSERTION_ERROR,
-        metadata={"severity_level": "critical", "security_impact": "high"}
+        metadata={"severity_level": "critical", "security_impact": "high"},
     )
     failure_1.occurrence_count = 3  # Multiple failures
     failure_id_1 = failure_tracker.record_failure(failure_1)
@@ -63,7 +63,7 @@ TimeoutError: Connection pool exhausted after 30 seconds
   Active connections: 10/10
   Waiting requests: 5""",
         category=FailureCategory.TIMEOUT_ERROR,
-        metadata={"retry_count": 2, "infrastructure_related": True}
+        metadata={"retry_count": 2, "infrastructure_related": True},
     )
     failure_2.occurrence_count = 7  # Very flaky
     failure_id_2 = failure_tracker.record_failure(failure_2)
@@ -82,7 +82,7 @@ AssertionError: Personal data not deleted after retention period
   Actual: 156 records
   Context: Data older than 365 days still present in database""",
         category=FailureCategory.ASSERTION_ERROR,
-        metadata={"compliance_impact": "high", "gdpr_violation": True}
+        metadata={"compliance_impact": "high", "gdpr_violation": True},
     )
     failure_3.occurrence_count = 2
     failure_id_3 = failure_tracker.record_failure(failure_3)
@@ -99,7 +99,7 @@ AssertionError: Personal data not deleted after retention period
 ModuleNotFoundError: No module named 'optional_crypto_lib'
   Note: This is an optional dependency for enhanced encryption features""",
         category=FailureCategory.IMPORT_ERROR,
-        metadata={"optional_dependency": True, "feature_impact": "low"}
+        metadata={"optional_dependency": True, "feature_impact": "low"},
     )
     failure_4.occurrence_count = 1
     failure_id_4 = failure_tracker.record_failure(failure_4)
@@ -109,7 +109,9 @@ ModuleNotFoundError: No module named 'optional_crypto_lib'
     return failure_ids
 
 
-def demonstrate_issue_template_generation(creator: TestFailureIssueCreator, failure_ids: list[int]):
+def demonstrate_issue_template_generation(
+    creator: TestFailureIssueCreator, failure_ids: list[int]
+):
     """Demonstrate issue template generation."""
     print("\n*** Demonstrating Issue Template Generation...")
 
@@ -125,9 +127,9 @@ def demonstrate_issue_template_generation(creator: TestFailureIssueCreator, fail
 
             # Show preview of template
             try:
-                with open(result.issue_url, 'r', encoding='utf-8') as f:
+                with open(result.issue_url, "r", encoding="utf-8") as f:
                     content = f.read()
-                    lines = content.split('\n')
+                    lines = content.split("\n")
 
                 print(f"   Preview (first 15 lines):")
                 for line in lines[:15]:
@@ -157,12 +159,16 @@ def demonstrate_candidate_identification(creator: TestFailureIssueCreator):
         print(f"      - Severity: {candidate['severity']}")
         print(f"      - Occurrences: {candidate['occurrence_count']}")
         print(f"      - Last seen: {candidate['last_seen']}")
-        print(f"      - Recommended labels: {', '.join(candidate['recommended_labels'])}")
+        print(
+            f"      - Recommended labels: {', '.join(candidate['recommended_labels'])}"
+        )
 
     return candidates
 
 
-def demonstrate_batch_processing(creator: TestFailureIssueCreator, failure_ids: list[int], dry_run: bool = True):
+def demonstrate_batch_processing(
+    creator: TestFailureIssueCreator, failure_ids: list[int], dry_run: bool = True
+):
     """Demonstrate batch issue creation."""
     print(f"\n*** Demonstrating Batch Issue Creation (dry_run={dry_run})...")
 
@@ -176,9 +182,12 @@ def demonstrate_batch_processing(creator: TestFailureIssueCreator, failure_ids: 
     output_dir = Path("quality/reports")
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    report_path = output_dir / f"github_issue_creation_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+    report_path = (
+        output_dir
+        / f"github_issue_creation_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+    )
 
-    with open(report_path, 'w', encoding='utf-8') as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
 
     print(f"   Batch processing completed")
@@ -192,7 +201,11 @@ def demonstrate_batch_processing(creator: TestFailureIssueCreator, failure_ids: 
     print(f"     - Total processed: {len(results)}")
     print(f"     - Successful: {len(successful)}")
     print(f"     - Failed: {len(failed)}")
-    print(f"     - Success rate: {len(successful)/len(results)*100:.1f}%" if results else "0%")
+    print(
+        f"     - Success rate: {len(successful)/len(results)*100:.1f}%"
+        if results
+        else "0%"
+    )
 
     if failed:
         print(f"   Errors:")
@@ -202,7 +215,9 @@ def demonstrate_batch_processing(creator: TestFailureIssueCreator, failure_ids: 
     return results
 
 
-def demonstrate_label_intelligence(creator: TestFailureIssueCreator, failure_ids: list[int]):
+def demonstrate_label_intelligence(
+    creator: TestFailureIssueCreator, failure_ids: list[int]
+):
     """Demonstrate intelligent label assignment."""
     print("\n*** Demonstrating Intelligent Label Assignment...")
 
@@ -221,11 +236,11 @@ def demonstrate_label_intelligence(creator: TestFailureIssueCreator, failure_ids
             print(f"     Template type: {template.template_type}")
 
             # Show label reasoning
-            if 'priority/high' in template.labels:
+            if "priority/high" in template.labels:
                 print(f"     [HIGH] High priority detected (critical/security issue)")
-            elif 'flaky-test' in template.template_type:
+            elif "flaky-test" in template.template_type:
                 print(f"     [FLAKY] Flaky test detected (multiple occurrences)")
-            elif 'infrastructure' in template.template_type:
+            elif "infrastructure" in template.template_type:
                 print(f"     [INFRA] Infrastructure issue detected")
 
         else:
@@ -235,12 +250,22 @@ def demonstrate_label_intelligence(creator: TestFailureIssueCreator, failure_ids
 def main():
     """Main demo function."""
     parser = argparse.ArgumentParser(description="GitHub Issue Creation Demo")
-    parser.add_argument('--dry-run', action='store_true', default=True,
-                       help='Generate templates without creating actual issues (default)')
-    parser.add_argument('--create-issues', action='store_true',
-                       help='Actually create GitHub issues (requires GitHub CLI auth)')
-    parser.add_argument('--skip-samples', action='store_true',
-                       help='Skip creating sample failures (use existing)')
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=True,
+        help="Generate templates without creating actual issues (default)",
+    )
+    parser.add_argument(
+        "--create-issues",
+        action="store_true",
+        help="Actually create GitHub issues (requires GitHub CLI auth)",
+    )
+    parser.add_argument(
+        "--skip-samples",
+        action="store_true",
+        help="Skip creating sample failures (use existing)",
+    )
 
     args = parser.parse_args()
 
@@ -249,17 +274,19 @@ def main():
     if args.create_issues:
         print("⚠️  WARNING: This will create real GitHub issues!")
         confirm = input("Are you sure you want to proceed? (y/N): ")
-        if confirm.lower() != 'y':
+        if confirm.lower() != "y":
             print("Cancelled.")
             return 1
 
     print("GitHub Issue Creation Demo")
     print("=" * 50)
-    print(f"Mode: {'DRY RUN (templates only)' if dry_run else 'LIVE (creating real issues)'}")
+    print(
+        f"Mode: {'DRY RUN (templates only)' if dry_run else 'LIVE (creating real issues)'}"
+    )
     print()
 
     # Initialize components with temporary database
-    with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as f:
+    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
         db_path = Path(f.name)
 
     try:
@@ -275,7 +302,7 @@ def main():
         else:
             # Get existing failures
             recent_failures = failure_tracker._get_recent_failures(30)
-            failure_ids = [f['id'] for f in recent_failures[:4]]  # Use first 4
+            failure_ids = [f["id"] for f in recent_failures[:4]]  # Use first 4
             print(f"Using existing failures: {failure_ids}")
 
         if not failure_ids:
@@ -305,6 +332,7 @@ def main():
     except Exception as e:
         print(f"Demo failed: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

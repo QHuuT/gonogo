@@ -11,12 +11,12 @@ Usage:
     python tools/db_inspector.py --table test_failures --limit 10
 """
 
-import sqlite3
 import argparse
+import json
+import sqlite3
 import sys
 from pathlib import Path
-from typing import List, Dict, Any
-import json
+from typing import Any, Dict, List
 
 
 def find_databases() -> List[Path]:
@@ -51,21 +51,25 @@ def get_table_schema(db_path: Path, table_name: str) -> List[Dict[str, Any]]:
             cursor = conn.execute(f"PRAGMA table_info({table_name})")
             columns = []
             for row in cursor.fetchall():
-                columns.append({
-                    'id': row[0],
-                    'name': row[1],
-                    'type': row[2],
-                    'not_null': bool(row[3]),
-                    'default': row[4],
-                    'primary_key': bool(row[5])
-                })
+                columns.append(
+                    {
+                        "id": row[0],
+                        "name": row[1],
+                        "type": row[2],
+                        "not_null": bool(row[3]),
+                        "default": row[4],
+                        "primary_key": bool(row[5]),
+                    }
+                )
             return columns
     except sqlite3.Error as e:
         print(f"Error getting schema for {table_name}: {e}")
         return []
 
 
-def get_table_data(db_path: Path, table_name: str, limit: int = 50) -> List[Dict[str, Any]]:
+def get_table_data(
+    db_path: Path, table_name: str, limit: int = 50
+) -> List[Dict[str, Any]]:
     """Get data from a table."""
     try:
         with sqlite3.connect(db_path) as conn:
@@ -131,11 +135,13 @@ def display_table_schema(db_path: Path, table_name: str):
     print("-" * 70)
 
     for col in schema:
-        null_str = "NO" if col['not_null'] else "YES"
-        key_str = "PRI" if col['primary_key'] else ""
-        default_str = str(col['default']) if col['default'] is not None else ""
+        null_str = "NO" if col["not_null"] else "YES"
+        key_str = "PRI" if col["primary_key"] else ""
+        default_str = str(col["default"]) if col["default"] is not None else ""
 
-        print(f"{col['name']:<20} {col['type']:<15} {null_str:<6} {key_str:<6} {default_str:<15}")
+        print(
+            f"{col['name']:<20} {col['type']:<15} {null_str:<6} {key_str:<6} {default_str:<15}"
+        )
 
 
 def display_table_data(db_path: Path, table_name: str, limit: int = 10):
@@ -190,7 +196,9 @@ def interactive_browser(db_path: Path):
                 count = get_table_count(db_path, command[1])
                 print(f"{command[1]}: {count} rows")
             else:
-                print("Unknown command. Use: tables, schema <table>, data <table> [limit], count <table>, quit")
+                print(
+                    "Unknown command. Use: tables, schema <table>, data <table> [limit], count <table>, quit"
+                )
 
         except KeyboardInterrupt:
             break
@@ -200,13 +208,19 @@ def interactive_browser(db_path: Path):
 
 def main():
     """Main entry point."""
-    parser = argparse.ArgumentParser(description="Inspect SQLite databases in quality/ folder")
-    parser.add_argument('--db', type=Path, help='Specific database file to inspect')
-    parser.add_argument('--table', help='Specific table to examine')
-    parser.add_argument('--limit', type=int, default=10, help='Limit rows when displaying data')
-    parser.add_argument('--schema', action='store_true', help='Show table schema')
-    parser.add_argument('--data', action='store_true', help='Show table data')
-    parser.add_argument('--interactive', '-i', action='store_true', help='Interactive browser mode')
+    parser = argparse.ArgumentParser(
+        description="Inspect SQLite databases in quality/ folder"
+    )
+    parser.add_argument("--db", type=Path, help="Specific database file to inspect")
+    parser.add_argument("--table", help="Specific table to examine")
+    parser.add_argument(
+        "--limit", type=int, default=10, help="Limit rows when displaying data"
+    )
+    parser.add_argument("--schema", action="store_true", help="Show table schema")
+    parser.add_argument("--data", action="store_true", help="Show table data")
+    parser.add_argument(
+        "--interactive", "-i", action="store_true", help="Interactive browser mode"
+    )
 
     args = parser.parse_args()
 

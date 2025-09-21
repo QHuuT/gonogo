@@ -11,8 +11,8 @@ Related Issues:
 Epic: EP-00005 - RTM Automation
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add src to Python path to import our modules
@@ -20,11 +20,15 @@ src_path = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
 try:
-    from shared.utils.rtm_hybrid_generator import HybridRTMLinkGenerator as RTMLinkGenerator
+    from shared.utils.rtm_hybrid_generator import (
+        HybridRTMLinkGenerator as RTMLinkGenerator,
+    )
+
     HYBRID_MODE_AVAILABLE = True
 except ImportError:
     # Fallback to original generator if hybrid not available
     from shared.utils.rtm_link_generator import RTMLinkGenerator
+
     HYBRID_MODE_AVAILABLE = False
 
 
@@ -32,20 +36,32 @@ def main():
     """Enhanced CLI entry point with hybrid mode support."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Enhanced RTM Link Tool with Database Support')
-    parser.add_argument('--validate', action='store_true',
-                       help='Validate RTM links')
-    parser.add_argument('--update', action='store_true',
-                       help='Update RTM links (dry run)')
-    parser.add_argument('--rtm-file',
-                       default='docs/traceability/requirements-matrix.md',
-                       help='RTM file path')
-    parser.add_argument('--mode', choices=['auto', 'file', 'database'], default='auto',
-                       help='RTM operation mode (auto=detect best, file=file-based, database=database-backed)')
-    parser.add_argument('--info', action='store_true',
-                       help='Show RTM system information and exit')
-    parser.add_argument('--export-db', action='store_true',
-                       help='Export database RTM to file (if database available)')
+    parser = argparse.ArgumentParser(
+        description="Enhanced RTM Link Tool with Database Support"
+    )
+    parser.add_argument("--validate", action="store_true", help="Validate RTM links")
+    parser.add_argument(
+        "--update", action="store_true", help="Update RTM links (dry run)"
+    )
+    parser.add_argument(
+        "--rtm-file",
+        default="docs/traceability/requirements-matrix.md",
+        help="RTM file path",
+    )
+    parser.add_argument(
+        "--mode",
+        choices=["auto", "file", "database"],
+        default="auto",
+        help="RTM operation mode (auto=detect best, file=file-based, database=database-backed)",
+    )
+    parser.add_argument(
+        "--info", action="store_true", help="Show RTM system information and exit"
+    )
+    parser.add_argument(
+        "--export-db",
+        action="store_true",
+        help="Export database RTM to file (if database available)",
+    )
 
     args = parser.parse_args()
 
@@ -80,7 +96,7 @@ def main():
 
     # Export database to file if requested
     if args.export_db:
-        if HYBRID_MODE_AVAILABLE and hasattr(generator, 'export_database_to_rtm_file'):
+        if HYBRID_MODE_AVAILABLE and hasattr(generator, "export_database_to_rtm_file"):
             print(f"Exporting database RTM to {args.rtm_file}...")
             success = generator.export_database_to_rtm_file(args.rtm_file)
             if success:
@@ -98,7 +114,7 @@ def main():
         if HYBRID_MODE_AVAILABLE:
             mode_info = generator.get_mode_info()
             print(f"RTM Validation - Mode: {mode_info['effective_mode']}")
-            if mode_info['effective_mode'] == 'database':
+            if mode_info["effective_mode"] == "database":
                 print("Using database as source of truth")
             else:
                 print(f"Validating file: {args.rtm_file}")
@@ -106,7 +122,10 @@ def main():
             print(f"Validating {args.rtm_file}...")
 
         # Check file existence for file mode
-        if not HYBRID_MODE_AVAILABLE or (hasattr(generator, 'get_mode_info') and generator.get_mode_info()['effective_mode'] == 'file'):
+        if not HYBRID_MODE_AVAILABLE or (
+            hasattr(generator, "get_mode_info")
+            and generator.get_mode_info()["effective_mode"] == "file"
+        ):
             if not os.path.exists(args.rtm_file):
                 print(f"Error: File not found: {args.rtm_file}")
                 return 1
@@ -141,7 +160,9 @@ def main():
             if result.invalid_links:
                 print(f"\nInvalid Links:")
                 for link in result.invalid_links[:10]:  # Show first 10
-                    print(f"  - {link.text}: {link.error_message or 'Link validation failed'}")
+                    print(
+                        f"  - {link.text}: {link.error_message or 'Link validation failed'}"
+                    )
                 if len(result.invalid_links) > 10:
                     print(f"  ... and {len(result.invalid_links) - 10} more")
 
@@ -173,5 +194,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

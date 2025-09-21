@@ -143,7 +143,7 @@
   background: var(--color-danger);
 }
 
-/* ===== COLLAPSIBLE SECTIONS ===== */
+/* ===== CSS-ONLY COLLAPSIBLE SECTIONS ===== */
 
 .collapsible {
   border: 1px solid var(--color-border-light);
@@ -153,8 +153,18 @@
   background: var(--color-bg-primary);
 }
 
+/* Hidden checkbox for CSS-only toggle */
+.collapsible__toggle {
+  display: none !important;
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  left: -9999px;
+}
+
 .collapsible__header {
-  background: var(--color-bg-secondary);
+  background: var(--color-text-muted);
+  color: var(--color-primary-contrast);
   padding: var(--space-lg);
   cursor: pointer;
   display: flex;
@@ -164,10 +174,11 @@
   border: none;
   width: 100%;
   text-align: left;
+  user-select: none;
 }
 
 .collapsible__header:hover {
-  background: var(--color-bg-tertiary);
+  background: var(--color-text-light);
 }
 
 .collapsible__header:focus {
@@ -178,30 +189,37 @@
 .collapsible__title {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
+  color: inherit;
   margin: 0;
 }
 
 .collapsible__icon {
   font-size: var(--font-size-base);
-  color: var(--color-text-muted);
+  color: inherit;
+  opacity: 0.8;
   transition: transform var(--transition-base);
 }
 
-.collapsible__header[aria-expanded="true"] .collapsible__icon {
-  transform: rotate(180deg);
-}
-
+/* Default state: sections start expanded (checkbox unchecked) */
 .collapsible__content {
-  padding: 0;
-  max-height: 0;
+  max-height: 10000px; /* Start expanded by default */
+  padding: var(--space-lg);
   overflow: hidden;
   transition: max-height var(--transition-slow) ease, padding var(--transition-base) ease;
 }
 
-.collapsible__content--expanded {
-  padding: var(--space-lg);
-  max-height: 2000px; /* Arbitrary large value for smooth animation */
+/* When checkbox is checked (collapsed state) */
+.collapsible__toggle:checked + .collapsible__header .collapsible__icon {
+  transform: rotate(180deg);
+}
+
+.collapsible__toggle:checked ~ .collapsible__content {
+  max-height: 0;
+  padding: 0;
+}
+
+.collapsible__toggle:checked + .collapsible__header {
+  background: var(--color-text-light);
 }
 
 .collapsible__body {
@@ -241,7 +259,7 @@
 /* ===== ENHANCED HEADER DESIGN ===== */
 
 .page-header {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  background: linear-gradient(135deg, var(--color-text-primary), var(--color-text-secondary));
   color: var(--color-primary-contrast);
   padding: var(--space-2xl) 0;
   margin-bottom: var(--space-3xl);
