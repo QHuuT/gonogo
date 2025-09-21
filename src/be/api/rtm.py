@@ -435,7 +435,7 @@ def generate_dynamic_rtm_matrix(
     status_filter: Optional[str] = Query(None, description="Filter by status"),
     priority_filter: Optional[str] = Query(None, description="Filter by priority"),
     us_status_filter: Optional[str] = Query("all", description="Filter user stories by status: all, planned, in_progress, completed, blocked"),
-    test_type_filter: Optional[str] = Query("e2e", description="Filter tests by type: all, unit, integration, e2e, security"),
+    test_type_filter: Optional[str] = Query("all", description="Filter tests by type: all, unit, integration, e2e, security"),
     defect_priority_filter: Optional[str] = Query("all", description="Filter defects by priority: all, critical, high, medium, low"),
     defect_status_filter: Optional[str] = Query("all", description="Filter defects by status: all, open, in_progress, resolved, closed"),
     include_tests: bool = Query(True, description="Include test coverage"),
@@ -456,6 +456,9 @@ def generate_dynamic_rtm_matrix(
         "include_tests": include_tests,
         "include_defects": include_defects,
     }
+
+    # DEBUG: Log filters to understand EP-00003 issue
+    print(f"[DEBUG API] Filters being passed: {filters}")
 
     if format == "html":
         content = generator.generate_html_matrix(filters)

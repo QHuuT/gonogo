@@ -461,12 +461,12 @@ class RTMReportGenerator:
                             <div class="filter-section" role="group" aria-label="Test Filters">
                                 <h4 class="filter-section__title">Filter Tests:</h4>
                                 <div class="filter-section__buttons">
-                                    <button class="filter-button filter-button--test filter-button--active"
+                                    <button class="filter-button filter-button--test"
                                             data-test-type="e2e"
                                             data-filter-group="epic-{epic.epic_id}-test"
                                             data-filter-value="e2e"
                                             onclick="filterTestsByType('{epic.epic_id}', 'e2e')"
-                                            aria-pressed="true">🔄 E2E Only</button>
+                                            aria-pressed="false">🔄 E2E Only</button>
                                     <button class="filter-button filter-button--test"
                                             data-test-type="unit"
                                             data-filter-group="epic-{epic.epic_id}-test"
@@ -485,14 +485,14 @@ class RTMReportGenerator:
                                             data-filter-value="security"
                                             onclick="filterTestsByType('{epic.epic_id}', 'security')"
                                             aria-pressed="false">🛡️ Security</button>
-                                    <button class="filter-button filter-button--test"
+                                    <button class="filter-button filter-button--test filter-button--active"
                                             data-test-type="all"
                                             data-filter-group="epic-{epic.epic_id}-test"
                                             data-filter-value="all"
                                             onclick="filterTestsByType('{epic.epic_id}', 'all')"
-                                            aria-pressed="false">📋 All Tests</button>
+                                            aria-pressed="true">📋 All Tests</button>
                                 </div>
-                                <div class="test-count-display filter-count" role="status" aria-live="polite">Showing E2E tests only</div>
+                                <div class="test-count-display filter-count" role="status" aria-live="polite">Showing all tests</div>
                             </div>
 
                             <!-- Test Traceability Table -->
@@ -504,7 +504,21 @@ class RTMReportGenerator:
 """
 
             # Add test information
-            for test in epic_data.get("tests", []):
+            tests_list = epic_data.get("tests", [])
+
+            # DEBUG: Check HTML generation for EP-00003
+            if epic_data["epic"]["epic_id"] == 'EP-00003':
+                print(f"[DEBUG] HTML generation for EP-00003: {len(tests_list)} tests to process")
+
+            test_rows_generated = 0
+            for test in tests_list:
+                # DEBUG: Count test rows for EP-00003
+                if epic_data["epic"]["epic_id"] == 'EP-00003':
+                    test_rows_generated += 1
+                    if test_rows_generated <= 10:  # Show first 10
+                        test_type = test.get('test_type', 'unknown')
+                        print(f"[DEBUG] Generating row {test_rows_generated}: {test_type}")
+
                 # Format last execution time
                 last_execution = test.get("last_execution_time", "")
                 if last_execution:
@@ -815,6 +829,15 @@ class RTMReportGenerator:
         tests = self.db.query(Test).filter(Test.epic_id == epic.id).all()
         defects = self.db.query(Defect).filter(Defect.epic_id == epic.id).all()
 
+        # DEBUG: Check test types for EP-00003
+        if epic.epic_id == 'EP-00003':
+            test_types = {}
+            for test in tests:
+                test_type = getattr(test, 'test_type', 'unknown')
+                test_types[test_type] = test_types.get(test_type, 0) + 1
+            print(f"[DEBUG] EP-00003 test types: {test_types}")
+
+
         # Calculate metrics
         total_story_points = sum(us.story_points for us in user_stories)
         completed_story_points = sum(
@@ -869,7 +892,19 @@ class RTMReportGenerator:
 
         # Only apply filtering if any filter parameters are set
         if any(v and v != 'all' for v in filter_params.values()):
+            # DEBUG: Check what filters are being applied to EP-00003
+            if epic.epic_id == 'EP-00003':
+                print(f"[DEBUG] Applying filters to EP-00003: {filter_params}")
             epic_data = self._apply_server_side_filters(epic_data, filter_params)
+            # DEBUG: Check how many tests remain after filtering
+            if epic.epic_id == 'EP-00003':
+                filtered_tests = epic_data.get("tests", [])
+                print(f"[DEBUG] After server-side filtering EP-00003: {len(filtered_tests)} tests remaining")
+
+        # DEBUG: Check final test count for EP-00003
+        if epic.epic_id == 'EP-00003':
+            final_tests = epic_data.get("tests", [])
+            print(f"[DEBUG] Final epic_data for EP-00003: {len(final_tests)} tests")
 
         return epic_data
 

@@ -22,7 +22,7 @@
         config: {
             animationDuration: 300,
             debounceDelay: 300,
-            defaultTestFilter: 'e2e',
+            defaultTestFilter: 'all',
             supportedExportFormats: ['csv', 'json'],
         },
 
@@ -31,7 +31,7 @@
             activeFilters: {
                 epic: 'all',
                 userStory: 'all',
-                test: 'e2e',
+                test: 'all',
                 defect: 'all'
             },
             expandedEpics: new Set(),
@@ -91,22 +91,37 @@
      * Update filter count display
      */
     function updateFilterCount(epicId, filterType, visible, total) {
-        const countDisplay = document.querySelector(`#epic-${epicId} .${filterType}-count-display`);
-        if (!countDisplay) return;
+        // Map filter types to actual HTML class names
+        const classMap = {
+            'test': 'test-count-display',
+            'userStory': 'us-count-display',
+            'defect': 'defect-count-display'
+        };
+
+        const className = classMap[filterType];
+        if (!className) {
+            console.warn(`❌ Unknown filter type: ${filterType}`);
+            return;
+        }
+
+        const countDisplay = document.querySelector(`#epic-${epicId} .${className}`);
+        if (!countDisplay) {
+            console.warn(`❌ No count display found for ${filterType} in epic ${epicId}`);
+            return;
+        }
 
         const filterName = RTM.state.activeFilters[filterType];
+        const displayName = filterType === 'userStory' ? 'user story' : filterType;
 
         if (total === 0) {
-            countDisplay.textContent = `No ${filterType}s available for this epic`;
-            countDisplay.className = 'empty-state__message';
-        } else if (filterName === 'all') {
-            countDisplay.textContent = `Showing all ${total} ${filterType}s`;
-            countDisplay.className = 'filter-count filter-count--all';
+            countDisplay.textContent = `No ${displayName}s available for this epic`;
+        } else if (filterName === 'all' || !filterName) {
+            countDisplay.textContent = `Showing all ${total} ${displayName}s`;
         } else {
             const filterDisplay = filterName.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-            countDisplay.textContent = `Showing ${visible} ${filterDisplay} ${filterType}s (${total} total)`;
-            countDisplay.className = 'filter-count filter-count--filtered';
+            countDisplay.textContent = `Showing ${visible} ${filterDisplay} ${displayName}s (${total} total)`;
         }
+
     }
 
     /**
@@ -165,51 +180,24 @@
             RTM.state.expandedEpics.delete(epicId);
         }
 
-        // Toggle epic content visibility
+        // SIMPLIFIED APPROACH: Just show/hide the original element
+        // This allows filter selectors to work correctly with #epic-{epicId}
         if (newState) {
-            // SUCCESS! Since we know visual content works, let's restore epic functionality
-            // Remove any existing epic display
+            // Show the original epic content - this makes filtering work!
+            content.style.display = 'block';
+
+            // Clean up any leftover epic-display elements from previous workaround
             const existingEpicDisplay = document.getElementById('epic-display-' + epicId);
             if (existingEpicDisplay) existingEpicDisplay.remove();
 
-            // Get the original epic content and restore it properly
-            const originalContent = content.innerHTML;
-
-            // Create a new div that works (like our successful tests)
-            const epicDisplay = document.createElement('div');
-            epicDisplay.id = 'epic-display-' + epicId;
-
-            // Fetch and display the original epic content
-            epicDisplay.innerHTML = originalContent || `
-                <section class="epic-description">
-                    <h3>Epic ${epicId} Details</h3>
-                    <p>Loading epic content...</p>
-                </section>
-            `;
-
-            // Apply working CSS styles (based on our successful test)
-            epicDisplay.style.cssText = `
-                position: relative;
-                background: #f8f9fa;
-                border: 1px solid #dee2e6;
-                border-radius: 8px;
-                padding: 20px;
-                margin: 15px 0;
-                width: calc(100% - 40px);
-                box-sizing: border-box;
-                display: block;
-                visibility: visible;
-                opacity: 1;
-                z-index: 10;
-            `;
-
-            // Insert right after the epic header
-            header.parentNode.insertBefore(epicDisplay, header.nextSibling);
-
+            // Apply default filter when epic is first expanded
+            setTimeout(() => {
+                console.log(`[DEBUG] Epic ${epicId} expanded - applying default filter: ${RTM.config.defaultTestFilter}`);
+                filterTestsByType(epicId, RTM.config.defaultTestFilter);
+            }, 100); // Small delay to ensure DOM is ready
         } else {
-            // Remove epic display
-            const epicDisplay = document.getElementById('epic-display-' + epicId);
-            if (epicDisplay) epicDisplay.remove();
+            // Hide the epic content
+            content.style.display = 'none';
         }
 
         // Announce to screen readers
@@ -253,22 +241,46 @@
     function filterTestsByType(epicId, testType) {
         RTM.state.activeFilters.test = testType;
 
-        const testTable = document.querySelector(`#epic-${epicId} .test-filter-section + table tbody`);
-        if (!testTable) return;
+        // DEBUG: Track filtering for EP-00003
+        if (epicId === 'EP-00003') {
+            console.log(`[DEBUG] filterTestsByType called for EP-00003 with testType: ${testType}`);
+            console.trace('[DEBUG] Call stack:');
+        }
+
+        const testTable = document.querySelector(`#epic-${epicId} table[aria-label*="Test Traceability"] tbody`);
+        if (!testTable) {
+            console.warn(`❌ No test table found for epic ${epicId}`);
+            return;
+        }
 
         const testRows = testTable.querySelectorAll('tr.test-row');
         let visibleCount = 0;
+
+        // DEBUG: For EP-00003, show filtering details
+        if (epicId === 'EP-00003') {
+            console.log(`[DEBUG] Found ${testRows.length} test rows for EP-00003`);
+            console.log(`[DEBUG] Filtering with testType: ${testType}`);
+        }
 
         // Update button states
         updateFilterButtonStates(`epic-${epicId}-test`, testType);
 
         // Filter test rows with animation
-        testRows.forEach(row => {
+        testRows.forEach((row, index) => {
             const testTypeBadge = row.querySelector('.test-type-badge');
-            if (!testTypeBadge) return;
+            if (!testTypeBadge) {
+                if (epicId === 'EP-00003' && index < 5) {
+                    console.log(`[DEBUG] Row ${index}: No test type badge found`);
+                }
+                return;
+            }
 
             const rowTestType = testTypeBadge.textContent.toLowerCase();
             const shouldShow = testType === 'all' || rowTestType === testType.toLowerCase();
+
+            if (epicId === 'EP-00003' && index < 5) {
+                console.log(`[DEBUG] Row ${index}: type='${rowTestType}', filter='${testType}', shouldShow=${shouldShow}`);
+            }
 
             if (shouldShow) {
                 visibleCount++;
@@ -277,6 +289,12 @@
                 animateVisibility(row, false);
             }
         });
+
+        // DEBUG: Final count for EP-00003
+        if (epicId === 'EP-00003') {
+            console.log(`[DEBUG] EP-00003 filtering complete: ${visibleCount}/${testRows.length} tests visible`);
+        }
+
 
         // Update count display
         updateFilterCount(epicId, 'test', visibleCount, testRows.length);
@@ -324,7 +342,10 @@
         RTM.state.activeFilters.defect = `${filterType}:${filterValue}`;
 
         const defectTable = document.querySelector(`#epic-${epicId} .defect-filter-section + table tbody`);
-        if (!defectTable) return;
+        if (!defectTable) {
+            console.warn(`❌ No defect table found for epic ${epicId}`);
+            return;
+        }
 
         const defectRows = defectTable.querySelectorAll('.defect-row');
         let visibleCount = 0;
@@ -333,7 +354,7 @@
         updateFilterButtonStates(`epic-${epicId}-defect`, `${filterType}:${filterValue}`);
 
         // Filter defect rows
-        defectRows.forEach(row => {
+        defectRows.forEach((row, index) => {
             let shouldShow = false;
 
             if (filterType === 'all') {
@@ -351,6 +372,11 @@
                 animateVisibility(row, false);
             }
         });
+
+        // Check after a delay if anything changed
+        setTimeout(() => {
+            const visibleAfterDelay = defectTable.querySelectorAll('.defect-row:not(.hidden)').length;
+        }, 500);
 
         // Update count display
         updateFilterCount(epicId, 'defect', visibleCount, defectRows.length);
@@ -731,12 +757,14 @@
      * Initialize default test filtering
      */
     function initializeTestFiltering() {
+        console.log('[DEBUG] initializeTestFiltering called');
         const epics = document.querySelectorAll('.epic-card');
 
         epics.forEach(epic => {
             const epicId = getEpicId(epic);
             if (epicId) {
-                // Default to E2E tests only
+                console.log(`[DEBUG] Initializing filters for epic: ${epicId}, filter: ${RTM.config.defaultTestFilter}`);
+                // Apply default filter (show all tests)
                 filterTestsByType(epicId, RTM.config.defaultTestFilter);
             }
         });
@@ -795,7 +823,7 @@
         // Setup core functionality
         setupKeyboardNavigation();
         setupFilterButtonAccessibility();
-        initializeTestFiltering();
+        // Note: Test filtering will be applied when epics are expanded (in toggleEpicDetails)
         initializeSearch();
         initializeExport();
 
@@ -805,7 +833,6 @@
         // Announce initialization
         announceToScreenReader('RTM interactive features initialized');
 
-        console.log('RTM Interactive Features initialized successfully');
     }
 
     // ===== GLOBAL FUNCTION EXPOSURE =====
