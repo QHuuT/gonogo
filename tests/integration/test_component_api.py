@@ -372,6 +372,57 @@ class TestComponentAPIIntegration:
         assert "total_tests" in summary
         assert "total_defects" in summary
 
+    def test_rtm_matrix_html_component_columns(self, client):
+        """Test that RTM matrix HTML includes component columns in all subtables."""
+        response = client.get("/api/rtm/reports/matrix?format=html&limit=1")
+        assert response.status_code == 200
+
+        html_content = response.text
+
+        # Check that component column headers are present in all table types
+        assert '<th scope="col">Component</th>' in html_content
+
+        # User Stories table should have Component as 3rd column
+        # Expected order: ID, Title, Component, Story Points, Status
+        user_stories_pattern = (
+            r'<th scope="col">ID</th>'
+            r'<th scope="col">Title</th>'
+            r'<th scope="col">Component</th>'
+            r'<th scope="col">Story Points</th>'
+            r'<th scope="col">Status</th>'
+        )
+
+        # Tests table should have Component as 3rd column
+        # Expected order: Test Type, Function/Scenario, Component, Last Execution, Status, File Path
+        tests_pattern = (
+            r'<th scope="col">Test Type</th>'
+            r'<th scope="col">Function/Scenario</th>'
+            r'<th scope="col">Component</th>'
+            r'<th scope="col">Last Execution</th>'
+            r'<th scope="col">Status</th>'
+            r'<th scope="col">File Path</th>'
+        )
+
+        # Defects table should have Component as 3rd column
+        # Expected order: ID, Title, Component, Priority, Status, Severity
+        defects_pattern = (
+            r'<th scope="col">ID</th>'
+            r'<th scope="col">Title</th>'
+            r'<th scope="col">Component</th>'
+            r'<th scope="col">Priority</th>'
+            r'<th scope="col">Status</th>'
+            r'<th scope="col">Severity</th>'
+        )
+
+        import re
+        assert re.search(user_stories_pattern, html_content), "User Stories table missing Component column in correct position"
+        assert re.search(tests_pattern, html_content), "Tests table missing Component column in correct position"
+        assert re.search(defects_pattern, html_content), "Defects table missing Component column in correct position"
+
+        # Check that empty state messages have correct colspan
+        assert 'colspan="5"' in html_content  # User stories (5 columns now)
+        assert 'colspan="6"' in html_content  # Tests and defects (6 columns now)
+
 
 @pytest.mark.asyncio
 async def test_component_api_complete_workflow():

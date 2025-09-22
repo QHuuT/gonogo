@@ -517,7 +517,7 @@ class RTMReportGenerator:
                             <div class="rtm-table-container">
                                 <table class="rtm-table" role="table" aria-label="User Stories for {epic.epic_id}">
                                 <thead class="rtm-table__header">
-                                    <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Story Points</th><th scope="col">Status</th></tr>
+                                    <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Component</th><th scope="col">Story Points</th><th scope="col">Status</th></tr>
                                 </thead>
                                 <tbody class="rtm-table__body">
 """
@@ -530,6 +530,7 @@ class RTMReportGenerator:
                                     <tr class="rtm-table__row us-row" data-us-status="{us['implementation_status']}">
                                         <td>{user_story_link}</td>
                                         <td>{us["title"]}</td>
+                                        <td>{self._render_component_badges(us.get("component"))}</td>
                                         <td>{us["story_points"]}</td>
                                         <td><span class="badge badge--status badge--status-{status_normalized}">{us["implementation_status"].replace('_', ' ').title()}</span></td>
                                     </tr>
@@ -539,7 +540,7 @@ class RTMReportGenerator:
             html += """
                                     <!-- Empty state row for user stories (hidden by default, shown when filtered count = 0) -->
                                     <tr class="empty-state-row" style="display: none;">
-                                        <td colspan="4" style="text-align: center; color: #7f8c8d; font-style: italic;">No user stories match the current filter</td>
+                                        <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No user stories match the current filter</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -641,7 +642,7 @@ class RTMReportGenerator:
                             <div class="rtm-table-container">
                             <table class="rtm-table" role="table" aria-label="Test Traceability for {epic.epic_id}">
                                 <thead class="rtm-table__header">
-                                    <tr><th scope="col">Test Type</th><th scope="col">Function/Scenario</th><th scope="col">Last Execution</th><th scope="col">Status</th><th scope="col">File Path</th></tr>
+                                    <tr><th scope="col">Test Type</th><th scope="col">Function/Scenario</th><th scope="col">Component</th><th scope="col">Last Execution</th><th scope="col">Status</th><th scope="col">File Path</th></tr>
                                 </thead>
                                 <tbody class="rtm-table__body">
 """
@@ -688,6 +689,7 @@ class RTMReportGenerator:
                         <tr class="test-row" data-test-type="{test_type_lower}">
                             <td><span class="badge badge--test-type">{test.get("test_type", "").upper()}</span></td>
                             <td class="function-cell">{test_name}</td>
+                            <td>{self._render_component_badges(test.get("component"))}</td>
                             <td>{formatted_time}</td>
                             <td><span class="badge badge--status badge--status-{status_class}">{status.title()}</span></td>
                             <td>
@@ -705,7 +707,7 @@ class RTMReportGenerator:
             if not epic_data.get("tests", []):
                 html += """
                         <tr>
-                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No tests available for this epic</td>
+                            <td colspan="6" style="text-align: center; color: #7f8c8d; font-style: italic;">No tests available for this epic</td>
                         </tr>
 """
 
@@ -727,7 +729,7 @@ class RTMReportGenerator:
                 """
                                     <!-- Empty state row for tests (hidden by default, shown when filtered count = 0) -->
                                     <tr class="empty-state-row" style="display: none;">
-                                        <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No tests match the current filter</td>
+                                        <td colspan="6" style="text-align: center; color: #7f8c8d; font-style: italic;">No tests match the current filter</td>
                                     </tr>
                     </tbody>
                 </table>
@@ -841,7 +843,7 @@ class RTMReportGenerator:
                             <div class="rtm-table-container">
                                 <table class="rtm-table" role="table" aria-label="Defect Traceability for {epic.epic_id}">
                                     <thead class="rtm-table__header">
-                                        <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Priority</th><th scope="col">Status</th><th scope="col">Severity</th></tr>
+                                        <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Component</th><th scope="col">Priority</th><th scope="col">Status</th><th scope="col">Severity</th></tr>
                                     </thead>
                                     <tbody class="rtm-table__body">
 """
@@ -881,6 +883,7 @@ class RTMReportGenerator:
                         <tr class="defect-row" data-defect-priority="{priority}" data-defect-status="{status}" data-defect-severity="{severity}">
                             <td>{defect_id_link}</td>
                             <td>{title}</td>
+                            <td>{self._render_component_badges(defect.get("component"))}</td>
                             <td><span class="badge badge--priority badge--priority-{priority}">{priority.title()}</span></td>
                             <td><span class="badge badge--status badge--status-{status.replace('_', '-')}">{status.replace('_', ' ').title()}</span></td>
                             <td><span class="badge badge--severity badge--severity-{severity}">{severity.title()}</span></td>
@@ -891,7 +894,7 @@ class RTMReportGenerator:
             if not defects:
                 html += """
                         <tr>
-                            <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No defects tracked for this epic</td>
+                            <td colspan="6" style="text-align: center; color: #7f8c8d; font-style: italic;">No defects tracked for this epic</td>
                         </tr>
 """
 
@@ -899,7 +902,7 @@ class RTMReportGenerator:
             html += """
                                     <!-- Empty state row for defects (hidden by default, shown when filtered count = 0) -->
                                     <tr class="empty-state-row" style="display: none;">
-                                        <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No defects match the current filter</td>
+                                        <td colspan="6" style="text-align: center; color: #7f8c8d; font-style: italic;">No defects match the current filter</td>
                                     </tr>
                                     </tbody>
                                 </table>
