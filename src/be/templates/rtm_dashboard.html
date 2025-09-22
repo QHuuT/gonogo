@@ -15,22 +15,6 @@
             --secondary-color: #95a5a6;
             --background-color: #f8f9fa;
             --card-shadow: 0 2px 10px rgba(0,0,0,0.1);
-
-            /* Component Color Palette */
-            --component-frontend: #3B82F6;     /* Blue - Frontend/UI */
-            --component-backend: #10B981;      /* Green - Backend/API */
-            --component-database: #8B5CF6;     /* Purple - Database */
-            --component-security: #EF4444;     /* Red - Security/GDPR */
-            --component-testing: #F59E0B;      /* Orange - Testing */
-            --component-ci-cd: #06B6D4;        /* Cyan - CI/CD */
-            --component-documentation: #6B7280; /* Gray - Documentation */
-            --component-default: #9CA3AF;      /* Light Gray - Default/Unknown */
-
-            /* Component Badge Styling */
-            --badge-border-radius: 16px;
-            --badge-padding: 4px 12px;
-            --badge-font-size: 11px;
-            --badge-font-weight: 600;
         }
 
         * {
@@ -264,102 +248,6 @@
         .status-completed { background: #d4edda; color: #155724; }
         .status-blocked { background: #f8d7da; color: #721c24; }
 
-        /* Component Badge Styles */
-        .component-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: var(--badge-padding);
-            border-radius: var(--badge-border-radius);
-            font-size: var(--badge-font-size);
-            font-weight: var(--badge-font-weight);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-right: 6px;
-            margin-bottom: 4px;
-            color: white;
-            cursor: help;
-            transition: all 0.2s ease;
-        }
-
-        .component-badge:hover {
-            transform: scale(1.05);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        .component-badge.frontend { background: var(--component-frontend); }
-        .component-badge.backend { background: var(--component-backend); }
-        .component-badge.database { background: var(--component-database); }
-        .component-badge.security { background: var(--component-security); }
-        .component-badge.testing { background: var(--component-testing); }
-        .component-badge.ci-cd { background: var(--component-ci-cd); }
-        .component-badge.documentation { background: var(--component-documentation); }
-        .component-badge.default { background: var(--component-default); }
-
-        .component-badges {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 12px;
-        }
-
-        .component-legend {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: var(--card-shadow);
-            margin-bottom: 30px;
-        }
-
-        .legend-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-        }
-
-        .legend-color {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
-            flex-shrink: 0;
-        }
-
-        .filter-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--primary-color);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .filter-tag:hover {
-            background: #2980b9;
-            transform: translateY(-1px);
-        }
-
-        .filter-remove {
-            font-size: 16px;
-            font-weight: bold;
-            margin-left: 4px;
-            opacity: 0.8;
-        }
-
-        .filter-remove:hover {
-            opacity: 1;
-        }
-
         .filters {
             background: white;
             padding: 20px;
@@ -467,175 +355,18 @@
             border-left: 4px solid #dc3545;
         }
 
-        /* Mobile-first responsive design */
-        @media (max-width: 1024px) {
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .legend-grid {
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            }
-        }
-
         @media (max-width: 768px) {
-            .container {
-                padding: 20px 15px;
-            }
-
-            .header-content {
-                padding: 0 15px;
-            }
-
             .charts-grid {
                 grid-template-columns: 1fr;
-                gap: 20px;
             }
 
             .filter-group {
                 flex-direction: column;
                 align-items: stretch;
-                gap: 12px;
-            }
-
-            .filter-item {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .filter-item label {
-                margin-bottom: 0;
-                flex-shrink: 0;
-                min-width: 80px;
-            }
-
-            .filter-item select,
-            .filter-item input {
-                flex: 1;
-                margin-left: 12px;
             }
 
             .export-buttons {
                 flex-direction: column;
-            }
-
-            .epics-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .epic-stats {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .metrics-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-
-            .metric-card {
-                padding: 20px;
-            }
-
-            .metric-value {
-                font-size: 28px;
-            }
-
-            .legend-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-            }
-
-            .legend-item {
-                font-size: 12px;
-            }
-
-            .component-badge {
-                font-size: 10px;
-                padding: 3px 8px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .metrics-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .epic-stats {
-                grid-template-columns: 1fr;
-            }
-
-            .legend-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .filter-item {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .filter-item label {
-                margin-bottom: 5px;
-                min-width: auto;
-            }
-
-            .filter-item select,
-            .filter-item input {
-                margin-left: 0;
-            }
-
-            /* Mobile card view alternative */
-            .epic-card-mobile {
-                background: white;
-                border-radius: 12px;
-                overflow: hidden;
-                box-shadow: var(--card-shadow);
-                margin-bottom: 15px;
-            }
-
-            .epic-card-mobile .epic-header {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                padding: 15px;
-            }
-
-            .epic-card-mobile .epic-content {
-                padding: 15px;
-            }
-
-            .epic-card-mobile .component-badges {
-                margin-bottom: 8px;
-            }
-        }
-
-        /* Accessibility improvements */
-        @media (prefers-reduced-motion: reduce) {
-            .component-badge,
-            .metric-card,
-            .epic-card,
-            .export-btn {
-                transition: none;
-            }
-
-            .component-badge:hover {
-                transform: none;
-            }
-
-            .metric-card:hover,
-            .epic-card:hover,
-            .export-btn:hover {
-                transform: none;
-            }
-        }
-
-        /* High contrast mode support */
-        @media (prefers-contrast: high) {
-            .component-badge {
-                border: 2px solid white;
-            }
-
-            .status-badge {
-                border: 1px solid currentColor;
             }
         }
     </style>
@@ -701,75 +432,13 @@
                 </div>
             </div>
 
-            <!-- Component Analytics -->
-            <div class="chart-card" style="margin-bottom: 30px;">
-                <h3>🏷️ Component Distribution</h3>
-                <div id="component-stats-loading" class="loading" style="display: none;">
-                    Loading component statistics...
-                </div>
-                <div id="component-stats-content">
-                    <div class="chart-container">
-                        <canvas id="component-distribution-chart"></canvas>
-                    </div>
-                    <div id="component-stats-table" style="margin-top: 20px;"></div>
-                </div>
-            </div>
-
-            <!-- Component Legend -->
-            <div class="component-legend">
-                <h3>🏷️ Component Legend</h3>
-                <div class="legend-grid">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--component-frontend);"></div>
-                        <span>Frontend/UI</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--component-backend);"></div>
-                        <span>Backend/API</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--component-database);"></div>
-                        <span>Database</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--component-security);"></div>
-                        <span>Security/GDPR</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--component-testing);"></div>
-                        <span>Testing</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--component-ci-cd);"></div>
-                        <span>CI/CD</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: var(--component-documentation);"></div>
-                        <span>Documentation</span>
-                    </div>
-                </div>
-            </div>
-
             <!-- Filters -->
             <div class="filters">
                 <h3>🔍 Filters</h3>
                 <div class="filter-group">
                     <div class="filter-item">
-                        <label>Component</label>
-                        <select id="component-filter" onchange="applyFilters()" aria-label="Filter by component">
-                            <option value="">All Components</option>
-                            <option value="frontend">Frontend/UI</option>
-                            <option value="backend">Backend/API</option>
-                            <option value="database">Database</option>
-                            <option value="security">Security/GDPR</option>
-                            <option value="testing">Testing</option>
-                            <option value="ci-cd">CI/CD</option>
-                            <option value="documentation">Documentation</option>
-                        </select>
-                    </div>
-                    <div class="filter-item">
                         <label>Epic Status</label>
-                        <select id="status-filter" onchange="applyFilters()" aria-label="Filter by status">
+                        <select id="status-filter" onchange="applyFilters()">
                             <option value="">All Statuses</option>
                             <option value="planned">Planned</option>
                             <option value="in_progress">In Progress</option>
@@ -779,7 +448,7 @@
                     </div>
                     <div class="filter-item">
                         <label>Priority</label>
-                        <select id="priority-filter" onchange="applyFilters()" aria-label="Filter by priority">
+                        <select id="priority-filter" onchange="applyFilters()">
                             <option value="">All Priorities</option>
                             <option value="critical">Critical</option>
                             <option value="high">High</option>
@@ -789,14 +458,8 @@
                     </div>
                     <div class="filter-item">
                         <label>Search</label>
-                        <input type="text" id="search-filter" placeholder="Search epics..." onkeyup="applyFilters()" aria-label="Search epics">
+                        <input type="text" id="search-filter" placeholder="Search epics..." onkeyup="applyFilters()">
                     </div>
-                </div>
-
-                <!-- Filter breadcrumbs -->
-                <div id="filter-breadcrumbs" style="margin-top: 15px; display: none;">
-                    <div style="font-size: 12px; color: #7f8c8d; margin-bottom: 8px;">Active Filters:</div>
-                    <div id="active-filters" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
                 </div>
             </div>
 
@@ -851,9 +514,6 @@
 
                 // Create charts
                 createCharts();
-
-                // Load component statistics
-                await loadComponentStatistics();
 
                 // Load epic progress data
                 const epicResponse = await axios.get('/api/rtm/reports/epic-progress?format=json');
@@ -947,10 +607,6 @@
                 card.dataset.status = epic.status;
                 card.dataset.priority = epic.priority;
                 card.dataset.title = epic.title.toLowerCase();
-                card.dataset.components = epic.inherited_components || epic.component || '';
-
-                // Generate component badges
-                const componentBadges = renderComponentBadges(epic.inherited_components || epic.component);
 
                 card.innerHTML = `
                     <div class="epic-header">
@@ -959,8 +615,6 @@
                         <span class="status-badge status-${epic.status.replace('_', '-')}">${epic.status.replace('_', ' ')}</span>
                     </div>
                     <div class="epic-content">
-                        ${componentBadges ? `<div class="component-badges">${componentBadges}</div>` : ''}
-
                         <div class="progress-section">
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: ${metrics.completion_percentage}%"></div>
@@ -996,65 +650,12 @@
             });
         }
 
-        function renderComponentBadges(components) {
-            if (!components) return '';
-
-            // Handle comma-separated components
-            const componentList = typeof components === 'string'
-                ? components.split(',').map(c => c.trim())
-                : (Array.isArray(components) ? components : [components]);
-
-            return componentList.map(component => {
-                const normalizedComponent = component.toLowerCase().replace(/[^a-z0-9]/g, '-');
-                const displayName = getComponentDisplayName(component);
-
-                return `<span class="component-badge ${normalizedComponent}"
-                              title="${displayName}"
-                              aria-label="Component: ${displayName}">
-                          ${getComponentAbbreviation(component)}
-                        </span>`;
-            }).join('');
-        }
-
-        function getComponentDisplayName(component) {
-            const componentMap = {
-                'frontend': 'Frontend/UI',
-                'backend': 'Backend/API',
-                'database': 'Database',
-                'security': 'Security/GDPR',
-                'testing': 'Testing',
-                'ci-cd': 'CI/CD',
-                'documentation': 'Documentation'
-            };
-
-            const normalized = component.toLowerCase().replace(/[^a-z0-9]/g, '-');
-            return componentMap[normalized] || component;
-        }
-
-        function getComponentAbbreviation(component) {
-            const abbreviationMap = {
-                'frontend': 'FE',
-                'backend': 'BE',
-                'database': 'DB',
-                'security': 'SEC',
-                'testing': 'TEST',
-                'ci-cd': 'CI',
-                'documentation': 'DOC'
-            };
-
-            const normalized = component.toLowerCase().replace(/[^a-z0-9]/g, '-');
-            return abbreviationMap[normalized] || component.substring(0, 3).toUpperCase();
-        }
-
         function applyFilters() {
             const statusFilter = document.getElementById('status-filter').value;
             const priorityFilter = document.getElementById('priority-filter').value;
-            const componentFilter = document.getElementById('component-filter').value;
             const searchFilter = document.getElementById('search-filter').value.toLowerCase();
 
             const cards = document.querySelectorAll('.epic-card');
-            let visibleCount = 0;
-
             cards.forEach(card => {
                 let show = true;
 
@@ -1066,239 +667,12 @@
                     show = false;
                 }
 
-                if (componentFilter && !card.dataset.components.toLowerCase().includes(componentFilter)) {
-                    show = false;
-                }
-
                 if (searchFilter && !card.dataset.title.includes(searchFilter)) {
                     show = false;
                 }
 
                 card.style.display = show ? 'block' : 'none';
-                if (show) visibleCount++;
             });
-
-            updateFilterBreadcrumbs();
-            updateVisibleCount(visibleCount);
-        }
-
-        function updateFilterBreadcrumbs() {
-            const statusFilter = document.getElementById('status-filter').value;
-            const priorityFilter = document.getElementById('priority-filter').value;
-            const componentFilter = document.getElementById('component-filter').value;
-            const searchFilter = document.getElementById('search-filter').value;
-
-            const breadcrumbsContainer = document.getElementById('filter-breadcrumbs');
-            const activeFiltersContainer = document.getElementById('active-filters');
-
-            const activeFilters = [];
-
-            if (componentFilter) {
-                activeFilters.push({
-                    type: 'component',
-                    value: componentFilter,
-                    label: `Component: ${getComponentDisplayName(componentFilter)}`
-                });
-            }
-
-            if (statusFilter) {
-                activeFilters.push({
-                    type: 'status',
-                    value: statusFilter,
-                    label: `Status: ${statusFilter.replace('_', ' ')}`
-                });
-            }
-
-            if (priorityFilter) {
-                activeFilters.push({
-                    type: 'priority',
-                    value: priorityFilter,
-                    label: `Priority: ${priorityFilter}`
-                });
-            }
-
-            if (searchFilter) {
-                activeFilters.push({
-                    type: 'search',
-                    value: searchFilter,
-                    label: `Search: "${searchFilter}"`
-                });
-            }
-
-            if (activeFilters.length > 0) {
-                breadcrumbsContainer.style.display = 'block';
-                activeFiltersContainer.innerHTML = activeFilters.map(filter =>
-                    `<span class="filter-tag" onclick="clearFilter('${filter.type}')">
-                        ${filter.label}
-                        <span class="filter-remove" aria-label="Remove filter">×</span>
-                    </span>`
-                ).join('');
-            } else {
-                breadcrumbsContainer.style.display = 'none';
-            }
-        }
-
-        function clearFilter(filterType) {
-            switch (filterType) {
-                case 'component':
-                    document.getElementById('component-filter').value = '';
-                    break;
-                case 'status':
-                    document.getElementById('status-filter').value = '';
-                    break;
-                case 'priority':
-                    document.getElementById('priority-filter').value = '';
-                    break;
-                case 'search':
-                    document.getElementById('search-filter').value = '';
-                    break;
-            }
-            applyFilters();
-        }
-
-        function updateVisibleCount(count) {
-            // Update header or add visible count indicator
-            const header = document.querySelector('.epics-container');
-            let countIndicator = document.getElementById('visible-count');
-
-            if (!countIndicator) {
-                countIndicator = document.createElement('div');
-                countIndicator.id = 'visible-count';
-                countIndicator.style.cssText = 'text-align: center; margin: 20px 0; color: #7f8c8d; font-size: 14px;';
-                header.parentNode.insertBefore(countIndicator, header);
-            }
-
-            countIndicator.textContent = count === filteredEpics.length
-                ? `Showing all ${count} epics`
-                : `Showing ${count} of ${filteredEpics.length} epics`;
-        }
-
-        async function loadComponentStatistics() {
-            try {
-                document.getElementById('component-stats-loading').style.display = 'block';
-
-                // Load component distribution data
-                const distributionResponse = await axios.get('/api/rtm/components/distribution');
-                const distributionData = distributionResponse.data;
-
-                // Load component statistics
-                const statsResponse = await axios.get('/api/rtm/components/statistics');
-                const statsData = statsResponse.data;
-
-                // Create component distribution chart
-                createComponentChart(distributionData);
-
-                // Create component statistics table
-                createComponentStatsTable(statsData);
-
-                document.getElementById('component-stats-loading').style.display = 'none';
-
-            } catch (error) {
-                console.error('Error loading component statistics:', error);
-                document.getElementById('component-stats-loading').innerHTML =
-                    '<div style="color: #e74c3c;">Failed to load component statistics</div>';
-            }
-        }
-
-        function createComponentChart(distributionData) {
-            const ctx = document.getElementById('component-distribution-chart').getContext('2d');
-
-            const labels = distributionData.distribution.map(item => getComponentDisplayName(item.component));
-            const data = distributionData.distribution.map(item => item.count);
-            const colors = distributionData.distribution.map(item => getComponentColor(item.component));
-
-            charts.componentDistribution = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: colors,
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const item = distributionData.distribution[context.dataIndex];
-                                    return `${context.label}: ${item.count} items (${item.percentage.toFixed(1)}%)`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function createComponentStatsTable(statsData) {
-            const tableContainer = document.getElementById('component-stats-table');
-
-            let tableHTML = `
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                        <thead>
-                            <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-                                <th style="padding: 8px; text-align: left;">Component</th>
-                                <th style="padding: 8px; text-align: center;">Epics</th>
-                                <th style="padding: 8px; text-align: center;">User Stories</th>
-                                <th style="padding: 8px; text-align: center;">Tests</th>
-                                <th style="padding: 8px; text-align: center;">Defects</th>
-                                <th style="padding: 8px; text-align: center;">Test Pass Rate</th>
-                                <th style="padding: 8px; text-align: center;">Total Items</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
-
-            Object.entries(statsData.components).forEach(([component, stats]) => {
-                const componentColor = getComponentColor(component);
-                const displayName = getComponentDisplayName(component);
-
-                tableHTML += `
-                    <tr style="border-bottom: 1px solid #eee;">
-                        <td style="padding: 8px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 12px; height: 12px; border-radius: 3px; background: ${componentColor};"></div>
-                                ${displayName}
-                            </div>
-                        </td>
-                        <td style="padding: 8px; text-align: center;">${stats.epic_count}</td>
-                        <td style="padding: 8px; text-align: center;">${stats.user_story_count}</td>
-                        <td style="padding: 8px; text-align: center;">${stats.test_count}</td>
-                        <td style="padding: 8px; text-align: center;">${stats.defect_count}</td>
-                        <td style="padding: 8px; text-align: center;">${stats.test_pass_rate.toFixed(1)}%</td>
-                        <td style="padding: 8px; text-align: center; font-weight: bold;">${stats.total_items}</td>
-                    </tr>`;
-            });
-
-            tableHTML += `
-                        </tbody>
-                    </table>
-                </div>`;
-
-            tableContainer.innerHTML = tableHTML;
-        }
-
-        function getComponentColor(component) {
-            const colorMap = {
-                'frontend': 'var(--component-frontend)',
-                'backend': 'var(--component-backend)',
-                'database': 'var(--component-database)',
-                'security': 'var(--component-security)',
-                'testing': 'var(--component-testing)',
-                'ci-cd': 'var(--component-ci-cd)',
-                'documentation': 'var(--component-documentation)'
-            };
-
-            const normalized = component.toLowerCase().replace(/[^a-z0-9]/g, '-');
-            return colorMap[normalized] || 'var(--component-default)';
         }
 
         async function exportReport(reportType, format) {
