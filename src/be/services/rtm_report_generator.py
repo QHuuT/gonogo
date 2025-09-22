@@ -178,6 +178,112 @@ class RTMReportGenerator:
         .skip-link:focus {{
             top: 6px;
         }}
+
+        /* Component Color Palette */
+        :root {{
+            --component-frontend: #3B82F6;     /* Blue - Frontend/UI */
+            --component-backend: #10B981;      /* Green - Backend/API */
+            --component-database: #8B5CF6;     /* Purple - Database */
+            --component-security: #EF4444;     /* Red - Security/GDPR */
+            --component-testing: #F59E0B;      /* Orange - Testing */
+            --component-ci-cd: #06B6D4;        /* Cyan - CI/CD */
+            --component-documentation: #6B7280; /* Gray - Documentation */
+            --component-default: #9CA3AF;      /* Light Gray - Default/Unknown */
+        }}
+
+        /* Component Badge Styles */
+        .component-badge {{
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            color: white;
+            transition: all 0.2s ease;
+        }}
+
+        .component-badge:hover {{
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }}
+
+        .component-badge.frontend {{ background: var(--component-frontend); }}
+        .component-badge.backend {{ background: var(--component-backend); }}
+        .component-badge.database {{ background: var(--component-database); }}
+        .component-badge.security {{ background: var(--component-security); }}
+        .component-badge.testing {{ background: var(--component-testing); }}
+        .component-badge.ci-cd {{ background: var(--component-ci-cd); }}
+        .component-badge.documentation {{ background: var(--component-documentation); }}
+        .component-badge.default {{ background: var(--component-default); }}
+
+        .component-badges {{
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }}
+
+        /* Component Filter Styles */
+        .component-filter-group {{
+            margin-bottom: 1rem;
+        }}
+
+        .component-filter-button {{
+            background: var(--color-bg-secondary, #f8f9fa);
+            border: 1px solid var(--color-border, #dee2e6);
+            color: var(--color-text-secondary, #6c757d);
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }}
+
+        .component-filter-button:hover {{
+            background: var(--color-bg-hover, #e9ecef);
+            border-color: var(--color-border-hover, #adb5bd);
+        }}
+
+        .component-filter-button.active {{
+            background: var(--color-primary, #007bff);
+            border-color: var(--color-primary, #007bff);
+            color: white;
+        }}
+
+        /* Responsive Design */
+        @media (max-width: 768px) {{
+            .component-badges {{
+                margin-bottom: 12px;
+            }}
+
+            .component-badge {{
+                font-size: 10px;
+                padding: 3px 6px;
+                margin-right: 3px;
+                margin-bottom: 3px;
+            }}
+
+            .component-filter-button {{
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+                margin-right: 0.3rem;
+                margin-bottom: 0.3rem;
+            }}
+        }}
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {{
+            .component-badge {{
+                border: 2px solid white;
+            }}
+        }}
     </style>
 
     <!-- Enhanced RTM Interactive Features -->
@@ -236,6 +342,20 @@ class RTMReportGenerator:
                 </div>
             </div>
 
+            <div class="filter-group component-filter-group">
+                <span class="filter-group__label">Component:</span>
+                <div class="filter-group__controls">
+                    <button class="component-filter-button active" onclick="filterByComponent('all')" data-filter-group="component" data-filter-value="all">All</button>
+                    <button class="component-filter-button" onclick="filterByComponent('frontend')" data-filter-group="component" data-filter-value="frontend">Frontend</button>
+                    <button class="component-filter-button" onclick="filterByComponent('backend')" data-filter-group="component" data-filter-value="backend">Backend</button>
+                    <button class="component-filter-button" onclick="filterByComponent('database')" data-filter-group="component" data-filter-value="database">Database</button>
+                    <button class="component-filter-button" onclick="filterByComponent('security')" data-filter-group="component" data-filter-value="security">Security</button>
+                    <button class="component-filter-button" onclick="filterByComponent('testing')" data-filter-group="component" data-filter-value="testing">Testing</button>
+                    <button class="component-filter-button" onclick="filterByComponent('ci-cd')" data-filter-group="component" data-filter-value="ci-cd">CI/CD</button>
+                    <button class="component-filter-button" onclick="filterByComponent('documentation')" data-filter-group="component" data-filter-value="documentation">Documentation</button>
+                </div>
+            </div>
+
             <div class="export-toolbar">
                 <button class="export-button" data-export-format="csv" title="Export to CSV">
                     CSV
@@ -276,14 +396,20 @@ class RTMReportGenerator:
             tests_not_run = metrics["tests_not_run"]
             defects_count = metrics["defects_count"]
 
+            # Generate component badges for the epic
+            inherited_components = epic.get_inherited_components()
+            component_string = ','.join(inherited_components) if inherited_components else epic.component
+            component_badges = self._render_component_badges(component_string)
+
             html += f"""
         <!-- Epic Card with Enhanced Design -->
-        <article class="epic-card" data-status="{epic.status}" data-epic-id="{epic.epic_id}" aria-labelledby="epic-{epic.epic_id}-title">
+        <article class="epic-card" data-status="{epic.status}" data-epic-id="{epic.epic_id}" data-components="{component_string or ''}" aria-labelledby="epic-{epic.epic_id}-title">
             <header class="epic-header" role="button" tabindex="0" aria-expanded="false" aria-controls="epic-{epic.epic_id}">
                 <div class="epic-header__top">
                     <h2 id="epic-{epic.epic_id}-title" class="epic-title-link">
                         {epic_title_link}
                     </h2>
+                    {component_badges}
                     <span class="badge badge--status badge--status-{epic.status.replace('_', '-')}" aria-label="Epic status: {epic.status.replace('_', ' ').title()}">
                         {epic.status.replace('_', ' ').title()}
                     </span>
@@ -960,6 +1086,64 @@ class RTMReportGenerator:
                 }
             }
         });
+
+        // Component filtering functionality
+        function filterByComponent(component) {
+            // Update button states
+            document.querySelectorAll('.component-filter-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filter epic cards
+            const epicCards = document.querySelectorAll('.epic-card');
+            let visibleCount = 0;
+
+            epicCards.forEach(card => {
+                const cardComponents = card.getAttribute('data-components') || '';
+                let shouldShow = false;
+
+                if (component === 'all') {
+                    shouldShow = true;
+                } else {
+                    // Check if the card has the component (case-insensitive, handles comma-separated)
+                    shouldShow = cardComponents.toLowerCase().includes(component.toLowerCase());
+                }
+
+                if (shouldShow) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Update filter results count
+            updateFilterResultsCount(visibleCount, epicCards.length, component);
+        }
+
+        function updateFilterResultsCount(visibleCount, totalCount, filterType) {
+            const resultsDiv = document.querySelector('.search-results-count');
+            if (resultsDiv) {
+                if (filterType === 'all') {
+                    resultsDiv.style.display = 'none';
+                } else {
+                    resultsDiv.style.display = 'block';
+                    resultsDiv.innerHTML = `<p>Showing ${visibleCount} of ${totalCount} epics filtered by component: <strong>${filterType}</strong></p>`;
+                }
+            }
+        }
+
+        // Initialize component filter on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add component data attributes for better filtering
+            document.querySelectorAll('.epic-card').forEach(card => {
+                const components = card.getAttribute('data-components');
+                if (components) {
+                    card.setAttribute('data-component-list', components.toLowerCase().replace(/\s+/g, ''));
+                }
+            });
+        });
     </script>
 </body>
 </html>
@@ -1479,3 +1663,67 @@ class RTMReportGenerator:
         """Export RTM data as PDF."""
         # Would implement PDF export using reportlab
         return b"PDF export not yet implemented"
+
+    def _render_component_badges(self, component_string: Optional[str]) -> str:
+        """Render component badges HTML for an epic or other entity."""
+        if not component_string:
+            return ""
+
+        # Handle comma-separated components and inherited components
+        components = []
+        if isinstance(component_string, str):
+            components = [c.strip() for c in component_string.split(',') if c.strip()]
+
+        if not components:
+            return ""
+
+        badges_html = '<div class="component-badges">'
+
+        for component in components:
+            # Normalize component name for CSS class
+            normalized_component = component.lower().replace('/', '-').replace(' ', '-')
+
+            # Get display name and abbreviation
+            display_name = self._get_component_display_name(component)
+            abbreviation = self._get_component_abbreviation(component)
+
+            badges_html += f'''
+                <span class="component-badge {normalized_component}"
+                      title="{display_name}"
+                      aria-label="Component: {display_name}">
+                    {abbreviation}
+                </span>
+            '''
+
+        badges_html += '</div>'
+        return badges_html
+
+    def _get_component_display_name(self, component: str) -> str:
+        """Get user-friendly display name for component."""
+        component_map = {
+            'frontend': 'Frontend/UI',
+            'backend': 'Backend/API',
+            'database': 'Database',
+            'security': 'Security/GDPR',
+            'testing': 'Testing',
+            'ci-cd': 'CI/CD',
+            'documentation': 'Documentation'
+        }
+
+        normalized = component.lower().replace('/', '-').replace(' ', '-')
+        return component_map.get(normalized, component.title())
+
+    def _get_component_abbreviation(self, component: str) -> str:
+        """Get abbreviated form for component badges."""
+        abbreviation_map = {
+            'frontend': 'FE',
+            'backend': 'BE',
+            'database': 'DB',
+            'security': 'SEC',
+            'testing': 'TEST',
+            'ci-cd': 'CI',
+            'documentation': 'DOC'
+        }
+
+        normalized = component.lower().replace('/', '-').replace(' ', '-')
+        return abbreviation_map.get(normalized, component[:3].upper())
