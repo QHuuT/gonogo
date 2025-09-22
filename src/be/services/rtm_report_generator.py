@@ -227,6 +227,18 @@ class RTMReportGenerator:
             margin-bottom: 8px;
         }}
 
+        /* Epic Components Container (positioned below progress bar) */
+        .epic-components {{
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid var(--color-border, #e9ecef);
+        }}
+
+        .epic-components .component-badges {{
+            margin-bottom: 0;
+            gap: 6px;
+        }}
+
         /* Component Filter Styles */
         .component-filter-group {{
             margin-bottom: 1rem;
@@ -275,6 +287,15 @@ class RTMReportGenerator:
                 padding: 0.4rem 0.8rem;
                 margin-right: 0.3rem;
                 margin-bottom: 0.3rem;
+            }}
+
+            .epic-components {{
+                margin-top: 8px;
+                padding-top: 6px;
+            }}
+
+            .epic-components .component-badges {{
+                gap: 4px;
             }}
         }}
 
@@ -409,7 +430,6 @@ class RTMReportGenerator:
                     <h2 id="epic-{epic.epic_id}-title" class="epic-title-link">
                         {epic_title_link}
                     </h2>
-                    {component_badges}
                     <span class="badge badge--status badge--status-{epic.status.replace('_', '-')}" aria-label="Epic status: {epic.status.replace('_', ' ').title()}">
                         {epic.status.replace('_', ' ').title()}
                     </span>
@@ -423,6 +443,11 @@ class RTMReportGenerator:
                     <div class="epic-progress__bar" role="progressbar" aria-valuenow="{progress:.1f}" aria-valuemin="0" aria-valuemax="100" aria-label="Epic completion progress">
                         <div class="epic-progress__fill" style="width: {progress}%"></div>
                     </div>
+                </div>
+
+                <!-- Component badges positioned below progress bar -->
+                <div class="epic-components">
+                    {component_badges}
                 </div>
             </header>
 
