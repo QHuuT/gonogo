@@ -15,7 +15,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import and_, func
+from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session
 
 from ..database import get_db
@@ -61,6 +61,8 @@ def create_epic(
 def list_epics(
     status: Optional[str] = Query(None, description="Filter by status"),
     priority: Optional[str] = Query(None, description="Filter by priority"),
+    component: Optional[str] = Query(None, description="Filter by component (supports comma-separated values)"),
+    exclude_component: Optional[str] = Query(None, description="Exclude components (supports comma-separated values)"),
     limit: int = Query(50, le=100, description="Limit results"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
     db: Session = Depends(get_db),
@@ -72,6 +74,21 @@ def list_epics(
         query = query.filter(Epic.status == status)
     if priority:
         query = query.filter(Epic.priority == priority)
+
+    # Component filtering
+    if component:
+        components = [c.strip() for c in component.split(',')]
+        # For epics, component can contain multiple values separated by comma
+        # So we need to check if ANY of the requested components are in the epic's component field
+        component_filters = []
+        for comp in components:
+            component_filters.append(Epic.component.like(f'%{comp}%'))
+        query = query.filter(or_(*component_filters))
+
+    if exclude_component:
+        exclude_components = [c.strip() for c in exclude_component.split(',')]
+        for comp in exclude_components:
+            query = query.filter(~Epic.component.like(f'%{comp}%'))
 
     epics = query.offset(offset).limit(limit).all()
     return [epic.to_dict() for epic in epics]
@@ -161,6 +178,8 @@ def create_user_story(
 def list_user_stories(
     epic_id: Optional[int] = Query(None, description="Filter by Epic ID"),
     status: Optional[str] = Query(None, description="Filter by implementation status"),
+    component: Optional[str] = Query(None, description="Filter by component (supports comma-separated values)"),
+    exclude_component: Optional[str] = Query(None, description="Exclude components (supports comma-separated values)"),
     limit: int = Query(50, le=100, description="Limit results"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
     db: Session = Depends(get_db),
@@ -172,6 +191,16 @@ def list_user_stories(
         query = query.filter(UserStory.epic_id == epic_id)
     if status:
         query = query.filter(UserStory.implementation_status == status)
+
+    # Component filtering
+    if component:
+        components = [c.strip() for c in component.split(',')]
+        # For user stories, component is a single value field
+        query = query.filter(UserStory.component.in_(components))
+
+    if exclude_component:
+        exclude_components = [c.strip() for c in exclude_component.split(',')]
+        query = query.filter(~UserStory.component.in_(exclude_components))
 
     user_stories = query.offset(offset).limit(limit).all()
     return [us.to_dict() for us in user_stories]
@@ -223,6 +252,8 @@ def list_tests(
     execution_status: Optional[str] = Query(
         None, description="Filter by execution status"
     ),
+    component: Optional[str] = Query(None, description="Filter by component (supports comma-separated values)"),
+    exclude_component: Optional[str] = Query(None, description="Exclude components (supports comma-separated values)"),
     limit: int = Query(50, le=100, description="Limit results"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
     db: Session = Depends(get_db),
@@ -236,6 +267,15 @@ def list_tests(
         query = query.filter(Test.epic_id == epic_id)
     if execution_status:
         query = query.filter(Test.last_execution_status == execution_status)
+
+    # Component filtering
+    if component:
+        components = [c.strip() for c in component.split(',')]
+        query = query.filter(Test.component.in_(components))
+
+    if exclude_component:
+        exclude_components = [c.strip() for c in exclude_component.split(',')]
+        query = query.filter(~Test.component.in_(exclude_components))
 
     tests = query.offset(offset).limit(limit).all()
     return [test.to_dict() for test in tests]
@@ -295,6 +335,8 @@ def list_defects(
     is_security_issue: Optional[bool] = Query(
         None, description="Filter by security issues"
     ),
+    component: Optional[str] = Query(None, description="Filter by component (supports comma-separated values)"),
+    exclude_component: Optional[str] = Query(None, description="Exclude components (supports comma-separated values)"),
     limit: int = Query(50, le=100, description="Limit results"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
     db: Session = Depends(get_db),
@@ -309,8 +351,171 @@ def list_defects(
     if is_security_issue is not None:
         query = query.filter(Defect.is_security_issue == is_security_issue)
 
+    # Component filtering
+    if component:
+        components = [c.strip() for c in component.split(',')]
+        query = query.filter(Defect.component.in_(components))
+
+    if exclude_component:
+        exclude_components = [c.strip() for c in exclude_component.split(',')]
+        query = query.filter(~Defect.component.in_(exclude_components))
+
     defects = query.offset(offset).limit(limit).all()
     return [defect.to_dict() for defect in defects]
+
+
+# Component Analysis Endpoints
+@router.get("/components/", response_model=List[str])
+def list_components(db: Session = Depends(get_db)):
+    """Get list of all unique components across all entities."""
+    epic_components = db.query(Epic.component).filter(Epic.component.isnot(None)).distinct().all()
+    us_components = db.query(UserStory.component).filter(UserStory.component.isnot(None)).distinct().all()
+    test_components = db.query(Test.component).filter(Test.component.isnot(None)).distinct().all()
+    defect_components = db.query(Defect.component).filter(Defect.component.isnot(None)).distinct().all()
+
+    # Flatten epic components (they can be comma-separated)
+    all_components = set()
+    for (comp,) in epic_components:
+        if comp:
+            all_components.update([c.strip() for c in comp.split(',')])
+
+    # Add single-value components
+    for (comp,) in us_components + test_components + defect_components:
+        if comp:
+            all_components.add(comp.strip())
+
+    return sorted(list(all_components))
+
+
+@router.get("/components/statistics", response_model=dict)
+def get_component_statistics(db: Session = Depends(get_db)):
+    """Get comprehensive statistics for each component."""
+    components = list_components(db)
+
+    stats = {}
+    for component in components:
+        # Epic count (need to check for component in comma-separated values)
+        epic_count = db.query(Epic).filter(Epic.component.like(f'%{component}%')).count()
+
+        # User story count
+        us_count = db.query(UserStory).filter(UserStory.component == component).count()
+
+        # Test count
+        test_count = db.query(Test).filter(Test.component == component).count()
+
+        # Defect count
+        defect_count = db.query(Defect).filter(Defect.component == component).count()
+
+        # Test pass rate for this component
+        total_tests = db.query(Test).filter(Test.component == component).count()
+        passed_tests = db.query(Test).filter(
+            Test.component == component,
+            Test.last_execution_status == 'passed'
+        ).count()
+        pass_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
+
+        # Critical defects for this component
+        critical_defects = db.query(Defect).filter(
+            Defect.component == component,
+            Defect.severity == 'critical'
+        ).count()
+
+        stats[component] = {
+            'epic_count': epic_count,
+            'user_story_count': us_count,
+            'test_count': test_count,
+            'defect_count': defect_count,
+            'test_pass_rate': round(pass_rate, 2),
+            'critical_defects': critical_defects,
+            'total_items': epic_count + us_count + test_count + defect_count
+        }
+
+    return {
+        'components': stats,
+        'summary': {
+            'total_components': len(components),
+            'total_epics': sum(stat['epic_count'] for stat in stats.values()),
+            'total_user_stories': sum(stat['user_story_count'] for stat in stats.values()),
+            'total_tests': sum(stat['test_count'] for stat in stats.values()),
+            'total_defects': sum(stat['defect_count'] for stat in stats.values())
+        }
+    }
+
+
+@router.get("/components/{component_name}/items", response_model=dict)
+def get_component_items(
+    component_name: str,
+    include_epics: bool = Query(True, description="Include epics with this component"),
+    include_user_stories: bool = Query(True, description="Include user stories with this component"),
+    include_tests: bool = Query(True, description="Include tests with this component"),
+    include_defects: bool = Query(True, description="Include defects with this component"),
+    limit: int = Query(50, le=100, description="Limit results per entity type"),
+    db: Session = Depends(get_db)
+):
+    """Get all items (epics, user stories, tests, defects) for a specific component."""
+    result = {
+        'component': component_name,
+        'epics': [],
+        'user_stories': [],
+        'tests': [],
+        'defects': []
+    }
+
+    if include_epics:
+        epics = db.query(Epic).filter(Epic.component.like(f'%{component_name}%')).limit(limit).all()
+        result['epics'] = [epic.to_dict() for epic in epics]
+
+    if include_user_stories:
+        user_stories = db.query(UserStory).filter(UserStory.component == component_name).limit(limit).all()
+        result['user_stories'] = [us.to_dict() for us in user_stories]
+
+    if include_tests:
+        tests = db.query(Test).filter(Test.component == component_name).limit(limit).all()
+        result['tests'] = [test.to_dict() for test in tests]
+
+    if include_defects:
+        defects = db.query(Defect).filter(Defect.component == component_name).limit(limit).all()
+        result['defects'] = [defect.to_dict() for defect in defects]
+
+    return result
+
+
+@router.get("/components/distribution", response_model=dict)
+def get_component_distribution(db: Session = Depends(get_db)):
+    """Get component distribution analytics."""
+    stats = get_component_statistics(db)
+    components_data = stats['components']
+
+    # Sort components by total items
+    sorted_components = sorted(
+        components_data.items(),
+        key=lambda x: x[1]['total_items'],
+        reverse=True
+    )
+
+    # Calculate percentages
+    total_items = sum(data['total_items'] for data in components_data.values())
+
+    distribution = []
+    for component, data in sorted_components:
+        percentage = (data['total_items'] / total_items * 100) if total_items > 0 else 0
+        distribution.append({
+            'component': component,
+            'count': data['total_items'],
+            'percentage': round(percentage, 2),
+            'breakdown': {
+                'epics': data['epic_count'],
+                'user_stories': data['user_story_count'],
+                'tests': data['test_count'],
+                'defects': data['defect_count']
+            }
+        })
+
+    return {
+        'distribution': distribution,
+        'total_items': total_items,
+        'total_components': len(components_data)
+    }
 
 
 # Analytics and Reporting Endpoints
@@ -585,7 +790,7 @@ def get_dashboard_data(db: Session = Depends(get_db)):
     recent_date = datetime.utcnow() - timedelta(days=7)
 
     recent_tests = (
-        db.query(Test).filter(Test.last_execution_timestamp >= recent_date).count()
+        db.query(Test).filter(Test.last_execution_time >= recent_date).count()
     )
 
     recent_defects = db.query(Defect).filter(Defect.created_at >= recent_date).count()

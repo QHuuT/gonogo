@@ -52,6 +52,45 @@ body:
     validations:
       required: false
 
+  - type: input
+    id: related-user-story
+    attributes:
+      label: Related User Story (Optional)
+      description: "User story this defect relates to (format: US-XXXXX or #issue-number)"
+      placeholder: "US-00042 or #42"
+    validations:
+      required: false
+
+  - type: input
+    id: related-epic
+    attributes:
+      label: Related Epic (Optional)
+      description: "Epic this defect relates to (format: EP-XXXXX)"
+      placeholder: "EP-00005"
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ## 🔗 Linking Defects to Requirements
+
+        **When to link to User Story**:
+        - Defect found in implemented user story functionality
+        - Bug prevents user story acceptance criteria from being met
+        - Regression in previously working user story
+
+        **When to link to Epic**:
+        - Defect affects multiple user stories within an epic
+        - Epic-level architectural or design issue
+        - No specific user story exists yet
+
+        **Format Examples**:
+        - User Story: "US-00042" or "#42"
+        - Epic: "EP-00005"
+
+        **Component Inheritance**: If a related User Story or Epic is specified, this defect will automatically inherit the component from that parent requirement.
+
   - type: textarea
     id: error-messages
     attributes:

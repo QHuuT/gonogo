@@ -33,6 +33,22 @@ body:
     validations:
       required: false
 
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component (Optional)
+      description: Primary component this user story affects
+      options:
+        - Frontend/UI
+        - Backend/API
+        - Database
+        - Security/GDPR
+        - Testing
+        - CI/CD
+        - Documentation
+    validations:
+      required: false
+
   - type: textarea
     id: acceptance-criteria-functional
     attributes:
@@ -80,6 +96,27 @@ body:
   - type: markdown
     attributes:
       value: |
+        ## Component Assignment
+
+        **Component Selection**: User Stories can optionally specify a component that represents the primary system area they affect.
+
+        **Component Inheritance Rules**:
+        - **User Stories**: Can specify their own component (optional field)
+        - **Defects**: Inherit component from their parent User Story (if specified)
+        - **Tests**: Inherit component from their parent User Story (if specified)
+        - **Epics**: Automatically inherit all unique components from their child User Stories
+
+        **Flexibility**: All component fields are optional to allow issue creation when parent epics or user stories don't exist yet.
+
+        **Component Options**:
+        - **Frontend/UI**: User interface, web components, styling, templates
+        - **Backend/API**: Server logic, API endpoints, business rules, services
+        - **Database**: Schema changes, migrations, data models, queries
+        - **Security/GDPR**: Authentication, authorization, privacy compliance
+        - **Testing**: Test infrastructure, quality assurance tools, test automation
+        - **CI/CD**: Build pipelines, deployment automation, GitHub Actions
+        - **Documentation**: User guides, technical docs, API documentation
+
         ## Next Steps
 
         1. Story will be reviewed and refined during backlog grooming

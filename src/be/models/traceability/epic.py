@@ -44,6 +44,9 @@ class Epic(TraceabilityBase):
     gdpr_applicable = Column(Boolean, default=False, index=True, nullable=False)
     gdpr_considerations = Column(Text)
 
+    # Component classification
+    component = Column(String(50), nullable=False, index=True, default='backend')
+
     # Relationships
     # User Stories - hybrid relationship (cached in DB, source of truth in GitHub)
     user_stories = relationship(
@@ -61,6 +64,7 @@ class Epic(TraceabilityBase):
         Index("idx_epic_status_priority", "status", "priority"),
         Index("idx_epic_completion", "completion_percentage"),
         Index("idx_epic_release", "target_release_version", "priority"),
+        Index("idx_epic_component", "component"),
     )
 
     def __init__(self, epic_id: str, title: str, **kwargs):
@@ -81,6 +85,8 @@ class Epic(TraceabilityBase):
             self.risk_level = "medium"
         if self.gdpr_applicable is None:
             self.gdpr_applicable = False
+        if self.component is None:
+            self.component = "backend"
 
     def calculate_completion_percentage(self):
         """Calculate completion percentage based on story points."""
@@ -93,6 +99,55 @@ class Epic(TraceabilityBase):
         self.completed_story_points = completed_points
         self.total_story_points = total_points
         self.completion_percentage = self.calculate_completion_percentage()
+
+    def get_component_label(self) -> str:
+        """Convert component to GitHub label format."""
+        mapping = {
+            'frontend/ui': 'component/frontend',
+            'frontend': 'component/frontend',
+            'backend/api': 'component/backend',
+            'backend': 'component/backend',
+            'database': 'component/database',
+            'security/gdpr': 'component/security',
+            'security': 'component/security',
+            'testing': 'component/testing',
+            'ci/cd': 'component/ci-cd',
+            'ci-cd': 'component/ci-cd',
+            'documentation': 'component/documentation'
+        }
+        component_key = self.component.lower().replace(' ', '/').replace('-', '/')
+        return mapping.get(component_key, mapping.get(self.component.lower(), f'component/{self.component.lower().replace("/", "-").replace(" ", "-")}'))
+
+    def validate_component(self) -> bool:
+        """Validate component value against allowed options."""
+        allowed = [
+            'frontend/ui', 'frontend', 'backend/api', 'backend', 'database',
+            'security/gdpr', 'security', 'testing', 'ci/cd', 'ci-cd', 'documentation'
+        ]
+        component_normalized = self.component.lower().replace(' ', '/').replace('-', '/')
+        return component_normalized in allowed or self.component.lower() in allowed
+
+    def get_inherited_components(self) -> list:
+        """Get unique components from child User Stories."""
+        if not self.user_stories:
+            return []
+
+        components = set()
+        for user_story in self.user_stories:
+            if user_story.component:
+                components.add(user_story.component)
+
+        return sorted(list(components))
+
+    def update_component_from_user_stories(self):
+        """Update Epic component based on child User Stories."""
+        inherited_components = self.get_inherited_components()
+        if inherited_components:
+            # If Epic has multiple components, join them with comma
+            self.component = ','.join(inherited_components)
+        elif not self.component:
+            # Default if no components found
+            self.component = 'backend'
 
     def to_dict(self):
         """Convert to dictionary with Epic-specific fields."""
@@ -109,6 +164,9 @@ class Epic(TraceabilityBase):
                 "risk_level": self.risk_level,
                 "gdpr_applicable": self.gdpr_applicable,
                 "gdpr_considerations": self.gdpr_considerations,
+                "component": self.component,
+                "component_label": self.get_component_label(),
+                "inherited_components": self.get_inherited_components(),
                 "test_count": len(self.tests) if self.tests else 0,
                 "user_story_count": len(self.user_stories) if self.user_stories else 0,
                 "defect_count": len(self.defects) if self.defects else 0,

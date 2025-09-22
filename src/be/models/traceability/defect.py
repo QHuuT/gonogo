@@ -88,6 +88,10 @@ class Defect(TraceabilityBase):
     affects_customers = Column(Boolean, default=False, index=True)
     customer_impact_details = Column(Text)
 
+    # Component classification (inherited from User Story or manually set)
+    component = Column(String(50), nullable=True, index=True)
+    # Values: frontend, backend, database, security, testing, ci-cd, documentation
+
     # Indexes for performance
     __table_args__ = (
         Index("idx_defect_epic_severity", "epic_id", "severity"),
@@ -152,6 +156,20 @@ class Defect(TraceabilityBase):
             or self.affects_gdpr
         )
 
+    def inherit_component_from_user_story(self, session):
+        """Inherit component from related User Story if not already set."""
+        if self.component is not None:
+            return  # Component already set, don't override
+
+        if self.github_user_story_number:
+            from .user_story import UserStory
+            user_story = session.query(UserStory).filter(
+                UserStory.github_issue_number == self.github_user_story_number
+            ).first()
+
+            if user_story and user_story.component:
+                self.component = user_story.component
+
     def to_dict(self):
         """Convert to dictionary with Defect specific fields."""
         base_dict = super().to_dict()
@@ -184,6 +202,7 @@ class Defect(TraceabilityBase):
                 "is_regression": self.is_regression,
                 "affects_customers": self.affects_customers,
                 "customer_impact_details": self.customer_impact_details,
+                "component": self.component,
                 "impact_score": self.calculate_impact_score(),
                 "is_high_priority": self.is_high_priority(),
             }

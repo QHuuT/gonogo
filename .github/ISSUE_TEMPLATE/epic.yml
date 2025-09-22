@@ -79,6 +79,22 @@ body:
     validations:
       required: true
 
+  - type: checkboxes
+    id: component
+    attributes:
+      label: Components
+      description: Components this epic affects (will be automatically populated based on child User Stories)
+      options:
+        - label: Frontend/UI
+        - label: Backend/API
+        - label: Database
+        - label: Security/GDPR
+        - label: Testing
+        - label: CI/CD
+        - label: Documentation
+    validations:
+      required: false
+
   - type: textarea
     id: success-criteria
     attributes:
@@ -155,6 +171,7 @@ body:
 
         **Fields displayed in RTM reports:**
         - ✅ **Epic Description** → Main display (500 char limit) - keep concise!
+        - ✅ **Component** → System component classification for organization
         - ✅ **Epic Status** → Progress tracking
         - ✅ **GitHub Links** → Direct links to this issue
         - ✅ **User Story Progress** → Calculated automatically
@@ -169,5 +186,20 @@ body:
         1. Link related User Stories using "Parent Epic: EP-XXXXX" in their descriptions
         2. Epic progress will be automatically calculated in RTM reports
         3. View RTM reports: `python tools/dynamic_rtm_demo.py --html`
+
+        **Component Inheritance System:**
+        - **Epic Components**: Automatically populated based on child User Stories
+        - **Unique Components**: Each component appears only once, even if multiple User Stories use it
+        - **Dynamic Updates**: Components update automatically as User Stories are added/modified
+        - **Manual Override**: Components can be manually selected during epic creation if needed
+
+        **Component Types**:
+        - **Frontend/UI**: User interface, web components, styling, templates
+        - **Backend/API**: Server logic, API endpoints, business rules, services
+        - **Database**: Schema changes, migrations, data models, queries
+        - **Security/GDPR**: Authentication, authorization, privacy compliance
+        - **Testing**: Test infrastructure, quality assurance tools, test automation
+        - **CI/CD**: Build pipelines, deployment automation, GitHub Actions
+        - **Documentation**: User guides, technical docs, API documentation
 
         💡 **Best Practice**: Use Epic Description for RTM (concise), Detailed Description for comprehensive documentation!

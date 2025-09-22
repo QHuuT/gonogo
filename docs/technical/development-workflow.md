@@ -1,6 +1,6 @@
 # Development Workflow
 
-**Last Updated**: 2025-09-20
+**Last Updated**: 2025-09-22
 
 ## 🎯 Overview
 
@@ -9,6 +9,42 @@ This document defines the complete development workflow for GoNoGo, integrating 
 ## 📋 Core Development Workflow
 
 ### **Phase 1: Requirements Analysis & GitHub Issue Creation**
+
+#### **Issue Creation Guidelines - Component Boundaries**
+
+**NEW: Epic and User Story Component Guidelines** (Updated 2025-09-22)
+
+**Epic Creation Guidelines:**
+- **Cross-Component Scope**: Epics CAN and SHOULD span multiple components/teams when the feature naturally requires cross-team collaboration
+- **Component Inheritance**: Epic component fields are automatically populated from all child User Stories
+- **Comprehensive Labeling**: Epic component field should list ALL components involved in the epic
+- **Example**: "Authentication System" epic might involve Frontend, Backend, Security, and Database components
+
+**User Story Creation Guidelines:**
+- **Single-Component Focus**: User stories SHOULD be component-focused and single-team when possible for optimal workflow
+- **Split Multi-Component Stories**: If a user story requires work across multiple components, it SHOULD be split into separate, coordinated user stories
+- **One Primary Component**: Each user story should have ONE primary component assignment
+- **Cross-Reference Related Stories**: Related user stories should reference each other for coordination and dependency tracking
+
+**Example of Proper Story Splitting:**
+```
+❌ AVOID: "US-XXX: Implement user login (Frontend + Backend + Database)"
+
+✅ PREFERRED: Split into coordinated stories:
+- "US-XXX: Design user login UI components (Frontend)"
+- "US-XXX: Implement login API endpoints (Backend)"
+- "US-XXX: Create user authentication database schema (Database)"
+```
+
+**Benefits of Component-Focused User Stories:**
+- **Clear Ownership**: Easy assignment to specific teams and developers
+- **Better Estimation**: More accurate story points for single-component work
+- **Parallel Development**: Teams can work simultaneously without coordination overhead
+- **Progress Tracking**: Component-specific progress is easily visible in RTM
+- **Reduced Complexity**: Each story has focused scope and clear deliverables
+
+**📖 Detailed Issue Creation Guide**: See [GitHub Issue Creation Guide](github-issue-creation.md) for complete examples and command templates
+
 1. **Read CLAUDE.md** for current project state and commands
 2. **Check GitHub Issues** for active epics and user stories
 3. **CREATE GITHUB ISSUE** using database-first ID assignment and templates:

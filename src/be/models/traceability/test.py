@@ -78,6 +78,10 @@ class Test(TraceabilityBase):
     last_error_message = Column(Text)
     last_error_traceback = Column(Text)
 
+    # Component classification (inherited from User Story or manually set)
+    component = Column(String(50), nullable=True, index=True)
+    # Values: frontend, backend, database, security, testing, ci-cd, documentation
+
     # Indexes for performance
     __table_args__ = (
         Index("idx_test_epic_type", "epic_id", "test_type"),
@@ -147,6 +151,20 @@ class Test(TraceabilityBase):
             (self.execution_count - self.failure_count) / self.execution_count
         ) * 100.0
 
+    def inherit_component_from_user_story(self, session):
+        """Inherit component from related User Story if not already set."""
+        if self.component is not None:
+            return  # Component already set, don't override
+
+        if self.github_user_story_number:
+            from .user_story import UserStory
+            user_story = session.query(UserStory).filter(
+                UserStory.github_issue_number == self.github_user_story_number
+            ).first()
+
+            if user_story and user_story.component:
+                self.component = user_story.component
+
     def to_dict(self):
         """Convert to dictionary with Test-specific fields."""
         base_dict = super().to_dict()
@@ -176,6 +194,7 @@ class Test(TraceabilityBase):
                 "code_coverage_percentage": self.code_coverage_percentage,
                 "tests_gdpr_compliance": self.tests_gdpr_compliance,
                 "tests_security_aspects": self.tests_security_aspects,
+                "component": self.component,
                 "last_error_message": self.last_error_message,
             }
         )

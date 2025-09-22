@@ -12,7 +12,12 @@
       "Bash(pytest:*)",
       "Bash(netstat:*)",
       "Bash(findstr:*)",
-      "Bash(gh issue list:*)"
+      "Bash(gh issue list:*)",
+      "Bash(alembic revision:*)",
+      "Bash(gh label:*)",
+      "Bash(alembic upgrade:*)",
+      "Bash(curl:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

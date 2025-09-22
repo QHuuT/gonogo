@@ -59,6 +59,10 @@ class UserStory(TraceabilityBase):
     affects_gdpr = Column(Boolean, default=False, index=True, nullable=False)
     gdpr_considerations = Column(Text)
 
+    # Component classification
+    component = Column(String(50), nullable=True, index=True)
+    # Values: frontend, backend, database, security, testing, ci-cd, documentation
+
     # Dependencies tracking
     depends_on_issues = Column(Text)  # JSON array of issue numbers
     blocks_issues = Column(Text)  # JSON array of issue numbers
@@ -189,6 +193,7 @@ class UserStory(TraceabilityBase):
                 "has_bdd_scenarios": self.has_bdd_scenarios,
                 "affects_gdpr": self.affects_gdpr,
                 "gdpr_considerations": self.gdpr_considerations,
+                "component": self.component,
                 "test_coverage": self.calculate_test_coverage(),
                 "defect_count": len(self.defects) if self.defects else 0,
             }

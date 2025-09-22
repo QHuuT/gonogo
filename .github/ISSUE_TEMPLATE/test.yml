@@ -1,0 +1,130 @@
+name: 🧪 Test
+description: Create a test case for a user story
+title: "TEST-XXXXX: [Brief description of the test]"
+labels: ["test", "needs-triage"]
+projects: ["gonogo/1"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Test Creation
+
+        Create a test case for a specific user story. Tests inherit the component from their parent user story.
+
+  - type: input
+    id: parent-user-story
+    attributes:
+      label: Parent User Story (Optional)
+      description: Which User Story is this test for? (Optional - for component inheritance)
+      placeholder: "US-XXXXX: Description of the parent user story"
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        **Component Inheritance**: If a parent User Story is specified, this test will automatically inherit the component from that User Story.
+
+  - type: textarea
+    id: test-description
+    attributes:
+      label: Test Description
+      description: What does this test validate?
+      placeholder: |
+        **Test Purpose**: Verify that blog search returns relevant results
+        **Test Type**: Integration test
+        **Test Scope**: Search functionality
+    validations:
+      required: true
+
+  - type: textarea
+    id: test-steps
+    attributes:
+      label: Test Steps
+      description: Detailed steps to execute this test
+      placeholder: |
+        1. Navigate to blog homepage
+        2. Enter search term "python"
+        3. Click search button
+        4. Verify results contain relevant posts
+        5. Verify results are ranked by relevance
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-results
+    attributes:
+      label: Expected Results
+      description: What should happen when the test passes?
+      placeholder: |
+        - Search returns at least 1 result
+        - All results contain the search keyword
+        - Results are displayed within 2 seconds
+        - Most relevant posts appear first
+    validations:
+      required: true
+
+  - type: dropdown
+    id: test-type
+    attributes:
+      label: Test Type
+      description: What type of test is this?
+      options:
+        - Unit Test
+        - Integration Test
+        - End-to-End Test
+        - Performance Test
+        - Security Test
+        - Accessibility Test
+    validations:
+      required: true
+
+  - type: dropdown
+    id: test-priority
+    attributes:
+      label: Test Priority
+      description: How critical is this test?
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: false
+
+  - type: textarea
+    id: test-data
+    attributes:
+      label: Test Data
+      description: Any specific data needed for this test
+      placeholder: |
+        - Sample blog posts with "python" keyword
+        - User account for authenticated tests
+        - Database state requirements
+    validations:
+      required: false
+
+  - type: textarea
+    id: automation-notes
+    attributes:
+      label: Automation Notes
+      description: Notes for test automation implementation
+      placeholder: |
+        - Can be automated with Playwright
+        - Requires API endpoint testing
+        - Mock external services needed
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Next Steps
+
+        1. Test will be reviewed and integrated into test suite
+        2. Component will be inherited from parent User Story
+        3. Test execution will be tracked in RTM reports
+        4. Implementation follows project testing standards
+
+        **Traceability** - This test will be automatically linked to the parent user story and tracked in the RTM.
