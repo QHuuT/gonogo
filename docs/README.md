@@ -31,7 +31,7 @@ docs/
 ├── user/                        # 👤 USER: End-user documentation
 │   └── guides/                 #   📖 User guides and help
 ├── traceability/               # 🔗 TRACEABILITY: Requirements tracking
-│   ├── requirements-matrix.md  #   📊 Links to GitHub Issues
+│   ├── requirements-matrix.md  #   📊 DEPRECATED - See database RTM
 │   └── gdpr-compliance-map.md  #   🛡️  Privacy compliance mapping
 └── generated/                  # 🤖 AUTO-GENERATED: From GitHub Issues
     └── (future automation)    #   📈 RTM, status reports, summaries
@@ -61,7 +61,7 @@ docs/
 - **[Context Documentation](context/)** - Stable decisions and compliance
   - [Architecture Decisions](context/decisions/) - Major technical and business decisions
   - [GDPR Requirements](context/compliance/gdpr-requirements.md) - Privacy compliance
-- **[Requirements Matrix](traceability/requirements-matrix.md)** - Full traceability to GitHub
+- **[RTM Web Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html)** - Interactive requirements traceability
 
 ### For Technical Reference
 - **[Technical Documentation](technical/)** - Implementation and architecture
@@ -114,7 +114,7 @@ GitHub Issues → Generated Documentation
 ### Context & Background
 - **🎯 Decisions**: [Architecture Decisions](context/decisions/)
 - **⚖️ Compliance**: [GDPR Requirements](context/compliance/gdpr-requirements.md)
-- **🔗 Traceability**: [Requirements Matrix](traceability/requirements-matrix.md)
+- **🔗 Traceability**: [RTM Web Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html) or [RTM Guide](../quality/RTM_GUIDE.md)
 
 ### Technical Implementation
 - **🏗️ Architecture**: [Cross-Cutting Architecture](technical/cross-cutting-architecture/)

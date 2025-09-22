@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 """
-RTM (Requirements Traceability Matrix) Automation Tool
+RTM (Requirements Traceability Matrix) Automation Tool - LEGACY VERSION
 
-Command-line interface for RTM link generation, validation, and updates.
-Supports configuration-driven automation and validation reporting.
+⚠️ DEPRECATION NOTICE (2025-09-22): This tool works with the old file-based RTM system.
+   The project has migrated to a database-driven RTM system.
+
+🚀 Use the new database RTM tools instead:
+   - python tools/rtm-db.py (database management)
+   - python tools/github_sync_manager.py (GitHub sync)
+   - Web dashboard: http://localhost:8000/api/rtm/reports/matrix?format=html
 
 Related Issue: US-00015 - Automated RTM link generation and validation
 Epic: EP-00005 - RTM Automation
+Migration: US-00060 - Complete migration to database RTM
 
-Usage:
+Legacy Usage (for reference only):
     python tools/rtm-links.py validate docs/traceability/requirements-matrix.md
     python tools/rtm-links.py update docs/traceability/requirements-matrix.md --dry-run
     python tools/rtm-links.py generate-link EP-00001 --bold

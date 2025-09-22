@@ -54,7 +54,7 @@ Feature: GitHub Issue Template Integration
     And they submit the epic issue
     Then the epic should be properly labeled with "epic" tag
     And the epic should reference relevant ADRs from docs/context/decisions/
-    And the epic should be trackable in the Requirements Matrix
+    And the epic should be trackable in the RTM database
 
   @integration @workflow
   Scenario: User story creation workflow with BDD integration
@@ -82,12 +82,12 @@ Feature: GitHub Issue Template Integration
     And security issues should be properly labeled and triaged
 
   @integration @traceability
-  Scenario: GitHub Issues integrate with Requirements Traceability Matrix
+  Scenario: GitHub Issues integrate with Database RTM System
     Given issues are created using the templates
-    When the RTM is updated
-    Then GitHub issue references should automatically link to implementation
-    And status changes in GitHub should reflect in documentation
-    And bidirectional traceability should be maintained
+    When the RTM database is synchronized with GitHub
+    Then GitHub issue references should automatically link to database records
+    And status changes in GitHub should reflect in the RTM database
+    And bidirectional traceability should be maintained through database queries
 
   @maintenance @template_updates
   Scenario: Issue templates stay synchronized with documentation structure

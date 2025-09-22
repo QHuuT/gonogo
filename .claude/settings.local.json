@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(PYTHONPATH=src python:*)"
+      "Bash(PYTHONPATH=src python:*)",
+      "Bash(git checkout:*)",
+      "Bash(python tools/rtm-db.py:*)",
+      "Bash(find:*)",
+      "Bash(python:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

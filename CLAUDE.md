@@ -20,6 +20,14 @@ This file contains configuration and commands for Claude Code to help with devel
 - **Hosting**: DigitalOcean App Platform (Amsterdam/Frankfurt)
 
 ## Recent Updates
+- **2025-09-22**: RTM Migration to Database-Only System (US-00060)
+  - ✅ **Complete migration from file-based to database RTM**
+  - ✅ Interactive web dashboard at http://localhost:8000/api/rtm/reports/matrix?format=html
+  - ✅ Real-time GitHub issue synchronization and progress tracking
+  - ✅ Comprehensive documentation updated with database RTM workflow
+  - ✅ Legacy markdown RTM deprecated in favor of dynamic database system
+  - **RTM Status**: Database RTM is now the single source of truth for requirements traceability
+
 - **2025-09-20**: EP-00006 stabilization completed
   - ✅ Fixed GitHub label mapper test mocking issues (2 tests restored)
   - ✅ Resolved DEF-00007 RTM namespace collision with direct module loading
@@ -39,7 +47,12 @@ pip install jinja2       # Required for report generation
 # Development
 python -m uvicorn src.be.main:app --reload --host 0.0.0.0 --port 8000
 
+# RTM Web Dashboard Access (after starting server)
+# Access: http://localhost:8000/api/rtm/reports/matrix?format=html
+# 📖 Complete Setup Guide: See quality/RTM_GUIDE.md for dashboard usage and features
+
 # Testing (Enhanced Test Runner with Structured Logging)
+# 📖 Complete Testing Guide: See quality/TESTING_GUIDE.md for comprehensive workflows
 pytest tests/ -v                    # All tests (standard mode)
 pytest --mode=silent --type=all     # All tests, minimal output
 pytest --mode=verbose --type=unit   # Unit tests with detailed output
@@ -67,6 +80,8 @@ python tools/report_generator.py --input quality/logs/ --filename custom_report.
 # See quality/README.md for detailed guide to all report types
 # See quality/QUICK_REFERENCE.md for common commands and quality thresholds
 # See quality/DATABASE_INSPECTION_GUIDE.md for SQLite database examination
+# See quality/RTM_GUIDE.md for enhanced RTM dashboard and interactive features
+# See quality/TESTING_GUIDE.md for comprehensive testing workflows and commands
 
 # Database Inspection (NEW)
 python tools/db_inspector.py                                    # Overview of all SQLite databases
@@ -110,6 +125,7 @@ python tools/rtm-links.py config-info                      # Show RTM configurat
 python tools/rtm-links.py doctor                          # Run RTM health diagnostics
 
 # RTM Database Management CLI (NEW - Enhanced Database Operations)
+# 📖 Complete RTM Guide: See quality/RTM_GUIDE.md for web dashboard setup and usage
 python tools/rtm-db.py --help                             # Show all available commands
 
 ## Entity Management
@@ -125,10 +141,9 @@ python tools/rtm-db.py query user-stories --epic-id EP-00005  # User stories for
 python tools/rtm-db.py query epic-progress EP-00005        # Detailed progress report for epic
 
 ## Data Import/Export
-python tools/rtm-db.py data import-rtm docs/traceability/requirements-matrix.md  # Import from markdown
-python tools/rtm-db.py data import-rtm --dry-run docs/file.md  # Preview import without changes
 python tools/rtm-db.py data export --output rtm_backup.json   # Export all data to JSON
 python tools/rtm-db.py data export --format json --include-tests  # Export with test data
+python tools/rtm-db.py data import-rtm --dry-run docs/file.md  # Preview import from markdown (legacy support)
 
 ## Database Administration
 python tools/rtm-db.py admin health-check                 # Check database connectivity and status
@@ -152,6 +167,7 @@ python tools/github_sync_manager.py --quiet               # Run sync with minima
 python tools/github_sync_manager.py                       # Full comprehensive sync of all entities
 
 # RTM Test-Database Integration CLI (NEW - Test Execution Integration)
+# 📖 Complete Testing Guide: See quality/TESTING_GUIDE.md for comprehensive workflows
 python tools/test-db-integration.py --help               # Show all available commands
 
 ## Test Discovery and Synchronization
@@ -159,6 +175,9 @@ python tools/test-db-integration.py discover tests       # Discover all tests an
 python tools/test-db-integration.py discover tests --dry-run  # Preview test discovery without changes
 python tools/test-db-integration.py discover scenarios   # Discover BDD scenarios and link to User Stories
 python tools/test-db-integration.py discover scenarios --dry-run  # Preview BDD scenario linking
+
+# Note: New automated server management commands and zombie process prevention available
+# See quality/TESTING_GUIDE.md for Windows/Unix server cleanup procedures
 
 ## Enhanced Test Execution with Database Integration
 python tools/test-db-integration.py run tests            # Run tests with basic database integration
@@ -174,11 +193,17 @@ python tools/test-db-integration.py utils analyze        # Analyze test-database
 python tools/test-db-integration.py utils analyze --show-epic-refs  # Show Epic references in tests
 python tools/test-db-integration.py utils analyze --show-orphaned   # Show tests without Epic links
 
-## Enhanced Pytest Integration (NEW)
+## Enhanced Pytest Integration (NEW) - with Test Execution Tracking
 pytest --sync-tests --link-scenarios --auto-defects tests/  # Run tests with full database integration
 pytest --sync-tests tests/unit/                         # Sync unit tests and run with database tracking
 pytest --link-scenarios tests/bdd/                      # Link BDD scenarios and run
 pytest --auto-defects tests/integration/                # Auto-create defects from integration test failures
+
+# Recent Improvements (2025-09-22):
+# - ✅ Test execution status tracking: Results automatically recorded in RTM database
+# - ✅ Windows path separator support: Works correctly on Windows and Unix systems
+# - ✅ Enhanced error handling: Better debugging output for test execution failures
+# - ✅ Real-time RTM updates: Test status and timestamps updated during pytest runs
 
 # Code Quality
 black src/ tests/                   # Format code
@@ -326,6 +351,8 @@ gonogo/
 - **[Documentation Workflow](docs/technical/documentation-workflow.md)** - How to maintain all documentation
 - **[GitHub Issue Creation](docs/technical/github-issue-creation.md)** - Step-by-step issue creation with error solutions
 - **[Quality Assurance](docs/technical/quality-assurance.md)** - Code standards, testing, and quality gates
+- **[RTM User Guide](quality/RTM_GUIDE.md)** - Enhanced RTM dashboard and interactive features
+- **[Testing Guide](quality/TESTING_GUIDE.md)** - Comprehensive testing workflows and commands
 
 ### 🎯 **Context & Decisions**
 - **[Architecture Decisions](docs/context/decisions/)** - ADRs for major technical and business decisions
@@ -338,7 +365,7 @@ gonogo/
 
 ### 🔗 **Project Management**
 - **[GitHub Issues](../../issues)** - Active project management (EP-XXX, US-XXX, DEF-XXX)
-- **[Requirements Matrix](docs/traceability/requirements-matrix.md)** - GitHub Issues → Implementation traceability
+- **[RTM Web Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html)** - Interactive Requirements Traceability (start server first)
 - **[Documentation Hub](docs/README.md)** - Complete documentation overview
 
 ## 📊 **Test Execution and Reporting Workflow**
@@ -469,6 +496,7 @@ python tools/rtm_report_generator.py --html              # Generate live RTM rep
 # Saves to: quality/reports/dynamic_rtm/rtm_matrix_complete.html
 # Uses: Real epics, user stories, tests, defects from RTM database
 # Features: Interactive test filtering (E2E, Unit, Integration, Security), clickable epic links
+# 📖 Complete User Guide: See quality/RTM_GUIDE.md for comprehensive RTM dashboard documentation
 
 # DEMO DATA - Test RTM Reports (uses sample data for development)
 python tools/rtm_demo.py --html                          # Generate demo RTM report
@@ -505,7 +533,7 @@ python tools/import_real_github_data.py --import        # Import from GitHub iss
 ```
 
 4. [ ] Review [Development Workflow](docs/technical/development-workflow.md) for task-specific processes
-5. [ ] Check [Requirements Matrix](docs/traceability/requirements-matrix.md) for current status
+5. [ ] Check [RTM Web Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html) for current RTM status (start server first)
 6. [ ] Verify [GDPR implications](docs/context/compliance/gdpr-requirements.md) if handling personal data
 
 ### **✅ Enhanced Commit Protocol with Project Integration**

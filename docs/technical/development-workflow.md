@@ -29,7 +29,7 @@ This document defines the complete development workflow for GoNoGo, integrating 
    ```
 4. **Review Context** in `docs/context/` for background decisions and compliance
 5. **Review BDD Scenarios** in `tests/bdd/features/`
-6. **Check RTM Status** in `docs/traceability/requirements-matrix.md`
+6. **Check RTM Status** via web dashboard (http://localhost:8000/api/rtm/reports/matrix?format=html) or CLI tools
 7. **Verify GDPR Implications** in `docs/context/compliance/gdpr-requirements.md`
 
 ### **Phase 2: Test-Driven Implementation**
@@ -49,16 +49,24 @@ This document defines the complete development workflow for GoNoGo, integrating 
 13. **Run Full Test Suite** to ensure no regressions
 
 ### **Phase 3: Documentation & Traceability**
-14. **UPDATE RTM** in `docs/traceability/requirements-matrix.md` with:
-    - Link to GitHub issue
-    - Implementation status (⏳ In Progress → ✅ Done)
-    - BDD scenario references
-    - Test implementation links
+14. **UPDATE RTM** using database tools:
+    ```bash
+    # Update user story status in database
+    python tools/github_sync_manager.py --epic EP-XXXXX
+
+    # Verify RTM status via web dashboard
+    # http://localhost:8000/api/rtm/reports/matrix?format=html
+
+    # Or check via CLI
+    python tools/rtm-db.py query user-stories --format table
+    ```
 15. **Update Technical Docs** if architecture changed (see [Documentation Workflow](documentation-workflow.md))
 16. **Verify GDPR Compliance** if personal data involved
 17. **Update CLAUDE.md** if workflow or structure changed
 
 ### **Phase 4: Quality Gates (MANDATORY) - Enhanced with Structured Logging**
+**📖 Complete Testing Guide**: See [Testing Guide](../../quality/TESTING_GUIDE.md) for comprehensive workflows and server management
+
 18. **Run Tests with Structured Logging** (generates logs automatically):
     ```bash
     # All tests with structured logging (creates quality/logs/test_execution.log)
@@ -193,6 +201,7 @@ This document defines the complete development workflow for GoNoGo, integrating 
 5. **Mock External Dependencies**: Keep tests isolated
 
 ## 📊 Requirements Traceability Matrix (RTM) Updates
+**📖 Complete RTM Guide**: See [RTM User Guide](../../quality/RTM_GUIDE.md) for web dashboard usage and interactive features
 
 ### **When to Update RTM**
 - New user story implemented
@@ -202,12 +211,22 @@ This document defines the complete development workflow for GoNoGo, integrating 
 - Defect discovered or resolved
 
 ### **RTM Update Process**
-1. **Open**: `docs/traceability/requirements-matrix.md`
-2. **Update Status**: Change from 📝 Planned → ⏳ In Progress → ✅ Done
-3. **Link Artifacts**: Ensure all columns are filled
-4. **Update Metrics**: Recalculate coverage percentages
-5. **Note Dependencies**: Update any blocking items
-6. **Link Defects**: Update defects column with DEF-XXX references
+**📖 Complete RTM Guide**: See [RTM User Guide](../../quality/RTM_GUIDE.md) for web dashboard usage
+
+1. **Sync GitHub Data**: `python tools/github_sync_manager.py` (automatic status updates)
+2. **Verify Status**: Check web dashboard at http://localhost:8000/api/rtm/reports/matrix?format=html
+3. **Manual Updates** (if needed): Use CLI tools for specific updates
+   ```bash
+   # Update epic progress
+   python tools/rtm-db.py query epic-progress EP-XXXXX
+
+   # Check user story status
+   python tools/rtm-db.py query user-stories --epic-id EP-XXXXX
+   ```
+4. **Link Tests**: Run test discovery to maintain test-requirement links
+   ```bash
+   python tools/test-db-integration.py discover tests
+   ```
 
 ## 🛡️ GDPR Compliance Integration
 
@@ -749,5 +768,8 @@ ClassName = module.ClassName
 **Related Documentation**:
 - [Documentation Workflow](documentation-workflow.md) - How to maintain documentation
 - [BDD Scenarios](../../tests/bdd/features/) - Executable test specifications
-- [Requirements Matrix](../traceability/requirements-matrix.md) - Current traceability status
+- [RTM Web Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html) - Interactive requirements traceability
 - [Quality Assurance Guidelines](quality-assurance.md) - Code standards and testing
+- [RTM User Guide](../../quality/RTM_GUIDE.md) - Enhanced RTM dashboard and interactive features
+- [Testing Guide](../../quality/TESTING_GUIDE.md) - Comprehensive testing workflows and commands
+- [Quality Reports Guide](../../quality/README.md) - Complete guide to all quality reports

@@ -10,7 +10,7 @@
 - **🎯 Current Work**: [Active Issues](../../../issues?q=is%3Aissue+is%3Aopen)
 
 ### Documentation (Secondary)
-- **🔗 Requirements Matrix**: [Traceability](../traceability/requirements-matrix.md)
+- **🔗 Requirements Matrix**: [RTM Web Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html)
 - **📚 GitHub Workflow**: [How to Use GitHub Issues](../../.github/GITHUB_WORKFLOW.md)
 
 ## 🚀 Quick Migration Guide
@@ -46,7 +46,7 @@ This directory contains legacy documentation files that are being replaced by Gi
 
 1. **Visit [GitHub Issues](../../../issues/new/choose)** to create your first epic
 2. **Review [GitHub Workflow Guide](../../.github/GITHUB_WORKFLOW.md)** for complete usage
-3. **Check [Requirements Matrix](../traceability/requirements-matrix.md)** for current traceability
+3. **Check [RTM Web Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html)** for current traceability (start server first)
 
 ---
 
