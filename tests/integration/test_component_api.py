@@ -423,6 +423,35 @@ class TestComponentAPIIntegration:
         assert 'colspan="5"' in html_content  # User stories (5 columns now)
         assert 'colspan="6"' in html_content  # Tests and defects (6 columns now)
 
+    def test_rtm_matrix_horizontal_scrolling(self, client):
+        """Test that RTM matrix HTML includes horizontal scrolling support."""
+        response = client.get("/api/rtm/reports/matrix?format=html&limit=1")
+        assert response.status_code == 200
+
+        html_content = response.text
+
+        # Check horizontal scrolling CSS is present
+        assert 'overflow-x: auto' in html_content
+        assert 'min-width: 800px' in html_content
+        assert 'position: sticky' in html_content
+
+        # Check table container structure
+        assert 'class="rtm-table-container"' in html_content
+        assert 'class="rtm-table"' in html_content
+        assert 'class="rtm-table__header"' in html_content
+        assert 'class="rtm-table__body"' in html_content
+
+        # Check sticky header styling
+        assert 'z-index: 10' in html_content
+        assert 'top: 0' in html_content
+
+        # Check scrollbar customization
+        assert '::-webkit-scrollbar' in html_content
+        assert 'height: 8px' in html_content
+
+        # Check responsive design
+        assert 'min-width: 600px' in html_content  # Mobile breakpoint
+
 
 @pytest.mark.asyncio
 async def test_component_api_complete_workflow():

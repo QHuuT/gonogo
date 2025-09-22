@@ -239,6 +239,96 @@ class RTMReportGenerator:
             gap: 6px;
         }}
 
+        /* Horizontal Scrolling for RTM Tables */
+        .rtm-table-container {{
+            overflow-x: auto;
+            margin-bottom: 1rem;
+            border: 1px solid var(--color-border, #dee2e6);
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }}
+
+        .rtm-table {{
+            width: 100%;
+            min-width: 800px; /* Minimum width to ensure readability */
+            border-collapse: collapse;
+            background: white;
+        }}
+
+        .rtm-table__header {{
+            position: sticky;
+            top: 0;
+            background: var(--color-bg-secondary, #f8f9fa);
+            z-index: 10;
+            border-bottom: 2px solid var(--color-border, #dee2e6);
+        }}
+
+        .rtm-table__header th {{
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--color-text-primary, #212529);
+            border-right: 1px solid var(--color-border-light, #f1f3f4);
+            white-space: nowrap;
+        }}
+
+        .rtm-table__header th:last-child {{
+            border-right: none;
+        }}
+
+        .rtm-table__body td {{
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--color-border-light, #f1f3f4);
+            border-right: 1px solid var(--color-border-light, #f1f3f4);
+            vertical-align: top;
+        }}
+
+        .rtm-table__body td:last-child {{
+            border-right: none;
+        }}
+
+        .rtm-table__row:hover {{
+            background-color: var(--color-bg-hover, #f8f9fa);
+        }}
+
+        /* Scrollbar Styling for Better UX */
+        .rtm-table-container::-webkit-scrollbar {{
+            height: 8px;
+        }}
+
+        .rtm-table-container::-webkit-scrollbar-track {{
+            background: var(--color-bg-secondary, #f8f9fa);
+            border-radius: 4px;
+        }}
+
+        .rtm-table-container::-webkit-scrollbar-thumb {{
+            background: var(--color-border, #dee2e6);
+            border-radius: 4px;
+        }}
+
+        .rtm-table-container::-webkit-scrollbar-thumb:hover {{
+            background: var(--color-text-secondary, #6c757d);
+        }}
+
+        /* Scroll Indicator Shadow */
+        .rtm-table-container::after {{
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(to left, rgba(255,255,255,0.8), transparent);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }}
+
+        .rtm-table-container:hover::after {{
+            opacity: 1;
+        }}
+
         /* Component Filter Styles */
         .component-filter-group {{
             margin-bottom: 1rem;
@@ -296,6 +386,25 @@ class RTMReportGenerator:
 
             .epic-components .component-badges {{
                 gap: 4px;
+            }}
+
+            /* Mobile table adjustments */
+            .rtm-table {{
+                min-width: 600px; /* Smaller minimum width on mobile */
+            }}
+
+            .rtm-table__header th {{
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }}
+
+            .rtm-table__body td {{
+                padding: 8px 12px;
+                font-size: 0.875rem;
+            }}
+
+            .rtm-table-container::-webkit-scrollbar {{
+                height: 6px;
             }}
         }}
 
