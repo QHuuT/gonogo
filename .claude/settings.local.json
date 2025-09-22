@@ -6,7 +6,13 @@
       "Bash(python tools/rtm-db.py:*)",
       "Bash(find:*)",
       "Bash(python:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh issue edit:*)",
+      "Bash(pytest:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(gh issue list:*)"
     ],
     "deny": [],
     "ask": []
