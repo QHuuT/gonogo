@@ -1,70 +1,184 @@
-# Quality Reports Quick Reference
+# 📋 Quality & Testing Quick Reference
 
-## 🚀 Most Common Commands
+**Essential commands and thresholds for daily development and quality assurance**
 
+## 🚀 Essential Daily Commands
+
+### **Testing & Coverage**
 ```bash
-# Generate all reports
-python tools/report_generator.py
+# Core testing workflows
+pytest tests/unit/ -v                          # Unit tests (fastest)
+pytest tests/integration/ -v                   # Integration tests
+pytest tests/security/ -v                      # Security & GDPR tests
+pytest --cov=src tests/ --cov-report=html      # Coverage with HTML report
+pytest --cov=src tests/ --cov-fail-under=85    # Enforce coverage threshold
 
-# Coverage with HTML report
-pytest --cov=src tests/ --cov-report=html
-
-# Check archive status
-python tools/archive_cleanup.py --metrics
-
-# Inspect databases (NEW!)
-python tools/db_inspector.py                    # All databases overview
-python tools/db_inspector.py --db quality/logs/test_failures.db -i  # Interactive browser
-
-# Run all demos (generates sample data)
-python tools/failure_tracking_demo.py
-python tools/log_correlation_demo.py
-python tools/github_issue_creation_demo.py
-python tools/archive_management_demo.py
+# Enhanced test execution modes
+pytest --mode=silent --type=all                # All tests, minimal output
+pytest --mode=verbose --type=unit              # Unit tests with details
+pytest --mode=detailed --type=integration      # Full debugging mode
 ```
 
-## 📊 Report Locations
+### **Report Generation**
+```bash
+# Generate comprehensive test reports
+python tools/report_generator.py                # Standard test report
+python tools/report_generator.py --demo         # Demo report with coverage
+python tools/failure_tracking_demo.py           # Failure analysis
+python tools/log_correlation_demo.py            # Log correlation analysis
+```
+
+### **Database & RTM Operations**
+```bash
+# Database health and exploration
+python tools/rtm-db.py admin health-check       # RTM database status
+python tools/db_inspector.py                    # Overview all databases
+sqlite3 gonogo.db "SELECT * FROM epics;"        # Quick RTM query
+
+# RTM management
+python tools/github_sync_manager.py             # Sync with GitHub
+python tools/rtm_report_generator.py --html     # Generate RTM dashboard
+```
+
+### **Archive & Maintenance**
+```bash
+# Storage management
+python tools/archive_cleanup.py --metrics       # Check storage usage
+python tools/archive_cleanup.py --dry-run       # Preview cleanup
+python tools/archive_cleanup.py --apply         # Apply retention policies
+```
+
+## 🗄️ Database Quick Access
+
+### **Database Locations**
+```bash
+# Main databases in repository
+gonogo.db                                # RTM database (Epics, User Stories, Tests)
+quality/logs/test_failures.db           # Test failure tracking
+quality/archives/archive_metadata.db    # Archive management
+```
+
+### **SQLite Command Line**
+```bash
+# Access RTM database
+sqlite3 gonogo.db
+.tables                                  # List all tables
+.schema epics                           # Show table structure
+.headers on && .mode column             # Format output
+
+# Quick queries
+SELECT epic_id, status FROM epics;      # Epic overview
+SELECT * FROM user_stories WHERE epic_id = 'EP-00005';  # Stories for epic
+SELECT test_file, last_execution_status FROM tests WHERE epic_id = 'EP-00005';
+```
+
+### **DB Browser for SQLite (GUI)**
+```bash
+# Recommended: Install DB Browser for SQLite
+# Windows: winget install DBBrowserForSQLite.DBBrowserForSQLite
+# macOS: brew install --cask db-browser-for-sqlite
+# Ubuntu: sudo apt install sqlitebrowser
+
+# Open gonogo.db in DB Browser:
+# 1. File → Open Database → gonogo.db
+# 2. Browse Data tab: View table contents
+# 3. Execute SQL tab: Run custom queries
+```
+
+## 🚨 Troubleshooting Commands
+
+### **Server Issues**
+```bash
+# Kill zombie processes (Windows)
+netstat -ano | findstr :8000
+taskkill /F /PID <PID_NUMBER>
+
+# Kill zombie processes (Unix/macOS)
+lsof -ti:8000 | xargs kill -9
+```
+
+### **Test Issues**
+```bash
+# Debug test failures
+pytest --mode=detailed tests/unit/test_specific.py  # Maximum debugging
+pytest -x tests/                        # Stop on first failure
+pytest --pdb tests/unit/test_specific.py # Drop to debugger
+
+# Check test discovery
+pytest --collect-only                   # Show discovered tests
+```
+
+### **Database Issues**
+```bash
+# Database health checks
+sqlite3 gonogo.db "PRAGMA integrity_check;"  # Check corruption
+python tools/rtm-db.py admin validate   # RTM validation
+python tools/rtm-db.py admin health-check  # Connection test
+```
+
+## 📊 Report Locations & Files
 
 | Report Type | Location | Key Files |
 |-------------|----------|-----------|
 | **Coverage** | `quality/reports/coverage/` | `index.html`, `coverage.json` |
 | **Test Results** | `quality/reports/` | `*test_report.html` |
 | **Failure Analysis** | `quality/reports/` | `failure_analysis.html` |
+| **RTM Dashboard** | `quality/reports/dynamic_rtm/` | `rtm_matrix_complete.html` |
 | **Log Correlation** | `quality/reports/` | `log_correlation_report.json` |
-| **GitHub Issues** | `quality/reports/` | `github_issue_creation_report_*.md` |
 | **Archives** | `quality/archives/` | Compressed historical reports |
-| **Databases** | `quality/logs/`, `quality/archives/` | `*.db` files (SQLite) |
 
-## 🎯 Quality Thresholds
+## 🎯 Quality Thresholds & Targets
 
-| Metric | Target | Action if Below |
-|--------|---------|-----------------|
-| **Test Coverage** | >90% | Add tests for uncovered code |
-| **Test Pass Rate** | >95% | Fix failing tests immediately |
-| **Failure Correlation** | >80% | Improve logging and context |
-| **Archive Compression** | >50% | Review retention policies |
+| Metric | Target | Warning | Action Required |
+|--------|---------|---------|-----------------|
+| **Test Coverage** | >90% | 80-90% | Add unit tests |
+| **Test Pass Rate** | >95% | 90-95% | Fix failing tests |
+| **Failure Correlation** | >80% | 60-80% | Improve logging |
+| **Archive Compression** | >50% | 30-50% | Review retention |
 
-## 🔧 Quick Fixes
+## 🔧 Common Problem Solutions
 
+### **Coverage Issues**
 ```bash
-# Coverage too low?
-pytest --cov=src tests/ --cov-report=term-missing  # See what's missing
-
-# Tests failing?
-pytest tests/ -v --tb=short --maxfail=5  # Show first 5 failures
-
-# Reports not generating?
-python tools/report_generator.py --debug  # Debug mode
-
-# Archive storage full?
-python tools/archive_cleanup.py --apply  # Clean old reports
+pytest --cov=src tests/ --cov-report=term-missing  # Show missing lines
+pytest --cov=src tests/ --cov-fail-under=85        # Enforce threshold
 ```
 
-## 📱 One-Liner Health Check
-
+### **Test Failures**
 ```bash
-# Complete quality health check
-pytest --cov=src tests/ --cov-report=term && python tools/archive_cleanup.py --metrics && echo "✅ Quality check complete"
+pytest tests/ -v --tb=short --maxfail=5    # Show first 5 failures
+python tools/failure_tracking_demo.py      # Analyze failure patterns
 ```
 
-For detailed information, see [Quality Reports Guide](README.md).
+### **Report Problems**
+```bash
+python tools/report_generator.py --debug   # Debug report generation
+pip install jinja2                         # Fix missing dependencies
+```
+
+### **Storage Issues**
+```bash
+python tools/archive_cleanup.py --metrics  # Check usage
+python tools/archive_cleanup.py --apply    # Clean old reports
+```
+
+## 📱 One-Liner Health Checks
+
+```bash
+# Complete system health check
+pytest --cov=src tests/ -v && python tools/rtm-db.py admin health-check && python tools/archive_cleanup.py --metrics
+
+# Quick test status
+pytest tests/unit/ -v --maxfail=3
+
+# RTM status check
+python tools/rtm-db.py query epics --format table
+```
+
+## 🔗 Related Documentation
+
+- **[Testing Guide](TESTING_GUIDE.md)** - Complete testing workflows
+- **[Database Guide](DATABASE_GUIDE.md)** - Database exploration and queries
+- **[RTM Guide](RTM_GUIDE.md)** - Requirements traceability matrix
+- **[Troubleshooting](TROUBLESHOOTING.md)** - Detailed problem solving
+- **[Quality Hub](README.md)** - Main navigation and persona guides

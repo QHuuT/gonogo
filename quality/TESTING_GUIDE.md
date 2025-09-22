@@ -456,6 +456,33 @@ python tools/rtm-db.py query defects --format table
 python tools/rtm-db.py query epics --format table
 ```
 
+## 🗄️ **Database Exploration**
+
+For comprehensive database exploration including SQLite access, schema analysis, and advanced queries, see:
+
+**📖 [Database Exploration Guide](DATABASE_GUIDE.md)**
+
+### **Quick Database Access**
+```bash
+# GUI exploration (recommended)
+# 1. Install DB Browser for SQLite: https://sqlitebrowser.org/
+# 2. Open: gonogo.db (main RTM database)
+
+# Command line access
+sqlite3 gonogo.db                       # Main RTM database
+sqlite3 quality/logs/test_failures.db   # Test failure tracking
+
+# Project tools
+python tools/db_inspector.py            # Overview of all databases
+python tools/rtm-db.py admin health-check  # RTM database status
+```
+
+### **Key Database Locations**
+- **gonogo.db** - Main RTM database (epics, user stories, tests, defects)
+- **quality/logs/test_failures.db** - Test failure tracking and analysis
+- **quality/logs/demo_test_failures.db** - Demo test failure data
+- **quality/archives/archive_metadata.db** - Archive management metadata
+
 ## 🐛 **Defect Management Workflow**
 
 ### **1. Auto-Defect Creation**

@@ -1,111 +1,77 @@
-# Quality Reports Guide
+# 📊 Quality & Testing Hub
 
-This guide explains how to generate, interpret, and use all quality reports available in the gonogo project.
+**Central navigation for all quality assurance, testing, and RTM documentation**
 
-## 📁 Quality Folder Structure
+## 🎯 Quick Start by Role
 
-```
-quality/
-├── archives/           # Test report archives and retention data
-├── logs/              # Structured logging outputs
-├── monitoring/        # System monitoring and metrics
-├── reports/           # Generated quality reports
-│   ├── coverage/      # HTML coverage reports
-│   ├── assets/        # Report styling and resources
-│   └── templates/     # Report templates
-└── README.md          # This guide
-```
-
-## ⚙️ Report Generation Conditions & Triggers
-
-### **Automatic Report Generation**
-Reports are generated based on these conditions and triggers:
-
-#### **1. Test Execution Triggers**
-- **When**: Every time `pytest` is run with the structured logging plugin
-- **Condition**: Tests must be executed in the project with pytest
-- **Output**: Structured logs created in `quality/logs/`
-- **Automatic**: Yes, via pytest integration plugin
-
-#### **2. Coverage Report Triggers**
-- **When**: `pytest --cov=src` command is executed
-- **Condition**: pytest-cov plugin must be installed and configured
-- **Output**: HTML and JSON coverage reports in `quality/reports/coverage/`
-- **Automatic**: Yes, when coverage flags are used
-
-#### **3. Manual Report Generation**
-- **When**: Explicitly run via command line tools
-- **Condition**: User or CI/CD pipeline executes report generation commands
-- **Output**: Various report types based on available data
-- **Automatic**: No, requires manual execution
-
-#### **4. Failure-Based Report Generation**
-- **When**: Test failures are detected and tracked
-- **Condition**: FailureTracker system records failures during test execution
-- **Output**: Failure analysis reports and reproduction scripts
-- **Automatic**: Yes, when failures occur
-
-#### **5. Archive Management Triggers**
-- **When**: Scheduled via cron jobs or manual execution
-- **Condition**: Reports and logs exist and meet retention policy criteria
-- **Output**: Compressed archives and cleanup reports
-- **Automatic**: Can be automated via scheduling
-
-### **Data Requirements for Report Generation**
-Each report type requires specific data sources to exist:
-
-| Report Type | Required Data Source | Trigger Condition |
-|-------------|---------------------|-------------------|
-| **Test Execution** | Structured log files | Pytest runs with logging enabled |
-| **Coverage** | Coverage data files | Tests run with `--cov` flag |
-| **Failure Analysis** | Failure tracking DB | Test failures recorded in database |
-| **Log Correlation** | Both logs + failures | Structured logging + failure tracking |
-| **GitHub Issues** | Failure data + auth | Failures exist + GitHub credentials |
-| **Archive Reports** | Historical reports | Previous reports exist in quality/ |
-
-## 🎯 Quick Start Commands
+### **👨‍💻 Developers - Daily Testing**
+**Start here for daily development testing workflows**
+- **[Testing Guide](TESTING_GUIDE.md)** - Complete testing commands and workflows
+- **[Quick Reference](QUICK_REFERENCE.md)** - Common commands and thresholds
+- **[Troubleshooting](TROUBLESHOOTING.md)** - Fix common test and server issues
 
 ```bash
-# Generate all reports
-python tools/report_generator.py
-
-# Run specific demos (generate sample data + reports)
-python tools/failure_tracking_demo.py
-python tools/log_correlation_demo.py
-python tools/github_issue_creation_demo.py
-python tools/archive_management_demo.py
-
-# Generate coverage reports
-pytest --cov=src tests/ --cov-report=html --cov-report=json
-
-# Check archive status
-python tools/archive_cleanup.py --metrics
-
-# Inspect SQLite databases (NEW!)
-python tools/db_inspector.py                                    # Overview of all databases
-python tools/db_inspector.py --db quality/logs/test_failures.db # Examine specific database
-python tools/db_inspector.py --db quality/logs/test_failures.db --interactive  # Interactive browser
+# Essential daily commands
+pytest tests/unit/ -v                  # Quick unit tests
+python tools/rtm-db.py admin health-check  # RTM status
+python tools/report_generator.py       # Generate test reports
 ```
 
-## 🗂️ Database Inspection (NEW!)
-**Purpose**: Examine SQLite databases created by testing and logging systems
-**Location**: Various locations in `quality/`
-**Tool**: `tools/db_inspector.py`
-
-The testing infrastructure creates SQLite databases to track failures, log data, and archive metadata. Use the database inspector tool to examine these databases:
+### **🔍 QA Engineers - Quality Analysis**
+**Start here for comprehensive quality analysis and reporting**
+- **[Testing Guide](TESTING_GUIDE.md)** - Advanced testing workflows and RTM integration
+- **[Database Guide](DATABASE_GUIDE.md)** - Explore test data and failure patterns
+- **[Troubleshooting](TROUBLESHOOTING.md)** - Debug test failures and quality issues
 
 ```bash
-# Quick overview of all databases
-python tools/db_inspector.py
-
-# Examine test failures
-python tools/db_inspector.py --db quality/logs/test_failures.db --table test_failures --data --limit 5
-
-# Interactive exploration
-python tools/db_inspector.py --db quality/logs/test_failures.db --interactive
+# Quality analysis commands
+pytest --cov=src tests/ --cov-report=html  # Coverage analysis
+python tools/failure_tracking_demo.py      # Failure pattern analysis
+python tools/db_inspector.py              # Database exploration
 ```
 
-**📖 Detailed Guide**: See [Database Inspection Guide](DATABASE_INSPECTION_GUIDE.md) for complete documentation.
+### **📈 Project Managers - RTM Dashboard**
+**Start here for requirements traceability and project metrics**
+- **[RTM Guide](RTM_GUIDE.md)** - Complete RTM dashboard documentation
+- **[Database Guide](DATABASE_GUIDE.md)** - Query project progress and metrics
+- **[Quick Reference](QUICK_REFERENCE.md)** - Key metrics and thresholds
+
+```bash
+# Project status commands
+python -m uvicorn src.be.main:app --reload  # Start RTM server
+# Access: http://localhost:8000/api/rtm/reports/matrix?format=html
+python tools/github_sync_manager.py        # Sync with GitHub
+```
+
+### **⚙️ DevOps - Database & System Maintenance**
+**Start here for system maintenance and automation**
+- **[Database Guide](DATABASE_GUIDE.md)** - Database administration and maintenance
+- **[Troubleshooting](TROUBLESHOOTING.md)** - System recovery and diagnostics
+- **[Testing Guide](TESTING_GUIDE.md)** - CI/CD integration and automation
+
+```bash
+# System maintenance commands
+python tools/archive_cleanup.py --metrics  # Storage analysis
+sqlite3 gonogo.db "PRAGMA integrity_check;" # Database health
+python tools/rtm-db.py admin validate      # Data integrity
+```
+
+## 📁 Quality Documentation Structure
+
+### **Core Guides (Start Here)**
+- **[TESTING_GUIDE.md](TESTING_GUIDE.md)** (900+ lines) - Complete testing workflows and RTM integration
+- **[RTM_GUIDE.md](RTM_GUIDE.md)** (750+ lines) - RTM dashboard and web interface guide
+- **[DATABASE_GUIDE.md](DATABASE_GUIDE.md)** (400+ lines) - Database exploration and analysis
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** (200+ lines) - Problem solving and recovery
+
+### **Reference Documentation**
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Common commands and quality thresholds
+- **[DATABASE_INSPECTION_GUIDE.md](DATABASE_INSPECTION_GUIDE.md)** - ⚠️ Deprecated, see DATABASE_GUIDE.md
+
+### **Generated Reports (Auto-Created)**
+- **reports/** - Generated test reports, coverage data, failure analysis
+- **logs/** - Structured test execution logs and failure tracking
+- **archives/** - Compressed historical reports and metadata
 
 ## 📊 Report Types Overview
 
