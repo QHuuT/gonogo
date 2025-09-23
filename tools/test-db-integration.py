@@ -26,6 +26,13 @@ from shared.testing.database_integration import (
     TestExecutionTracker,
 )
 
+# Import epic inheritance system
+from epic_label_inheritance import (
+    inherit_epic_labels_for_tests,
+    find_test_epic_relationship,
+    run_comprehensive_epic_inheritance
+)
+
 console = Console()
 
 
@@ -99,6 +106,116 @@ def tests(ctx, dry_run):
         if ctx.obj["verbose"]:
             import traceback
 
+            console.print(traceback.format_exc())
+
+
+@discover.command()
+@click.option(
+    "--dry-run", is_flag=True, help="Show epic inheritance analysis without database changes"
+)
+@click.option(
+    "--entity-type",
+    type=click.Choice(['tests', 'user-stories', 'defects', 'all']),
+    default='all',
+    help="Which entity types to process for epic inheritance"
+)
+@click.pass_context
+def epics(ctx, dry_run, entity_type):
+    """Discover and apply epic inheritance for all test types and entities."""
+    try:
+        with console.status(f"[bold green]Processing epic inheritance for {entity_type}..."):
+            if entity_type == 'all':
+                results = run_comprehensive_epic_inheritance(dry_run=dry_run)
+            else:
+                # Import database session for specific entity types
+                from be.database import SessionLocal
+                session = SessionLocal()
+                try:
+                    if entity_type == 'tests':
+                        results = {'test_stats': inherit_epic_labels_for_tests(session, dry_run)}
+                    elif entity_type == 'user-stories':
+                        from epic_label_inheritance import inherit_epic_labels_for_user_stories
+                        results = {'user_story_stats': inherit_epic_labels_for_user_stories(session, dry_run)}
+                    elif entity_type == 'defects':
+                        from epic_label_inheritance import inherit_epic_labels_for_defects
+                        results = {'defect_stats': inherit_epic_labels_for_defects(session, dry_run)}
+
+                    if not dry_run:
+                        session.commit()
+                    else:
+                        session.rollback()
+
+                    results['success'] = True
+                except Exception as e:
+                    session.rollback()
+                    raise e
+                finally:
+                    session.close()
+
+        # Display results in a formatted table
+        console.print(f"[green]Epic inheritance processing completed![/green]")
+
+        # User Stories results
+        if 'user_story_stats' in results:
+            us_stats = results['user_story_stats']
+            table = Table(title="User Story Epic Inheritance")
+            table.add_column("Metric", style="cyan")
+            table.add_column("Value", style="white")
+            table.add_row("Total User Stories", str(us_stats.get('total_user_stories', 0)))
+            table.add_row("Processed", str(us_stats.get('user_stories_processed', 0)))
+            table.add_row("Labels Added", str(us_stats.get('labels_added', 0)))
+            table.add_row("GitHub Updates", str(us_stats.get('github_updates', 0)))
+            console.print(table)
+
+        # Defects results
+        if 'defect_stats' in results:
+            defect_stats = results['defect_stats']
+            table = Table(title="Defect Epic Inheritance")
+            table.add_column("Metric", style="cyan")
+            table.add_column("Value", style="white")
+            table.add_row("Total Defects", str(defect_stats.get('total_defects', 0)))
+            table.add_row("Processed", str(defect_stats.get('defects_processed', 0)))
+            table.add_row("Labels Added", str(defect_stats.get('labels_added', 0)))
+            table.add_row("GitHub Updates", str(defect_stats.get('github_updates', 0)))
+            console.print(table)
+
+        # Tests results
+        if 'test_stats' in results:
+            test_stats = results['test_stats']
+            table = Table(title="Test Epic Inheritance")
+            table.add_column("Metric", style="cyan")
+            table.add_column("Value", style="white")
+            table.add_row("Total Tests", str(test_stats.get('total_tests', 0)))
+            table.add_row("With Epic Links", str(test_stats.get('tests_with_epics', 0)))
+            table.add_row("Without Epic Links", str(test_stats.get('tests_without_epics', 0)))
+            table.add_row("Database Updates", str(test_stats.get('tests_processed', 0)))
+
+            # Show inheritance sources
+            if test_stats.get('inheritance_sources'):
+                console.print("\n[bold]Inheritance Sources:[/bold]")
+                for source, count in test_stats['inheritance_sources'].items():
+                    console.print(f"  • {source}: {count}")
+
+            console.print(table)
+
+        # Summary
+        if 'summary' in results:
+            summary = results['summary']
+            console.print(f"\n[bold green]Summary:[/bold green]")
+            console.print(f"  Total Entities Processed: {summary.get('total_entities_processed', 0)}")
+            console.print(f"  Total Labels Added: {summary.get('total_labels_added', 0)}")
+            console.print(f"  Total GitHub Updates: {summary.get('total_github_updates', 0)}")
+            console.print(f"  Total Errors: {summary.get('total_errors', 0)}")
+
+        if dry_run:
+            console.print(f"\n[yellow]DRY RUN - No changes were applied[/yellow]")
+        else:
+            console.print(f"\n[green]Changes have been applied successfully![/green]")
+
+    except Exception as e:
+        console.print(f"[red]Epic inheritance processing failed: {e}[/red]")
+        if ctx.obj["verbose"]:
+            import traceback
             console.print(traceback.format_exc())
 
 

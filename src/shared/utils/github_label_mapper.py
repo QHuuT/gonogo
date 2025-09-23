@@ -14,6 +14,17 @@ from typing import Dict, List, Optional, Set
 
 logger = logging.getLogger(__name__)
 
+# Import for database access
+try:
+    import sys
+    sys.path.append('src')
+    from be.database import SessionLocal
+    from be.models.traceability.epic import Epic
+    DATABASE_AVAILABLE = True
+except ImportError:
+    DATABASE_AVAILABLE = False
+    logger.warning("Database models not available, falling back to static mappings")
+
 
 @dataclass
 class LabelMapping:
@@ -33,6 +44,76 @@ class IssueData:
     body: str
     existing_labels: List[str]
     issue_number: int
+
+
+class DatabaseEpicMapper:
+    """
+    Retrieves epic mappings from the RTM database.
+
+    Replaces file-based TraceabilityMatrixParser with real-time database queries.
+    """
+
+    def __init__(self) -> None:
+        """Initialize the database epic mapper."""
+        self._epic_mappings: Optional[Dict[str, Dict[str, str]]] = None
+
+    def get_epic_mappings(self) -> Dict[str, Dict[str, str]]:
+        """
+        Extract epic-to-component mappings from RTM database.
+
+        Returns:
+            Dictionary mapping epic IDs to their properties
+            Format: {"EP-00001": {"component": "frontend", "epic_label": "blog-content"}}
+        """
+        if self._epic_mappings is not None:
+            return self._epic_mappings
+
+        mappings = {}
+
+        if not DATABASE_AVAILABLE:
+            logger.warning("Database not available, using fallback mappings")
+            return self._get_fallback_mappings()
+
+        try:
+            session = SessionLocal()
+            epics = session.query(Epic).all()
+
+            for epic in epics:
+                # Get component (handle multiple components)
+                component = epic.component if epic.component else "backend"
+                if "," in component:
+                    # Take the first component if multiple
+                    component = component.split(",")[0].strip()
+
+                # Get epic label name
+                epic_label = epic.epic_label_name if epic.epic_label_name else epic.get_epic_label_name()
+
+                mappings[epic.epic_id] = {
+                    "component": component,
+                    "epic_label": epic_label
+                }
+
+            session.close()
+            logger.info(f"Loaded {len(mappings)} epic mappings from database")
+
+        except Exception as e:
+            logger.error(f"Error loading epic mappings from database: {e}")
+            mappings = self._get_fallback_mappings()
+
+        self._epic_mappings = mappings
+        return mappings
+
+    def _get_fallback_mappings(self) -> Dict[str, Dict[str, str]]:
+        """Fallback epic mappings when database is unavailable."""
+        return {
+            "EP-00001": {"component": "frontend", "epic_label": "blog-content"},
+            "EP-00002": {"component": "backend", "epic_label": "comment-system"},
+            "EP-00003": {"component": "security", "epic_label": "privacy-consent"},
+            "EP-00004": {"component": "ci-cd", "epic_label": "github-workflow"},
+            "EP-00005": {"component": "backend", "epic_label": "rtm"},
+            "EP-00006": {"component": "ci-cd", "epic_label": "github-project"},
+            "EP-00007": {"component": "testing", "epic_label": "test-reporting"},
+        }
 
 
 class TraceabilityMatrixParser:
@@ -122,12 +203,17 @@ class GitHubIssueLabelMapper:
     - Status management
     """
 
-    def __init__(self, matrix_path: Optional[Path] = None) -> None:
+    def __init__(self, matrix_path: Optional[Path] = None, use_database: bool = True) -> None:
         """Initialize the label mapper."""
-        if matrix_path is None:
-            matrix_path = Path("docs/traceability/requirements-matrix.md")
-
-        self.matrix_parser = TraceabilityMatrixParser(matrix_path)
+        if use_database and DATABASE_AVAILABLE:
+            self.epic_mapper = DatabaseEpicMapper()
+            logger.info("Using database epic mapper for dynamic label mapping")
+        else:
+            # Fallback to file-based parser
+            if matrix_path is None:
+                matrix_path = Path("docs/traceability/requirements-matrix.md")
+            self.epic_mapper = TraceabilityMatrixParser(matrix_path)
+            logger.info("Using file-based epic mapper (fallback)")
         self.priority_mappings = {
             "Critical": "priority/critical",
             "High": "priority/high",
@@ -196,8 +282,8 @@ class GitHubIssueLabelMapper:
         epic_num = int(epic_match.group(1))
         normalized_epic_id = f"EP-{epic_num:05d}"
 
-        # Get mappings from traceability matrix
-        epic_mappings = self.matrix_parser.get_epic_mappings()
+        # Get mappings from epic mapper (database or file-based)
+        epic_mappings = self.epic_mapper.get_epic_mappings()
 
         if normalized_epic_id in epic_mappings:
             mapping = epic_mappings[normalized_epic_id]

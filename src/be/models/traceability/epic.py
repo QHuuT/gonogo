@@ -47,6 +47,16 @@ class Epic(TraceabilityBase):
     # Component classification
     component = Column(String(50), nullable=False, index=True, default='backend')
 
+    # Epic Label Management (US-00006)
+    epic_label_name = Column(String(50), nullable=True, index=True)
+    # Format: "rtm-automation", "github-project", etc. (used in epic/x GitHub labels)
+
+    github_epic_label = Column(String(100), nullable=True, index=True)
+    # Format: "epic/rtm-automation" (full GitHub label name)
+
+    last_github_sync = Column(String(50), nullable=True)
+    # Timestamp of last sync with GitHub labels
+
     # Relationships
     # User Stories - hybrid relationship (cached in DB, source of truth in GitHub)
     user_stories = relationship(
@@ -65,6 +75,7 @@ class Epic(TraceabilityBase):
         Index("idx_epic_completion", "completion_percentage"),
         Index("idx_epic_release", "target_release_version", "priority"),
         Index("idx_epic_component", "component"),
+        Index("idx_epic_label", "epic_label_name", "github_epic_label"),
     )
 
     def __init__(self, epic_id: str, title: str, **kwargs):
@@ -149,6 +160,34 @@ class Epic(TraceabilityBase):
             # Default if no components found
             self.component = 'backend'
 
+    def get_epic_label_name(self) -> str:
+        """Get or generate epic label name for GitHub labels."""
+        if self.epic_label_name:
+            return self.epic_label_name
+
+        # Generate from title if not set
+        from tools.sync_epic_labels import generate_epic_label_name
+        return generate_epic_label_name(self.title, self.epic_id)
+
+    def get_github_epic_label(self) -> str:
+        """Get full GitHub epic label (epic/name format)."""
+        if self.github_epic_label:
+            return self.github_epic_label
+
+        # Generate from label name
+        label_name = self.get_epic_label_name()
+        return f"epic/{label_name}"
+
+    def update_epic_label_info(self, label_name: str, sync_timestamp: str = None):
+        """Update epic label information after GitHub sync."""
+        self.epic_label_name = label_name
+        self.github_epic_label = f"epic/{label_name}"
+        if sync_timestamp:
+            self.last_github_sync = sync_timestamp
+        else:
+            from datetime import datetime
+            self.last_github_sync = datetime.now().isoformat()
+
     def to_dict(self):
         """Convert to dictionary with Epic-specific fields."""
         base_dict = super().to_dict()
@@ -167,6 +206,9 @@ class Epic(TraceabilityBase):
                 "component": self.component,
                 "component_label": self.get_component_label(),
                 "inherited_components": self.get_inherited_components(),
+                "epic_label_name": self.epic_label_name,
+                "github_epic_label": self.github_epic_label,
+                "last_github_sync": self.last_github_sync,
                 "test_count": len(self.tests) if self.tests else 0,
                 "user_story_count": len(self.user_stories) if self.user_stories else 0,
                 "defect_count": len(self.defects) if self.defects else 0,
