@@ -21,7 +21,7 @@ import pytest
 from click.testing import CliRunner
 
 # Load CLI module directly to avoid import path issues
-repo_root = Path(__file__).parent.parent.parent.parent
+repo_root = Path(__file__).parent.parent.parent.parent.parent
 cli_path = repo_root / "tools" / "rtm-db.py"
 
 spec = importlib.util.spec_from_file_location("rtm_db_cli", cli_path)
