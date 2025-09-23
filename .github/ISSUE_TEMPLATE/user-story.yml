@@ -33,6 +33,53 @@ body:
     validations:
       required: false
 
+  - type: input
+    id: story-points
+    attributes:
+      label: Story Points (Optional)
+      description: Effort estimation (0-21 Fibonacci scale)
+      placeholder: "5"
+    validations:
+      required: false
+
+  - type: input
+    id: sprint
+    attributes:
+      label: Sprint (Optional)
+      description: Sprint assignment
+      placeholder: "Sprint 1"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: User story priority level
+      options:
+        - low
+        - medium
+        - high
+        - critical
+      default: 1
+    validations:
+      required: false
+
+  - type: dropdown
+    id: target-release-version
+    attributes:
+      label: Target Release Version (Optional)
+      description: Target release for this story
+      options:
+        - v1.0.0
+        - v1.1.0
+        - v1.2.0
+        - v1.3.0
+        - v2.0.0
+        - Future Release
+    validations:
+      required: false
+
   - type: dropdown
     id: component
     attributes:
@@ -72,6 +119,15 @@ body:
         - label: Not applicable
 
   - type: textarea
+    id: gdpr-notes
+    attributes:
+      label: GDPR Considerations Notes (Optional)
+      description: Detailed GDPR considerations if applicable
+      placeholder: "Describe any privacy implications, data processing needs, or compliance requirements"
+    validations:
+      required: false
+
+  - type: textarea
     id: dependencies
     attributes:
       label: Dependencies (Optional)
@@ -81,6 +137,36 @@ body:
         - Infrastructure or technical requirements
     validations:
       required: false
+
+  - type: textarea
+    id: blocks
+    attributes:
+      label: Blocks (Optional)
+      description: What other user stories or requirements are blocked by this?
+      placeholder: |
+        - US-XXXXX: User story that depends on this
+        - Infrastructure changes that depend on this
+    validations:
+      required: false
+
+  - type: input
+    id: affects-versions
+    attributes:
+      label: Affects Versions (Optional)
+      description: Versions this story affects
+      placeholder: "v1.0.0, v1.1.0"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: bdd-scenarios
+    attributes:
+      label: BDD Scenarios
+      description: BDD test scenarios status
+      options:
+        - label: Has BDD scenarios defined
+        - label: BDD scenarios need to be created
+        - label: Not applicable
 
   - type: textarea
     id: technical-notes

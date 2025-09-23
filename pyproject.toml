@@ -94,7 +94,12 @@ markers = [
     "performance: marks tests as performance tests",
     "bdd: marks tests as BDD scenarios",
     "detailed: marks tests for detailed debugging mode",
-    "test_type: categorizes tests by type (unit, integration, etc.)"
+    "test_type: categorizes tests by type (unit, integration, etc.)",
+    "user_story: links test to user story (US-XXXXX) - can specify multiple",
+    "epic: links test to epic (EP-XXXXX) - can specify multiple",
+    "component: specifies test component (backend, frontend, etc.) - can specify multiple",
+    "defect: links test to defect regression (DEF-XXXXX) - can specify multiple",
+    "priority: specifies test priority (critical, high, medium, low)"
 ]
 
 # Coverage configuration

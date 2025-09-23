@@ -86,10 +86,47 @@ body:
       label: Test Priority
       description: How critical is this test?
       options:
-        - Critical
-        - High
-        - Medium
-        - Low
+        - critical
+        - high
+        - medium
+        - low
+      default: 2
+    validations:
+      required: false
+
+  - type: input
+    id: test-file-path
+    attributes:
+      label: Test File Path
+      description: Path to the test file
+      placeholder: "tests/integration/test_search.py"
+    validations:
+      required: false
+
+  - type: input
+    id: test-function-name
+    attributes:
+      label: Test Function Name (Optional)
+      description: Name of the test function
+      placeholder: "test_search_returns_results"
+    validations:
+      required: false
+
+  - type: input
+    id: bdd-feature-file
+    attributes:
+      label: BDD Feature File (Optional)
+      description: Path to BDD feature file if applicable
+      placeholder: "features/search.feature"
+    validations:
+      required: false
+
+  - type: input
+    id: bdd-scenario-name
+    attributes:
+      label: BDD Scenario Name (Optional)
+      description: Name of the BDD scenario
+      placeholder: "User searches for blog posts"
     validations:
       required: false
 
@@ -114,6 +151,53 @@ body:
         - Can be automated with Playwright
         - Requires API endpoint testing
         - Mock external services needed
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: test-characteristics
+    attributes:
+      label: Test Characteristics
+      description: Test automation and verification requirements
+      options:
+        - label: Is automated
+        - label: Requires manual verification
+        - label: Tests GDPR compliance
+        - label: Tests security aspects
+
+  - type: input
+    id: code-coverage-percentage
+    attributes:
+      label: Code Coverage Percentage (Optional)
+      description: Expected or actual code coverage
+      placeholder: "85.5"
+    validations:
+      required: false
+
+  - type: textarea
+    id: covered-files
+    attributes:
+      label: Covered Files (Optional)
+      description: Files covered by this test
+      placeholder: |
+        - src/search/search_service.py
+        - src/api/search_endpoints.py
+    validations:
+      required: false
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component (Optional)
+      description: Component this test covers (inherited from parent if not specified)
+      options:
+        - Frontend/UI
+        - Backend/API
+        - Database
+        - Security/GDPR
+        - Testing
+        - CI/CD
+        - Documentation
     validations:
       required: false
 

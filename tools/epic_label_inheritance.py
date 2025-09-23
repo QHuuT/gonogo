@@ -137,7 +137,18 @@ def inherit_epic_labels_for_user_stories(session, dry_run: bool = True) -> Dict[
 
             # Generate expected epic labels
             epic_label = epic.get_github_epic_label()  # e.g., "epic/rtm"
-            component_label = epic.get_component_label()  # e.g., "component/backend"
+
+            # For component inheritance: user story should have ONE component from epic
+            # If user story already has component, use that; otherwise use first epic component
+            if user_story.component:
+                component_label = f"component/{user_story.component}"
+            else:
+                # Use first component from epic's comma-separated components
+                epic_components = [c.strip() for c in epic.component.split(',') if c.strip()]
+                if epic_components:
+                    component_label = f"component/{epic_components[0]}"
+                else:
+                    component_label = "component/backend"  # fallback
 
             expected_labels = [epic_label, component_label]
 
@@ -216,7 +227,19 @@ def inherit_epic_labels_for_defects(session, dry_run: bool = True) -> Dict[str, 
 
             # Generate expected epic labels
             epic_label = epic.get_github_epic_label()
-            component_label = epic.get_component_label()
+
+            # For component inheritance: defect should have ONE component
+            # If defect already has component, use that; otherwise use first epic component
+            if defect.component:
+                component_label = f"component/{defect.component}"
+            else:
+                # Use first component from epic's comma-separated components
+                epic_components = [c.strip() for c in epic.component.split(',') if c.strip()]
+                if epic_components:
+                    component_label = f"component/{epic_components[0]}"
+                else:
+                    component_label = "component/backend"  # fallback
+
             expected_labels = [epic_label, component_label]
 
             # Get current GitHub labels

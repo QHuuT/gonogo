@@ -1,0 +1,476 @@
+{
+  "e2e\\test_blog_workflow.py": {
+    "user_stories": [],
+    "epics": [],
+    "components": [
+      "backend"
+    ],
+    "test_type": "e2e",
+    "file_path": "tests\\e2e\\test_blog_workflow.py"
+  },
+  "integration\\test_component_api.py": {
+    "user_stories": [
+      "US-00005"
+    ],
+    "epics": [
+      "EP-00005"
+    ],
+    "components": [],
+    "test_type": "integration",
+    "file_path": "tests\\integration\\test_component_api.py"
+  },
+  "integration\\test_database_integration_workflow.py": {
+    "user_stories": [
+      "US-00057"
+    ],
+    "epics": [
+      "EP-00005",
+      "EP-00057",
+      "EP-99999"
+    ],
+    "components": [],
+    "test_type": "integration",
+    "file_path": "tests\\integration\\test_database_integration_workflow.py"
+  },
+  "integration\\test_gdpr_integration.py": {
+    "user_stories": [],
+    "epics": [],
+    "components": [
+      "security"
+    ],
+    "test_type": "integration",
+    "file_path": "tests\\integration\\test_gdpr_integration.py"
+  },
+  "integration\\test_github_actions_integration.py": {
+    "user_stories": [
+      "US-00002",
+      "US-00020",
+      "US-00001",
+      "US-00010",
+      "US-00056",
+      "US-00003",
+      "US-00011"
+    ],
+    "epics": [
+      "EP-00005",
+      "EP-00007",
+      "EP-00001",
+      "EP-00006"
+    ],
+    "components": [],
+    "test_type": "integration",
+    "file_path": "tests\\integration\\test_github_actions_integration.py"
+  },
+  "integration\\test_rtm_actual_behavior.py": {
+    "user_stories": [],
+    "epics": [
+      "EP-00001"
+    ],
+    "components": [
+      "backend"
+    ],
+    "test_type": "integration",
+    "file_path": "tests\\integration\\test_rtm_actual_behavior.py"
+  },
+  "integration\\test_rtm_api.py": {
+    "user_stories": [
+      "US-00054",
+      "US-00001"
+    ],
+    "epics": [
+      "EP-00005",
+      "EP-00001",
+      "EP-99999"
+    ],
+    "components": [
+      "backend"
+    ],
+    "test_type": "integration",
+    "file_path": "tests\\integration\\test_rtm_api.py"
+  },
+  "integration\\test_rtm_browser_clicks.py": {
+    "user_stories": [],
+    "epics": [
+      "EP-00001"
+    ],
+    "components": [
+      "backend"
+    ],
+    "test_type": "integration",
+    "file_path": "tests\\integration\\test_rtm_browser_clicks.py"
+  },
+  "integration\\test_rtm_db_integration.py": {
+    "user_stories": [
+      "US-00055"
+    ],
+    "epics": [
+      "EP-00005"
+    ],
+    "components": [
+      "backend"
+    ],
+    "test_type": "integration",
+    "file_path": "tests\\integration\\test_rtm_db_integration.py"
+  },
+  "integration\\test_rtm_filter_integration.py": {
+    "user_stories": [],
+    "epics": [],
+    "components": [
+      "backend"
+    ],
+    "test_type": "integration",
+    "file_path": "tests\\integration\\test_rtm_filter_integration.py"
+  },
+  "integration\\test_rtm_filter_regression.py": {
+    "user_stories": [],
+    "epics": [],
+    "components": [
+      "backend"
+    ],
+    "test_type": "integration",
+    "file_path": "tests\\integration\\test_rtm_filter_regression.py"
+  },
+  "integration\\test_rtm_filter_validation.py": {
+    "user_stories": [],
+    "epics": [
+      "EP-00001"
+    ],
+    "components": [
+      "backend"
+    ],
+    "test_type": "integration",
+    "file_path": "tests\\integration\\test_rtm_filter_validation.py"
+  },
+  "security\\test_gdpr_compliance.py": {
+    "user_stories": [],
+    "epics": [],
+    "components": [
+      "security"
+    ],
+    "test_type": "unknown",
+    "file_path": "tests\\security\\test_gdpr_compliance.py"
+  },
+  "security\\test_input_validation.py": {
+    "user_stories": [],
+    "epics": [],
+    "components": [
+      "security"
+    ],
+    "test_type": "unknown",
+    "file_path": "tests\\security\\test_input_validation.py"
+  },
+  "unit\\test_gdpr_service.py": {
+    "user_stories": [],
+    "epics": [],
+    "components": [
+      "security"
+    ],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\test_gdpr_service.py"
+  },
+  "unit\\test_github_label_mapper.py": {
+    "user_stories": [
+      "US-00015",
+      "US-00002",
+      "US-00001",
+      "US-00004",
+      "US-00003"
+    ],
+    "epics": [
+      "EP-00004",
+      "EP-00001",
+      "EP-00003",
+      "EP-00002"
+    ],
+    "components": [],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\test_github_label_mapper.py"
+  },
+  "unit\\test_main_app.py": {
+    "user_stories": [],
+    "epics": [],
+    "components": [],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\test_main_app.py"
+  },
+  "unit\\test_rtm_filter_functionality.py": {
+    "user_stories": [],
+    "epics": [
+      "EP-00007",
+      "EP-00001",
+      "EP-00002"
+    ],
+    "components": [
+      "backend"
+    ],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\test_rtm_filter_functionality.py"
+  },
+  "unit\\test_rtm_javascript.py": {
+    "user_stories": [],
+    "epics": [
+      "EP-00001"
+    ],
+    "components": [
+      "backend"
+    ],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\test_rtm_javascript.py"
+  },
+  "unit\\test_runner_plugin_demo.py": {
+    "user_stories": [],
+    "epics": [],
+    "components": [],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\test_runner_plugin_demo.py"
+  },
+  "unit\\test_structured_logging_demo.py": {
+    "user_stories": [
+      "US-00022"
+    ],
+    "epics": [],
+    "components": [],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\test_structured_logging_demo.py"
+  },
+  "unit\\test_unicode_encoding_validation.py": {
+    "user_stories": [
+      "US-00001",
+      "US-00003",
+      "US-00031",
+      "US-00002"
+    ],
+    "epics": [
+      "EP-00001",
+      "EP-00003",
+      "EP-00002"
+    ],
+    "components": [],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\test_unicode_encoding_validation.py"
+  },
+  "unit\\models\\test_epic_model.py": {
+    "user_stories": [
+      "US-00052"
+    ],
+    "epics": [
+      "EP-00005",
+      "EP-00001",
+      "EP-00002"
+    ],
+    "components": [],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\models\\test_epic_model.py"
+  },
+  "unit\\models\\test_test_model.py": {
+    "user_stories": [
+      "US-00052"
+    ],
+    "epics": [
+      "EP-00005",
+      "EP-00001"
+    ],
+    "components": [],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\models\\test_test_model.py"
+  },
+  "unit\\models\\test_traceability_base.py": {
+    "user_stories": [
+      "US-00052"
+    ],
+    "epics": [
+      "EP-00005"
+    ],
+    "components": [],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\models\\test_traceability_base.py"
+  },
+  "unit\\models\\test_user_story_model.py": {
+    "user_stories": [
+      "US-00052",
+      "US-00001",
+      "US-00002"
+    ],
+    "epics": [
+      "EP-00005",
+      "EP-00001"
+    ],
+    "components": [],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\models\\test_user_story_model.py"
+  },
+  "unit\\tools\\test_rtm_db_cli.py": {
+    "user_stories": [
+      "US-00055"
+    ],
+    "epics": [
+      "EP-00005",
+      "EP-99999"
+    ],
+    "components": [
+      "backend"
+    ],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\tools\\test_rtm_db_cli.py"
+  },
+  "unit\\shared\\testing\\test_database_integration.py": {
+    "user_stories": [
+      "US-00057",
+      "US-99999"
+    ],
+    "epics": [
+      "EP-00005",
+      "EP-12345",
+      "EP-00057",
+      "EP-99999"
+    ],
+    "components": [
+      "shared"
+    ],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\shared\\testing\\test_database_integration.py"
+  },
+  "unit\\shared\\testing\\test_failure_tracker.py": {
+    "user_stories": [
+      "US-00025"
+    ],
+    "epics": [],
+    "components": [
+      "shared"
+    ],
+    "test_type": "unit",
+    "file_path": "tests\\unit\\shared\\testing\\test_failure_tracker.py"
+  },
+  "integration\\rtm\\test_plugin_system.py": {
+    "user_stories": [
+      "US-12345",
+      "US-00017",
+      "US-00014"
+    ],
+    "epics": [
+      "EP-00005",
+      "EP-00001"
+    ],
+    "components": [
+      "backend"
+    ],
+    "test_type": "integration",
+    "file_path": "tests\\integration\\rtm\\test_plugin_system.py"
+  },
+  "integration\\rtm\\test_rtm_end_to_end.py": {
+    "user_stories": [
+      "US-00002",
+      "US-00017",
+      "US-00001",
+      "US-00014",
+      "US-00003"
+    ],
+    "epics": [
+      "EP-00005",
+      "EP-00001",
+      "EP-00002"
+    ],
+    "components": [
+      "backend"
+    ],
+    "test_type": "integration",
+    "file_path": "tests\\integration\\rtm\\test_rtm_end_to_end.py"
+  },
+  "bdd\\step_definitions\\test_blog_content_steps.py": {
+    "user_stories": [],
+    "epics": [],
+    "components": [
+      "backend"
+    ],
+    "test_type": "bdd",
+    "file_path": "tests\\bdd\\step_definitions\\test_blog_content_steps.py"
+  },
+  "bdd\\step_definitions\\test_gdpr_consent_steps.py": {
+    "user_stories": [],
+    "epics": [],
+    "components": [
+      "security"
+    ],
+    "test_type": "bdd",
+    "file_path": "tests\\bdd\\step_definitions\\test_gdpr_consent_steps.py"
+  },
+  "bdd\\step_definitions\\test_github_label_steps.py": {
+    "user_stories": [],
+    "epics": [],
+    "components": [],
+    "test_type": "bdd",
+    "file_path": "tests\\bdd\\step_definitions\\test_github_label_steps.py"
+  },
+  "bdd\\features\\blog-content.feature": {
+    "user_stories": [
+      "US-00001",
+      "US-00002"
+    ],
+    "epics": [
+      "EP-00001"
+    ],
+    "components": [
+      "security"
+    ],
+    "test_type": "bdd",
+    "file_path": "tests\\bdd\\features\\blog-content.feature"
+  },
+  "bdd\\features\\comment-system.feature": {
+    "user_stories": [
+      "US-00004",
+      "US-00003",
+      "US-00005"
+    ],
+    "epics": [
+      "EP-00002"
+    ],
+    "components": [
+      "security"
+    ],
+    "test_type": "bdd",
+    "file_path": "tests\\bdd\\features\\comment-system.feature"
+  },
+  "bdd\\features\\gdpr-consent.feature": {
+    "user_stories": [
+      "US-00008",
+      "US-00006",
+      "US-00007"
+    ],
+    "epics": [
+      "EP-00003"
+    ],
+    "components": [],
+    "test_type": "bdd",
+    "file_path": "tests\\bdd\\features\\gdpr-consent.feature"
+  },
+  "bdd\\features\\gdpr-rights.feature": {
+    "user_stories": [
+      "US-00008",
+      "US-00007"
+    ],
+    "epics": [],
+    "components": [
+      "security"
+    ],
+    "test_type": "bdd",
+    "file_path": "tests\\bdd\\features\\gdpr-rights.feature"
+  },
+  "bdd\\features\\github-integration.feature": {
+    "user_stories": [],
+    "epics": [],
+    "components": [
+      "security"
+    ],
+    "test_type": "bdd",
+    "file_path": "tests\\bdd\\features\\github-integration.feature"
+  },
+  "bdd\\features\\scenario-template.feature": {
+    "user_stories": [],
+    "epics": [],
+    "components": [
+      "security"
+    ],
+    "test_type": "bdd",
+    "file_path": "tests\\bdd\\features\\scenario-template.feature"
+  }
+}

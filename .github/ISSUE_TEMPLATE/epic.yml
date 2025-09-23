@@ -79,6 +79,47 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Epic priority level
+      options:
+        - low
+        - medium
+        - high
+        - critical
+      default: 1
+    validations:
+      required: false
+
+  - type: input
+    id: total-story-points
+    attributes:
+      label: Total Story Points (Optional)
+      description: Total estimated story points for this epic
+      placeholder: "50"
+    validations:
+      required: false
+
+  - type: input
+    id: completed-story-points
+    attributes:
+      label: Completed Story Points (Optional)
+      description: Story points completed so far
+      placeholder: "20"
+    validations:
+      required: false
+
+  - type: input
+    id: target-release-version
+    attributes:
+      label: Target Release Version (Optional)
+      description: Target release for this epic
+      placeholder: "v1.2.0"
+    validations:
+      required: false
+
   - type: checkboxes
     id: component
     attributes:
@@ -161,6 +202,15 @@ body:
         - label: Involves personal data processing
         - label: GDPR compliance review needed
         - label: Not applicable
+
+  - type: textarea
+    id: gdpr-considerations-details
+    attributes:
+      label: GDPR Considerations Details (Optional)
+      description: Detailed GDPR considerations if applicable
+      placeholder: "Describe any privacy implications, data processing needs, or compliance requirements"
+    validations:
+      required: false
 
   - type: markdown
     attributes:

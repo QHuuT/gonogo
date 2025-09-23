@@ -52,6 +52,51 @@ body:
     validations:
       required: false
 
+  - type: dropdown
+    id: defect-type
+    attributes:
+      label: Defect Type
+      description: Classification of the defect
+      options:
+        - bug
+        - regression
+        - enhancement
+        - security
+        - performance
+        - usability
+      default: 0
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: Impact level of the defect
+      options:
+        - critical
+        - high
+        - medium
+        - low
+        - blocking
+      default: 2
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Urgency level for fixing
+      options:
+        - critical
+        - high
+        - medium
+        - low
+      default: 2
+    validations:
+      required: false
+
   - type: input
     id: related-user-story
     attributes:
@@ -67,6 +112,50 @@ body:
       label: Related Epic (Optional)
       description: "Epic this defect relates to (format: EP-XXXXX)"
       placeholder: "EP-00005"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: Where was this defect found?
+      options:
+        - Prod
+        - Demo
+        - Staging
+        - Dev
+    validations:
+      required: false
+
+  - type: input
+    id: browser-version
+    attributes:
+      label: Browser Version (Optional)
+      description: Browser and version if applicable
+      placeholder: "Chrome 131.0.6778.86"
+    validations:
+      required: false
+
+  - type: input
+    id: os-version
+    attributes:
+      label: OS Version (Optional)
+      description: Operating system and version
+      placeholder: "Windows 11, macOS 14.2, Ubuntu 22.04"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: found-in-phase
+    attributes:
+      label: Found in Phase
+      description: Development phase where defect was discovered
+      options:
+        - development
+        - testing
+        - staging
+        - production
     validations:
       required: false
 
@@ -124,6 +213,45 @@ body:
     validations:
       required: false
 
+  - type: textarea
+    id: root-cause
+    attributes:
+      label: Root Cause Analysis (Optional)
+      description: Analysis of why this defect occurred
+      placeholder: "Detailed root cause analysis..."
+    validations:
+      required: false
+
+  - type: input
+    id: estimated-hours
+    attributes:
+      label: Estimated Hours (Optional)
+      description: Estimated effort to fix
+      placeholder: "4.5"
+    validations:
+      required: false
+
+  - type: input
+    id: actual-hours
+    attributes:
+      label: Actual Hours (Optional)
+      description: Actual effort spent fixing
+      placeholder: "6.0"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: quality-flags
+    attributes:
+      label: Quality Flags
+      description: Special considerations for this defect
+      options:
+        - label: Escaped to production
+        - label: Security issue
+        - label: Regression from previous version
+        - label: Affects customers
+        - label: GDPR/Privacy impact
+
   - type: checkboxes
     id: gdpr-impact
     attributes:
@@ -134,3 +262,37 @@ body:
         - label: Consent system affected
         - label: Data retention impacted
         - label: Not applicable
+
+  - type: textarea
+    id: gdpr-impact-details
+    attributes:
+      label: GDPR Impact Details (Optional)
+      description: Detailed GDPR impact if applicable
+      placeholder: "Describe any privacy implications..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: customer-impact-details
+    attributes:
+      label: Customer Impact Details (Optional)
+      description: How this affects customers if applicable
+      placeholder: "Describe customer impact..."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component (Optional)
+      description: Primary component this defect affects
+      options:
+        - Frontend/UI
+        - Backend/API
+        - Database
+        - Security/GDPR
+        - Testing
+        - CI/CD
+        - Documentation
+    validations:
+      required: false

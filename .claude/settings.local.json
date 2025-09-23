@@ -18,7 +18,14 @@
       "Bash(alembic upgrade:*)",
       "Bash(curl:*)",
       "Bash(git commit:*)",
-      "Bash(git revert:*)"
+      "Bash(git revert:*)",
+      "Bash(taskkill:*)",
+      "Bash(gh workflow run:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(pip install:*)",
+      "Bash(git push:*)",
+      "Bash(gh api:*)"
     ],
     "deny": [],
     "ask": []

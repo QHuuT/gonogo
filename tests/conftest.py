@@ -19,6 +19,28 @@ from src.security.gdpr.models import Base
 pytest_plugins = ["tools.test_runner_plugin"]
 
 
+def pytest_configure(config):
+    """Register custom markers for RTM traceability."""
+    config.addinivalue_line(
+        "markers",
+        "user_story(id): mark test as linked to user story (US-XXXXX). Can specify multiple.",
+    )
+    config.addinivalue_line(
+        "markers", "epic(id): mark test as linked to epic (EP-XXXXX). Can specify multiple."
+    )
+    config.addinivalue_line(
+        "markers",
+        "component(name): mark test component (backend, frontend, database, etc.). Can specify multiple.",
+    )
+    config.addinivalue_line(
+        "markers",
+        "defect(id): mark test as defect regression test (DEF-XXXXX). Can specify multiple.",
+    )
+    config.addinivalue_line(
+        "markers", "priority(level): mark test priority (critical, high, medium, low)"
+    )
+
+
 @pytest.fixture(scope="session")
 def test_db() -> Generator[str, None, None]:
     """Create a temporary SQLite database for testing."""
