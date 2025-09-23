@@ -33,6 +33,9 @@ dev = [
     "watchfiles>=0.21.0",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
 [tool.black]
 line-length = 88
 target-version = ['py311']
