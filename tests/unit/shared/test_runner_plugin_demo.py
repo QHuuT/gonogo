@@ -6,7 +6,7 @@ This test can run without external dependencies.
 import pytest
 
 
-@pytest.mark.epic("EP-00006")
+@pytest.mark.epic("EP-00007")
 @pytest.mark.component("shared")
 def test_plugin_mode_detection():
     """Test that can detect execution mode (basic functionality demo)."""
@@ -14,7 +14,7 @@ def test_plugin_mode_detection():
     assert True
 
 
-@pytest.mark.epic("EP-00006")
+@pytest.mark.epic("EP-00007")
 @pytest.mark.component("shared")
 def test_plugin_type_detection():
     """Test that can detect test type (basic functionality demo)."""
@@ -22,7 +22,7 @@ def test_plugin_type_detection():
     assert 1 + 1 == 2
 
 
-@pytest.mark.epic("EP-00006")
+@pytest.mark.epic("EP-00007")
 @pytest.mark.component("shared")
 @pytest.mark.detailed
 def test_detailed_mode_marker():

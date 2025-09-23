@@ -58,16 +58,16 @@
   },
   "unit\\shared\\test_github_label_mapper.py": {
     "user_stories": [
-      "US-00004",
       "US-00001",
+      "US-00004",
+      "US-00002",
       "US-00015",
-      "US-00003",
-      "US-00002"
+      "US-00003"
     ],
     "epics": [
-      "EP-00002",
       "EP-00004",
       "EP-00003",
+      "EP-00002",
       "EP-00001"
     ],
     "components": [
@@ -90,7 +90,7 @@
   "unit\\shared\\test_runner_plugin_demo.py": {
     "user_stories": [],
     "epics": [
-      "EP-00006"
+      "EP-00007"
     ],
     "components": [
       "shared"
@@ -111,14 +111,14 @@
   },
   "unit\\shared\\test_unicode_encoding_validation.py": {
     "user_stories": [
-      "US-00002",
       "US-00001",
       "US-00003",
+      "US-00002",
       "US-00031"
     ],
     "epics": [
-      "EP-00002",
       "EP-00003",
+      "EP-00002",
       "EP-00001"
     ],
     "components": [
@@ -172,8 +172,8 @@
   "unit\\shared\\models\\test_user_story_model.py": {
     "user_stories": [
       "US-00001",
-      "US-00052",
-      "US-00002"
+      "US-00002",
+      "US-00052"
     ],
     "epics": [
       "EP-00005",
@@ -187,13 +187,13 @@
   },
   "unit\\shared\\shared\\testing\\test_database_integration.py": {
     "user_stories": [
-      "US-99999",
-      "US-00057"
+      "US-00057",
+      "US-99999"
     ],
     "epics": [
-      "EP-12345",
-      "EP-99999",
       "EP-00005",
+      "EP-99999",
+      "EP-12345",
       "EP-00057"
     ],
     "components": [
@@ -218,8 +218,8 @@
       "US-00055"
     ],
     "epics": [
-      "EP-99999",
-      "EP-00005"
+      "EP-00005",
+      "EP-99999"
     ],
     "components": [
       "backend"
@@ -243,8 +243,8 @@
       "US-00057"
     ],
     "epics": [
-      "EP-99999",
       "EP-00005",
+      "EP-99999",
       "EP-00057"
     ],
     "components": [],
@@ -264,17 +264,17 @@
   },
   "integration\\github_rtm\\test_github_actions_integration.py": {
     "user_stories": [
-      "US-00011",
-      "US-00001",
       "US-00020",
-      "US-00056",
-      "US-00003",
+      "US-00001",
+      "US-00010",
+      "US-00011",
       "US-00002",
-      "US-00010"
+      "US-00056",
+      "US-00003"
     ],
     "epics": [
-      "EP-00006",
       "EP-00005",
+      "EP-00006",
       "EP-00007",
       "EP-00001"
     ],
@@ -286,12 +286,12 @@
   },
   "integration\\rtm_api\\test_rtm_api.py": {
     "user_stories": [
-      "US-00054",
-      "US-00001"
+      "US-00001",
+      "US-00054"
     ],
     "epics": [
-      "EP-99999",
       "EP-00005",
+      "EP-99999",
       "EP-00001"
     ],
     "components": [
@@ -359,9 +359,9 @@
   },
   "integration\\rtm_plugin\\test_plugin_system.py": {
     "user_stories": [
+      "US-00014",
       "US-00017",
-      "US-12345",
-      "US-00014"
+      "US-12345"
     ],
     "epics": [
       "EP-00005",
@@ -386,11 +386,11 @@
   },
   "integration\\rtm_workflow\\test_rtm_end_to_end.py": {
     "user_stories": [
-      "US-00017",
       "US-00001",
-      "US-00003",
+      "US-00014",
       "US-00002",
-      "US-00014"
+      "US-00017",
+      "US-00003"
     ],
     "epics": [
       "EP-00005",
@@ -470,9 +470,9 @@
   },
   "bdd\\features\\gdpr-consent.feature": {
     "user_stories": [
-      "US-00006",
       "US-00008",
-      "US-00007"
+      "US-00007",
+      "US-00006"
     ],
     "epics": [
       "EP-00003"
