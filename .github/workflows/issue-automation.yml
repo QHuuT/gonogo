@@ -425,7 +425,6 @@ jobs:
       - name: Sync GitHub issue to database
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_ACTION: ${{ github.event.action }}
@@ -774,7 +773,6 @@ jobs:
 
       - name: Calculate Epic progress
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           python - <<'EOF'
