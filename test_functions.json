@@ -1,0 +1,5527 @@
+{
+  "unit\\backend\\test_rtm_filter_functionality.py": {
+    "file_path": "tests\\unit\\backend\\test_rtm_filter_functionality.py",
+    "functions": [
+      {
+        "name": "test_filter_tests_by_type_selector",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filterTestsByType uses correct CSS selectors."
+      },
+      {
+        "name": "test_filter_user_stories_by_status_selector",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filterUserStoriesByStatus uses correct CSS selectors."
+      },
+      {
+        "name": "test_filter_defects_selector",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filterDefects uses correct CSS selectors."
+      },
+      {
+        "name": "test_update_filter_button_states_defect_handling",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that updateFilterButtonStates handles defect buttons correctly."
+      },
+      {
+        "name": "test_update_filter_button_states_standard_handling",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that updateFilterButtonStates handles standard buttons correctly."
+      },
+      {
+        "name": "test_filter_data_attributes",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filter functions look for correct data attributes."
+      },
+      {
+        "name": "test_filter_button_data_attributes",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filter buttons have correct data attributes."
+      },
+      {
+        "name": "test_filter_css_classes",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filter functions target correct CSS classes."
+      },
+      {
+        "name": "test_epic_container_structure",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that epic containers have correct ID structure."
+      },
+      {
+        "name": "test_filter_values_mapping",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filter values map correctly to data attributes."
+      },
+      {
+        "name": "test_aria_attributes",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that accessibility attributes are correctly handled."
+      },
+      {
+        "name": "test_console_warning_scenarios",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that appropriate console warnings are generated."
+      },
+      {
+        "name": "test_multiple_epic_filtering",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filtering works correctly for different epics."
+      },
+      {
+        "name": "test_animation_integration",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filter functions integrate with animation system."
+      },
+      {
+        "name": "test_filter_count_display_integration",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filter count displays are updated correctly."
+      },
+      {
+        "name": "test_comprehensive_integration",
+        "class_name": "TestRTMFilterFunctionality",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that all filter components work together."
+      },
+      {
+        "name": "test_epic_collapse_regression",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that epic expand/collapse doesn't interfere with filtering."
+      },
+      {
+        "name": "test_parameter_mismatch_prevention",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that function parameters match HTML onclick calls."
+      },
+      {
+        "name": "test_selector_specificity",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that selectors are specific enough to avoid conflicts."
+      },
+      {
+        "name": "test_button_state_consistency",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that button states are managed consistently."
+      }
+    ]
+  },
+  "unit\\backend\\test_rtm_javascript.py": {
+    "file_path": "tests\\unit\\backend\\test_rtm_javascript.py",
+    "functions": [
+      {
+        "name": "test_javascript_functions_without_browser",
+        "class_name": null,
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Basic test that can run without browser - tests function logic"
+      }
+    ]
+  },
+  "unit\\security\\test_gdpr_compliance.py": {
+    "file_path": "tests\\unit\\security\\test_gdpr_compliance.py",
+    "functions": [
+      {
+        "name": "test_ip_address_anonymization_security",
+        "class_name": "TestGDPRSecurity",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that IP addresses are properly anonymized and cannot be reversed."
+      },
+      {
+        "name": "test_email_hashing_prevents_enumeration",
+        "class_name": "TestGDPRSecurity",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that email hashing prevents email enumeration attacks."
+      },
+      {
+        "name": "test_consent_id_unpredictability",
+        "class_name": "TestGDPRSecurity",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that consent IDs are cryptographically unpredictable."
+      },
+      {
+        "name": "test_sensitive_data_not_logged",
+        "class_name": "TestGDPRSecurity",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that sensitive data is not accidentally logged."
+      },
+      {
+        "name": "test_sql_injection_prevention_in_consent_queries",
+        "class_name": "TestGDPRSecurity",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that consent queries are resistant to SQL injection."
+      },
+      {
+        "name": "test_data_subject_request_injection_prevention",
+        "class_name": "TestGDPRSecurity",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that data subject requests prevent injection attacks."
+      },
+      {
+        "name": "test_timing_attack_resistance",
+        "class_name": "TestGDPRSecurity",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that operations don't leak information through timing attacks."
+      },
+      {
+        "name": "test_data_retention_enforcement",
+        "class_name": "TestGDPRSecurity",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that data retention policies are properly enforced."
+      },
+      {
+        "name": "test_access_control_on_sensitive_operations",
+        "class_name": "TestGDPRSecurity",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that sensitive operations require proper authorization."
+      },
+      {
+        "name": "test_gdpr_right_to_be_forgotten_security",
+        "class_name": "TestGDPRSecurity",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that right to be forgotten is properly implemented securely."
+      },
+      {
+        "name": "test_data_minimization_principle",
+        "class_name": "TestGDPRSecurity",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that only necessary data is collected and stored."
+      }
+    ]
+  },
+  "unit\\security\\test_gdpr_service.py": {
+    "file_path": "tests\\unit\\security\\test_gdpr_service.py",
+    "functions": [
+      {
+        "name": "test_record_consent_creates_unique_id",
+        "class_name": "TestGDPRService",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that consent recording creates unique consent ID."
+      },
+      {
+        "name": "test_record_consent_hashes_sensitive_data",
+        "class_name": "TestGDPRService",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that IP addresses and user agents are properly hashed."
+      },
+      {
+        "name": "test_withdraw_consent_updates_record",
+        "class_name": "TestGDPRService",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that consent withdrawal properly updates the record."
+      },
+      {
+        "name": "test_withdraw_nonexistent_consent_returns_false",
+        "class_name": "TestGDPRService",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that withdrawing non-existent consent returns False."
+      },
+      {
+        "name": "test_get_active_consents_filters_withdrawn",
+        "class_name": "TestGDPRService",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that withdrawn consents are not included in active consents."
+      },
+      {
+        "name": "test_get_active_consents_filters_expired",
+        "class_name": "TestGDPRService",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that expired consents are not included in active consents."
+      },
+      {
+        "name": "test_create_data_subject_request_hashes_email",
+        "class_name": "TestGDPRService",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that data subject requests hash email addresses."
+      },
+      {
+        "name": "test_create_data_subject_request_sets_due_date",
+        "class_name": "TestGDPRService",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that data subject requests have proper due dates (30 days)."
+      },
+      {
+        "name": "test_process_data_subject_request_completes",
+        "class_name": "TestGDPRService",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that processing a data subject request marks it complete."
+      },
+      {
+        "name": "test_get_overdue_requests_finds_old_requests",
+        "class_name": "TestGDPRService",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that overdue requests are properly identified."
+      },
+      {
+        "name": "test_hash_data_produces_consistent_hashes",
+        "class_name": "TestGDPRService",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that the hash function produces consistent results."
+      },
+      {
+        "name": "test_hash_data_produces_different_hashes_different_salt",
+        "class_name": "TestGDPRService",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that different salts produce different hashes."
+      },
+      {
+        "name": "test_generate_consent_id_creates_unique_ids",
+        "class_name": "TestGDPRService",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that consent ID generation creates unique identifiers."
+      },
+      {
+        "name": "test_compliance_score_calculation",
+        "class_name": "TestGDPRService",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test GDPR compliance score calculation."
+      }
+    ]
+  },
+  "unit\\security\\test_input_validation.py": {
+    "file_path": "tests\\unit\\security\\test_input_validation.py",
+    "functions": [
+      {
+        "name": "test_xss_prevention_in_endpoints",
+        "class_name": "TestInputValidation",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that XSS payloads are properly handled."
+      },
+      {
+        "name": "test_sql_injection_prevention",
+        "class_name": "TestInputValidation",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test SQL injection prevention in API endpoints."
+      },
+      {
+        "name": "test_template_injection_prevention",
+        "class_name": "TestInputValidation",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test prevention of template injection attacks."
+      },
+      {
+        "name": "test_path_traversal_prevention",
+        "class_name": "TestInputValidation",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test prevention of path traversal attacks."
+      },
+      {
+        "name": "test_command_injection_prevention",
+        "class_name": "TestInputValidation",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test prevention of command injection attacks."
+      },
+      {
+        "name": "test_http_header_injection_prevention",
+        "class_name": "TestInputValidation",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test prevention of HTTP header injection attacks."
+      },
+      {
+        "name": "test_ldap_injection_prevention",
+        "class_name": "TestInputValidation",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test prevention of LDAP injection attacks."
+      },
+      {
+        "name": "test_nosql_injection_prevention",
+        "class_name": "TestInputValidation",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test prevention of NoSQL injection attacks."
+      },
+      {
+        "name": "test_xml_injection_prevention",
+        "class_name": "TestInputValidation",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test prevention of XML injection and XXE attacks."
+      },
+      {
+        "name": "test_file_upload_security",
+        "class_name": "TestInputValidation",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test file upload security measures."
+      },
+      {
+        "name": "test_rate_limiting_headers",
+        "class_name": "TestInputValidation",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that appropriate headers are set for security."
+      },
+      {
+        "name": "test_error_message_information_disclosure",
+        "class_name": "TestInputValidation",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that error messages don't disclose sensitive information."
+      }
+    ]
+  },
+  "unit\\shared\\test_github_label_mapper.py": {
+    "file_path": "tests\\unit\\shared\\test_github_label_mapper.py",
+    "functions": [
+      {
+        "name": "test_init_with_path",
+        "class_name": "TestTraceabilityMatrixParser",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test initialization with matrix path."
+      },
+      {
+        "name": "test_get_default_mappings",
+        "class_name": "TestTraceabilityMatrixParser",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test default epic mappings fallback."
+      },
+      {
+        "name": "test_determine_component_from_description",
+        "class_name": "TestTraceabilityMatrixParser",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test component determination from epic description."
+      },
+      {
+        "name": "test_get_epic_mappings_from_file",
+        "class_name": "TestTraceabilityMatrixParser",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test parsing epic mappings from matrix file."
+      },
+      {
+        "name": "test_get_epic_mappings_file_not_found",
+        "class_name": "TestTraceabilityMatrixParser",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test fallback when matrix file doesn't exist."
+      },
+      {
+        "name": "test_extract_form_value_basic",
+        "class_name": "TestGitHubIssueLabelMapper",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test basic form value extraction."
+      },
+      {
+        "name": "test_extract_form_value_no_response",
+        "class_name": "TestGitHubIssueLabelMapper",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test handling of '_No response_' values."
+      },
+      {
+        "name": "test_extract_form_value_alternative_formats",
+        "class_name": "TestGitHubIssueLabelMapper",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test extraction from different markdown formats."
+      },
+      {
+        "name": "test_map_priority_labels",
+        "class_name": "TestGitHubIssueLabelMapper",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test priority label mapping."
+      },
+      {
+        "name": "test_map_epic_labels",
+        "class_name": "TestGitHubIssueLabelMapper",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test epic-to-component label mapping."
+      },
+      {
+        "name": "test_map_gdpr_labels",
+        "class_name": "TestGitHubIssueLabelMapper",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test GDPR label mapping based on content."
+      },
+      {
+        "name": "test_map_release_labels",
+        "class_name": "TestGitHubIssueLabelMapper",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test release label mapping logic."
+      },
+      {
+        "name": "test_map_status_labels",
+        "class_name": "TestGitHubIssueLabelMapper",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test status label mapping."
+      },
+      {
+        "name": "test_map_status_labels_preserves_existing",
+        "class_name": "TestGitHubIssueLabelMapper",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test that existing status labels are preserved."
+      },
+      {
+        "name": "test_generate_labels_integration",
+        "class_name": "TestGitHubIssueLabelMapper",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test full label generation integration."
+      },
+      {
+        "name": "test_generate_labels_error_handling",
+        "class_name": "TestGitHubIssueLabelMapper",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test error handling in label generation."
+      },
+      {
+        "name": "test_issue_data_creation",
+        "class_name": "TestIssueData",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test IssueData creation and attributes."
+      },
+      {
+        "name": "test_label_mapping_creation",
+        "class_name": "TestLabelMapping",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test LabelMapping creation with default priority."
+      },
+      {
+        "name": "test_label_mapping_with_priority",
+        "class_name": "TestLabelMapping",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test LabelMapping creation with custom priority."
+      },
+      {
+        "name": "test_full_epic_workflow",
+        "class_name": "TestLabelMapperIntegration",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test complete epic label assignment workflow."
+      },
+      {
+        "name": "test_user_story_inheritance",
+        "class_name": "TestLabelMapperIntegration",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test user story label inheritance from parent epic."
+      }
+    ]
+  },
+  "unit\\shared\\test_main_app.py": {
+    "file_path": "tests\\unit\\shared\\test_main_app.py",
+    "functions": [
+      {
+        "name": "test_health_check_endpoint",
+        "class_name": "TestMainApplication",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that health check endpoint returns correct response."
+      },
+      {
+        "name": "test_home_endpoint_returns_coming_soon",
+        "class_name": "TestMainApplication",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that home endpoint returns coming soon message."
+      },
+      {
+        "name": "test_app_title_and_metadata",
+        "class_name": "TestMainApplication",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that FastAPI app has correct metadata."
+      },
+      {
+        "name": "test_static_files_mounted",
+        "class_name": "TestMainApplication",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that static files are properly mounted."
+      },
+      {
+        "name": "test_nonexistent_endpoint_returns_404",
+        "class_name": "TestMainApplication",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that non-existent endpoints return 404."
+      },
+      {
+        "name": "test_health_endpoint_accepts_only_get",
+        "class_name": "TestMainApplication",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that health endpoint only accepts GET requests."
+      },
+      {
+        "name": "test_app_has_templates_configured",
+        "class_name": "TestMainApplication",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that Jinja2 templates are properly configured."
+      },
+      {
+        "name": "test_cors_headers_in_response",
+        "class_name": "TestMainApplication",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that appropriate headers are set in responses."
+      }
+    ]
+  },
+  "unit\\shared\\test_runner_plugin_demo.py": {
+    "file_path": "tests\\unit\\shared\\test_runner_plugin_demo.py",
+    "functions": [
+      {
+        "name": "test_plugin_mode_detection",
+        "class_name": null,
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test that can detect execution mode (basic functionality demo)."
+      },
+      {
+        "name": "test_plugin_type_detection",
+        "class_name": null,
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test that can detect test type (basic functionality demo)."
+      },
+      {
+        "name": "test_detailed_mode_marker",
+        "class_name": null,
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test with detailed mode marker."
+      },
+      {
+        "name": "test_silent_mode_compatible",
+        "class_name": "TestRunnerPluginDemo",
+        "epics": [],
+        "user_stories": [],
+        "components": [],
+        "docstring": "Test that works well in silent mode."
+      },
+      {
+        "name": "test_verbose_mode_compatible",
+        "class_name": "TestRunnerPluginDemo",
+        "epics": [],
+        "user_stories": [],
+        "components": [],
+        "docstring": "Test that provides good output in verbose mode."
+      },
+      {
+        "name": "test_standard_mode_compatible",
+        "class_name": "TestRunnerPluginDemo",
+        "epics": [],
+        "user_stories": [],
+        "components": [],
+        "docstring": "Test that works with standard mode."
+      }
+    ]
+  },
+  "unit\\shared\\test_structured_logging_demo.py": {
+    "file_path": "tests\\unit\\shared\\test_structured_logging_demo.py",
+    "functions": [
+      {
+        "name": "test_basic_logging_functionality",
+        "class_name": "TestStructuredLoggingDemo",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00022"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test basic logging operations."
+      },
+      {
+        "name": "test_test_lifecycle_logging",
+        "class_name": "TestStructuredLoggingDemo",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00022"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test logging for test lifecycle events."
+      },
+      {
+        "name": "test_test_failure_logging",
+        "class_name": "TestStructuredLoggingDemo",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00022"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test logging for test failures."
+      },
+      {
+        "name": "test_gdpr_sanitization",
+        "class_name": "TestStructuredLoggingDemo",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00022"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test GDPR-compliant data sanitization."
+      },
+      {
+        "name": "test_json_formatting",
+        "class_name": "TestStructuredLoggingDemo",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00022"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test JSON log formatting."
+      },
+      {
+        "name": "test_human_readable_formatting",
+        "class_name": "TestStructuredLoggingDemo",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00022"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test human-readable log formatting."
+      },
+      {
+        "name": "test_summary_generation",
+        "class_name": "TestStructuredLoggingDemo",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00022"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test summary report generation."
+      },
+      {
+        "name": "test_configuration_info",
+        "class_name": "TestStructuredLoggingDemo",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00022"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test that configuration information is accessible."
+      }
+    ]
+  },
+  "unit\\shared\\test_unicode_encoding_validation.py": {
+    "file_path": "tests\\unit\\shared\\test_unicode_encoding_validation.py",
+    "functions": [
+      {
+        "name": "test_tempfile_with_unicode_content",
+        "class_name": "TestUnicodeEncodingValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test that tempfile operations handle Unicode characters correctly."
+      },
+      {
+        "name": "test_tempfile_without_encoding_fails_on_unicode",
+        "class_name": "TestUnicodeEncodingValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test that demonstrates why encoding parameter is mandatory."
+      },
+      {
+        "name": "test_various_file_operations_with_unicode",
+        "class_name": "TestUnicodeEncodingValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test different file operation patterns with Unicode content."
+      },
+      {
+        "name": "test_emoji_heavy_content",
+        "class_name": "TestUnicodeEncodingValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test content with many emoji characters that often cause encoding issues."
+      },
+      {
+        "name": "test_rtm_file_pattern_with_unicode",
+        "class_name": "TestFileOperationPatterns",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test the specific pattern used in RTM link generator that caused the original issue."
+      },
+      {
+        "name": "test_config_file_pattern_with_unicode",
+        "class_name": "TestFileOperationPatterns",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test YAML config file pattern with Unicode content."
+      }
+    ]
+  },
+  "unit\\shared\\models\\test_epic_model.py": {
+    "file_path": "tests\\unit\\shared\\models\\test_epic_model.py",
+    "functions": [
+      {
+        "name": "test_epic_creation",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test basic Epic creation."
+      },
+      {
+        "name": "test_epic_persistence",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test Epic can be saved and retrieved."
+      },
+      {
+        "name": "test_calculate_completion_percentage_zero_points",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test completion calculation with zero story points."
+      },
+      {
+        "name": "test_calculate_completion_percentage_normal",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test completion calculation with normal values."
+      },
+      {
+        "name": "test_calculate_completion_percentage_complete",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test completion calculation when fully complete."
+      },
+      {
+        "name": "test_update_progress",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test progress update functionality."
+      },
+      {
+        "name": "test_update_progress_zero_total",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test progress update with zero total points."
+      },
+      {
+        "name": "test_gdpr_fields",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test GDPR-related fields."
+      },
+      {
+        "name": "test_risk_assessment",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test risk assessment fields."
+      },
+      {
+        "name": "test_success_criteria",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test success criteria field."
+      },
+      {
+        "name": "test_to_dict_basic",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test dictionary conversion with basic Epic data."
+      },
+      {
+        "name": "test_to_dict_with_relationships",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test dictionary conversion includes relationship counts."
+      },
+      {
+        "name": "test_repr",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test string representation."
+      },
+      {
+        "name": "test_epic_id_uniqueness_constraint",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test that epic_id must be unique."
+      },
+      {
+        "name": "test_priority_values",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test valid priority values."
+      },
+      {
+        "name": "test_risk_level_values",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test valid risk level values."
+      },
+      {
+        "name": "test_default_values",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test default values on Epic creation."
+      },
+      {
+        "name": "test_github_integration",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test GitHub issue integration fields."
+      },
+      {
+        "name": "test_version_tracking_inheritance",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test that Epic inherits version tracking from base."
+      },
+      {
+        "name": "test_completion_percentage_property",
+        "class_name": "TestEpic",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test that completion_percentage is correctly calculated and stored."
+      }
+    ]
+  },
+  "unit\\shared\\models\\test_test_model.py": {
+    "file_path": "tests\\unit\\shared\\models\\test_test_model.py",
+    "functions": [
+      {
+        "name": "test_entity",
+        "class_name": null,
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Create a test Test instance."
+      },
+      {
+        "name": "test_test_creation",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test basic Test creation."
+      },
+      {
+        "name": "test_test_persistence",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test Test can be saved and retrieved."
+      },
+      {
+        "name": "test_epic_relationship",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test relationship with Epic."
+      },
+      {
+        "name": "test_test_types",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test valid test types."
+      },
+      {
+        "name": "test_bdd_fields",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test BDD-specific fields."
+      },
+      {
+        "name": "test_github_references",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test GitHub issue references."
+      },
+      {
+        "name": "test_update_execution_result_success",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test updating execution result for successful test."
+      },
+      {
+        "name": "test_update_execution_result_failure",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test updating execution result for failed test."
+      },
+      {
+        "name": "test_update_execution_result_multiple_runs",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test multiple execution result updates."
+      },
+      {
+        "name": "test_get_success_rate_no_executions",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test success rate calculation with no executions."
+      },
+      {
+        "name": "test_get_success_rate_all_passed",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test success rate calculation with all tests passing."
+      },
+      {
+        "name": "test_get_success_rate_mixed_results",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test success rate calculation with mixed results."
+      },
+      {
+        "name": "test_test_priority_values",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test valid test priority values."
+      },
+      {
+        "name": "test_automation_flags",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test automation-related flags."
+      },
+      {
+        "name": "test_coverage_information",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test code coverage fields."
+      },
+      {
+        "name": "test_gdpr_and_security_flags",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test GDPR and security testing flags."
+      },
+      {
+        "name": "test_error_tracking",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test error message and traceback tracking."
+      },
+      {
+        "name": "test_to_dict_basic",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test dictionary conversion with basic Test data."
+      },
+      {
+        "name": "test_to_dict_with_execution_data",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test dictionary conversion includes execution data."
+      },
+      {
+        "name": "test_repr",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test string representation."
+      },
+      {
+        "name": "test_default_values",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test default values on Test creation."
+      },
+      {
+        "name": "test_execution_status_values",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test valid execution status values."
+      },
+      {
+        "name": "test_version_tracking_inheritance",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test that Test inherits version tracking from base."
+      },
+      {
+        "name": "test_test_file_path_indexing",
+        "class_name": "TestTestModel",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test that test_file_path is properly indexed for queries."
+      }
+    ]
+  },
+  "unit\\shared\\models\\test_traceability_base.py": {
+    "file_path": "tests\\unit\\shared\\models\\test_traceability_base.py",
+    "functions": [
+      {
+        "name": "test_entity",
+        "class_name": null,
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Create a test entity instance."
+      },
+      {
+        "name": "test_entity_creation",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test basic entity creation."
+      },
+      {
+        "name": "test_entity_persistence",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test entity can be saved and retrieved."
+      },
+      {
+        "name": "test_set_git_context",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test git context setting."
+      },
+      {
+        "name": "test_mark_resolved",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test marking entity as resolved."
+      },
+      {
+        "name": "test_mark_resolved_status_preservation",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test that already completed status is preserved."
+      },
+      {
+        "name": "test_add_affected_version_new_list",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test adding affected version to new entity."
+      },
+      {
+        "name": "test_add_affected_version_existing_list",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test adding version to existing list."
+      },
+      {
+        "name": "test_add_affected_version_duplicate",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test that duplicate versions are not added."
+      },
+      {
+        "name": "test_add_fixed_version",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test adding fixed version."
+      },
+      {
+        "name": "test_is_fixed_in_version_true",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test checking if fixed in specific version - positive case."
+      },
+      {
+        "name": "test_is_fixed_in_version_false",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test checking if fixed in specific version - negative case."
+      },
+      {
+        "name": "test_is_fixed_in_version_empty",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test checking fixed version on entity with no fixed versions."
+      },
+      {
+        "name": "test_is_fixed_in_version_invalid_json",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test handling of invalid JSON in fixed_in_versions."
+      },
+      {
+        "name": "test_to_dict_basic",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test dictionary conversion with basic data."
+      },
+      {
+        "name": "test_to_dict_with_git_context",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test dictionary conversion with git context."
+      },
+      {
+        "name": "test_repr",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test string representation."
+      },
+      {
+        "name": "test_github_integration_fields",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test GitHub integration fields."
+      },
+      {
+        "name": "test_version_tracking_fields",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test version tracking fields."
+      },
+      {
+        "name": "test_json_version_handling_corruption",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test handling of corrupted JSON in version fields."
+      },
+      {
+        "name": "test_none_version_handling",
+        "class_name": "TestTraceabilityBase",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "docstring": "Test handling of None values in version fields."
+      }
+    ]
+  },
+  "unit\\shared\\models\\test_user_story_model.py": {
+    "file_path": "tests\\unit\\shared\\models\\test_user_story_model.py",
+    "functions": [
+      {
+        "name": "test_user_story_creation",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test basic UserStory creation."
+      },
+      {
+        "name": "test_user_story_persistence",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test UserStory can be saved and retrieved."
+      },
+      {
+        "name": "test_epic_relationship",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test relationship with Epic."
+      },
+      {
+        "name": "test_update_from_github_basic",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test updating from GitHub issue data."
+      },
+      {
+        "name": "test_update_from_github_partial",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test updating from partial GitHub data."
+      },
+      {
+        "name": "test_calculate_test_coverage_no_tests",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test test coverage calculation with no tests."
+      },
+      {
+        "name": "test_bdd_integration_fields",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test BDD integration fields."
+      },
+      {
+        "name": "test_gdpr_fields",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test GDPR-related fields."
+      },
+      {
+        "name": "test_dependencies_tracking",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test dependency tracking fields."
+      },
+      {
+        "name": "test_implementation_status_values",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test valid implementation status values."
+      },
+      {
+        "name": "test_sprint_assignment",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test sprint assignment."
+      },
+      {
+        "name": "test_story_points_validation",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test story points assignment."
+      },
+      {
+        "name": "test_acceptance_criteria",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test acceptance criteria field."
+      },
+      {
+        "name": "test_business_value",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test business value field."
+      },
+      {
+        "name": "test_to_dict_basic",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test dictionary conversion with basic UserStory data."
+      },
+      {
+        "name": "test_to_dict_includes_test_coverage",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test that to_dict includes test coverage calculation."
+      },
+      {
+        "name": "test_repr",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test string representation."
+      },
+      {
+        "name": "test_github_issue_uniqueness",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test that GitHub issue numbers must be unique."
+      },
+      {
+        "name": "test_user_story_id_uniqueness",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test that user_story_id must be unique."
+      },
+      {
+        "name": "test_default_values",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test default values on UserStory creation."
+      },
+      {
+        "name": "test_version_tracking_inheritance",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test that UserStory inherits version tracking from base."
+      }
+    ]
+  },
+  "unit\\shared\\shared\\testing\\test_database_integration.py": {
+    "file_path": "tests\\unit\\shared\\shared\\testing\\test_database_integration.py",
+    "functions": [
+      {
+        "name": "test_epic_pattern_matching",
+        "class_name": "TestTestDiscovery",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test Epic reference pattern matching."
+      },
+      {
+        "name": "test_user_story_pattern_matching",
+        "class_name": "TestTestDiscovery",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test User Story reference pattern matching."
+      },
+      {
+        "name": "test_defect_pattern_matching",
+        "class_name": "TestTestDiscovery",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test Defect reference pattern matching."
+      },
+      {
+        "name": "test_generate_test_title",
+        "class_name": "TestTestDiscovery",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test test title generation from function names."
+      },
+      {
+        "name": "test_analyze_test_file_with_references",
+        "class_name": "TestTestDiscovery",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test analyzing a test file with Epic/US references."
+      },
+      {
+        "name": "test_analyze_test_file_without_references",
+        "class_name": "TestTestDiscovery",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test analyzing a test file without Epic/US references."
+      },
+      {
+        "name": "test_discover_tests",
+        "class_name": "TestTestDiscovery",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test test discovery functionality."
+      },
+      {
+        "name": "test_create_or_update_test_new",
+        "class_name": "TestTestDatabaseSync",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test creating a new test record."
+      },
+      {
+        "name": "test_create_or_update_test_existing",
+        "class_name": "TestTestDatabaseSync",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test updating an existing test record."
+      },
+      {
+        "name": "test_link_test_to_epic_success",
+        "class_name": "TestTestDatabaseSync",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test successfully linking test to Epic."
+      },
+      {
+        "name": "test_link_test_to_epic_no_epic",
+        "class_name": "TestTestDatabaseSync",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test linking test to Epic when Epic doesn't exist."
+      },
+      {
+        "name": "test_start_and_end_session",
+        "class_name": "TestTestExecutionTracker",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test session management."
+      },
+      {
+        "name": "test_record_test_result_success",
+        "class_name": "TestTestExecutionTracker",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test recording successful test result."
+      },
+      {
+        "name": "test_record_test_result_no_session",
+        "class_name": "TestTestExecutionTracker",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test recording test result without session."
+      },
+      {
+        "name": "test_record_test_result_invalid_test_id",
+        "class_name": "TestTestExecutionTracker",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test recording test result with invalid test ID."
+      },
+      {
+        "name": "test_create_defect_from_failure",
+        "class_name": "TestTestExecutionTracker",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test creating defect from test failure."
+      },
+      {
+        "name": "test_determine_failure_severity",
+        "class_name": "TestTestExecutionTracker",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test failure severity determination."
+      },
+      {
+        "name": "test_scenario_pattern_matching",
+        "class_name": "TestBDDScenarioParser",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test scenario pattern matching."
+      },
+      {
+        "name": "test_extract_user_story_context",
+        "class_name": "TestBDDScenarioParser",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test extracting User Story references from context."
+      },
+      {
+        "name": "test_parse_feature_content",
+        "class_name": "TestBDDScenarioParser",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test parsing feature file content."
+      },
+      {
+        "name": "test_link_scenario_to_user_story_success",
+        "class_name": "TestBDDScenarioParser",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test successfully linking scenario to User Story."
+      },
+      {
+        "name": "test_link_scenario_to_user_story_no_user_story",
+        "class_name": "TestBDDScenarioParser",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test linking scenario when User Story doesn't exist."
+      },
+      {
+        "name": "test_full_sync_workflow",
+        "class_name": "TestIntegrationWorkflow",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test complete test discovery and sync workflow."
+      },
+      {
+        "name": "test_pytest_plugin_integration",
+        "class_name": "TestIntegrationWorkflow",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test integration with pytest plugin."
+      }
+    ]
+  },
+  "unit\\shared\\shared\\testing\\test_failure_tracker.py": {
+    "file_path": "tests\\unit\\shared\\shared\\testing\\test_failure_tracker.py",
+    "functions": [
+      {
+        "name": "test_database_initialization",
+        "class_name": "TestFailureTracker",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test that database tables are created correctly."
+      },
+      {
+        "name": "test_failure_categorization",
+        "class_name": "TestFailureTracker",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test automatic failure categorization."
+      },
+      {
+        "name": "test_severity_determination",
+        "class_name": "TestFailureTracker",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test failure severity determination."
+      },
+      {
+        "name": "test_record_new_failure",
+        "class_name": "TestFailureTracker",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test recording a new test failure."
+      },
+      {
+        "name": "test_record_duplicate_failure",
+        "class_name": "TestFailureTracker",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test that duplicate failures increment occurrence count."
+      },
+      {
+        "name": "test_get_failure_statistics",
+        "class_name": "TestFailureTracker",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test failure statistics generation."
+      },
+      {
+        "name": "test_get_top_failing_tests",
+        "class_name": "TestFailureTracker",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test retrieval of top failing tests."
+      },
+      {
+        "name": "test_detect_patterns",
+        "class_name": "TestFailureTracker",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test pattern detection functionality."
+      },
+      {
+        "name": "test_cleanup_old_failures",
+        "class_name": "TestFailureTracker",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test cleanup of old failure records."
+      },
+      {
+        "name": "test_failure_creation",
+        "class_name": "TestTestFailure",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test TestFailure object creation and defaults."
+      },
+      {
+        "name": "test_error_hash_generation",
+        "class_name": "TestTestFailure",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test that error hash is generated consistently."
+      },
+      {
+        "name": "test_hash_normalization",
+        "class_name": "TestTestFailure",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test that error hash normalizes common variable elements."
+      },
+      {
+        "name": "test_failure_category_values",
+        "class_name": "TestFailureEnums",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test FailureCategory enum values."
+      },
+      {
+        "name": "test_failure_severity_values",
+        "class_name": "TestFailureEnums",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test FailureSeverity enum values."
+      },
+      {
+        "name": "test_unicode_content_handling",
+        "class_name": "TestFailureTrackerIntegration",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test that tracker handles Unicode content correctly."
+      },
+      {
+        "name": "test_large_stack_trace_handling",
+        "class_name": "TestFailureTrackerIntegration",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test handling of very large stack traces."
+      },
+      {
+        "name": "test_concurrent_failure_recording",
+        "class_name": "TestFailureTrackerIntegration",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test recording failures concurrently (simulated)."
+      },
+      {
+        "name": "test_malformed_data_handling",
+        "class_name": "TestFailureTrackerIntegration",
+        "epics": [
+          "EP-00007"
+        ],
+        "user_stories": [
+          "US-00025"
+        ],
+        "components": [
+          "shared"
+        ],
+        "docstring": "Test handling of malformed or edge case data."
+      }
+    ]
+  },
+  "unit\\backend\\tools\\test_rtm_db_cli.py": {
+    "file_path": "tests\\unit\\backend\\tools\\test_rtm_db_cli.py",
+    "functions": [
+      {
+        "name": "test_create_epic_success",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test successful Epic creation."
+      },
+      {
+        "name": "test_create_epic_already_exists",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test Epic creation when epic already exists."
+      },
+      {
+        "name": "test_create_user_story_success",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test successful User Story creation."
+      },
+      {
+        "name": "test_create_user_story_epic_not_found",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test User Story creation when parent Epic not found."
+      },
+      {
+        "name": "test_create_test_success",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test successful Test creation."
+      },
+      {
+        "name": "test_query_epics_table_format",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test querying Epics with table format."
+      },
+      {
+        "name": "test_query_epics_json_format",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test querying Epics with JSON format."
+      },
+      {
+        "name": "test_query_epics_with_filters",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test querying Epics with status and priority filters."
+      },
+      {
+        "name": "test_query_user_stories",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test querying User Stories."
+      },
+      {
+        "name": "test_query_user_stories_by_epic",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test querying User Stories filtered by Epic."
+      },
+      {
+        "name": "test_epic_progress_detailed",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test detailed Epic progress report."
+      },
+      {
+        "name": "test_epic_progress_not_found",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test Epic progress for non-existent Epic."
+      },
+      {
+        "name": "test_data_export_json",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test data export in JSON format."
+      },
+      {
+        "name": "test_admin_health_check",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test database health check."
+      },
+      {
+        "name": "test_admin_validate_no_issues",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test data validation with no issues found."
+      },
+      {
+        "name": "test_admin_validate_with_issues",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test data validation with issues found."
+      },
+      {
+        "name": "test_admin_reset_without_confirm",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test database reset without confirmation."
+      },
+      {
+        "name": "test_admin_reset_with_confirm",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test database reset with confirmation."
+      },
+      {
+        "name": "test_github_sync_status_no_records",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test GitHub sync status with no records."
+      },
+      {
+        "name": "test_github_sync_status_with_records",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test GitHub sync status with records."
+      },
+      {
+        "name": "test_cli_help",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test CLI help output."
+      },
+      {
+        "name": "test_entities_help",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test entities subcommand help."
+      },
+      {
+        "name": "test_query_help",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test query subcommand help."
+      },
+      {
+        "name": "test_data_help",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test data subcommand help."
+      },
+      {
+        "name": "test_admin_help",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test admin subcommand help."
+      },
+      {
+        "name": "test_github_help",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test github subcommand help."
+      },
+      {
+        "name": "test_verbose_mode",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test verbose mode flag."
+      },
+      {
+        "name": "test_import_rtm_file_not_found",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test RTM import with non-existent file."
+      },
+      {
+        "name": "test_import_rtm_dry_run",
+        "class_name": "TestRTMDatabaseCLI",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test RTM import with dry run."
+      },
+      {
+        "name": "test_full_workflow_integration",
+        "class_name": "TestRTMDatabaseCLIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test complete workflow: create epic -> create user story -> query progress."
+      }
+    ]
+  },
+  "integration\\component_system\\test_component_api.py": {
+    "file_path": "tests\\integration\\component_system\\test_component_api.py",
+    "functions": [
+      {
+        "name": "test_list_components",
+        "class_name": "TestComponentEndpoints",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test listing all unique components."
+      },
+      {
+        "name": "test_component_statistics",
+        "class_name": "TestComponentEndpoints",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test component statistics endpoint."
+      },
+      {
+        "name": "test_component_distribution",
+        "class_name": "TestComponentEndpoints",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test component distribution analytics."
+      },
+      {
+        "name": "test_component_items",
+        "class_name": "TestComponentEndpoints",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test getting all items for a specific component."
+      },
+      {
+        "name": "test_epic_component_filtering",
+        "class_name": "TestComponentFiltering",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test epic filtering by component."
+      },
+      {
+        "name": "test_user_story_component_filtering",
+        "class_name": "TestComponentFiltering",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test user story filtering by component."
+      },
+      {
+        "name": "test_defect_component_filtering",
+        "class_name": "TestComponentFiltering",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test defect filtering by component."
+      },
+      {
+        "name": "test_test_component_filtering",
+        "class_name": "TestComponentFiltering",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test test filtering by component."
+      },
+      {
+        "name": "test_nonexistent_component",
+        "class_name": "TestComponentAPIEdgeCases",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test filtering with non-existent component."
+      },
+      {
+        "name": "test_component_items_nonexistent",
+        "class_name": "TestComponentAPIEdgeCases",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test getting items for non-existent component."
+      },
+      {
+        "name": "test_empty_component_filter",
+        "class_name": "TestComponentAPIEdgeCases",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test filtering with empty component parameter."
+      },
+      {
+        "name": "test_component_filter_with_spaces",
+        "class_name": "TestComponentAPIEdgeCases",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test component filtering with spaces in component names."
+      },
+      {
+        "name": "test_component_statistics_performance",
+        "class_name": "TestComponentAPIPerformance",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test that component statistics can handle reasonable data volumes."
+      },
+      {
+        "name": "test_large_component_filter",
+        "class_name": "TestComponentAPIPerformance",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test filtering with large result sets."
+      },
+      {
+        "name": "test_component_data_in_epic_progress",
+        "class_name": "TestComponentAPIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test that epic progress includes component information."
+      },
+      {
+        "name": "test_component_data_in_rtm_matrix",
+        "class_name": "TestComponentAPIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test that RTM matrix includes component information."
+      },
+      {
+        "name": "test_dashboard_data_with_components",
+        "class_name": "TestComponentAPIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test that dashboard data includes component information."
+      },
+      {
+        "name": "test_rtm_matrix_html_component_columns",
+        "class_name": "TestComponentAPIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test that RTM matrix HTML includes component columns in all subtables."
+      },
+      {
+        "name": "test_rtm_matrix_horizontal_scrolling",
+        "class_name": "TestComponentAPIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00005"
+        ],
+        "components": [],
+        "docstring": "Test that RTM matrix HTML includes horizontal scrolling support."
+      }
+    ]
+  },
+  "integration\\database_workflow\\test_database_integration_workflow.py": {
+    "file_path": "tests\\integration\\database_workflow\\test_database_integration_workflow.py",
+    "functions": [
+      {
+        "name": "test_test_discovery_and_sync_workflow",
+        "class_name": "TestDatabaseIntegrationWorkflow",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [],
+        "docstring": "Test complete test discovery and database sync workflow."
+      },
+      {
+        "name": "test_test_execution_tracking_workflow",
+        "class_name": "TestDatabaseIntegrationWorkflow",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [],
+        "docstring": "Test test execution result tracking workflow."
+      },
+      {
+        "name": "test_bdd_scenario_linking_workflow",
+        "class_name": "TestDatabaseIntegrationWorkflow",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [],
+        "docstring": "Test BDD scenario to User Story linking workflow."
+      },
+      {
+        "name": "test_end_to_end_integration_workflow",
+        "class_name": "TestDatabaseIntegrationWorkflow",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [],
+        "docstring": "Test complete end-to-end integration workflow."
+      },
+      {
+        "name": "test_error_handling_and_recovery",
+        "class_name": "TestDatabaseIntegrationWorkflow",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [],
+        "docstring": "Test error handling and recovery in integration workflow."
+      },
+      {
+        "name": "test_duplicate_test_handling",
+        "class_name": "TestDatabaseIntegrationWorkflow",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00057"
+        ],
+        "components": [],
+        "docstring": "Test handling of duplicate test discoveries."
+      }
+    ]
+  },
+  "integration\\gdpr_compliance\\test_gdpr_integration.py": {
+    "file_path": "tests\\integration\\gdpr_compliance\\test_gdpr_integration.py",
+    "functions": [
+      {
+        "name": "test_full_consent_lifecycle",
+        "class_name": "TestGDPRIntegration",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test complete consent lifecycle: record -> query -> withdraw."
+      },
+      {
+        "name": "test_multiple_consent_types_single_user",
+        "class_name": "TestGDPRIntegration",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that a user can have multiple consent types."
+      },
+      {
+        "name": "test_data_subject_request_full_workflow",
+        "class_name": "TestGDPRIntegration",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test complete data subject request workflow."
+      },
+      {
+        "name": "test_anonymization_workflow",
+        "class_name": "TestGDPRIntegration",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test data anonymization workflow for expired data."
+      },
+      {
+        "name": "test_overdue_requests_detection",
+        "class_name": "TestGDPRIntegration",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test detection of overdue data subject requests."
+      },
+      {
+        "name": "test_compliance_report_generation",
+        "class_name": "TestGDPRIntegration",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test generation of comprehensive compliance report."
+      },
+      {
+        "name": "test_gdpr_data_processing_record_creation",
+        "class_name": "TestGDPRIntegration",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test creation of data processing records for Article 30 compliance."
+      },
+      {
+        "name": "test_consent_expiration_handling",
+        "class_name": "TestGDPRIntegration",
+        "epics": [
+          "EP-00003"
+        ],
+        "user_stories": [],
+        "components": [
+          "security"
+        ],
+        "docstring": "Test that expired consents are properly handled."
+      }
+    ]
+  },
+  "integration\\github_rtm\\test_github_actions_integration.py": {
+    "file_path": "tests\\integration\\github_rtm\\test_github_actions_integration.py",
+    "functions": [
+      {
+        "name": "test_epic_sync_creation",
+        "class_name": "TestGitHubDatabaseSync",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test creating Epic from GitHub issue."
+      },
+      {
+        "name": "test_epic_sync_update",
+        "class_name": "TestGitHubDatabaseSync",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test updating existing Epic from GitHub issue."
+      },
+      {
+        "name": "test_user_story_sync_with_epic_reference",
+        "class_name": "TestGitHubDatabaseSync",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test creating User Story with Epic reference."
+      },
+      {
+        "name": "test_user_story_sync_closed_issue",
+        "class_name": "TestGitHubDatabaseSync",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test User Story sync when GitHub issue is closed."
+      },
+      {
+        "name": "test_defect_sync_creation",
+        "class_name": "TestGitHubDatabaseSync",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test creating Defect from GitHub issue."
+      },
+      {
+        "name": "test_sync_status_recording",
+        "class_name": "TestGitHubDatabaseSync",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test that sync status is properly recorded."
+      },
+      {
+        "name": "test_sync_status_recording_failure",
+        "class_name": "TestGitHubDatabaseSync",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test that sync failures are properly recorded."
+      },
+      {
+        "name": "test_epic_progress_calculation",
+        "class_name": "TestGitHubDatabaseSync",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test Epic progress calculation when User Stories are completed."
+      },
+      {
+        "name": "test_epic_progress_without_story_points",
+        "class_name": "TestGitHubDatabaseSync",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test Epic progress calculation when User Stories have no story points."
+      },
+      {
+        "name": "test_epic_status_update_on_completion",
+        "class_name": "TestGitHubDatabaseSync",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test that Epic status is updated when progress reaches 100%."
+      },
+      {
+        "name": "test_parsing_functions",
+        "class_name": "TestGitHubDatabaseSync",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test various parsing functions used in sync."
+      },
+      {
+        "name": "test_issue_type_detection",
+        "class_name": "TestGitHubDatabaseSync",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test issue type detection from title and labels."
+      },
+      {
+        "name": "test_entity_id_extraction",
+        "class_name": "TestGitHubDatabaseSync",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test entity ID extraction from titles."
+      },
+      {
+        "name": "test_workflow_trigger_conditions",
+        "class_name": "TestGitHubActionsWorkflowIntegration",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test that workflow triggers on correct GitHub events."
+      },
+      {
+        "name": "test_job_dependencies",
+        "class_name": "TestGitHubActionsWorkflowIntegration",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Test that workflow jobs have correct dependencies."
+      }
+    ]
+  },
+  "integration\\rtm_api\\test_rtm_api.py": {
+    "file_path": "tests\\integration\\rtm_api\\test_rtm_api.py",
+    "functions": [
+      {
+        "name": "test_db",
+        "class_name": null,
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Create test database tables and clean up after each test."
+      },
+      {
+        "name": "test_create_epic",
+        "class_name": "TestEpicAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test creating a new Epic."
+      },
+      {
+        "name": "test_list_epics",
+        "class_name": "TestEpicAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test listing Epics."
+      },
+      {
+        "name": "test_list_epics_with_filters",
+        "class_name": "TestEpicAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test listing Epics with filters."
+      },
+      {
+        "name": "test_get_epic",
+        "class_name": "TestEpicAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test getting a specific Epic."
+      },
+      {
+        "name": "test_get_epic_not_found",
+        "class_name": "TestEpicAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test getting a non-existent Epic."
+      },
+      {
+        "name": "test_update_epic",
+        "class_name": "TestEpicAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test updating an Epic."
+      },
+      {
+        "name": "test_delete_epic",
+        "class_name": "TestEpicAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test deleting an Epic."
+      },
+      {
+        "name": "test_create_user_story",
+        "class_name": "TestUserStoryAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test creating a new User Story."
+      },
+      {
+        "name": "test_list_user_stories",
+        "class_name": "TestUserStoryAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test listing User Stories."
+      },
+      {
+        "name": "test_list_user_stories_by_epic",
+        "class_name": "TestUserStoryAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test listing User Stories filtered by Epic."
+      },
+      {
+        "name": "test_get_user_story",
+        "class_name": "TestUserStoryAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test getting a specific User Story."
+      },
+      {
+        "name": "test_create_test",
+        "class_name": "TestTestAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test creating a new Test."
+      },
+      {
+        "name": "test_list_tests",
+        "class_name": "TestTestAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test listing Tests."
+      },
+      {
+        "name": "test_list_tests_with_filters",
+        "class_name": "TestTestAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test listing Tests with filters."
+      },
+      {
+        "name": "test_update_test_execution",
+        "class_name": "TestTestAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test updating test execution results."
+      },
+      {
+        "name": "test_create_defect",
+        "class_name": "TestDefectAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test creating a new Defect."
+      },
+      {
+        "name": "test_list_defects",
+        "class_name": "TestDefectAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test listing Defects."
+      },
+      {
+        "name": "test_list_defects_with_filters",
+        "class_name": "TestDefectAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test listing Defects with filters."
+      },
+      {
+        "name": "test_epic_progress_analytics",
+        "class_name": "TestAnalyticsAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test Epic progress analytics."
+      },
+      {
+        "name": "test_rtm_overview_analytics",
+        "class_name": "TestAnalyticsAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test RTM overview analytics."
+      },
+      {
+        "name": "test_pagination",
+        "class_name": "TestAnalyticsAPI",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test pagination in list endpoints."
+      },
+      {
+        "name": "test_full_rtm_workflow",
+        "class_name": "TestAPIIntegration",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test a complete RTM workflow."
+      }
+    ]
+  },
+  "integration\\rtm_database\\test_rtm_db_integration.py": {
+    "file_path": "tests\\integration\\rtm_database\\test_rtm_db_integration.py",
+    "functions": [
+      {
+        "name": "test_cli_help",
+        "class_name": "TestRTMDatabaseCLIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test CLI help command."
+      },
+      {
+        "name": "test_admin_health_check",
+        "class_name": "TestRTMDatabaseCLIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test database health check command."
+      },
+      {
+        "name": "test_create_and_query_epic",
+        "class_name": "TestRTMDatabaseCLIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test creating and querying an Epic."
+      },
+      {
+        "name": "test_create_user_story_with_epic",
+        "class_name": "TestRTMDatabaseCLIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test creating User Story linked to Epic."
+      },
+      {
+        "name": "test_epic_progress_calculation",
+        "class_name": "TestRTMDatabaseCLIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test Epic progress calculation."
+      },
+      {
+        "name": "test_json_output_format",
+        "class_name": "TestRTMDatabaseCLIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test JSON output format."
+      },
+      {
+        "name": "test_data_export",
+        "class_name": "TestRTMDatabaseCLIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test data export functionality."
+      },
+      {
+        "name": "test_admin_validation",
+        "class_name": "TestRTMDatabaseCLIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test database validation functionality."
+      },
+      {
+        "name": "test_create_epic_duplicate_error",
+        "class_name": "TestRTMDatabaseCLIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test error handling for duplicate Epic creation."
+      },
+      {
+        "name": "test_user_story_epic_not_found",
+        "class_name": "TestRTMDatabaseCLIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test error handling when parent Epic not found."
+      },
+      {
+        "name": "test_verbose_mode",
+        "class_name": "TestRTMDatabaseCLIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test verbose output mode."
+      },
+      {
+        "name": "test_cli_error_handling",
+        "class_name": "TestRTMDatabaseCLIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test CLI error handling for invalid commands."
+      },
+      {
+        "name": "test_import_rtm_functionality",
+        "class_name": "TestRTMDatabaseCLIIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00055"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test RTM import functionality (requires test markdown file)."
+      }
+    ]
+  },
+  "integration\\rtm_filter\\test_rtm_filter_integration.py": {
+    "file_path": "tests\\integration\\rtm_filter\\test_rtm_filter_integration.py",
+    "functions": [
+      {
+        "name": "test_rtm_report_generation",
+        "class_name": "TestRTMFilterIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that RTM reports can be generated successfully."
+      },
+      {
+        "name": "test_rtm_html_structure_for_filtering",
+        "class_name": "TestRTMFilterIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that generated RTM HTML has correct structure for filtering."
+      },
+      {
+        "name": "test_javascript_functions_are_exposed",
+        "class_name": "TestRTMFilterIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that JavaScript functions are properly exposed to global scope."
+      },
+      {
+        "name": "test_filter_button_data_attributes_consistency",
+        "class_name": "TestRTMFilterIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filter buttons have consistent data attributes."
+      },
+      {
+        "name": "test_epic_specific_filter_groups",
+        "class_name": "TestRTMFilterIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that each epic has its own filter groups."
+      },
+      {
+        "name": "test_javascript_selector_compatibility",
+        "class_name": "TestRTMFilterIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that JavaScript selectors match the generated HTML structure."
+      },
+      {
+        "name": "test_filter_count_display_elements",
+        "class_name": "TestRTMFilterIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filter count display elements exist."
+      },
+      {
+        "name": "test_animation_classes_and_functionality",
+        "class_name": "TestRTMFilterIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that animation-related classes and functionality are present."
+      },
+      {
+        "name": "test_error_handling_and_logging",
+        "class_name": "TestRTMFilterIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that error handling and console logging are implemented."
+      },
+      {
+        "name": "test_accessibility_features",
+        "class_name": "TestRTMFilterIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that accessibility features are implemented."
+      },
+      {
+        "name": "test_multiple_epic_independence",
+        "class_name": "TestRTMFilterIntegration",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filtering one epic doesn't affect others."
+      },
+      {
+        "name": "test_epic_expand_collapse_still_works",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that epic expand/collapse functionality is not broken by filter fixes."
+      },
+      {
+        "name": "test_search_functionality_preserved",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that search functionality is not broken by filter fixes."
+      },
+      {
+        "name": "test_export_functionality_preserved",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that export functionality is not broken by filter fixes."
+      }
+    ]
+  },
+  "integration\\rtm_filter\\test_rtm_filter_regression.py": {
+    "file_path": "tests\\integration\\rtm_filter\\test_rtm_filter_regression.py",
+    "functions": [
+      {
+        "name": "test_rtm_interface_loads_successfully",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that RTM interface loads without errors"
+      },
+      {
+        "name": "test_filter_buttons_generate_correct_onclick_handlers",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filter buttons have correct onclick handlers"
+      },
+      {
+        "name": "test_epic_toggle_handlers_present",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that epic headers have toggleEpicDetails onclick handlers"
+      },
+      {
+        "name": "test_javascript_file_loads_correctly",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that rtm-interactions.js loads and contains required functions"
+      },
+      {
+        "name": "test_status_filter_backend_functionality",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that backend filtering works correctly"
+      },
+      {
+        "name": "test_filter_buttons_do_not_interfere_with_epic_structure",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filter buttons are not inside epic headers (preventing epic collapse)"
+      },
+      {
+        "name": "test_no_javascript_syntax_errors_in_generated_html",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that generated HTML doesn't have JavaScript syntax errors"
+      },
+      {
+        "name": "test_filter_functions_parameter_compatibility",
+        "class_name": "TestRTMFilterRegression",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filter function calls match expected parameter counts"
+      }
+    ]
+  },
+  "integration\\rtm_filter\\test_rtm_filter_validation.py": {
+    "file_path": "tests\\integration\\rtm_filter\\test_rtm_filter_validation.py",
+    "functions": [
+      {
+        "name": "test_existing_rtm_report_structure",
+        "class_name": "TestRTMFilterValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that existing RTM reports have correct structure for filtering."
+      },
+      {
+        "name": "test_javascript_fixes_applied",
+        "class_name": "TestRTMFilterValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that the JavaScript fixes have been correctly applied."
+      },
+      {
+        "name": "test_filter_function_parameter_matching",
+        "class_name": "TestRTMFilterValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filter function parameters match HTML onclick calls."
+      },
+      {
+        "name": "test_css_selector_improvements",
+        "class_name": "TestRTMFilterValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that CSS selectors have been improved to match HTML structure."
+      },
+      {
+        "name": "test_button_state_management_fix",
+        "class_name": "TestRTMFilterValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that button state management has been fixed for defect buttons."
+      },
+      {
+        "name": "test_error_handling_improvements",
+        "class_name": "TestRTMFilterValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that error handling and debugging have been improved."
+      },
+      {
+        "name": "test_regression_prevention",
+        "class_name": "TestRTMFilterValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that existing functionality hasn't been broken."
+      },
+      {
+        "name": "test_initialization_and_exposure",
+        "class_name": "TestRTMFilterValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that initialization and global function exposure work correctly."
+      },
+      {
+        "name": "test_animation_and_ux_features",
+        "class_name": "TestRTMFilterValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that animation and UX features are preserved."
+      },
+      {
+        "name": "test_selector_string_correctness",
+        "class_name": "TestRTMFilterUnitValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that the new selector strings are correctly formatted."
+      },
+      {
+        "name": "test_data_attribute_mapping",
+        "class_name": "TestRTMFilterUnitValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that data attribute mapping is correct."
+      },
+      {
+        "name": "test_filter_group_naming_convention",
+        "class_name": "TestRTMFilterUnitValidation",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filter group naming follows consistent convention."
+      }
+    ]
+  },
+  "integration\\rtm_general\\test_rtm_actual_behavior.py": {
+    "file_path": "tests\\integration\\rtm_general\\test_rtm_actual_behavior.py",
+    "functions": [
+      {
+        "name": "test_clicking_status_filter_actually_filters",
+        "class_name": "TestRTMActualBehavior",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that status filter buttons actually redirect to filtered URLs"
+      },
+      {
+        "name": "test_clicking_defect_filter_actually_filters",
+        "class_name": "TestRTMActualBehavior",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that defect filter buttons actually redirect to filtered URLs"
+      },
+      {
+        "name": "test_epic_headers_still_have_toggle_functionality",
+        "class_name": "TestRTMActualBehavior",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that epic headers still have toggle functionality and aren't affected by filters"
+      },
+      {
+        "name": "test_filter_clear_functionality",
+        "class_name": "TestRTMActualBehavior",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that 'all' filters actually clear parameters"
+      },
+      {
+        "name": "test_multiple_filters_work_independently",
+        "class_name": "TestRTMActualBehavior",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that different filter types can be applied independently"
+      },
+      {
+        "name": "test_filter_buttons_exist_and_have_correct_onclick",
+        "class_name": "TestRTMActualBehavior",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that filter buttons exist and have the correct onclick handlers"
+      },
+      {
+        "name": "test_regression_scenario_specifically",
+        "class_name": "TestRTMActualBehavior",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test the exact scenario that was reported as broken"
+      },
+      {
+        "name": "test_actual_filter_behavior",
+        "class_name": null,
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Standalone function for direct testing"
+      }
+    ]
+  },
+  "integration\\rtm_plugin\\test_plugin_system.py": {
+    "file_path": "tests\\integration\\rtm_plugin\\test_plugin_system.py",
+    "functions": [
+      {
+        "name": "test_plugin_manager_initialization",
+        "class_name": "TestPluginManager",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00014"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test plugin manager initialization."
+      },
+      {
+        "name": "test_manual_plugin_registration",
+        "class_name": "TestPluginManager",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00014"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test manual plugin registration."
+      },
+      {
+        "name": "test_plugin_retrieval",
+        "class_name": "TestPluginManager",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00014"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test plugin retrieval methods."
+      },
+      {
+        "name": "test_list_plugins",
+        "class_name": "TestPluginManager",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00014"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test plugin listing functionality."
+      },
+      {
+        "name": "test_invalid_plugin_type_registration",
+        "class_name": "TestPluginManager",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00014"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test registration with invalid plugin type."
+      },
+      {
+        "name": "test_github_issue_link_generator",
+        "class_name": "TestBuiltInPlugins",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00014"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test GitHub issue link generator."
+      },
+      {
+        "name": "test_standard_validator",
+        "class_name": "TestBuiltInPlugins",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00014"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test standard validator."
+      },
+      {
+        "name": "test_standard_markdown_parser",
+        "class_name": "TestBuiltInPlugins",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00014"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test standard markdown parser."
+      },
+      {
+        "name": "test_plugin_discovery_with_temp_plugins",
+        "class_name": "TestPluginDiscovery",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00014"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test plugin discovery with temporary plugin files."
+      },
+      {
+        "name": "test_plugin_discovery_error_handling",
+        "class_name": "TestPluginDiscovery",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00014"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test plugin discovery with invalid plugin files."
+      },
+      {
+        "name": "test_custom_link_generator_integration",
+        "class_name": "TestPluginIntegration",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00014"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test custom link generator integration."
+      },
+      {
+        "name": "test_custom_validator_integration",
+        "class_name": "TestPluginIntegration",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00014"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test custom validator integration."
+      },
+      {
+        "name": "test_plugin_priority_system",
+        "class_name": "TestPluginIntegration",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00014"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test plugin priority system."
+      }
+    ]
+  },
+  "integration\\rtm_ui\\test_rtm_browser_clicks.py": {
+    "file_path": "tests\\integration\\rtm_ui\\test_rtm_browser_clicks.py",
+    "functions": [
+      {
+        "name": "test_click_filter_button_and_check_behavior",
+        "class_name": "TestRTMBrowserClicks",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Click an actual filter button and see what happens"
+      },
+      {
+        "name": "test_epic_toggle_still_works_after_filter",
+        "class_name": "TestRTMBrowserClicks",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that epic toggle still works independently"
+      },
+      {
+        "name": "test_javascript_console_for_errors",
+        "class_name": "TestRTMBrowserClicks",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Check browser console for JavaScript errors"
+      },
+      {
+        "name": "test_filter_functions_are_defined",
+        "class_name": "TestRTMBrowserClicks",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that JavaScript filter functions are actually defined"
+      },
+      {
+        "name": "test_actual_function_execution",
+        "class_name": "TestRTMBrowserClicks",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test actually calling the JavaScript functions"
+      },
+      {
+        "name": "test_browser_behavior",
+        "class_name": null,
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Standalone test function"
+      }
+    ]
+  },
+  "integration\\rtm_workflow\\test_rtm_end_to_end.py": {
+    "file_path": "tests\\integration\\rtm_workflow\\test_rtm_end_to_end.py",
+    "functions": [
+      {
+        "name": "test_rtm_generator_with_real_files",
+        "class_name": "TestRTMEndToEnd",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test RTM generator with real file structure."
+      },
+      {
+        "name": "test_rtm_update_with_real_files",
+        "class_name": "TestRTMEndToEnd",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test RTM update functionality with real files."
+      },
+      {
+        "name": "test_cli_tool_integration",
+        "class_name": "TestRTMEndToEnd",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test CLI tool with real project structure."
+      },
+      {
+        "name": "test_plugin_system_integration",
+        "class_name": "TestRTMEndToEnd",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test plugin system discovery and loading."
+      },
+      {
+        "name": "test_configuration_variations",
+        "class_name": "TestRTMEndToEnd",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test different configuration scenarios."
+      },
+      {
+        "name": "test_error_handling_integration",
+        "class_name": "TestRTMEndToEnd",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test error handling in integration scenarios."
+      },
+      {
+        "name": "test_link_generation_accuracy",
+        "class_name": "TestRTMEndToEnd",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test accuracy of generated links."
+      },
+      {
+        "name": "test_validation_report_generation",
+        "class_name": "TestRTMEndToEnd",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test validation report generation."
+      },
+      {
+        "name": "test_large_rtm_performance",
+        "class_name": "TestRTMPerformance",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test performance with large RTM file."
+      }
+    ]
+  },
+  "e2e\\complete_blog_workflow\\test_blog_workflow.py": {
+    "file_path": "tests\\e2e\\complete_blog_workflow\\test_blog_workflow.py",
+    "functions": [
+      {
+        "name": "test_basic_blog_access_workflow",
+        "class_name": "TestBlogE2E",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test basic blog access and health check workflow."
+      },
+      {
+        "name": "test_gdpr_consent_and_data_request_flow",
+        "class_name": "TestBlogE2E",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test complete GDPR consent and data subject request flow."
+      },
+      {
+        "name": "test_security_headers_across_endpoints",
+        "class_name": "TestBlogE2E",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that security headers are properly set across all endpoints."
+      },
+      {
+        "name": "test_gdpr_data_lifecycle_complete_flow",
+        "class_name": "TestBlogE2E",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test complete data lifecycle from creation to deletion."
+      },
+      {
+        "name": "test_compliance_monitoring_workflow",
+        "class_name": "TestBlogE2E",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test compliance monitoring and reporting workflow."
+      },
+      {
+        "name": "test_error_handling_across_workflows",
+        "class_name": "TestBlogE2E",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Test that errors are handled gracefully across all workflows."
+      }
+    ]
+  }
+}
