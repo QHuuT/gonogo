@@ -12,6 +12,7 @@ import pytest
 import requests
 
 
+@pytest.mark.epic("EP-00005")
 @pytest.mark.component("backend")
 class TestRTMFilterRegression:
     """Test RTM filter functionality via HTTP requests (Robot Framework ready)"""

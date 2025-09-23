@@ -6,6 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 
+@pytest.mark.epic("EP-00003")
 @pytest.mark.component("security")
 class TestInputValidation:
     """Security tests for input validation and sanitization."""

@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 
+@pytest.mark.epic("EP-00001")
 @pytest.mark.component("backend")
 class TestBlogE2E:
     """End-to-end tests for critical blog workflows."""

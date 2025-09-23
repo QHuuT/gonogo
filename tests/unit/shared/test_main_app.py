@@ -7,6 +7,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 
+@pytest.mark.epic("EP-00001")
+@pytest.mark.component("backend")
 class TestMainApplication:
     """Unit tests for main FastAPI application routes."""
 

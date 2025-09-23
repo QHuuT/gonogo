@@ -11,6 +11,7 @@ from src.security.gdpr.models import ConsentType, DataSubjectRights
 from src.security.gdpr.service import GDPRService
 
 
+@pytest.mark.epic("EP-00003")
 @pytest.mark.component("security")
 class TestGDPRIntegration:
     """Integration tests for GDPR service with database."""

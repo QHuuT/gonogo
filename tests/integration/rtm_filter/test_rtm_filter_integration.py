@@ -17,6 +17,7 @@ from pathlib import Path
 import pytest
 
 
+@pytest.mark.epic("EP-00005")
 @pytest.mark.component("backend")
 class TestRTMFilterIntegration:
     """Integration tests for RTM filter functionality."""

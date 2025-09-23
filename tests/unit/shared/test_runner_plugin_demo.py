@@ -6,18 +6,24 @@ This test can run without external dependencies.
 import pytest
 
 
+@pytest.mark.epic("EP-00006")
+@pytest.mark.component("shared")
 def test_plugin_mode_detection():
     """Test that can detect execution mode (basic functionality demo)."""
     # This is a simple test that should always pass
     assert True
 
 
+@pytest.mark.epic("EP-00006")
+@pytest.mark.component("shared")
 def test_plugin_type_detection():
     """Test that can detect test type (basic functionality demo)."""
     # This test demonstrates test type filtering
     assert 1 + 1 == 2
 
 
+@pytest.mark.epic("EP-00006")
+@pytest.mark.component("shared")
 @pytest.mark.detailed
 def test_detailed_mode_marker():
     """Test with detailed mode marker."""
