@@ -143,12 +143,8 @@ class RTMTestSynchronizer:
 
     def _get_epic_id(self, epic_marker: str) -> Optional[int]:
         """Get Epic database ID from marker (e.g., EP-00005)."""
-        epic_number = self._extract_epic_number(epic_marker)
-        if not epic_number:
-            return None
-
         epic = self.session.query(Epic).filter(
-            Epic.github_issue_number == epic_number
+            Epic.epic_id == epic_marker
         ).first()
 
         return epic.id if epic else None

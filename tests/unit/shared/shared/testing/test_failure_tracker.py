@@ -36,6 +36,7 @@ FailurePattern = failure_tracker.FailurePattern
 FailureStatistics = failure_tracker.FailureStatistics
 
 
+@pytest.mark.epic("EP-00007")
 @pytest.mark.user_story("US-00025")
 @pytest.mark.component("shared")
 class TestFailureTracker:
@@ -310,6 +311,7 @@ class TestFailureTracker:
         # Old test should be gone, but might not be in top failing if there are others
 
 
+@pytest.mark.epic("EP-00007")
 @pytest.mark.user_story("US-00025")
 @pytest.mark.component("shared")
 class TestTestFailure:
@@ -376,6 +378,7 @@ class TestTestFailure:
         )  # Numbers should be normalized
 
 
+@pytest.mark.epic("EP-00007")
 @pytest.mark.user_story("US-00025")
 @pytest.mark.component("shared")
 class TestFailureEnums:
@@ -398,6 +401,7 @@ class TestFailureEnums:
         assert FailureSeverity.FLAKY.value == "flaky"
 
 
+@pytest.mark.epic("EP-00007")
 @pytest.mark.user_story("US-00025")
 @pytest.mark.component("shared")
 class TestFailureTrackerIntegration:

@@ -22,7 +22,9 @@ from src.shared.logging import (
 )
 
 
+@pytest.mark.epic("EP-00007")
 @pytest.mark.user_story("US-00022")
+@pytest.mark.component("shared")
 class TestStructuredLoggingDemo:
     """Demonstration of structured logging capabilities."""
 
