@@ -8,10 +8,14 @@ from urllib.parse import parse_qs, urlparse
 import pytest
 
 
+@pytest.mark.epic("EP-00001")
+@pytest.mark.component("backend")
 class TestRTMFilterLogic:
     """Test RTM filter logic (Python implementation of JavaScript behavior)"""
 
 
+@pytest.mark.epic("EP-00001")
+@pytest.mark.component("backend")
 def test_javascript_functions_without_browser():
     """Basic test that can run without browser - tests function logic"""
     # This test simulates the JavaScript logic in Python

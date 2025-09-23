@@ -12,9 +12,11 @@ from src.security.gdpr.models import ConsentType, DataSubjectRights
 from src.security.gdpr.service import GDPRService
 
 
+@pytest.mark.component("security")
 class TestGDPRSecurity:
     """Security tests for GDPR compliance."""
 
+    @pytest.mark.component("security")
     def test_ip_address_anonymization_security(self, db_session):
         """Test that IP addresses are properly anonymized and cannot be reversed."""
 
@@ -44,6 +46,7 @@ class TestGDPRSecurity:
         # Hash should include salt (format: salt:hash)
         assert ":" in record.ip_address_hash
 
+    @pytest.mark.component("security")
     def test_email_hashing_prevents_enumeration(self, db_session):
         """Test that email hashing prevents email enumeration attacks."""
 
@@ -74,6 +77,7 @@ class TestGDPRSecurity:
         # All hashes should be different
         assert len(set(hashed_emails)) == len(test_emails)
 
+    @pytest.mark.component("security")
     def test_consent_id_unpredictability(self, db_session):
         """Test that consent IDs are cryptographically unpredictable."""
 
@@ -100,6 +104,7 @@ class TestGDPRSecurity:
             # Should be substantial length (cryptographically secure)
             assert len(consent_id) >= 32
 
+    @pytest.mark.component("security")
     def test_sensitive_data_not_logged(self, db_session, caplog):
         """Test that sensitive data is not accidentally logged."""
 
@@ -125,6 +130,7 @@ class TestGDPRSecurity:
         assert sensitive_email not in log_output
         assert sensitive_ip not in log_output
 
+    @pytest.mark.component("security")
     def test_sql_injection_prevention_in_consent_queries(self, db_session):
         """Test that consent queries are resistant to SQL injection."""
 
@@ -145,6 +151,7 @@ class TestGDPRSecurity:
 
         assert legitimate_consent_id is not None
 
+    @pytest.mark.component("security")
     def test_data_subject_request_injection_prevention(self, db_session):
         """Test that data subject requests prevent injection attacks."""
 
@@ -181,6 +188,7 @@ class TestGDPRSecurity:
                 # Some inputs might cause validation errors, which is fine
                 pass
 
+    @pytest.mark.component("security")
     def test_timing_attack_resistance(self, db_session):
         """Test that operations don't leak information through timing attacks."""
 
@@ -209,6 +217,7 @@ class TestGDPRSecurity:
         time_ratio = max(real_time, fake_time) / min(real_time, fake_time)
         assert time_ratio < 10  # Should not differ by more than 10x
 
+    @pytest.mark.component("security")
     def test_data_retention_enforcement(self, db_session):
         """Test that data retention policies are properly enforced."""
 
@@ -245,6 +254,7 @@ class TestGDPRSecurity:
         assert record.withdrawn_at is not None
         assert record.withdrawal_reason == "expired"
 
+    @pytest.mark.component("security")
     def test_access_control_on_sensitive_operations(self, db_session):
         """Test that sensitive operations require proper authorization."""
 
@@ -265,6 +275,7 @@ class TestGDPRSecurity:
         assert isinstance(report["total_consent_records"], int)
         assert isinstance(report["compliance_score"], float)
 
+    @pytest.mark.component("security")
     def test_gdpr_right_to_be_forgotten_security(self, db_session):
         """Test that right to be forgotten is properly implemented securely."""
 
@@ -314,6 +325,7 @@ class TestGDPRSecurity:
         assert erasure_request.status == "completed"
         assert "deleted" in erasure_request.response_data["status"]
 
+    @pytest.mark.component("security")
     def test_data_minimization_principle(self, db_session):
         """Test that only necessary data is collected and stored."""
 

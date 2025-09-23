@@ -37,6 +37,9 @@ app.dependency_overrides[get_db] = override_get_db
 
 
 @pytest.fixture(scope="function")
+@pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+@pytest.mark.user_story("US-00001", "US-00054")
+@pytest.mark.component("backend")
 def test_db():
     """Create test database tables and clean up after each test."""
     Base.metadata.create_all(bind=test_engine)
@@ -66,9 +69,15 @@ def sample_epic(client, test_db):
     return response.json()
 
 
+@pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+@pytest.mark.user_story("US-00001", "US-00054")
+@pytest.mark.component("backend")
 class TestEpicAPI:
     """Test Epic CRUD operations."""
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_create_epic(self, client, test_db):
         """Test creating a new Epic."""
         epic_data = {
@@ -85,6 +94,9 @@ class TestEpicAPI:
         assert data["title"] == "Test Epic"
         assert data["priority"] == "high"
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_list_epics(self, client, sample_epic):
         """Test listing Epics."""
         response = client.get("/api/rtm/epics/")
@@ -94,6 +106,9 @@ class TestEpicAPI:
         assert len(data) == 1
         assert data[0]["epic_id"] == "EP-00001"
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_list_epics_with_filters(self, client, sample_epic):
         """Test listing Epics with filters."""
         # Filter by priority
@@ -108,6 +123,9 @@ class TestEpicAPI:
         data = response.json()
         assert len(data) == 0
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_get_epic(self, client, sample_epic):
         """Test getting a specific Epic."""
         response = client.get("/api/rtm/epics/EP-00001")
@@ -117,6 +135,9 @@ class TestEpicAPI:
         assert data["epic_id"] == "EP-00001"
         assert data["title"] == "Test Epic"
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_get_epic_not_found(self, client, test_db):
         """Test getting a non-existent Epic."""
         response = client.get("/api/rtm/epics/EP-99999")
@@ -124,6 +145,9 @@ class TestEpicAPI:
         assert response.status_code == 404
         assert "not found" in response.json()["detail"]
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_update_epic(self, client, sample_epic):
         """Test updating an Epic."""
         update_data = {"title": "Updated Epic Title", "priority": "critical"}
@@ -134,6 +158,9 @@ class TestEpicAPI:
         assert data["title"] == "Updated Epic Title"
         assert data["priority"] == "critical"
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_delete_epic(self, client, sample_epic):
         """Test deleting an Epic."""
         response = client.delete("/api/rtm/epics/EP-00001")
@@ -146,9 +173,15 @@ class TestEpicAPI:
         assert response.status_code == 404
 
 
+@pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+@pytest.mark.user_story("US-00001", "US-00054")
+@pytest.mark.component("backend")
 class TestUserStoryAPI:
     """Test User Story CRUD operations."""
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_create_user_story(self, client, sample_epic):
         """Test creating a new User Story."""
         epic_id = sample_epic["id"]
@@ -168,6 +201,9 @@ class TestUserStoryAPI:
         assert data["epic_id"] == epic_id
         assert data["story_points"] == 5
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_list_user_stories(self, client, sample_epic):
         """Test listing User Stories."""
         # Create a user story first
@@ -187,6 +223,9 @@ class TestUserStoryAPI:
         assert len(data) == 1
         assert data[0]["user_story_id"] == "US-00001"
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_list_user_stories_by_epic(self, client, sample_epic):
         """Test listing User Stories filtered by Epic."""
         epic_id = sample_epic["id"]
@@ -207,6 +246,9 @@ class TestUserStoryAPI:
         assert len(data) == 1
         assert data[0]["epic_id"] == epic_id
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_get_user_story(self, client, sample_epic):
         """Test getting a specific User Story."""
         epic_id = sample_epic["id"]
@@ -225,9 +267,15 @@ class TestUserStoryAPI:
         assert data["user_story_id"] == "US-00001"
 
 
+@pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+@pytest.mark.user_story("US-00001", "US-00054")
+@pytest.mark.component("backend")
 class TestTestAPI:
     """Test Test entity CRUD operations."""
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_create_test(self, client, sample_epic):
         """Test creating a new Test."""
         epic_id = sample_epic["id"]
@@ -246,6 +294,9 @@ class TestTestAPI:
         assert data["test_file_path"] == "tests/unit/test_example.py"
         assert data["epic_id"] == epic_id
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_list_tests(self, client, sample_epic):
         """Test listing Tests."""
         epic_id = sample_epic["id"]
@@ -264,6 +315,9 @@ class TestTestAPI:
         assert len(data) == 1
         assert data[0]["test_type"] == "unit"
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_list_tests_with_filters(self, client, sample_epic):
         """Test listing Tests with filters."""
         epic_id = sample_epic["id"]
@@ -297,6 +351,9 @@ class TestTestAPI:
         data = response.json()
         assert len(data) == 2
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_update_test_execution(self, client, sample_epic):
         """Test updating test execution results."""
         epic_id = sample_epic["id"]
@@ -322,9 +379,15 @@ class TestTestAPI:
         assert data["execution_count"] == 1
 
 
+@pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+@pytest.mark.user_story("US-00001", "US-00054")
+@pytest.mark.component("backend")
 class TestDefectAPI:
     """Test Defect CRUD operations."""
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_create_defect(self, client, sample_epic):
         """Test creating a new Defect."""
         epic_id = sample_epic["id"]
@@ -344,6 +407,9 @@ class TestDefectAPI:
         assert data["severity"] == "high"
         assert data["epic_id"] == epic_id
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_list_defects(self, client, sample_epic):
         """Test listing Defects."""
         epic_id = sample_epic["id"]
@@ -362,6 +428,9 @@ class TestDefectAPI:
         assert len(data) == 1
         assert data[0]["defect_id"] == "DEF-00001"
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_list_defects_with_filters(self, client, sample_epic):
         """Test listing Defects with filters."""
         epic_id = sample_epic["id"]
@@ -392,9 +461,15 @@ class TestDefectAPI:
         assert data[0]["severity"] == "critical"
 
 
+@pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+@pytest.mark.user_story("US-00001", "US-00054")
+@pytest.mark.component("backend")
 class TestAnalyticsAPI:
     """Test analytics and reporting endpoints."""
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_epic_progress_analytics(self, client, sample_epic):
         """Test Epic progress analytics."""
         epic_id = sample_epic["epic_id"]
@@ -409,6 +484,9 @@ class TestAnalyticsAPI:
         assert "total_story_points" in data["metrics"]
         assert "test_pass_rate" in data["metrics"]
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_rtm_overview_analytics(self, client, sample_epic):
         """Test RTM overview analytics."""
         response = client.get("/api/rtm/analytics/overview")
@@ -421,6 +499,9 @@ class TestAnalyticsAPI:
         assert "tests" in data["summary"]
         assert "defects" in data["summary"]
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_pagination(self, client, sample_epic):
         """Test pagination in list endpoints."""
         epic_id = sample_epic["id"]
@@ -452,9 +533,15 @@ class TestAnalyticsAPI:
         assert len(data) == 1  # Only one remaining
 
 
+@pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+@pytest.mark.user_story("US-00001", "US-00054")
+@pytest.mark.component("backend")
 class TestAPIIntegration:
     """Test API integration scenarios."""
 
+    @pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00001", "US-00054")
+    @pytest.mark.component("backend")
     def test_full_rtm_workflow(self, client, test_db):
         """Test a complete RTM workflow."""
         # 1. Create Epic

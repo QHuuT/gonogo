@@ -40,6 +40,8 @@ def epic(db_session):
 
 
 @pytest.fixture
+@pytest.mark.epic("EP-00001", "EP-00005")
+@pytest.mark.user_story("US-00052")
 def test_entity(epic):
     """Create a test Test instance."""
     return Test(
@@ -51,9 +53,13 @@ def test_entity(epic):
     )
 
 
+@pytest.mark.epic("EP-00001", "EP-00005")
+@pytest.mark.user_story("US-00052")
 class TestTestModel:
     """Test cases for Test model."""
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_test_creation(self, test_entity, epic):
         """Test basic Test creation."""
         assert test_entity.test_type == "unit"
@@ -62,6 +68,8 @@ class TestTestModel:
         assert test_entity.test_function_name == "test_login_success"
         assert test_entity.epic_id == epic.id
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_test_persistence(self, db_session, test_entity):
         """Test Test can be saved and retrieved."""
         db_session.add(test_entity)
@@ -76,6 +84,8 @@ class TestTestModel:
         assert retrieved.test_type == "unit"
         assert retrieved.test_file_path == "tests/unit/test_auth.py"
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_epic_relationship(self, db_session, test_entity, epic):
         """Test relationship with Epic."""
         db_session.add(test_entity)
@@ -87,6 +97,8 @@ class TestTestModel:
         # Test reverse relationship
         assert test_entity in epic.tests
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_test_types(self, test_entity):
         """Test valid test types."""
         valid_types = ["unit", "integration", "bdd", "security", "e2e"]
@@ -95,6 +107,8 @@ class TestTestModel:
             test_entity.test_type = test_type
             assert test_entity.test_type == test_type
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_bdd_fields(self, test_entity):
         """Test BDD-specific fields."""
         test_entity.test_type = "bdd"
@@ -104,6 +118,8 @@ class TestTestModel:
         assert test_entity.bdd_feature_file == "features/authentication.feature"
         assert test_entity.bdd_scenario_name == "User logs in successfully"
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_github_references(self, test_entity):
         """Test GitHub issue references."""
         test_entity.github_user_story_number = 123
@@ -112,6 +128,8 @@ class TestTestModel:
         assert test_entity.github_user_story_number == 123
         assert test_entity.github_defect_number == 456
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_update_execution_result_success(self, test_entity):
         """Test updating execution result for successful test."""
         test_entity.update_execution_result("passed", duration_ms=150.5)
@@ -122,6 +140,8 @@ class TestTestModel:
         assert test_entity.failure_count == 0
         assert test_entity.last_error_message is None
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_update_execution_result_failure(self, test_entity):
         """Test updating execution result for failed test."""
         error_msg = "AssertionError: Expected 200, got 401"
@@ -135,6 +155,8 @@ class TestTestModel:
         assert test_entity.failure_count == 1
         assert test_entity.last_error_message == error_msg
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_update_execution_result_multiple_runs(self, test_entity):
         """Test multiple execution result updates."""
         # First run - pass
@@ -153,10 +175,14 @@ class TestTestModel:
         assert test_entity.failure_count == 1  # Total failures remains
         assert test_entity.last_error_message is None
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_get_success_rate_no_executions(self, test_entity):
         """Test success rate calculation with no executions."""
         assert test_entity.get_success_rate() == 0.0
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_get_success_rate_all_passed(self, test_entity):
         """Test success rate calculation with all tests passing."""
         for _ in range(5):
@@ -164,6 +190,8 @@ class TestTestModel:
 
         assert test_entity.get_success_rate() == 100.0
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_get_success_rate_mixed_results(self, test_entity):
         """Test success rate calculation with mixed results."""
         # 3 passes, 2 failures
@@ -174,6 +202,8 @@ class TestTestModel:
 
         assert test_entity.get_success_rate() == 60.0  # 3/5 * 100
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_test_priority_values(self, test_entity):
         """Test valid test priority values."""
         valid_priorities = ["critical", "high", "medium", "low"]
@@ -182,6 +212,8 @@ class TestTestModel:
             test_entity.test_priority = priority
             assert test_entity.test_priority == priority
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_automation_flags(self, test_entity):
         """Test automation-related flags."""
         test_entity.is_automated = False
@@ -190,6 +222,8 @@ class TestTestModel:
         assert test_entity.is_automated is False
         assert test_entity.requires_manual_verification is True
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_coverage_information(self, test_entity):
         """Test code coverage fields."""
         test_entity.code_coverage_percentage = 85.5
@@ -199,6 +233,8 @@ class TestTestModel:
         assert test_entity.code_coverage_percentage == 85.5
         assert json.loads(test_entity.covered_files) == covered_files
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_gdpr_and_security_flags(self, test_entity):
         """Test GDPR and security testing flags."""
         test_entity.tests_gdpr_compliance = True
@@ -207,6 +243,8 @@ class TestTestModel:
         assert test_entity.tests_gdpr_compliance is True
         assert test_entity.tests_security_aspects is True
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_error_tracking(self, test_entity):
         """Test error message and traceback tracking."""
         error_msg = "ValueError: Invalid input"
@@ -218,6 +256,8 @@ class TestTestModel:
         assert test_entity.last_error_message == error_msg
         assert test_entity.last_error_traceback == traceback
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_to_dict_basic(self, test_entity):
         """Test dictionary conversion with basic Test data."""
         result = test_entity.to_dict()
@@ -231,6 +271,8 @@ class TestTestModel:
         assert result["failure_count"] == 0
         assert result["success_rate"] == 0.0
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_to_dict_with_execution_data(self, test_entity):
         """Test dictionary conversion includes execution data."""
         test_entity.update_execution_result("passed", duration_ms=123.45)
@@ -242,6 +284,8 @@ class TestTestModel:
         assert result["execution_count"] == 1
         assert result["success_rate"] == 100.0
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_repr(self, test_entity):
         """Test string representation."""
         repr_str = repr(test_entity)
@@ -252,6 +296,8 @@ class TestTestModel:
         assert "not_run" in repr_str
         assert str(test_entity.epic_id) in repr_str
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_default_values(self, epic):
         """Test default values on Test creation."""
         test = Test(
@@ -270,6 +316,8 @@ class TestTestModel:
         assert test.tests_gdpr_compliance is False
         assert test.tests_security_aspects is False
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_execution_status_values(self, test_entity):
         """Test valid execution status values."""
         valid_statuses = ["not_run", "passed", "failed", "skipped", "error"]
@@ -278,6 +326,8 @@ class TestTestModel:
             test_entity.last_execution_status = status
             assert test_entity.last_execution_status == status
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_version_tracking_inheritance(self, test_entity):
         """Test that Test inherits version tracking from base."""
         test_entity.set_git_context("abc123def", "feature/test-implementation")
@@ -287,6 +337,8 @@ class TestTestModel:
         assert test_entity.introduced_in_branch == "feature/test-implementation"
         assert test_entity.target_release_version == "v1.1.0"
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_test_file_path_indexing(self, db_session, epic):
         """Test that test_file_path is properly indexed for queries."""
         test1 = Test(

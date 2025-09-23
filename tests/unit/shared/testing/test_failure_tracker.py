@@ -36,6 +36,8 @@ FailurePattern = failure_tracker.FailurePattern
 FailureStatistics = failure_tracker.FailureStatistics
 
 
+@pytest.mark.user_story("US-00025")
+@pytest.mark.component("shared")
 class TestFailureTracker:
     """Test core FailureTracker functionality."""
 
@@ -58,6 +60,8 @@ class TestFailureTracker:
         """Create FailureTracker instance with temporary database."""
         return FailureTracker(db_path=temp_db)
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_database_initialization(self, tracker):
         """Test that database tables are created correctly."""
         # Database should be initialized
@@ -75,6 +79,8 @@ class TestFailureTracker:
         assert "test_failures" in table_names
         assert "failure_patterns" in table_names
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_failure_categorization(self, tracker):
         """Test automatic failure categorization."""
         test_cases = [
@@ -103,6 +109,8 @@ class TestFailureTracker:
             category = tracker.categorize_failure(error_msg, stack_trace)
             assert category == expected_category, f"Failed for: {error_msg}"
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_severity_determination(self, tracker):
         """Test failure severity determination."""
         # Critical failure
@@ -133,6 +141,8 @@ class TestFailureTracker:
         severity = tracker.determine_severity(flaky_failure)
         assert severity == FailureSeverity.FLAKY
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_record_new_failure(self, tracker):
         """Test recording a new test failure."""
         failure = TestFailure(
@@ -165,6 +175,8 @@ class TestFailureTracker:
         assert result[1] == "assertion_error"
         assert result[2] == 1
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_record_duplicate_failure(self, tracker):
         """Test that duplicate failures increment occurrence count."""
         failure = TestFailure(
@@ -191,6 +203,8 @@ class TestFailureTracker:
 
         assert result[0] == 2
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_get_failure_statistics(self, tracker):
         """Test failure statistics generation."""
         # Create some test failures
@@ -222,6 +236,8 @@ class TestFailureTracker:
         assert stats.unique_failures >= 3
         assert stats.most_common_category == FailureCategory.ASSERTION_ERROR
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_get_top_failing_tests(self, tracker):
         """Test retrieval of top failing tests."""
         # Create failures with different occurrence counts
@@ -243,6 +259,8 @@ class TestFailureTracker:
         assert top_failing[0]["test_name"] == "flaky_test"
         assert top_failing[0]["total_failures"] >= 5
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_detect_patterns(self, tracker):
         """Test pattern detection functionality."""
         # Create multiple failures of the same category
@@ -263,6 +281,8 @@ class TestFailureTracker:
         assert assertion_pattern is not None
         assert assertion_pattern.occurrences >= 3
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_cleanup_old_failures(self, tracker):
         """Test cleanup of old failure records."""
         # Create an old failure
@@ -290,9 +310,13 @@ class TestFailureTracker:
         # Old test should be gone, but might not be in top failing if there are others
 
 
+@pytest.mark.user_story("US-00025")
+@pytest.mark.component("shared")
 class TestTestFailure:
     """Test TestFailure dataclass functionality."""
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_failure_creation(self):
         """Test TestFailure object creation and defaults."""
         failure = TestFailure(
@@ -309,6 +333,8 @@ class TestTestFailure:
         assert failure.error_hash != ""
         assert failure.metadata == {}
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_error_hash_generation(self):
         """Test that error hash is generated consistently."""
         failure1 = TestFailure(
@@ -335,6 +361,8 @@ class TestTestFailure:
         # Should generate different hash (different test name)
         assert failure1.error_hash != failure3.error_hash
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_hash_normalization(self):
         """Test that error hash normalizes common variable elements."""
         failure = TestFailure(
@@ -348,15 +376,21 @@ class TestTestFailure:
         )  # Numbers should be normalized
 
 
+@pytest.mark.user_story("US-00025")
+@pytest.mark.component("shared")
 class TestFailureEnums:
     """Test enum definitions and behavior."""
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_failure_category_values(self):
         """Test FailureCategory enum values."""
         assert FailureCategory.ASSERTION_ERROR.value == "assertion_error"
         assert FailureCategory.UNICODE_ERROR.value == "unicode_error"
         assert FailureCategory.UNKNOWN_ERROR.value == "unknown_error"
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_failure_severity_values(self):
         """Test FailureSeverity enum values."""
         assert FailureSeverity.CRITICAL.value == "critical"
@@ -364,6 +398,8 @@ class TestFailureEnums:
         assert FailureSeverity.FLAKY.value == "flaky"
 
 
+@pytest.mark.user_story("US-00025")
+@pytest.mark.component("shared")
 class TestFailureTrackerIntegration:
     """Test integration scenarios and edge cases."""
 
@@ -382,6 +418,8 @@ class TestFailureTrackerIntegration:
             # File might be locked by SQLite on Windows, ignore for tests
             pass
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_unicode_content_handling(self, tracker):
         """Test that tracker handles Unicode content correctly."""
         failure = TestFailure(
@@ -407,6 +445,8 @@ class TestFailureTrackerIntegration:
         assert "✅" in result[0]
         assert "⚠️" in result[1]
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_large_stack_trace_handling(self, tracker):
         """Test handling of very large stack traces."""
         large_stack_trace = "Line of stack trace\n" * 1000  # Large stack trace
@@ -420,6 +460,8 @@ class TestFailureTrackerIntegration:
         failure_id = tracker.record_failure(failure)
         assert failure_id is not None
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_concurrent_failure_recording(self, tracker):
         """Test recording failures concurrently (simulated)."""
         failures = [
@@ -437,6 +479,8 @@ class TestFailureTrackerIntegration:
         assert len(failure_ids) == 10
         assert all(fid is not None for fid in failure_ids)
 
+    @pytest.mark.user_story("US-00025")
+    @pytest.mark.component("shared")
     def test_malformed_data_handling(self, tracker):
         """Test handling of malformed or edge case data."""
         # Empty strings

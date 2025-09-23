@@ -13,9 +13,13 @@ from pathlib import Path
 import pytest
 
 
+@pytest.mark.epic("EP-00001", "EP-00002", "EP-00003")
+@pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00031")
 class TestUnicodeEncodingValidation:
     """Test Unicode character handling in file operations."""
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00031")
     def test_tempfile_with_unicode_content(self):
         """Test that tempfile operations handle Unicode characters correctly."""
         # Content with various Unicode characters that commonly cause issues
@@ -55,6 +59,8 @@ Arrows: → ← ↑ ↓ ↔ ⟶ ⟵
         # Cleanup
         Path(temp_path).unlink()
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00031")
     def test_tempfile_without_encoding_fails_on_unicode(self):
         """Test that demonstrates why encoding parameter is mandatory."""
         unicode_content = "Status: ✅ 📝 ⏳"
@@ -77,6 +83,8 @@ Arrows: → ← ↑ ↓ ↔ ⟶ ⟵
         # Cleanup
         Path(temp_path).unlink()
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00031")
     def test_various_file_operations_with_unicode(self):
         """Test different file operation patterns with Unicode content."""
         test_cases = [
@@ -102,6 +110,8 @@ Arrows: → ← ↑ ↓ ↔ ⟶ ⟵
             # Cleanup
             Path(temp_path).unlink()
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00031")
     def test_emoji_heavy_content(self):
         """Test content with many emoji characters that often cause encoding issues."""
         emoji_content = """
@@ -156,9 +166,13 @@ Arrows: → ← ↑ ↓ ↔ ⟶ ⟵
         Path(temp_path).unlink()
 
 
+@pytest.mark.epic("EP-00001", "EP-00002", "EP-00003")
+@pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00031")
 class TestFileOperationPatterns:
     """Test common file operation patterns used throughout the project."""
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00031")
     def test_rtm_file_pattern_with_unicode(self):
         """Test the specific pattern used in RTM link generator that caused the original issue."""
         rtm_content = """# Requirements Traceability Matrix
@@ -189,6 +203,8 @@ class TestFileOperationPatterns:
         # Cleanup
         Path(temp_path).unlink()
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00031")
     def test_config_file_pattern_with_unicode(self):
         """Test YAML config file pattern with Unicode content."""
         config_content = """

@@ -30,6 +30,9 @@ from shared.utils.rtm_plugins.base_rtm_parser import (
 from shared.utils.rtm_plugins.base_validator import BaseValidator, StandardValidator
 
 
+@pytest.mark.epic("EP-00001", "EP-00005")
+@pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+@pytest.mark.component("backend")
 class TestCustomPlugin(RTMPlugin):
     """Test custom plugin for testing."""
 
@@ -82,9 +85,15 @@ class CustomValidator(BaseValidator):
         return errors
 
 
+@pytest.mark.epic("EP-00001", "EP-00005")
+@pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+@pytest.mark.component("backend")
 class TestPluginManager:
     """Test plugin manager functionality."""
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+    @pytest.mark.component("backend")
     def test_plugin_manager_initialization(self):
         """Test plugin manager initialization."""
         manager = PluginManager()
@@ -95,6 +104,9 @@ class TestPluginManager:
         assert "validators" in manager.plugin_types
         assert "parsers" in manager.plugin_types
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+    @pytest.mark.component("backend")
     def test_manual_plugin_registration(self):
         """Test manual plugin registration."""
         manager = PluginManager()
@@ -107,6 +119,9 @@ class TestPluginManager:
         assert test_plugin.name in manager.plugins
         assert test_plugin in manager.plugin_types["link_generators"]
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+    @pytest.mark.component("backend")
     def test_plugin_retrieval(self):
         """Test plugin retrieval methods."""
         manager = PluginManager()
@@ -129,6 +144,9 @@ class TestPluginManager:
         validators = manager.get_plugins_by_type("validators")
         assert validator in validators
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+    @pytest.mark.component("backend")
     def test_list_plugins(self):
         """Test plugin listing functionality."""
         manager = PluginManager()
@@ -150,6 +168,9 @@ class TestPluginManager:
         assert link_gens[0]["name"] == "custom_link_generator"
         assert link_gens[0]["version"] == "1.0.0"
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+    @pytest.mark.component("backend")
     def test_invalid_plugin_type_registration(self):
         """Test registration with invalid plugin type."""
         manager = PluginManager()
@@ -159,9 +180,15 @@ class TestPluginManager:
             manager.register_plugin(plugin, "invalid_type")
 
 
+@pytest.mark.epic("EP-00001", "EP-00005")
+@pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+@pytest.mark.component("backend")
 class TestBuiltInPlugins:
     """Test built-in plugin functionality."""
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+    @pytest.mark.component("backend")
     def test_github_issue_link_generator(self):
         """Test GitHub issue link generator."""
         generator = GitHubIssueLinkGenerator()
@@ -196,6 +223,9 @@ class TestBuiltInPlugins:
         assert generator.validate_link("US-12345", context) is True
         assert generator.validate_link("INVALID-123", context) is False
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+    @pytest.mark.component("backend")
     def test_standard_validator(self):
         """Test standard validator."""
         validator = StandardValidator()
@@ -229,6 +259,9 @@ class TestBuiltInPlugins:
         assert len(errors) > 0
         assert any("Missing required field" in error for error in errors)
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+    @pytest.mark.component("backend")
     def test_standard_markdown_parser(self):
         """Test standard markdown parser."""
         parser = StandardMarkdownParser()
@@ -274,9 +307,15 @@ class TestBuiltInPlugins:
         assert metadata["last_updated"] == "2025-09-20"
 
 
+@pytest.mark.epic("EP-00001", "EP-00005")
+@pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+@pytest.mark.component("backend")
 class TestPluginDiscovery:
     """Test plugin discovery mechanism."""
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+    @pytest.mark.component("backend")
     def test_plugin_discovery_with_temp_plugins(self):
         """Test plugin discovery with temporary plugin files."""
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -322,6 +361,9 @@ class TempLinkGenerator(BaseLinkGenerator):
             assert temp_plugin is not None
             assert temp_plugin["version"] == "1.0.0"
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+    @pytest.mark.component("backend")
     def test_plugin_discovery_error_handling(self):
         """Test plugin discovery with invalid plugin files."""
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -342,9 +384,15 @@ class TempLinkGenerator(BaseLinkGenerator):
             assert isinstance(manager.plugins, dict)
 
 
+@pytest.mark.epic("EP-00001", "EP-00005")
+@pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+@pytest.mark.component("backend")
 class TestPluginIntegration:
     """Test plugin integration with RTM system."""
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+    @pytest.mark.component("backend")
     def test_custom_link_generator_integration(self):
         """Test custom link generator integration."""
         generator = CustomLinkGenerator()
@@ -356,6 +404,9 @@ class TestPluginIntegration:
         link = generator.generate_link("CUSTOM-001", {})
         assert link == "[CUSTOM-001](https://custom.example.com/CUSTOM-001)"
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+    @pytest.mark.component("backend")
     def test_custom_validator_integration(self):
         """Test custom validator integration."""
         validator = CustomValidator()
@@ -371,6 +422,9 @@ class TestPluginIntegration:
         assert len(errors) == 1
         assert "Custom validation failed" in errors[0]
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+    @pytest.mark.component("backend")
     def test_plugin_priority_system(self):
         """Test plugin priority system."""
 

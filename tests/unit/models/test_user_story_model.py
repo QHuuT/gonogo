@@ -51,9 +51,13 @@ def user_story(epic):
     )
 
 
+@pytest.mark.epic("EP-00001", "EP-00005")
+@pytest.mark.user_story("US-00001", "US-00002", "US-00052")
 class TestUserStory:
     """Test cases for UserStory model."""
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_user_story_creation(self, user_story, epic):
         """Test basic UserStory creation."""
         assert user_story.user_story_id == "US-00001"
@@ -63,6 +67,8 @@ class TestUserStory:
         assert user_story.story_points == 5
         assert user_story.priority == "high"
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_user_story_persistence(self, db_session, user_story):
         """Test UserStory can be saved and retrieved."""
         db_session.add(user_story)
@@ -75,6 +81,8 @@ class TestUserStory:
         assert retrieved.user_story_id == "US-00001"
         assert retrieved.github_issue_number == 123
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_epic_relationship(self, db_session, user_story, epic):
         """Test relationship with Epic."""
         db_session.add(user_story)
@@ -86,6 +94,8 @@ class TestUserStory:
         # Test reverse relationship
         assert user_story in epic.user_stories
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_update_from_github_basic(self, user_story):
         """Test updating from GitHub issue data."""
         github_data = {
@@ -104,6 +114,8 @@ class TestUserStory:
         assert "bug" in user_story.github_labels
         assert "developer1" in user_story.github_assignees
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_update_from_github_partial(self, user_story):
         """Test updating from partial GitHub data."""
         original_title = user_story.title
@@ -114,6 +126,8 @@ class TestUserStory:
         assert user_story.github_issue_state == "closed"
         assert user_story.title == original_title  # Should remain unchanged
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_calculate_test_coverage_no_tests(self, user_story):
         """Test test coverage calculation with no tests."""
         result = user_story.calculate_test_coverage()
@@ -122,6 +136,8 @@ class TestUserStory:
         assert result["passed_tests"] == 0
         assert result["coverage_percentage"] == 0.0
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_bdd_integration_fields(self, user_story):
         """Test BDD integration fields."""
         user_story.has_bdd_scenarios = True
@@ -133,6 +149,8 @@ class TestUserStory:
         feature_files = json.loads(user_story.bdd_feature_files)
         assert "features/auth.feature" in feature_files
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_gdpr_fields(self, user_story):
         """Test GDPR-related fields."""
         user_story.affects_gdpr = True
@@ -141,6 +159,8 @@ class TestUserStory:
         assert user_story.affects_gdpr is True
         assert "personal user data" in user_story.gdpr_considerations
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_dependencies_tracking(self, user_story):
         """Test dependency tracking fields."""
         depends_on = [124, 125]
@@ -152,6 +172,8 @@ class TestUserStory:
         assert json.loads(user_story.depends_on_issues) == depends_on
         assert json.loads(user_story.blocks_issues) == blocks
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_implementation_status_values(self, user_story):
         """Test valid implementation status values."""
         valid_statuses = ["todo", "in_progress", "in_review", "done", "blocked"]
@@ -160,11 +182,15 @@ class TestUserStory:
             user_story.implementation_status = status
             assert user_story.implementation_status == status
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_sprint_assignment(self, user_story):
         """Test sprint assignment."""
         user_story.sprint = "Sprint 2024-01"
         assert user_story.sprint == "Sprint 2024-01"
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_story_points_validation(self, user_story):
         """Test story points assignment."""
         valid_points = [0, 1, 2, 3, 5, 8, 13, 21]
@@ -173,6 +199,8 @@ class TestUserStory:
             user_story.story_points = points
             assert user_story.story_points == points
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_acceptance_criteria(self, user_story):
         """Test acceptance criteria field."""
         criteria = (
@@ -182,6 +210,8 @@ class TestUserStory:
 
         assert user_story.acceptance_criteria == criteria
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_business_value(self, user_story):
         """Test business value field."""
         value = "Improves user experience and reduces support tickets"
@@ -189,6 +219,8 @@ class TestUserStory:
 
         assert user_story.business_value == value
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_to_dict_basic(self, user_story):
         """Test dictionary conversion with basic UserStory data."""
         result = user_story.to_dict()
@@ -201,6 +233,8 @@ class TestUserStory:
         assert "test_coverage" in result
         assert "defect_count" in result
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_to_dict_includes_test_coverage(self, user_story):
         """Test that to_dict includes test coverage calculation."""
         result = user_story.to_dict()
@@ -210,6 +244,8 @@ class TestUserStory:
         assert coverage["passed_tests"] == 0
         assert coverage["coverage_percentage"] == 0.0
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_repr(self, user_story):
         """Test string representation."""
         repr_str = repr(user_story)
@@ -219,6 +255,8 @@ class TestUserStory:
         assert str(user_story.epic_id) in repr_str
         assert "123" in repr_str  # GitHub issue number
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_github_issue_uniqueness(self, db_session, epic):
         """Test that GitHub issue numbers must be unique."""
         us1 = UserStory(
@@ -241,6 +279,8 @@ class TestUserStory:
         with pytest.raises(Exception):  # Should raise integrity error
             db_session.commit()
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_user_story_id_uniqueness(self, db_session, epic):
         """Test that user_story_id must be unique."""
         us1 = UserStory(
@@ -263,6 +303,8 @@ class TestUserStory:
         with pytest.raises(Exception):  # Should raise integrity error
             db_session.commit()
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_default_values(self, epic):
         """Test default values on UserStory creation."""
         us = UserStory(
@@ -279,6 +321,8 @@ class TestUserStory:
         assert us.has_bdd_scenarios is False
         assert us.affects_gdpr is False
 
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_version_tracking_inheritance(self, user_story):
         """Test that UserStory inherits version tracking from base."""
         user_story.set_git_context("def456abc", "feature/user-story")

@@ -19,6 +19,9 @@ from be.database import get_db_session
 from be.models.traceability import Epic, UserStory
 
 
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00055")
+@pytest.mark.component("backend")
 class TestRTMDatabaseCLIIntegration:
     """Integration tests for RTM Database CLI."""
 
@@ -45,18 +48,27 @@ class TestRTMDatabaseCLIIntegration:
         )
         return result
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_cli_help(self):
         """Test CLI help command."""
         result = self.run_cli_command("--help")
         assert result.returncode == 0
         assert "RTM Database Management CLI" in result.stdout
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_admin_health_check(self):
         """Test database health check command."""
         result = self.run_cli_command("admin", "health-check")
         assert result.returncode == 0
         assert "Database connection successful" in result.stdout
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_create_and_query_epic(self):
         """Test creating and querying an Epic."""
         # Create epic
@@ -87,6 +99,9 @@ class TestRTMDatabaseCLIIntegration:
         assert "EP-INT-01" in result.stdout
         assert "Integration Test Epic" in result.stdout
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_create_user_story_with_epic(self):
         """Test creating User Story linked to Epic."""
         # Create parent epic first
@@ -125,6 +140,9 @@ class TestRTMDatabaseCLIIntegration:
         assert user_story.story_points == 5
         assert user_story.github_issue_number == 123
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_epic_progress_calculation(self):
         """Test Epic progress calculation."""
         # Create epic and user story
@@ -149,6 +167,9 @@ class TestRTMDatabaseCLIIntegration:
         assert "Epic Progress Report: EP-INT-03" in result.stdout
         assert "8/8 (100.0%)" in result.stdout  # All story points completed
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_json_output_format(self):
         """Test JSON output format."""
         # Create test epic
@@ -167,6 +188,9 @@ class TestRTMDatabaseCLIIntegration:
         assert data[0]["epic_id"] == "EP-JSON-01"
         assert data[0]["title"] == "JSON Test Epic"
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_data_export(self):
         """Test data export functionality."""
         # Create test data
@@ -205,6 +229,9 @@ class TestRTMDatabaseCLIIntegration:
             # Cleanup
             tmp_path.unlink()
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_admin_validation(self):
         """Test database validation functionality."""
         # Create valid data
@@ -226,6 +253,9 @@ class TestRTMDatabaseCLIIntegration:
         assert result.returncode == 0
         assert "All validation checks passed" in result.stdout
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_create_epic_duplicate_error(self):
         """Test error handling for duplicate Epic creation."""
         # Create epic via database
@@ -245,6 +275,9 @@ class TestRTMDatabaseCLIIntegration:
         assert result.returncode == 0
         assert "Epic EP-DUP-01 already exists" in result.stdout
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_user_story_epic_not_found(self):
         """Test error handling when parent Epic not found."""
         result = self.run_cli_command(
@@ -262,6 +295,9 @@ class TestRTMDatabaseCLIIntegration:
         assert result.returncode == 0
         assert "Epic EP-NONEXISTENT not found" in result.stdout
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_verbose_mode(self):
         """Test verbose output mode."""
         result = self.run_cli_command(
@@ -279,6 +315,9 @@ class TestRTMDatabaseCLIIntegration:
         assert "Created Epic EP-VERBOSE-01" in result.stdout
         # Verbose mode output would include additional details
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_cli_error_handling(self):
         """Test CLI error handling for invalid commands."""
         # Test invalid subcommand

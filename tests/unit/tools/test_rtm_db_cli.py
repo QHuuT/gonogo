@@ -43,6 +43,9 @@ with patch.dict(
     spec.loader.exec_module(rtm_db_cli)
 
 
+@pytest.mark.epic("EP-00005", "EP-99999")
+@pytest.mark.user_story("US-00055")
+@pytest.mark.component("backend")
 class TestRTMDatabaseCLI:
     """Test RTM Database CLI functionality."""
 
@@ -81,6 +84,9 @@ class TestRTMDatabaseCLI:
         }
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_create_epic_success(self, mock_get_db):
         """Test successful Epic creation."""
         mock_get_db.return_value = self.mock_db
@@ -110,6 +116,9 @@ class TestRTMDatabaseCLI:
         self.mock_db.commit.assert_called_once()
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_create_epic_already_exists(self, mock_get_db):
         """Test Epic creation when epic already exists."""
         mock_get_db.return_value = self.mock_db
@@ -134,6 +143,9 @@ class TestRTMDatabaseCLI:
         self.mock_db.add.assert_not_called()
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_create_user_story_success(self, mock_get_db):
         """Test successful User Story creation."""
         mock_get_db.return_value = self.mock_db
@@ -168,6 +180,9 @@ class TestRTMDatabaseCLI:
         self.mock_db.commit.assert_called_once()
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_create_user_story_epic_not_found(self, mock_get_db):
         """Test User Story creation when parent Epic not found."""
         mock_get_db.return_value = self.mock_db
@@ -196,6 +211,9 @@ class TestRTMDatabaseCLI:
         self.mock_db.add.assert_not_called()
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_create_test_success(self, mock_get_db):
         """Test successful Test creation."""
         mock_get_db.return_value = self.mock_db
@@ -227,6 +245,9 @@ class TestRTMDatabaseCLI:
         self.mock_db.commit.assert_called_once()
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_query_epics_table_format(self, mock_get_db):
         """Test querying Epics with table format."""
         mock_get_db.return_value = self.mock_db
@@ -238,6 +259,9 @@ class TestRTMDatabaseCLI:
         # Note: Rich table output is complex to test, just verify no errors
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_query_epics_json_format(self, mock_get_db):
         """Test querying Epics with JSON format."""
         mock_get_db.return_value = self.mock_db
@@ -255,6 +279,9 @@ class TestRTMDatabaseCLI:
             pytest.fail("Output is not valid JSON")
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_query_epics_with_filters(self, mock_get_db):
         """Test querying Epics with status and priority filters."""
         mock_get_db.return_value = self.mock_db
@@ -273,6 +300,9 @@ class TestRTMDatabaseCLI:
         assert mock_query.filter.call_count == 2
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_query_user_stories(self, mock_get_db):
         """Test querying User Stories."""
         mock_get_db.return_value = self.mock_db
@@ -283,6 +313,9 @@ class TestRTMDatabaseCLI:
         assert result.exit_code == 0
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_query_user_stories_by_epic(self, mock_get_db):
         """Test querying User Stories filtered by Epic."""
         mock_get_db.return_value = self.mock_db
@@ -306,6 +339,9 @@ class TestRTMDatabaseCLI:
         assert result.exit_code == 0
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_epic_progress_detailed(self, mock_get_db):
         """Test detailed Epic progress report."""
         mock_get_db.return_value = self.mock_db
@@ -337,6 +373,9 @@ class TestRTMDatabaseCLI:
         assert "Epic Progress Report" in result.output
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_epic_progress_not_found(self, mock_get_db):
         """Test Epic progress for non-existent Epic."""
         mock_get_db.return_value = self.mock_db
@@ -350,6 +389,9 @@ class TestRTMDatabaseCLI:
         assert "Epic EP-99999 not found" in result.output
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_data_export_json(self, mock_get_db):
         """Test data export in JSON format."""
         mock_get_db.return_value = self.mock_db
@@ -392,6 +434,9 @@ class TestRTMDatabaseCLI:
             tmp_path.unlink()
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_admin_health_check(self, mock_get_db):
         """Test database health check."""
         mock_get_db.return_value = self.mock_db
@@ -414,6 +459,9 @@ class TestRTMDatabaseCLI:
         assert "Database connection successful" in result.output
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_admin_validate_no_issues(self, mock_get_db):
         """Test data validation with no issues found."""
         mock_get_db.return_value = self.mock_db
@@ -433,6 +481,9 @@ class TestRTMDatabaseCLI:
         assert "All validation checks passed" in result.output
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_admin_validate_with_issues(self, mock_get_db):
         """Test data validation with issues found."""
         mock_get_db.return_value = self.mock_db
@@ -458,6 +509,9 @@ class TestRTMDatabaseCLI:
         assert "Found 1 validation issues" in result.output
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_admin_reset_without_confirm(self, mock_get_db):
         """Test database reset without confirmation."""
         result = self.runner.invoke(rtm_db_cli.cli, ["admin", "reset"])
@@ -466,6 +520,9 @@ class TestRTMDatabaseCLI:
         assert "Use --confirm to proceed" in result.output
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_admin_reset_with_confirm(self, mock_get_db):
         """Test database reset with confirmation."""
         mock_get_db.return_value = self.mock_db
@@ -482,6 +539,9 @@ class TestRTMDatabaseCLI:
         self.mock_db.commit.assert_called_once()
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_github_sync_status_no_records(self, mock_get_db):
         """Test GitHub sync status with no records."""
         mock_get_db.return_value = self.mock_db
@@ -496,6 +556,9 @@ class TestRTMDatabaseCLI:
         assert "No sync records found" in result.output
 
     @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_github_sync_status_with_records(self, mock_get_db):
         """Test GitHub sync status with records."""
         mock_get_db.return_value = self.mock_db
@@ -517,42 +580,63 @@ class TestRTMDatabaseCLI:
 
         assert result.exit_code == 0
 
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_cli_help(self):
         """Test CLI help output."""
         result = self.runner.invoke(rtm_db_cli.cli, ["--help"])
         assert result.exit_code == 0
         assert "RTM Database Management CLI" in result.output
 
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_entities_help(self):
         """Test entities subcommand help."""
         result = self.runner.invoke(rtm_db_cli.cli, ["entities", "--help"])
         assert result.exit_code == 0
         assert "Manage RTM entities" in result.output
 
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_query_help(self):
         """Test query subcommand help."""
         result = self.runner.invoke(rtm_db_cli.cli, ["query", "--help"])
         assert result.exit_code == 0
         assert "Query and report on RTM data" in result.output
 
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_data_help(self):
         """Test data subcommand help."""
         result = self.runner.invoke(rtm_db_cli.cli, ["data", "--help"])
         assert result.exit_code == 0
         assert "Data import, export, and migration operations" in result.output
 
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_admin_help(self):
         """Test admin subcommand help."""
         result = self.runner.invoke(rtm_db_cli.cli, ["admin", "--help"])
         assert result.exit_code == 0
         assert "Database administration and maintenance" in result.output
 
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_github_help(self):
         """Test github subcommand help."""
         result = self.runner.invoke(rtm_db_cli.cli, ["github", "--help"])
         assert result.exit_code == 0
         assert "GitHub integration and synchronization" in result.output
 
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_verbose_mode(self):
         """Test verbose mode flag."""
         result = self.runner.invoke(rtm_db_cli.cli, ["--verbose", "--help"])
@@ -560,6 +644,9 @@ class TestRTMDatabaseCLI:
         # Verbose mode should be enabled, but hard to test without actual operations
 
     @patch("rtm_db_cli.RTMDataMigrator")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_import_rtm_file_not_found(self, mock_migrator):
         """Test RTM import with non-existent file."""
         result = self.runner.invoke(
@@ -570,6 +657,9 @@ class TestRTMDatabaseCLI:
         assert "File /nonexistent/file.md not found" in result.output
 
     @patch("rtm_db_cli.RTMDataMigrator")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_import_rtm_dry_run(self, mock_migrator):
         """Test RTM import with dry run."""
         with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".md") as tmp:
@@ -587,6 +677,9 @@ class TestRTMDatabaseCLI:
             Path(tmp.name).unlink()
 
 
+@pytest.mark.epic("EP-00005", "EP-99999")
+@pytest.mark.user_story("US-00055")
+@pytest.mark.component("backend")
 class TestRTMDatabaseCLIIntegration:
     """Integration tests for RTM Database CLI with real database operations."""
 
@@ -597,6 +690,9 @@ class TestRTMDatabaseCLIIntegration:
         # For now, we'll use mocks in unit tests
         pass
 
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_full_workflow_integration(self):
         """Test complete workflow: create epic -> create user story -> query progress."""
         # This would test the full CLI workflow with a real database

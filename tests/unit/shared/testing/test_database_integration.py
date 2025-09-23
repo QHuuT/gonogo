@@ -21,6 +21,9 @@ from src.shared.testing.database_integration import (
 )
 
 
+@pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+@pytest.mark.user_story("US-00057", "US-99999")
+@pytest.mark.component("shared")
 class TestTestDiscovery:
     """Test TestDiscovery functionality."""
 
@@ -28,10 +31,16 @@ class TestTestDiscovery:
         """Set up test fixtures."""
         self.discovery = TestDiscovery()
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_epic_pattern_matching(self):
         """Test Epic reference pattern matching."""
         content = """
         # This test is related to EP-00057
+        @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+        @pytest.mark.user_story("US-00057", "US-99999")
+        @pytest.mark.component("shared")
         def test_something():
             # Testing for EP-12345
             pass
@@ -40,6 +49,9 @@ class TestTestDiscovery:
         assert "EP-00057" in epic_refs
         assert "EP-12345" in epic_refs
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_user_story_pattern_matching(self):
         """Test User Story reference pattern matching."""
         content = """
@@ -49,6 +61,9 @@ class TestTestDiscovery:
         assert "US-00057" in us_refs
         assert "US-99999" in us_refs
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_defect_pattern_matching(self):
         """Test Defect reference pattern matching."""
         content = """
@@ -58,6 +73,9 @@ class TestTestDiscovery:
         assert "DEF-00001" in def_refs
         assert "DEF-12345" in def_refs
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_generate_test_title(self):
         """Test test title generation from function names."""
         assert (
@@ -68,6 +86,9 @@ class TestTestDiscovery:
             == "Test: Epic Progress Calculation"
         )
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_analyze_test_file_with_references(self):
         """Test analyzing a test file with Epic/US references."""
         test_content = '''
@@ -76,10 +97,16 @@ Test file for EP-00057 functionality.
 Related to US-00057.
 """
 
+@pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+@pytest.mark.user_story("US-00057", "US-99999")
+@pytest.mark.component("shared")
 def test_database_integration():
     """Test database integration - EP-00057."""
     pass
 
+@pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+@pytest.mark.user_story("US-00057", "US-99999")
+@pytest.mark.component("shared")
 def test_user_story_linking():
     """Test for US-00057."""
     pass
@@ -104,9 +131,15 @@ def test_user_story_linking():
             except (PermissionError, FileNotFoundError):
                 pass  # Windows may lock the file, ignore cleanup errors
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_analyze_test_file_without_references(self):
         """Test analyzing a test file without Epic/US references."""
         test_content = '''
+@pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+@pytest.mark.user_story("US-00057", "US-99999")
+@pytest.mark.component("shared")
 def test_simple_function():
     """Simple test without references."""
     assert True
@@ -131,6 +164,9 @@ def test_simple_function():
                 pass  # Windows may lock the file, ignore cleanup errors
 
     @patch("src.shared.testing.database_integration.Path.glob")
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_discover_tests(self, mock_glob):
         """Test test discovery functionality."""
         # Mock test files
@@ -157,6 +193,9 @@ def test_simple_function():
             mock_analyze.assert_called()
 
 
+@pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+@pytest.mark.user_story("US-00057", "US-99999")
+@pytest.mark.component("shared")
 class TestTestDatabaseSync:
     """Test TestDatabaseSync functionality."""
 
@@ -166,6 +205,9 @@ class TestTestDatabaseSync:
         self.mock_db = Mock()
 
     @patch("src.shared.testing.database_integration.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_create_or_update_test_new(self, mock_get_db):
         """Test creating a new test record."""
         mock_get_db.return_value = self.mock_db
@@ -186,6 +228,9 @@ class TestTestDatabaseSync:
         self.mock_db.add.assert_called_once()
 
     @patch("src.shared.testing.database_integration.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_create_or_update_test_existing(self, mock_get_db):
         """Test updating an existing test record."""
         mock_get_db.return_value = self.mock_db
@@ -209,6 +254,9 @@ class TestTestDatabaseSync:
         self.mock_db.add.assert_not_called()
 
     @patch("src.shared.testing.database_integration.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_link_test_to_epic_success(self, mock_get_db):
         """Test successfully linking test to Epic."""
         mock_get_db.return_value = self.mock_db
@@ -232,6 +280,9 @@ class TestTestDatabaseSync:
         assert result is True
 
     @patch("src.shared.testing.database_integration.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_link_test_to_epic_no_epic(self, mock_get_db):
         """Test linking test to Epic when Epic doesn't exist."""
         mock_get_db.return_value = self.mock_db
@@ -244,6 +295,9 @@ class TestTestDatabaseSync:
         assert result is False
 
 
+@pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+@pytest.mark.user_story("US-00057", "US-99999")
+@pytest.mark.component("shared")
 class TestTestExecutionTracker:
     """Test TestExecutionTracker functionality."""
 
@@ -252,6 +306,9 @@ class TestTestExecutionTracker:
         self.tracker = TestExecutionTracker()
         self.mock_db = Mock()
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_start_and_end_session(self):
         """Test session management."""
         with patch(
@@ -267,6 +324,9 @@ class TestTestExecutionTracker:
             self.mock_db.close.assert_called_once()
             assert self.tracker.db_session is None
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_record_test_result_success(self):
         """Test recording successful test result."""
         self.tracker.db_session = self.mock_db
@@ -283,6 +343,9 @@ class TestTestExecutionTracker:
         assert result is True
         mock_test.update_execution_result.assert_called_once_with("passed", 150.5, None)
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_record_test_result_no_session(self):
         """Test recording test result without session."""
         result = self.tracker.record_test_result(
@@ -291,6 +354,9 @@ class TestTestExecutionTracker:
 
         assert result is False
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_record_test_result_invalid_test_id(self):
         """Test recording test result with invalid test ID."""
         self.tracker.db_session = self.mock_db
@@ -299,6 +365,9 @@ class TestTestExecutionTracker:
 
         assert result is False
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_create_defect_from_failure(self):
         """Test creating defect from test failure."""
         self.tracker.db_session = self.mock_db
@@ -332,6 +401,9 @@ class TestTestExecutionTracker:
         assert defect_id == "DEF-00006"
         self.mock_db.add.assert_called_once()
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_determine_failure_severity(self):
         """Test failure severity determination."""
         assert (
@@ -349,6 +421,9 @@ class TestTestExecutionTracker:
         assert self.tracker._determine_failure_severity("Unknown error") == "low"
 
 
+@pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+@pytest.mark.user_story("US-00057", "US-99999")
+@pytest.mark.component("shared")
 class TestBDDScenarioParser:
     """Test BDDScenarioParser functionality."""
 
@@ -356,6 +431,9 @@ class TestBDDScenarioParser:
         """Set up test fixtures."""
         self.parser = BDDScenarioParser()
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_scenario_pattern_matching(self):
         """Test scenario pattern matching."""
         content = """
@@ -376,6 +454,9 @@ Feature: User Authentication
         assert "User login with valid credentials" in scenarios
         assert "Outline: User login attempts" in scenarios
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_extract_user_story_context(self):
         """Test extracting User Story references from context."""
         content = """
@@ -394,6 +475,9 @@ Feature: Test Database Integration
 
         assert "US-00057" in user_story_refs
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_parse_feature_content(self):
         """Test parsing feature file content."""
         content = """
@@ -420,6 +504,9 @@ Feature: Test Integration
         assert "US-00057" in scenarios[1]["user_story_references"]
 
     @patch("src.shared.testing.database_integration.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_link_scenario_to_user_story_success(self, mock_get_db):
         """Test successfully linking scenario to User Story."""
         mock_db = Mock()
@@ -446,6 +533,9 @@ Feature: Test Integration
         mock_db.add.assert_called_once()
 
     @patch("src.shared.testing.database_integration.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_link_scenario_to_user_story_no_user_story(self, mock_get_db):
         """Test linking scenario when User Story doesn't exist."""
         mock_db = Mock()
@@ -459,11 +549,17 @@ Feature: Test Integration
         assert result is False
 
 
+@pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+@pytest.mark.user_story("US-00057", "US-99999")
+@pytest.mark.component("shared")
 class TestIntegrationWorkflow:
     """Test complete integration workflow."""
 
     @patch("src.shared.testing.database_integration.get_db_session")
     @patch("src.shared.testing.database_integration.TestDiscovery.discover_tests")
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_full_sync_workflow(self, mock_discover, mock_get_db):
         """Test complete test discovery and sync workflow."""
         mock_db = Mock()
@@ -499,6 +595,9 @@ class TestIntegrationWorkflow:
         assert stats["linked_to_epics"] == 1
         assert stats["errors"] == 0
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
     def test_pytest_plugin_integration(self):
         """Test integration with pytest plugin."""
         from src.shared.testing.database_pytest_plugin import DatabaseIntegrationPlugin

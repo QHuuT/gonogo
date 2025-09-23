@@ -11,9 +11,11 @@ from src.security.gdpr.models import ConsentType, DataSubjectRights
 from src.security.gdpr.service import GDPRService
 
 
+@pytest.mark.component("security")
 class TestGDPRService:
     """Unit tests for GDPR service functionality."""
 
+    @pytest.mark.component("security")
     def test_record_consent_creates_unique_id(self, db_session):
         """Test that consent recording creates unique consent ID."""
 
@@ -28,6 +30,7 @@ class TestGDPRService:
         assert consent_id is not None
         assert len(consent_id) > 20  # Should be a substantial unique ID
 
+    @pytest.mark.component("security")
     def test_record_consent_hashes_sensitive_data(self, db_session):
         """Test that IP addresses and user agents are properly hashed."""
 
@@ -55,6 +58,7 @@ class TestGDPRService:
         assert record.user_agent_hash is not None
         assert "Mozilla" not in record.user_agent_hash  # Original UA not stored
 
+    @pytest.mark.component("security")
     def test_withdraw_consent_updates_record(self, db_session):
         """Test that consent withdrawal properly updates the record."""
 
@@ -83,6 +87,7 @@ class TestGDPRService:
         assert record.withdrawn_at is not None
         assert record.withdrawal_reason == "User requested withdrawal"
 
+    @pytest.mark.component("security")
     def test_withdraw_nonexistent_consent_returns_false(self, db_session):
         """Test that withdrawing non-existent consent returns False."""
 
@@ -92,6 +97,7 @@ class TestGDPRService:
 
         assert result is False
 
+    @pytest.mark.component("security")
     def test_get_active_consents_filters_withdrawn(self, db_session):
         """Test that withdrawn consents are not included in active consents."""
 
@@ -109,6 +115,7 @@ class TestGDPRService:
 
         assert active_consents[ConsentType.ANALYTICS] is False
 
+    @pytest.mark.component("security")
     def test_get_active_consents_filters_expired(self, db_session):
         """Test that expired consents are not included in active consents."""
 
@@ -125,6 +132,7 @@ class TestGDPRService:
         # Analytics consent should be active (hasn't expired yet)
         assert active_consents[ConsentType.ANALYTICS] is True
 
+    @pytest.mark.component("security")
     def test_create_data_subject_request_hashes_email(self, db_session):
         """Test that data subject requests hash email addresses."""
 
@@ -151,6 +159,7 @@ class TestGDPRService:
         assert "user@example.com" not in request.contact_email_hash
         assert len(request.contact_email_hash) > 10  # Should be a hash
 
+    @pytest.mark.component("security")
     def test_create_data_subject_request_sets_due_date(self, db_session):
         """Test that data subject requests have proper due dates (30 days)."""
 
@@ -178,6 +187,7 @@ class TestGDPRService:
 
         assert expected_due_date_min <= request.due_date <= expected_due_date_max
 
+    @pytest.mark.component("security")
     def test_process_data_subject_request_completes(self, db_session):
         """Test that processing a data subject request marks it complete."""
 
@@ -212,6 +222,7 @@ class TestGDPRService:
         assert request.response_data == response_data
         assert request.completion_notes == "Request processed successfully"
 
+    @pytest.mark.component("security")
     def test_get_overdue_requests_finds_old_requests(self, db_session):
         """Test that overdue requests are properly identified."""
 
@@ -241,6 +252,7 @@ class TestGDPRService:
         assert len(overdue_requests) >= 1
         assert any(req.id == request_id for req in overdue_requests)
 
+    @pytest.mark.component("security")
     def test_hash_data_produces_consistent_hashes(self, db_session):
         """Test that the hash function produces consistent results."""
 
@@ -255,6 +267,7 @@ class TestGDPRService:
 
         assert hash1 == hash2
 
+    @pytest.mark.component("security")
     def test_hash_data_produces_different_hashes_different_salt(self, db_session):
         """Test that different salts produce different hashes."""
 
@@ -267,6 +280,7 @@ class TestGDPRService:
 
         assert hash1 != hash2
 
+    @pytest.mark.component("security")
     def test_generate_consent_id_creates_unique_ids(self, db_session):
         """Test that consent ID generation creates unique identifiers."""
 
@@ -279,6 +293,7 @@ class TestGDPRService:
         assert len(id1) > 10  # Should be substantial length
         assert len(id2) > 10
 
+    @pytest.mark.component("security")
     def test_compliance_score_calculation(self, db_session):
         """Test GDPR compliance score calculation."""
 

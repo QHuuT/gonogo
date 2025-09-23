@@ -8,9 +8,11 @@ import pytest
 from fastapi.testclient import TestClient
 
 
+@pytest.mark.component("backend")
 class TestBlogE2E:
     """End-to-end tests for critical blog workflows."""
 
+    @pytest.mark.component("backend")
     def test_basic_blog_access_workflow(self, client: TestClient):
         """Test basic blog access and health check workflow."""
 
@@ -29,6 +31,7 @@ class TestBlogE2E:
         assert health_data["status"] == "healthy"
         assert health_data["service"] == "gonogo-blog"
 
+    @pytest.mark.component("backend")
     def test_gdpr_consent_and_data_request_flow(self, db_session):
         """Test complete GDPR consent and data subject request flow."""
 
@@ -81,6 +84,7 @@ class TestBlogE2E:
         final_consents = service.get_active_consents(consent_id)
         assert final_consents[ConsentType.ANALYTICS] is False
 
+    @pytest.mark.component("backend")
     def test_security_headers_across_endpoints(
         self, client: TestClient, security_headers
     ):
@@ -99,6 +103,7 @@ class TestBlogE2E:
                 # for header_name, expected_value in security_headers.items():
                 #     assert response.headers.get(header_name) == expected_value
 
+    @pytest.mark.component("backend")
     def test_gdpr_data_lifecycle_complete_flow(self, db_session):
         """Test complete data lifecycle from creation to deletion."""
 
@@ -179,6 +184,7 @@ class TestBlogE2E:
         assert erasure_request.status == "completed"
         assert "deleted" in erasure_request.response_data["status"]
 
+    @pytest.mark.component("backend")
     def test_compliance_monitoring_workflow(self, db_session):
         """Test compliance monitoring and reporting workflow."""
 
@@ -221,6 +227,7 @@ class TestBlogE2E:
         assert "192.168" not in report_str  # No IP addresses
         assert len(report_str.split()) < 50  # Should be concise
 
+    @pytest.mark.component("backend")
     def test_error_handling_across_workflows(self, client: TestClient):
         """Test that errors are handled gracefully across all workflows."""
 

@@ -38,9 +38,13 @@ def epic():
     )
 
 
+@pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+@pytest.mark.user_story("US-00052")
 class TestEpic:
     """Test cases for Epic model."""
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_epic_creation(self, epic):
         """Test basic Epic creation."""
         assert epic.epic_id == "EP-00001"
@@ -50,6 +54,8 @@ class TestEpic:
         assert epic.total_story_points == 0
         assert epic.completion_percentage == 0.0
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_epic_persistence(self, db_session, epic):
         """Test Epic can be saved and retrieved."""
         db_session.add(epic)
@@ -60,11 +66,15 @@ class TestEpic:
         assert retrieved.epic_id == "EP-00001"
         assert retrieved.title == "Test Epic"
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_calculate_completion_percentage_zero_points(self, epic):
         """Test completion calculation with zero story points."""
         result = epic.calculate_completion_percentage()
         assert result == 0.0
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_calculate_completion_percentage_normal(self, epic):
         """Test completion calculation with normal values."""
         epic.total_story_points = 10
@@ -73,6 +83,8 @@ class TestEpic:
         result = epic.calculate_completion_percentage()
         assert result == 30.0
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_calculate_completion_percentage_complete(self, epic):
         """Test completion calculation when fully complete."""
         epic.total_story_points = 10
@@ -81,6 +93,8 @@ class TestEpic:
         result = epic.calculate_completion_percentage()
         assert result == 100.0
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_update_progress(self, epic):
         """Test progress update functionality."""
         epic.update_progress(completed_points=5, total_points=15)
@@ -91,6 +105,8 @@ class TestEpic:
             abs(epic.completion_percentage - 33.333333333333336) < 0.0001
         )  # 5/15 * 100 with tolerance
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_update_progress_zero_total(self, epic):
         """Test progress update with zero total points."""
         epic.update_progress(completed_points=0, total_points=0)
@@ -99,6 +115,8 @@ class TestEpic:
         assert epic.total_story_points == 0
         assert epic.completion_percentage == 0.0
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_gdpr_fields(self, epic):
         """Test GDPR-related fields."""
         epic.gdpr_applicable = True
@@ -107,12 +125,16 @@ class TestEpic:
         assert epic.gdpr_applicable is True
         assert "Personal data" in epic.gdpr_considerations
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_risk_assessment(self, epic):
         """Test risk assessment fields."""
         epic.risk_level = "high"
 
         assert epic.risk_level == "high"
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_success_criteria(self, epic):
         """Test success criteria field."""
         criteria = "User satisfaction > 90%, Performance < 200ms"
@@ -120,6 +142,8 @@ class TestEpic:
 
         assert epic.success_criteria == criteria
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_to_dict_basic(self, epic):
         """Test dictionary conversion with basic Epic data."""
         result = epic.to_dict()
@@ -134,6 +158,8 @@ class TestEpic:
         assert result["user_story_count"] == 0
         assert result["defect_count"] == 0
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_to_dict_with_relationships(self, db_session, epic):
         """Test dictionary conversion includes relationship counts."""
         # Save epic to get ID for relationships
@@ -147,6 +173,8 @@ class TestEpic:
         assert "user_story_count" in result
         assert "defect_count" in result
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_repr(self, epic):
         """Test string representation."""
         repr_str = repr(epic)
@@ -157,6 +185,8 @@ class TestEpic:
         assert "planned" in repr_str  # Default status
         assert "0.0%" in repr_str  # Completion percentage
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_epic_id_uniqueness_constraint(self, db_session):
         """Test that epic_id must be unique."""
         epic1 = Epic(epic_id="EP-00001", title="First Epic")
@@ -169,6 +199,8 @@ class TestEpic:
         with pytest.raises(Exception):  # Should raise integrity error
             db_session.commit()
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_priority_values(self, epic):
         """Test valid priority values."""
         valid_priorities = ["critical", "high", "medium", "low"]
@@ -177,6 +209,8 @@ class TestEpic:
             epic.priority = priority
             assert epic.priority == priority
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_risk_level_values(self, epic):
         """Test valid risk level values."""
         valid_risk_levels = ["low", "medium", "high", "critical"]
@@ -185,6 +219,8 @@ class TestEpic:
             epic.risk_level = risk_level
             assert epic.risk_level == risk_level
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_default_values(self):
         """Test default values on Epic creation."""
         epic = Epic(epic_id="EP-00002", title="Default Test")
@@ -197,6 +233,8 @@ class TestEpic:
         assert epic.completion_percentage == 0.0
         assert epic.gdpr_applicable is False
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_github_integration(self, epic):
         """Test GitHub issue integration fields."""
         epic.github_issue_number = 42
@@ -205,6 +243,8 @@ class TestEpic:
         assert epic.github_issue_number == 42
         assert epic.github_issue_url.endswith("/issues/42")
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_version_tracking_inheritance(self, epic):
         """Test that Epic inherits version tracking from base."""
         epic.set_git_context("abc123def", "feature/epic-implementation")
@@ -214,6 +254,8 @@ class TestEpic:
         assert epic.introduced_in_branch == "feature/epic-implementation"
         assert epic.target_release_version == "v1.2.0"
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_completion_percentage_property(self, epic):
         """Test that completion_percentage is correctly calculated and stored."""
         epic.total_story_points = 20

@@ -27,6 +27,9 @@ from shared.utils.rtm_link_generator import RTMLinkGenerator
 from shared.utils.rtm_plugins import PluginManager
 
 
+@pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+@pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00014", "US-00017")
+@pytest.mark.component("backend")
 class TestRTMEndToEnd:
     """End-to-end integration tests for RTM automation."""
 
@@ -107,6 +110,9 @@ class TestRTMEndToEnd:
                 "config_file": config_file,
             }
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00014", "US-00017")
+    @pytest.mark.component("backend")
     def test_rtm_generator_with_real_files(self, temp_project_structure):
         """Test RTM generator with real file structure."""
         project_dir = temp_project_structure["project_dir"]
@@ -141,6 +147,9 @@ class TestRTMEndToEnd:
         finally:
             os.chdir(original_cwd)
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00014", "US-00017")
+    @pytest.mark.component("backend")
     def test_rtm_update_with_real_files(self, temp_project_structure):
         """Test RTM update functionality with real files."""
         project_dir = temp_project_structure["project_dir"]
@@ -178,6 +187,9 @@ class TestRTMEndToEnd:
         finally:
             os.chdir(original_cwd)
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00014", "US-00017")
+    @pytest.mark.component("backend")
     def test_cli_tool_integration(self, temp_project_structure):
         """Test CLI tool with real project structure."""
         project_dir = temp_project_structure["project_dir"]
@@ -229,6 +241,9 @@ class TestRTMEndToEnd:
         finally:
             os.chdir(original_cwd)
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00014", "US-00017")
+    @pytest.mark.component("backend")
     def test_plugin_system_integration(self):
         """Test plugin system discovery and loading."""
         plugin_manager = PluginManager()
@@ -245,6 +260,9 @@ class TestRTMEndToEnd:
         for plugin_type in expected_types:
             assert plugin_type in plugins
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00014", "US-00017")
+    @pytest.mark.component("backend")
     def test_configuration_variations(self, temp_project_structure):
         """Test different configuration scenarios."""
         config_file = temp_project_structure["config_file"]
@@ -257,6 +275,9 @@ class TestRTMEndToEnd:
         generator = RTMLinkGenerator(str(config_file))
         assert generator.github_owner == "TestOwner"  # From config
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00014", "US-00017")
+    @pytest.mark.component("backend")
     def test_error_handling_integration(self, temp_project_structure):
         """Test error handling in integration scenarios."""
         project_dir = temp_project_structure["project_dir"]
@@ -283,6 +304,9 @@ class TestRTMEndToEnd:
         finally:
             os.chdir(original_cwd)
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00014", "US-00017")
+    @pytest.mark.component("backend")
     def test_link_generation_accuracy(self, temp_project_structure):
         """Test accuracy of generated links."""
         config_file = temp_project_structure["config_file"]
@@ -310,6 +334,9 @@ class TestRTMEndToEnd:
         assert "auth.feature" in file_link
         assert "](" in file_link
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00014", "US-00017")
+    @pytest.mark.component("backend")
     def test_validation_report_generation(self, temp_project_structure):
         """Test validation report generation."""
         project_dir = temp_project_structure["project_dir"]
@@ -340,9 +367,15 @@ class TestRTMEndToEnd:
             os.chdir(original_cwd)
 
 
+@pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+@pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00014", "US-00017")
+@pytest.mark.component("backend")
 class TestRTMPerformance:
     """Performance tests for RTM automation."""
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00014", "US-00017")
+    @pytest.mark.component("backend")
     def test_large_rtm_performance(self):
         """Test performance with large RTM file."""
         # Create large RTM content

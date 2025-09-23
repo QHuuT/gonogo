@@ -30,9 +30,13 @@ def db_session():
     session.close()
 
 
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00005")
 class TestComponentEndpoints:
     """Test component-related API endpoints."""
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_list_components(self, client):
         """Test listing all unique components."""
         response = client.get("/api/rtm/components/")
@@ -47,6 +51,8 @@ class TestComponentEndpoints:
         for comp in expected_components:
             assert comp in components
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_component_statistics(self, client):
         """Test component statistics endpoint."""
         response = client.get("/api/rtm/components/statistics")
@@ -84,6 +90,8 @@ class TestComponentEndpoints:
         assert "total_tests" in summary
         assert "total_defects" in summary
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_component_distribution(self, client):
         """Test component distribution analytics."""
         response = client.get("/api/rtm/components/distribution")
@@ -115,6 +123,8 @@ class TestComponentEndpoints:
             assert "tests" in breakdown
             assert "defects" in breakdown
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_component_items(self, client):
         """Test getting all items for a specific component."""
         # First get available components
@@ -148,9 +158,13 @@ class TestComponentEndpoints:
             assert len(data["user_stories"]) == 0  # Should be empty due to filter
 
 
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00005")
 class TestComponentFiltering:
     """Test component filtering in existing endpoints."""
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_epic_component_filtering(self, client):
         """Test epic filtering by component."""
         # Test single component filter
@@ -180,6 +194,8 @@ class TestComponentFiltering:
             component = epic.get('component', '')
             assert 'testing' not in component
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_user_story_component_filtering(self, client):
         """Test user story filtering by component."""
         response = client.get("/api/rtm/user-stories/?component=backend&limit=5")
@@ -197,6 +213,8 @@ class TestComponentFiltering:
         for us in user_stories:
             assert us.get('component') in ['backend', 'frontend']
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_defect_component_filtering(self, client):
         """Test defect filtering by component."""
         response = client.get("/api/rtm/defects/?component=backend")
@@ -206,6 +224,8 @@ class TestComponentFiltering:
         for defect in defects:
             assert defect.get('component') == 'backend'
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_test_component_filtering(self, client):
         """Test test filtering by component."""
         response = client.get("/api/rtm/tests/?component=backend")
@@ -219,9 +239,13 @@ class TestComponentFiltering:
                 assert component == 'backend'
 
 
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00005")
 class TestComponentAPIEdgeCases:
     """Test edge cases and error conditions."""
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_nonexistent_component(self, client):
         """Test filtering with non-existent component."""
         response = client.get("/api/rtm/user-stories/?component=nonexistent")
@@ -230,6 +254,8 @@ class TestComponentAPIEdgeCases:
         user_stories = response.json()
         assert len(user_stories) == 0
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_component_items_nonexistent(self, client):
         """Test getting items for non-existent component."""
         response = client.get("/api/rtm/components/nonexistent/items")
@@ -242,6 +268,8 @@ class TestComponentAPIEdgeCases:
         assert len(data["tests"]) == 0
         assert len(data["defects"]) == 0
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_empty_component_filter(self, client):
         """Test filtering with empty component parameter."""
         response = client.get("/api/rtm/user-stories/?component=")
@@ -251,6 +279,8 @@ class TestComponentAPIEdgeCases:
         user_stories = response.json()
         assert isinstance(user_stories, list)
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_component_filter_with_spaces(self, client):
         """Test component filtering with spaces in component names."""
         response = client.get("/api/rtm/user-stories/?component=backend, frontend")
@@ -264,9 +294,13 @@ class TestComponentAPIEdgeCases:
                 assert component in ['backend', 'frontend']
 
 
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00005")
 class TestComponentAPIPerformance:
     """Test performance aspects of component API."""
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_component_statistics_performance(self, client, db_session):
         """Test that component statistics can handle reasonable data volumes."""
         # This test ensures the statistics endpoint performs reasonably
@@ -295,6 +329,8 @@ class TestComponentAPIPerformance:
         assert summary["total_tests"] == calculated_tests
         assert summary["total_defects"] == calculated_defects
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_large_component_filter(self, client):
         """Test filtering with large result sets."""
         response = client.get("/api/rtm/user-stories/?limit=50")
@@ -314,9 +350,13 @@ class TestComponentAPIPerformance:
             assert us.get('component') == 'backend'
 
 
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00005")
 class TestComponentAPIIntegration:
     """Test integration between component API and other RTM features."""
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_component_data_in_epic_progress(self, client):
         """Test that epic progress includes component information."""
         # Get first epic
@@ -336,6 +376,8 @@ class TestComponentAPIIntegration:
             assert "component" in epic_data
             assert "inherited_components" in epic_data
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_component_data_in_rtm_matrix(self, client):
         """Test that RTM matrix includes component information."""
         response = client.get("/api/rtm/reports/matrix?format=json&limit=5")
@@ -356,6 +398,8 @@ class TestComponentAPIIntegration:
                     for us in epic_data["user_stories"]:
                         assert "component" in us
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_dashboard_data_with_components(self, client):
         """Test that dashboard data includes component information."""
         response = client.get("/api/rtm/reports/dashboard-data")
@@ -372,6 +416,8 @@ class TestComponentAPIIntegration:
         assert "total_tests" in summary
         assert "total_defects" in summary
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_rtm_matrix_html_component_columns(self, client):
         """Test that RTM matrix HTML includes component columns in all subtables."""
         response = client.get("/api/rtm/reports/matrix?format=html&limit=1")
@@ -423,6 +469,8 @@ class TestComponentAPIIntegration:
         assert 'colspan="5"' in html_content  # User stories (5 columns now)
         assert 'colspan="6"' in html_content  # Tests and defects (6 columns now)
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00005")
     def test_rtm_matrix_horizontal_scrolling(self, client):
         """Test that RTM matrix HTML includes horizontal scrolling support."""
         response = client.get("/api/rtm/reports/matrix?format=html&limit=1")

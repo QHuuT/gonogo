@@ -23,6 +23,8 @@ from shared.testing.database_integration import (
 )
 
 
+@pytest.mark.epic("EP-00005", "EP-00057", "EP-99999")
+@pytest.mark.user_story("US-00057")
 class TestDatabaseIntegrationWorkflow:
     """Integration tests for complete test-database integration workflow."""
 
@@ -45,6 +47,8 @@ class TestDatabaseIntegrationWorkflow:
         self.db.commit()
         self.db.close()
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-99999")
+    @pytest.mark.user_story("US-00057")
     def test_test_discovery_and_sync_workflow(self):
         """Test complete test discovery and database sync workflow."""
         # Create test Epic for linking
@@ -60,10 +64,14 @@ class TestDatabaseIntegrationWorkflow:
 Test file for EP-00057 functionality.
 """
 
+@pytest.mark.epic("EP-00005", "EP-00057", "EP-99999")
+@pytest.mark.user_story("US-00057")
 def test_database_integration():
     """Test database integration functionality - EP-00057."""
     assert True
 
+@pytest.mark.epic("EP-00005", "EP-00057", "EP-99999")
+@pytest.mark.user_story("US-00057")
 def test_another_function():
     """Another test without Epic reference."""
     assert True
@@ -135,6 +143,8 @@ def test_another_function():
             finally:
                 tmp_path.unlink()
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-99999")
+    @pytest.mark.user_story("US-00057")
     def test_test_execution_tracking_workflow(self):
         """Test test execution result tracking workflow."""
         # Create test Epic and Test records
@@ -189,6 +199,8 @@ def test_another_function():
         finally:
             tracker.end_test_session()
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-99999")
+    @pytest.mark.user_story("US-00057")
     def test_bdd_scenario_linking_workflow(self):
         """Test BDD scenario to User Story linking workflow."""
         # Create test Epic and User Story
@@ -271,6 +283,8 @@ Feature: Test Database Integration
             finally:
                 tmp_path.unlink()
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-99999")
+    @pytest.mark.user_story("US-00057")
     def test_end_to_end_integration_workflow(self):
         """Test complete end-to-end integration workflow."""
         # Create Epic and User Story
@@ -377,6 +391,8 @@ Feature: Test Database Integration
 
         assert epic.completion_percentage == 0.0  # No tests passed in this scenario
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-99999")
+    @pytest.mark.user_story("US-00057")
     def test_error_handling_and_recovery(self):
         """Test error handling and recovery in integration workflow."""
         # Test with invalid Epic reference
@@ -407,6 +423,8 @@ Feature: Test Database Integration
         assert len(tests) == 1
         assert tests[0].epic_id is None  # Not linked
 
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-99999")
+    @pytest.mark.user_story("US-00057")
     def test_duplicate_test_handling(self):
         """Test handling of duplicate test discoveries."""
         # Create initial test

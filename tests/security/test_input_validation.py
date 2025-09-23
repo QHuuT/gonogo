@@ -6,9 +6,11 @@ import pytest
 from fastapi.testclient import TestClient
 
 
+@pytest.mark.component("security")
 class TestInputValidation:
     """Security tests for input validation and sanitization."""
 
+    @pytest.mark.component("security")
     def test_xss_prevention_in_endpoints(self, client: TestClient, malicious_payloads):
         """Test that XSS payloads are properly handled."""
 
@@ -24,6 +26,7 @@ class TestInputValidation:
                 assert "javascript:" not in response_text.lower()
                 assert "onerror=" not in response_text.lower()
 
+    @pytest.mark.component("security")
     def test_sql_injection_prevention(self, client: TestClient):
         """Test SQL injection prevention in API endpoints."""
 
@@ -61,6 +64,7 @@ class TestInputValidation:
                 for keyword in dangerous_keywords:
                     assert keyword not in error_message
 
+    @pytest.mark.component("security")
     def test_template_injection_prevention(self, client: TestClient):
         """Test prevention of template injection attacks."""
 
@@ -83,6 +87,7 @@ class TestInputValidation:
                 assert "49" not in response_text  # 7*7 = 49
                 assert payload not in response_text or response_text.count(payload) <= 1
 
+    @pytest.mark.component("security")
     def test_path_traversal_prevention(self, client: TestClient):
         """Test prevention of path traversal attacks."""
 
@@ -116,6 +121,7 @@ class TestInputValidation:
                 for indicator in system_indicators:
                     assert indicator not in content
 
+    @pytest.mark.component("security")
     def test_command_injection_prevention(self, client: TestClient):
         """Test prevention of command injection attacks."""
 
@@ -152,6 +158,7 @@ class TestInputValidation:
                 for output in command_outputs:
                     assert output not in response_text
 
+    @pytest.mark.component("security")
     def test_http_header_injection_prevention(self, client: TestClient):
         """Test prevention of HTTP header injection attacks."""
 
@@ -172,6 +179,7 @@ class TestInputValidation:
             for header in injected_headers:
                 assert header not in [h.lower() for h in response.headers.keys()]
 
+    @pytest.mark.component("security")
     def test_ldap_injection_prevention(self, client: TestClient):
         """Test prevention of LDAP injection attacks."""
 
@@ -188,6 +196,7 @@ class TestInputValidation:
             # Should handle LDAP-style input safely
             assert response.status_code in [200, 400, 422]
 
+    @pytest.mark.component("security")
     def test_nosql_injection_prevention(self, client: TestClient):
         """Test prevention of NoSQL injection attacks."""
 
@@ -205,6 +214,7 @@ class TestInputValidation:
             # Should handle NoSQL-style input safely
             assert response.status_code in [200, 400, 422]
 
+    @pytest.mark.component("security")
     def test_xml_injection_prevention(self, client: TestClient):
         """Test prevention of XML injection and XXE attacks."""
 
@@ -228,6 +238,7 @@ class TestInputValidation:
                 assert "root:" not in response_text
                 assert "passwd" not in response_text
 
+    @pytest.mark.component("security")
     def test_file_upload_security(self, client: TestClient):
         """Test file upload security measures."""
 
@@ -249,6 +260,7 @@ class TestInputValidation:
             # Should reject file uploads or handle safely
             assert response.status_code in [400, 405, 413, 415, 422]
 
+    @pytest.mark.component("security")
     def test_rate_limiting_headers(self, client: TestClient):
         """Test that appropriate headers are set for security."""
 
@@ -268,6 +280,7 @@ class TestInputValidation:
                 assert "nginx" not in header_value
                 assert "microsoft" not in header_value
 
+    @pytest.mark.component("security")
     def test_error_message_information_disclosure(self, client: TestClient):
         """Test that error messages don't disclose sensitive information."""
 

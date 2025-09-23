@@ -22,6 +22,7 @@ from src.shared.logging import (
 )
 
 
+@pytest.mark.user_story("US-00022")
 class TestStructuredLoggingDemo:
     """Demonstration of structured logging capabilities."""
 
@@ -47,6 +48,7 @@ class TestStructuredLoggingDemo:
 
         self.logger = StructuredLogger(self.config)
 
+    @pytest.mark.user_story("US-00022")
     def test_basic_logging_functionality(self):
         """Test basic logging operations."""
         # Test different log levels
@@ -70,6 +72,7 @@ class TestStructuredLoggingDemo:
         assert "warning" in log_levels
         assert "error" in log_levels
 
+    @pytest.mark.user_story("US-00022")
     def test_test_lifecycle_logging(self):
         """Test logging for test lifecycle events."""
         test_id = "test_123"
@@ -90,6 +93,7 @@ class TestStructuredLoggingDemo:
         assert test_logs[1].test_status == "passed"
         assert test_logs[1].duration_ms == 10.5
 
+    @pytest.mark.user_story("US-00022")
     def test_test_failure_logging(self):
         """Test logging for test failures."""
         test_id = "test_456"
@@ -117,6 +121,7 @@ class TestStructuredLoggingDemo:
         assert "Assertion failed" in failure_log.message
         assert failure_log.stack_trace is not None
 
+    @pytest.mark.user_story("US-00022")
     def test_gdpr_sanitization(self):
         """Test GDPR-compliant data sanitization."""
         # Log some data that should be sanitized
@@ -142,6 +147,7 @@ class TestStructuredLoggingDemo:
         assert "user@example.com" not in log_entry.message
         assert "192.168.1.100" not in log_entry.message
 
+    @pytest.mark.user_story("US-00022")
     def test_json_formatting(self):
         """Test JSON log formatting."""
         formatter = JSONFormatter(compact=True, include_metadata=True)
@@ -169,6 +175,7 @@ class TestStructuredLoggingDemo:
         assert "metadata" in parsed
         assert "tags" in parsed
 
+    @pytest.mark.user_story("US-00022")
     def test_human_readable_formatting(self):
         """Test human-readable log formatting."""
         formatter = TestFormatter(show_timestamp=True, colorize=False)
@@ -184,6 +191,7 @@ class TestStructuredLoggingDemo:
             assert "[INFO]" in formatted or "[DEBUG]" in formatted
             assert "human_readable_test" in formatted
 
+    @pytest.mark.user_story("US-00022")
     def test_summary_generation(self):
         """Test summary report generation."""
         # Create multiple test results
@@ -217,6 +225,7 @@ class TestStructuredLoggingDemo:
         assert "Total Tests:" in summary
         assert "Success Rate:" in summary
 
+    @pytest.mark.user_story("US-00022")
     def test_configuration_info(self):
         """Test that configuration information is accessible."""
         config_info = self.logger.get_config_info()

@@ -10,6 +10,8 @@ import pytest
 import requests
 
 
+@pytest.mark.epic("EP-00001")
+@pytest.mark.component("backend")
 class TestRTMActualBehavior:
     """Test actual RTM behavior - what happens when buttons are clicked"""
 
@@ -21,6 +23,8 @@ class TestRTMActualBehavior:
         response = requests.get(f"{self.BASE_URL}/health", timeout=5)
         assert response.status_code == 200
 
+    @pytest.mark.epic("EP-00001")
+    @pytest.mark.component("backend")
     def test_clicking_status_filter_actually_filters(self):
         """Test that status filter buttons actually redirect to filtered URLs"""
         self.check_server_running()
@@ -42,6 +46,8 @@ class TestRTMActualBehavior:
         )
         print("OK Status filter redirects to correct URL")
 
+    @pytest.mark.epic("EP-00001")
+    @pytest.mark.component("backend")
     def test_clicking_defect_filter_actually_filters(self):
         """Test that defect filter buttons actually redirect to filtered URLs"""
         self.check_server_running()
@@ -70,6 +76,8 @@ class TestRTMActualBehavior:
         )
         print("OK Defect status filter redirects to correct URL")
 
+    @pytest.mark.epic("EP-00001")
+    @pytest.mark.component("backend")
     def test_epic_headers_still_have_toggle_functionality(self):
         """Test that epic headers still have toggle functionality and aren't affected by filters"""
         self.check_server_running()
@@ -103,6 +111,8 @@ class TestRTMActualBehavior:
 
         print("OK Epic headers don't contain filter buttons")
 
+    @pytest.mark.epic("EP-00001")
+    @pytest.mark.component("backend")
     def test_filter_clear_functionality(self):
         """Test that 'all' filters actually clear parameters"""
         self.check_server_running()
@@ -123,6 +133,8 @@ class TestRTMActualBehavior:
         assert "defect_status_filter" not in clear_url
         print("OK Filter clearing works correctly")
 
+    @pytest.mark.epic("EP-00001")
+    @pytest.mark.component("backend")
     def test_multiple_filters_work_independently(self):
         """Test that different filter types can be applied independently"""
         self.check_server_running()
@@ -140,6 +152,8 @@ class TestRTMActualBehavior:
         assert "defect_priority_filter=critical" in request_url
         print("OK Multiple filters work independently")
 
+    @pytest.mark.epic("EP-00001")
+    @pytest.mark.component("backend")
     def test_filter_buttons_exist_and_have_correct_onclick(self):
         """Test that filter buttons exist and have the correct onclick handlers"""
         self.check_server_running()
@@ -170,6 +184,8 @@ class TestRTMActualBehavior:
             f"OK Found filter buttons: {len(critical_buttons)} critical, {len(open_buttons)} open, {len(all_buttons)} all"
         )
 
+    @pytest.mark.epic("EP-00001")
+    @pytest.mark.component("backend")
     def test_regression_scenario_specifically(self):
         """Test the exact scenario that was reported as broken"""
         self.check_server_running()
@@ -226,6 +242,8 @@ class TestRTMActualBehavior:
         )
 
 
+@pytest.mark.epic("EP-00001")
+@pytest.mark.component("backend")
 def test_actual_filter_behavior():
     """Standalone function for direct testing"""
     test = TestRTMActualBehavior()

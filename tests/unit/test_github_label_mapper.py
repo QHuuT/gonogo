@@ -23,9 +23,13 @@ from src.shared.utils.github_label_mapper import (
 )
 
 
+@pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+@pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
 class TestTraceabilityMatrixParser:
     """Test traceability matrix parsing functionality."""
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_init_with_path(self):
         """Test initialization with matrix path."""
         path = Path("test/matrix.md")
@@ -33,6 +37,8 @@ class TestTraceabilityMatrixParser:
         assert parser.matrix_path == path
         assert parser._epic_mappings is None
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_get_default_mappings(self):
         """Test default epic mappings fallback."""
         parser = TraceabilityMatrixParser(Path("nonexistent.md"))
@@ -47,6 +53,8 @@ class TestTraceabilityMatrixParser:
 
         assert mappings == expected
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_determine_component_from_description(self):
         """Test component determination from epic description."""
         parser = TraceabilityMatrixParser(Path("test.md"))
@@ -77,6 +85,8 @@ class TestTraceabilityMatrixParser:
 
     @patch("pathlib.Path.exists")
     @patch("pathlib.Path.read_text")
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_get_epic_mappings_from_file(self, mock_read_text, mock_exists):
         """Test parsing epic mappings from matrix file."""
         mock_exists.return_value = True
@@ -94,6 +104,8 @@ class TestTraceabilityMatrixParser:
         assert mappings["EP-00002"]["epic_label"] == "comment-system"
 
     @patch("pathlib.Path.exists")
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_get_epic_mappings_file_not_found(self, mock_exists):
         """Test fallback when matrix file doesn't exist."""
         mock_exists.return_value = False
@@ -106,6 +118,8 @@ class TestTraceabilityMatrixParser:
         assert "EP-00001" in mappings
 
 
+@pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+@pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
 class TestGitHubIssueLabelMapper:
     """Test the main label mapping functionality."""
 
@@ -125,6 +139,8 @@ class TestGitHubIssueLabelMapper:
             issue_number=123,
         )
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_extract_form_value_basic(self, mapper):
         """Test basic form value extraction."""
         issue_body = """
@@ -141,6 +157,8 @@ class TestGitHubIssueLabelMapper:
         assert mapper.extract_form_value(issue_body, "Epic ID") == "EP-00001"
         assert mapper.extract_form_value(issue_body, "Nonexistent") is None
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_extract_form_value_no_response(self, mapper):
         """Test handling of '_No response_' values."""
         issue_body = """
@@ -151,6 +169,8 @@ class TestGitHubIssueLabelMapper:
 
         assert mapper.extract_form_value(issue_body, "Priority") is None
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_extract_form_value_alternative_formats(self, mapper):
         """Test extraction from different markdown formats."""
         test_cases = [
@@ -163,6 +183,8 @@ class TestGitHubIssueLabelMapper:
             result = mapper.extract_form_value(body, field)
             assert result == expected
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_map_priority_labels(self, mapper, sample_issue_data):
         """Test priority label mapping."""
         test_cases = [
@@ -183,6 +205,8 @@ class TestGitHubIssueLabelMapper:
             result = mapper.map_priority_labels(issue_data)
             assert result == expected
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_map_epic_labels(self, mapper):
         """Test epic-to-component label mapping."""
         # Mock the instance method instead of the class method
@@ -208,6 +232,8 @@ class TestGitHubIssueLabelMapper:
             result = mapper.map_epic_labels(issue_data)
             assert result == expected
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_map_gdpr_labels(self, mapper):
         """Test GDPR label mapping based on content."""
         test_cases = [
@@ -229,6 +255,8 @@ class TestGitHubIssueLabelMapper:
             result = mapper.map_gdpr_labels(issue_data)
             assert result == expected
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_map_release_labels(self, mapper):
         """Test release label mapping logic."""
         test_cases = [
@@ -255,6 +283,8 @@ class TestGitHubIssueLabelMapper:
             result = mapper.map_release_labels(issue_data)
             assert result == expected
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_map_status_labels(self, mapper):
         """Test status label mapping."""
         test_cases = [
@@ -271,6 +301,8 @@ class TestGitHubIssueLabelMapper:
             result = mapper.map_status_labels(issue_data)
             assert result == expected
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_map_status_labels_preserves_existing(self, mapper):
         """Test that existing status labels are preserved."""
         issue_data = IssueData(
@@ -282,6 +314,8 @@ class TestGitHubIssueLabelMapper:
         result = mapper.map_status_labels(issue_data)
         assert result == set()  # Should not add new status labels
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_generate_labels_integration(self, mapper):
         """Test full label generation integration."""
         # Mock the instance method instead of the class method
@@ -323,6 +357,8 @@ class TestGitHubIssueLabelMapper:
         assert set(result) == expected_labels
         assert "needs-triage" not in result
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_generate_labels_error_handling(self, mapper):
         """Test error handling in label generation."""
         # Mock an error in one of the mapping methods
@@ -341,9 +377,13 @@ class TestGitHubIssueLabelMapper:
             assert result == ["original"]
 
 
+@pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+@pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
 class TestIssueData:
     """Test the IssueData dataclass."""
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_issue_data_creation(self):
         """Test IssueData creation and attributes."""
         issue_data = IssueData(
@@ -359,9 +399,13 @@ class TestIssueData:
         assert issue_data.issue_number == 123
 
 
+@pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+@pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
 class TestLabelMapping:
     """Test the LabelMapping dataclass."""
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_label_mapping_creation(self):
         """Test LabelMapping creation with default priority."""
         mapping = LabelMapping(
@@ -373,6 +417,8 @@ class TestLabelMapping:
         assert mapping.target_label == "priority/high"
         assert mapping.priority == 0
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_label_mapping_with_priority(self):
         """Test LabelMapping creation with custom priority."""
         mapping = LabelMapping(
@@ -386,6 +432,8 @@ class TestLabelMapping:
 
 
 # Integration tests
+@pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+@pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
 class TestLabelMapperIntegration:
     """Integration tests with real-like data."""
 
@@ -408,6 +456,8 @@ class TestLabelMapperIntegration:
 
         return GitHubIssueLabelMapper(matrix_file)
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_full_epic_workflow(self, integration_mapper):
         """Test complete epic label assignment workflow."""
         epic_issue = IssueData(
@@ -451,6 +501,8 @@ class TestLabelMapperIntegration:
         assert set(labels) == expected_labels
         assert "needs-triage" not in labels
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_user_story_inheritance(self, integration_mapper):
         """Test user story label inheritance from parent epic."""
         user_story_issue = IssueData(

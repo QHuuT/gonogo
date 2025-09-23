@@ -17,6 +17,8 @@ from sqlalchemy.orm import sessionmaker
 from src.be.models.traceability.base import Base, TraceabilityBase
 
 
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00052")
 class TestEntity(TraceabilityBase):
     """Test entity for testing base functionality."""
 
@@ -35,6 +37,8 @@ def db_session():
 
 
 @pytest.fixture
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00052")
 def test_entity():
     """Create a test entity instance."""
     return TestEntity(
@@ -42,9 +46,13 @@ def test_entity():
     )
 
 
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00052")
 class TestTraceabilityBase:
     """Test cases for TraceabilityBase functionality."""
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_entity_creation(self, test_entity):
         """Test basic entity creation."""
         assert test_entity.title == "Test Entity"
@@ -52,6 +60,8 @@ class TestTraceabilityBase:
         assert test_entity.status == "planned"
         assert test_entity.id is None  # Not saved yet
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_entity_persistence(self, db_session, test_entity):
         """Test entity can be saved and retrieved."""
         db_session.add(test_entity)
@@ -61,6 +71,8 @@ class TestTraceabilityBase:
         assert test_entity.created_at is not None
         assert test_entity.updated_at is not None
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_set_git_context(self, test_entity):
         """Test git context setting."""
         commit_sha = "abc123def456"
@@ -71,6 +83,8 @@ class TestTraceabilityBase:
         assert test_entity.introduced_in_commit == commit_sha
         assert test_entity.introduced_in_branch == branch
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_mark_resolved(self, test_entity):
         """Test marking entity as resolved."""
         commit_sha = "def456abc123"
@@ -82,6 +96,8 @@ class TestTraceabilityBase:
         assert test_entity.released_in_version == release_version
         assert test_entity.status == "completed"
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_mark_resolved_status_preservation(self, test_entity):
         """Test that already completed status is preserved."""
         test_entity.status = "done"
@@ -89,6 +105,8 @@ class TestTraceabilityBase:
 
         assert test_entity.status == "done"
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_add_affected_version_new_list(self, test_entity):
         """Test adding affected version to new entity."""
         version = "v1.1.0"
@@ -98,6 +116,8 @@ class TestTraceabilityBase:
         assert version in versions
         assert len(versions) == 1
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_add_affected_version_existing_list(self, test_entity):
         """Test adding version to existing list."""
         # Set up existing versions
@@ -110,6 +130,8 @@ class TestTraceabilityBase:
         assert "v1.1.0" in versions
         assert len(versions) == 2
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_add_affected_version_duplicate(self, test_entity):
         """Test that duplicate versions are not added."""
         version = "v1.1.0"
@@ -120,6 +142,8 @@ class TestTraceabilityBase:
         assert len(versions) == 1
         assert version in versions
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_add_fixed_version(self, test_entity):
         """Test adding fixed version."""
         version = "v1.2.0"
@@ -128,6 +152,8 @@ class TestTraceabilityBase:
         versions = json.loads(test_entity.fixed_in_versions)
         assert version in versions
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_is_fixed_in_version_true(self, test_entity):
         """Test checking if fixed in specific version - positive case."""
         version = "v1.2.0"
@@ -135,22 +161,30 @@ class TestTraceabilityBase:
 
         assert test_entity.is_fixed_in_version(version) is True
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_is_fixed_in_version_false(self, test_entity):
         """Test checking if fixed in specific version - negative case."""
         test_entity.add_fixed_version("v1.2.0")
 
         assert test_entity.is_fixed_in_version("v1.3.0") is False
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_is_fixed_in_version_empty(self, test_entity):
         """Test checking fixed version on entity with no fixed versions."""
         assert test_entity.is_fixed_in_version("v1.0.0") is False
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_is_fixed_in_version_invalid_json(self, test_entity):
         """Test handling of invalid JSON in fixed_in_versions."""
         test_entity.fixed_in_versions = "invalid json"
 
         assert test_entity.is_fixed_in_version("v1.0.0") is False
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_to_dict_basic(self, test_entity):
         """Test dictionary conversion with basic data."""
         result = test_entity.to_dict()
@@ -162,6 +196,8 @@ class TestTraceabilityBase:
         assert "created_at" in result
         assert "updated_at" in result
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_to_dict_with_git_context(self, test_entity):
         """Test dictionary conversion with git context."""
         test_entity.set_git_context("abc123", "main")
@@ -171,6 +207,8 @@ class TestTraceabilityBase:
         assert result["introduced_in_commit"] == "abc123"
         assert result["introduced_in_branch"] == "main"
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_repr(self, test_entity):
         """Test string representation."""
         repr_str = repr(test_entity)
@@ -179,6 +217,8 @@ class TestTraceabilityBase:
         assert "Test Entity" in repr_str
         assert "planned" in repr_str
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_github_integration_fields(self, test_entity):
         """Test GitHub integration fields."""
         test_entity.github_issue_number = 123
@@ -187,6 +227,8 @@ class TestTraceabilityBase:
         assert test_entity.github_issue_number == 123
         assert "github.com" in test_entity.github_issue_url
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_version_tracking_fields(self, test_entity):
         """Test version tracking fields."""
         test_entity.target_release_version = "v1.2.0"
@@ -195,6 +237,8 @@ class TestTraceabilityBase:
         assert test_entity.target_release_version == "v1.2.0"
         assert test_entity.released_in_version == "v1.1.5"
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_json_version_handling_corruption(self, test_entity):
         """Test handling of corrupted JSON in version fields."""
         # Test add_affected_version with corrupted JSON
@@ -211,6 +255,8 @@ class TestTraceabilityBase:
         fixed_versions = json.loads(test_entity.fixed_in_versions)
         assert "v1.1.0" in fixed_versions
 
+    @pytest.mark.epic("EP-00005")
+    @pytest.mark.user_story("US-00052")
     def test_none_version_handling(self, test_entity):
         """Test handling of None values in version fields."""
         test_entity.affects_versions = None

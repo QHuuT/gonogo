@@ -18,6 +18,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 
+@pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+@pytest.mark.component("backend")
 class TestRTMFilterFunctionality:
     """Test RTM JavaScript filter functions with mock DOM structures."""
 
@@ -26,6 +28,8 @@ class TestRTMFilterFunctionality:
         self.mock_dom = MagicMock()
         self.sample_epic_id = "EP-00001"
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_filter_tests_by_type_selector(self):
         """Test that filterTestsByType uses correct CSS selectors."""
         # Expected selector after our fix
@@ -38,6 +42,8 @@ class TestRTMFilterFunctionality:
         assert f"#epic-{self.sample_epic_id}" in expected_selector
         assert "tbody" in expected_selector
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_filter_user_stories_by_status_selector(self):
         """Test that filterUserStoriesByStatus uses correct CSS selectors."""
         # Expected selector after our fix
@@ -50,6 +56,8 @@ class TestRTMFilterFunctionality:
         assert f"#epic-{self.sample_epic_id}" in expected_selector
         assert "tbody" in expected_selector
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_filter_defects_selector(self):
         """Test that filterDefects uses correct CSS selectors."""
         # Expected selector (unchanged as it was already correct)
@@ -62,6 +70,8 @@ class TestRTMFilterFunctionality:
         assert f"#epic-{self.sample_epic_id}" in expected_selector
         assert "tbody" in expected_selector
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_update_filter_button_states_defect_handling(self):
         """Test that updateFilterButtonStates handles defect buttons correctly."""
         filter_group = f"epic-{self.sample_epic_id}-defect"
@@ -77,6 +87,8 @@ class TestRTMFilterFunctionality:
         expected_selector = f"#epic-{epic_id} .defect-filter-button"
         assert ".defect-filter-button" in expected_selector
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_update_filter_button_states_standard_handling(self):
         """Test that updateFilterButtonStates handles standard buttons correctly."""
         test_filter_group = f"epic-{self.sample_epic_id}-test"
@@ -93,6 +105,8 @@ class TestRTMFilterFunctionality:
         assert "data-filter-group" in expected_test_selector
         assert "data-filter-group" in expected_us_selector
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_filter_data_attributes(self):
         """Test that filter functions look for correct data attributes."""
         # Test row data attributes that should be used for filtering
@@ -106,6 +120,8 @@ class TestRTMFilterFunctionality:
         assert "data-defect-priority" in defect_data_attributes
         assert "data-defect-status" in defect_data_attributes
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_filter_button_data_attributes(self):
         """Test that filter buttons have correct data attributes."""
         # Button data attributes that should be used for button state management
@@ -121,6 +137,8 @@ class TestRTMFilterFunctionality:
         assert "data-defect-filter" in defect_button_attributes
         assert "data-filter-group" not in defect_button_attributes
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_filter_css_classes(self):
         """Test that filter functions target correct CSS classes."""
         # Row CSS classes that should be targeted
@@ -138,6 +156,8 @@ class TestRTMFilterFunctionality:
         for css_class in expected_row_classes + expected_button_classes:
             assert css_class.startswith(".")
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_epic_container_structure(self):
         """Test that epic containers have correct ID structure."""
         # Epic container ID pattern
@@ -147,6 +167,8 @@ class TestRTMFilterFunctionality:
         assert expected_epic_container_id.startswith("epic-")
         assert self.sample_epic_id in expected_epic_container_id
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_filter_values_mapping(self):
         """Test that filter values map correctly to data attributes."""
         # Test filter value mappings
@@ -161,6 +183,8 @@ class TestRTMFilterFunctionality:
         assert len(defect_priorities) > 0
         assert len(defect_statuses) > 0
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_aria_attributes(self):
         """Test that accessibility attributes are correctly handled."""
         # ARIA attributes that should be set
@@ -170,6 +194,8 @@ class TestRTMFilterFunctionality:
         for attr in expected_aria_attributes:
             assert attr.startswith("aria-")
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_console_warning_scenarios(self):
         """Test that appropriate console warnings are generated."""
         # Scenarios that should generate console warnings
@@ -195,6 +221,8 @@ class TestRTMFilterFunctionality:
         assert epic_id in us_selector
         assert epic_id in defect_selector
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_animation_integration(self):
         """Test that filter functions integrate with animation system."""
         # Animation classes and functions that should be available
@@ -204,6 +232,8 @@ class TestRTMFilterFunctionality:
         for element in animation_elements:
             assert isinstance(element, str)
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_filter_count_display_integration(self):
         """Test that filter count displays are updated correctly."""
         # Count display classes that should be targeted
@@ -218,6 +248,8 @@ class TestRTMFilterFunctionality:
         for css_class in count_display_classes:
             assert css_class.startswith(".")
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_comprehensive_integration(self):
         """Test that all filter components work together."""
         # Integration test to verify all parts work together
@@ -259,9 +291,13 @@ class TestRTMFilterFunctionality:
             assert len(selector) > 0
 
 
+@pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+@pytest.mark.component("backend")
 class TestRTMFilterRegression:
     """Regression tests to ensure filtering issues don't reoccur."""
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_epic_collapse_regression(self):
         """Test that epic expand/collapse doesn't interfere with filtering."""
         # Ensure epic toggle functionality remains separate from filtering
@@ -276,6 +312,8 @@ class TestRTMFilterRegression:
         for filter_func in filter_functions:
             assert filter_func != epic_toggle_function
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_parameter_mismatch_prevention(self):
         """Test that function parameters match HTML onclick calls."""
         # Function signatures that should match HTML onclick calls
@@ -292,6 +330,8 @@ class TestRTMFilterRegression:
         us_params = ["epicId", "status"]
         assert len(us_params) == 2
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_selector_specificity(self):
         """Test that selectors are specific enough to avoid conflicts."""
         epic_id = "EP-00001"
@@ -307,6 +347,8 @@ class TestRTMFilterRegression:
         # Verify selectors are distinct
         assert test_selector != us_selector
 
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00007")
+    @pytest.mark.component("backend")
     def test_button_state_consistency(self):
         """Test that button states are managed consistently."""
         # CSS classes for button states
