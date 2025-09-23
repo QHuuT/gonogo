@@ -17,7 +17,8 @@
       "Bash(gh label:*)",
       "Bash(alembic upgrade:*)",
       "Bash(curl:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git revert:*)"
     ],
     "deny": [],
     "ask": []
