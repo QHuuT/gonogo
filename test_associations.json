@@ -1,10 +1,12 @@
 {
   "unit\\backend\\test_rtm_filter_functionality.py": {
-    "user_stories": [],
+    "user_stories": [
+      "US-00046"
+    ],
     "epics": [
-      "EP-00001",
       "EP-00007",
-      "EP-00002"
+      "EP-00005",
+      "EP-00006"
     ],
     "components": [
       "backend"
@@ -58,17 +60,17 @@
   },
   "unit\\shared\\test_github_label_mapper.py": {
     "user_stories": [
-      "US-00001",
-      "US-00002",
       "US-00004",
+      "US-00015",
+      "US-00001",
       "US-00003",
-      "US-00015"
+      "US-00002"
     ],
     "epics": [
       "EP-00001",
       "EP-00004",
-      "EP-00002",
-      "EP-00003"
+      "EP-00003",
+      "EP-00002"
     ],
     "components": [
       "shared"
@@ -82,7 +84,6 @@
       "EP-00001"
     ],
     "components": [
-      "backend",
       "shared"
     ],
     "test_type": "unit",
@@ -114,15 +115,15 @@
   },
   "unit\\shared\\test_unicode_encoding_validation.py": {
     "user_stories": [
-      "US-00031",
-      "US-00001",
       "US-00002",
+      "US-00001",
+      "US-00031",
       "US-00003"
     ],
     "epics": [
       "EP-00001",
-      "EP-00002",
-      "EP-00003"
+      "EP-00003",
+      "EP-00002"
     ],
     "components": [
       "shared"
@@ -136,8 +137,8 @@
     ],
     "epics": [
       "EP-00001",
-      "EP-00005",
-      "EP-00002"
+      "EP-00002",
+      "EP-00005"
     ],
     "components": [
       "shared"
@@ -174,9 +175,9 @@
   },
   "unit\\shared\\models\\test_user_story_model.py": {
     "user_stories": [
-      "US-00052",
+      "US-00002",
       "US-00001",
-      "US-00002"
+      "US-00052"
     ],
     "epics": [
       "EP-00001",
@@ -190,14 +191,14 @@
   },
   "unit\\shared\\shared\\testing\\test_database_integration.py": {
     "user_stories": [
-      "US-00057",
-      "US-99999"
+      "US-99999",
+      "US-00057"
     ],
     "epics": [
-      "EP-12345",
       "EP-00057",
-      "EP-00005",
-      "EP-99999"
+      "EP-12345",
+      "EP-99999",
+      "EP-00005"
     ],
     "components": [
       "shared"
@@ -223,8 +224,8 @@
       "US-00055"
     ],
     "epics": [
-      "EP-00005",
-      "EP-99999"
+      "EP-99999",
+      "EP-00005"
     ],
     "components": [
       "backend"
@@ -249,8 +250,8 @@
     ],
     "epics": [
       "EP-00057",
-      "EP-00005",
-      "EP-99999"
+      "EP-99999",
+      "EP-00005"
     ],
     "components": [],
     "test_type": "integration",
@@ -270,17 +271,17 @@
   "integration\\github_rtm\\test_github_actions_integration.py": {
     "user_stories": [
       "US-00001",
-      "US-00002",
       "US-00010",
+      "US-00020",
       "US-00003",
       "US-00056",
-      "US-00020",
-      "US-00011"
+      "US-00011",
+      "US-00002"
     ],
     "epics": [
       "EP-00001",
-      "EP-00005",
       "EP-00007",
+      "EP-00005",
       "EP-00006"
     ],
     "components": [
@@ -291,13 +292,13 @@
   },
   "integration\\rtm_api\\test_rtm_api.py": {
     "user_stories": [
-      "US-00001",
-      "US-00054"
+      "US-00054",
+      "US-00001"
     ],
     "epics": [
       "EP-00001",
-      "EP-00005",
-      "EP-99999"
+      "EP-99999",
+      "EP-00005"
     ],
     "components": [
       "backend"
@@ -364,9 +365,9 @@
   },
   "integration\\rtm_plugin\\test_plugin_system.py": {
     "user_stories": [
-      "US-00014",
       "US-00017",
-      "US-12345"
+      "US-12345",
+      "US-00014"
     ],
     "epics": [
       "EP-00001",
@@ -391,16 +392,16 @@
   },
   "integration\\rtm_workflow\\test_rtm_end_to_end.py": {
     "user_stories": [
+      "US-00017",
       "US-00001",
       "US-00014",
-      "US-00002",
       "US-00003",
-      "US-00017"
+      "US-00002"
     ],
     "epics": [
       "EP-00001",
-      "EP-00005",
-      "EP-00002"
+      "EP-00002",
+      "EP-00005"
     ],
     "components": [
       "backend"
@@ -446,8 +447,8 @@
   },
   "bdd\\features\\blog-content.feature": {
     "user_stories": [
-      "US-00001",
-      "US-00002"
+      "US-00002",
+      "US-00001"
     ],
     "epics": [
       "EP-00001"
@@ -460,9 +461,9 @@
   },
   "bdd\\features\\comment-system.feature": {
     "user_stories": [
-      "US-00003",
+      "US-00004",
       "US-00005",
-      "US-00004"
+      "US-00003"
     ],
     "epics": [
       "EP-00002"
@@ -488,8 +489,8 @@
   },
   "bdd\\features\\gdpr-rights.feature": {
     "user_stories": [
-      "US-00007",
-      "US-00008"
+      "US-00008",
+      "US-00007"
     ],
     "epics": [],
     "components": [
