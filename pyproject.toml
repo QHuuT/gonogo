@@ -34,7 +34,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src"]
+packages = ["src/be", "src/security", "src/shared"]
 
 [tool.black]
 line-length = 88
