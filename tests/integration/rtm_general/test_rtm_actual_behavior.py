@@ -10,11 +10,9 @@ import pytest
 import requests
 
 
-@pytest.mark.epic("EP-00001")
+@pytest.mark.epic("EP-00005")
 @pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
-@pytest.mark.test_category("undefined")
-@pytest.mark.priority("undefined")
 class TestRTMActualBehavior:
     """Test actual RTM behavior - what happens when buttons are clicked"""
 
@@ -234,8 +232,8 @@ class TestRTMActualBehavior:
 @pytest.mark.epic("EP-00001")
 @pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
-@pytest.mark.test_category("undefined")
-@pytest.mark.priority("undefined")
+@pytest.mark.test_category("regression")
+@pytest.mark.priority("high")
 def test_actual_filter_behavior():
     """Standalone function for direct testing"""
     test = TestRTMActualBehavior()

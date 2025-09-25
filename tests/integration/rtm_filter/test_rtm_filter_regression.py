@@ -15,8 +15,6 @@ import requests
 @pytest.mark.epic("EP-00005")
 @pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
-@pytest.mark.test_category("undefined")
-@pytest.mark.priority("undefined")
 class TestRTMFilterRegression:
     """Test RTM filter functionality via HTTP requests (Robot Framework ready)"""
 

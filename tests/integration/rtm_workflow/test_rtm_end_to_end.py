@@ -27,12 +27,10 @@ from shared.utils.rtm_link_generator import RTMLinkGenerator
 from shared.utils.rtm_plugins import PluginManager
 
 
-@pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
-@pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00014", "US-00017")
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00017")
 @pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
-@pytest.mark.test_category("undefined")
-@pytest.mark.priority("undefined")
 class TestRTMEndToEnd:
     """End-to-end integration tests for RTM automation."""
 
@@ -350,8 +348,8 @@ class TestRTMEndToEnd:
 @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00014", "US-00017")
 @pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
-@pytest.mark.test_category("undefined")
-@pytest.mark.priority("undefined")
+@pytest.mark.test_category("performance")
+@pytest.mark.priority("low")
 class TestRTMPerformance:
     """Performance tests for RTM automation."""
 

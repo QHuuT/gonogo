@@ -69,12 +69,10 @@ def sample_epic(client, test_db):
     return response.json()
 
 
-@pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
-@pytest.mark.user_story("US-00001", "US-00054")
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00054")
 @pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
-@pytest.mark.test_category("undefined")
-@pytest.mark.priority("undefined")
 class TestEpicAPI:
     """Test Epic CRUD operations."""
 
@@ -176,12 +174,10 @@ class TestEpicAPI:
         assert response.status_code == 404
 
 
-@pytest.mark.epic("EP-00001", "EP-00005", "EP-99999")
-@pytest.mark.user_story("US-00001", "US-00054")
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00054")
 @pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
-@pytest.mark.test_category("undefined")
-@pytest.mark.priority("undefined")
 class TestUserStoryAPI:
     """Test User Story CRUD operations."""
 

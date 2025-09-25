@@ -20,8 +20,6 @@ import pytest
 @pytest.mark.epic("EP-00005")
 @pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
-@pytest.mark.test_category("undefined")
-@pytest.mark.priority("undefined")
 class TestRTMFilterIntegration:
     """Integration tests for RTM filter functionality."""
 
@@ -30,8 +28,8 @@ class TestRTMFilterIntegration:
         self.test_output_dir = Path("quality/reports/test_rtm_filters")
         self.test_output_dir.mkdir(exist_ok=True)
 
-    @pytest.mark.test_category("undefined")
-    @pytest.mark.priority("undefined")
+    @pytest.mark.test_category("smoke")
+    @pytest.mark.priority("high")
     def test_rtm_report_generation(self):
         """Test that RTM reports can be generated successfully."""
         # Generate a test RTM report
@@ -49,8 +47,8 @@ class TestRTMFilterIntegration:
         expected_output = Path("quality/reports/dynamic_rtm/rtm_matrix_complete.html")
         assert expected_output.exists(), "RTM report was not generated"
 
-    @pytest.mark.test_category("undefined")
-    @pytest.mark.priority("undefined")
+    @pytest.mark.test_category("regression")
+    @pytest.mark.priority("high")
     def test_rtm_html_structure_for_filtering(self):
         """Test that generated RTM HTML has correct structure for filtering."""
         # First generate the report
@@ -387,8 +385,8 @@ class TestRTMFilterIntegration:
 @pytest.mark.epic("EP-00005")
 @pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
-@pytest.mark.test_category("undefined")
-@pytest.mark.priority("undefined")
+@pytest.mark.test_category("regression")
+@pytest.mark.priority("high")
 class TestRTMFilterRegression:
     """Regression tests to ensure the filtering fix doesn't break existing functionality."""
 

@@ -12,11 +12,9 @@ from pathlib import Path
 import pytest
 
 
-@pytest.mark.epic("EP-00001")
+@pytest.mark.epic("EP-00005")
 @pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
-@pytest.mark.test_category("undefined")
-@pytest.mark.priority("undefined")
 class TestRTMFilterValidation:
     """Validation tests for RTM filter functionality."""
 
@@ -243,8 +241,8 @@ class TestRTMFilterValidation:
 @pytest.mark.epic("EP-00001")
 @pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
-@pytest.mark.test_category("undefined")
-@pytest.mark.priority("undefined")
+@pytest.mark.test_category("regression")
+@pytest.mark.priority("medium")
 class TestRTMFilterUnitValidation:
     """Unit-level validation of the specific fixes."""
 

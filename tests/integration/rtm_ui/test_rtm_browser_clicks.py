@@ -15,11 +15,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-@pytest.mark.epic("EP-00001")
+@pytest.mark.epic("EP-00005")
 @pytest.mark.test_type("integration")
-@pytest.mark.component("backend")
-@pytest.mark.test_category("undefined")
-@pytest.mark.priority("undefined")
+@pytest.mark.component("frontend")
 class TestRTMBrowserClicks:
     """Test RTM by actually clicking buttons in a real browser"""
 

@@ -30,12 +30,10 @@ from shared.utils.rtm_plugins.base_rtm_parser import (
 from shared.utils.rtm_plugins.base_validator import BaseValidator, StandardValidator
 
 
-@pytest.mark.epic("EP-00001", "EP-00005")
-@pytest.mark.user_story("US-00014", "US-00017", "US-12345")
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00017")
 @pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
-@pytest.mark.test_category("undefined")
-@pytest.mark.priority("undefined")
 class TestCustomPlugin(RTMPlugin):
     """Test custom plugin for testing."""
 
