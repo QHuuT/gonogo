@@ -933,7 +933,7 @@ python tools/github_issue_creation_demo.py
 - **[Quality Reports Guide](README.md)** - Complete reporting system overview
 - **[RTM Guide](RTM_GUIDE.md)** - Requirements traceability matrix details
 - **[Quick Reference](QUICK_REFERENCE.md)** - Common commands and thresholds
-- **[CLAUDE.md](../CLAUDE.md)** - Complete project configuration and commands
+- **[Development Workflow](../docs/technical/development-workflow.md)** - Complete project configuration and commands
 
 ---
 

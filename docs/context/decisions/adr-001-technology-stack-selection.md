@@ -68,7 +68,7 @@ We will use the following technology stack:
 
 ### Documentation Updates Required
 - Technical architecture documentation (✅ completed in docs/02-technical/cross-cutting-architecture/)
-- Development setup instructions in CLAUDE.md
+- Development setup instructions in docs/technical/development-workflow.md
 - Deployment procedures for DigitalOcean
 
 ### Training/Onboarding Impact

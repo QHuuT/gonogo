@@ -1,6 +1,6 @@
 # Static Assets
 
-This directory contains frontend static assets for the GoNoGo project, following the structure documented in CLAUDE.md.
+This directory contains frontend static assets for the GoNoGo project, following the structure documented in docs/technical/development-workflow.md.
 
 ## Directory Structure
 
@@ -46,6 +46,6 @@ For RTM reports, assets will be:
 3. Served via FastAPI static file handling
 
 ## Related Documentation
-- See CLAUDE.md Project Structure section
+- See docs/technical/development-workflow.md project structure section
 - US-00002: Enhanced RTM Report UX/UI Design
 - EP-00005: Requirements Traceability Matrix Automation

@@ -44,7 +44,7 @@ A GDPR-compliant blog platform with comments, built with FastAPI and designed fo
 
 ### For Development
 1. **Check Current Work**: See active [GitHub Issues](../../issues)
-2. **Review Architecture**: Read [CLAUDE.md](CLAUDE.md) for development workflow
+2. **Review Workflow**: Read [development workflow guide](docs/technical/development-workflow.md)
 3. **Follow BDD Process**: Requirements → Tests → Implementation
 
 ### For Project Management
@@ -81,7 +81,7 @@ A GDPR-compliant blog platform with comments, built with FastAPI and designed fo
 ## 📖 Key Documentation
 
 ### For Developers
-- [**CLAUDE.md**](CLAUDE.md) - Complete development workflow and project standards
+- [**Development Workflow**](docs/technical/development-workflow.md) - Project standards and day-to-day process
 - [**GitHub Workflow**](.github/GITHUB_WORKFLOW.md) - Issue templates and project management
 - [**Requirements Matrix**](docs/traceability/requirements-matrix.md) - Full traceability
 
@@ -94,8 +94,11 @@ A GDPR-compliant blog platform with comments, built with FastAPI and designed fo
 - **📋 Create New Work**: [Issue Templates](../../issues/new/choose)
 - **📊 Track Progress**: [GitHub Issues](../../issues)
 - **📚 Full Documentation**: [docs/](docs/)
-- **🔧 Development Guide**: [CLAUDE.md](CLAUDE.md)
+- **🔧 Development Guide**: [docs/technical/development-workflow.md](docs/technical/development-workflow.md)
 
 ---
 
 **Quality First**: This project emphasizes thorough requirements, comprehensive testing, and GDPR compliance from day one.
+
+
+

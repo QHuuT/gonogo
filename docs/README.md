@@ -55,7 +55,7 @@ docs/
 ### For Active Development
 - **[GitHub Issues](../../../issues)** - Current work and status
 - **[Issue Templates](../../../issues/new/choose)** - Create new work
-- **[CLAUDE.md](../CLAUDE.md)** - Development workflow and standards
+- **[Development Workflow](technical/development-workflow.md)** - Day-to-day engineering process and standards
 
 ### For Context & Background
 - **[Context Documentation](context/)** - Stable decisions and compliance
@@ -109,7 +109,7 @@ GitHub Issues → Generated Documentation
 ### Primary (GitHub-based)
 - **📋 Create Work**: [Issue Templates](../../../issues/new/choose)
 - **📊 Track Progress**: [GitHub Issues](../../../issues)
-- **🔧 Development**: [CLAUDE.md](../CLAUDE.md)
+- **🔧 Development**: [technical/development-workflow.md](technical/development-workflow.md)
 
 ### Context & Background
 - **🎯 Decisions**: [Architecture Decisions](context/decisions/)

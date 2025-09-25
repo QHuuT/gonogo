@@ -5,7 +5,7 @@
 
 ## 🎯 Overview
 
-This guide provides step-by-step instructions for creating GitHub issues using the CLI, avoiding common errors, and ensuring proper ID sequencing following the CLAUDE.md protocol.
+This guide provides step-by-step instructions for creating GitHub issues using the CLI, avoiding common errors, and ensuring proper ID sequencing following the development workflow standards.
 
 ## 🔧 Component-Focused Issue Creation Guidelines
 
@@ -101,8 +101,8 @@ When splitting multi-component features into focused user stories:
 
 ## 📋 Pre-Creation Checklist
 
-### **Step 1: Follow CLAUDE.md Protocol**
-- [ ] Read CLAUDE.md completely
+### **Step 1: Follow Development Workflow Standards**
+- [ ] Review development workflow guide
 - [ ] Check current GitHub issues for assigned work
 - [ ] Review Requirements Matrix for current status
 
@@ -468,11 +468,11 @@ After creating the issue, update `docs/traceability/requirements-matrix.md`:
    | [**EP-XXXXX**](https://github.com/QHuuT/gonogo/issues/[NUMBER]) | **REQ-001** | [Description] | [Priority] | [US-XXXXX](https://github.com/QHuuT/gonogo/issues/[NUMBER]) | [scenario] | [test] | [impl] | - | 📝 Planned | [Notes] |
    ```
 
-### **Step 2: Comment on Issue** (following CLAUDE.md protocol):
+### **Step 2: Comment on Issue** (following development workflow standards):
 ```bash
 gh issue comment [ISSUE-NUMBER] --body "## Issue Created ✅
 
-Created following enhanced GitHub-first workflow protocol from CLAUDE.md.
+Created following the development workflow standards.
 
 **Next Steps:**
 - [ ] Add to Requirements Traceability Matrix
@@ -620,7 +620,7 @@ When creating issues, the RTM automation system should:
 ---
 
 **Related Documentation**:
-- [CLAUDE.md](../../CLAUDE.md) - Enhanced GitHub-first workflow protocol
+- [DOCUMENTATION_MAP.md](../../DOCUMENTATION_MAP.md) - Documentation navigation and workflow overview
 - [Development Workflow](development-workflow.md) - Complete development process with component-focused guidelines
 - [Documentation Workflow](documentation-workflow.md) - RTM update requirements
 - [Requirements Matrix](../traceability/requirements-matrix.md) - Current RTM status

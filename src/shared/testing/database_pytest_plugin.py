@@ -192,7 +192,7 @@ class EnhancedTestRunner:
         """
         Run tests with full database synchronization.
 
-        This is a helper method for CLAUDE.md commands.
+        This is a helper method for development workflow commands.
         """
         import subprocess
         import sys
@@ -294,3 +294,4 @@ def main():
 
 if __name__ == "__main__":
     exit(main())
+

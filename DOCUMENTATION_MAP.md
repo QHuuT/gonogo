@@ -1,217 +1,199 @@
-# üìö GoNoGo Documentation Map
+# GoNoGo Documentation Map
 
-**Quick navigation guide to find the right documentation for your needs**
-
----
-
-## üéØ I Want To...
-
-### **Start Development**
-‚Üí **[CLAUDE.md](CLAUDE.md)** - Choose your specialized agent based on task:
-- üîß **Daily Development** ‚Üí [`.claude/daily-dev.md`](.claude/daily-dev.md)
-- üß™ **Testing & Code Review** ‚Üí [`.claude/test-review.md`](.claude/test-review.md)
-- üìö **Documentation** ‚Üí [`.claude/documentation.md`](.claude/documentation.md)
-- üé® **UX/UI Design** ‚Üí [`.claude/ux-ui-design.md`](.claude/ux-ui-design.md)
-- üö® **Troubleshooting** ‚Üí [`.claude/emergency.md`](.claude/emergency.md)
-
-### **Understand the Project**
-‚Üí **[README.md](README.md)** - Project overview, quick start, features
-
-### **Create or Track Work**
-‚Üí **[GitHub Issues](../../issues)** - All active project management
-‚Üí **[Issue Templates](../../issues/new/choose)** - Create Epics, User Stories, Defects
-
-### **View Requirements & Traceability**
-‚Üí **[RTM Web Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html)** - Interactive requirements matrix
-‚Üí **[quality/RTM_GUIDE.md](quality/RTM_GUIDE.md)** - How to use the RTM dashboard
-
-### **Run Tests**
-‚Üí **[quality/TESTING_GUIDE.md](quality/TESTING_GUIDE.md)** - Comprehensive testing workflows
-‚Üí **[quality/QUICK_REFERENCE.md](quality/QUICK_REFERENCE.md)** - Quick command reference
-
-### **Fix Issues or Debug**
-‚Üí **[quality/TROUBLESHOOTING.md](quality/TROUBLESHOOTING.md)** - Common issues & solutions
-‚Üí **[.claude/emergency.md](.claude/emergency.md)** - Emergency recovery procedures
-‚Üí **[quality/DATABASE_GUIDE.md](quality/DATABASE_GUIDE.md)** - Database troubleshooting
-
-### **Understand Architecture**
-‚Üí **[docs/technical/cross-cutting-architecture/](docs/technical/cross-cutting-architecture/)** - System design
-‚Üí **[docs/context/decisions/](docs/context/decisions/)** - Architecture Decision Records (ADRs)
-
-### **Ensure Compliance**
-‚Üí **[docs/context/compliance/gdpr-requirements.md](docs/context/compliance/gdpr-requirements.md)** - GDPR requirements
-‚Üí **[docs/traceability/gdpr-compliance-map.md](docs/traceability/gdpr-compliance-map.md)** - Compliance mapping
+Quick navigation guide to find the right documentation for your needs.
 
 ---
 
-## üìÇ Documentation by Location
+## I Want To...
 
-### **Root Directory**
+### Start Development
+- [docs/technical/development-workflow.md](docs/technical/development-workflow.md) ñ End-to-end engineering workflow
+- [quality/TESTING_GUIDE.md](quality/TESTING_GUIDE.md) ñ Test strategy and commands
+- [quality/QUICK_REFERENCE.md](quality/QUICK_REFERENCE.md) ñ Common development commands
+
+### Understand the Project
+- [README.md](README.md) ñ Project overview, quick start, features
+- [docs/README.md](docs/README.md) ñ Full documentation index
+
+### Create or Track Work
+- [GitHub Issues](../../issues) ñ Active project management
+- [Issue Templates](../../issues/new/choose) ñ Create Epics, User Stories, Defects
+
+### View Requirements & Traceability
+- [RTM Web Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html) ñ Interactive requirements matrix
+- [quality/RTM_GUIDE.md](quality/RTM_GUIDE.md) ñ How to use the RTM dashboard
+
+### Run Tests
+- [quality/TESTING_GUIDE.md](quality/TESTING_GUIDE.md) ñ Comprehensive testing workflows
+- [quality/QUICK_REFERENCE.md](quality/QUICK_REFERENCE.md) ñ Quick command reference
+
+### Fix Issues or Debug
+- [quality/TROUBLESHOOTING.md](quality/TROUBLESHOOTING.md) ñ Common issues & solutions
+- [quality/DATABASE_GUIDE.md](quality/DATABASE_GUIDE.md) ñ Database troubleshooting
+
+### Understand Architecture
+- [docs/technical/cross-cutting-architecture/](docs/technical/cross-cutting-architecture/) ñ System design
+- [docs/context/decisions/](docs/context/decisions/) ñ Architecture Decision Records (ADRs)
+
+### Ensure Compliance
+- [docs/context/compliance/gdpr-requirements.md](docs/context/compliance/gdpr-requirements.md) ñ GDPR requirements
+- [docs/traceability/gdpr-compliance-map.md](docs/traceability/gdpr-compliance-map.md) ñ Compliance mapping
+
+---
+
+## Documentation by Location
+
+### Root Directory
 | File | Purpose | When to Use |
 |------|---------|-------------|
-| **[CLAUDE.md](CLAUDE.md)** | Agent navigation & project overview | Starting any development task |
-| **[README.md](README.md)** | Project overview & quick start | First-time project setup |
-| **[DOCUMENTATION_MAP.md](DOCUMENTATION_MAP.md)** | This file - documentation navigation | Finding the right documentation |
+| [README.md](README.md) | Project overview & quick start | First-time project setup |
+| [DOCUMENTATION_MAP.md](DOCUMENTATION_MAP.md) | Documentation navigation | Finding the right documentation |
 
-### **Agent Documentation (`.claude/`)**
-Specialized task-focused documentation for AI agents and developers:
-
-| Agent | Purpose | When to Use |
-|-------|---------|-------------|
-| **[daily-dev.md](.claude/daily-dev.md)** | Daily coding tasks | 80% of development work |
-| **[test-review.md](.claude/test-review.md)** | Testing & code review | Comprehensive testing, PR reviews |
-| **[documentation.md](.claude/documentation.md)** | Documentation maintenance | Creating/updating docs |
-| **[ux-ui-design.md](.claude/ux-ui-design.md)** | Design & accessibility | UI work, accessibility improvements |
-| **[emergency.md](.claude/emergency.md)** | Troubleshooting & recovery | System issues, debugging |
-
-### **Quality Assurance (`quality/`)**
+### Quality Assurance (quality/)
 Testing, traceability, and quality documentation:
 
 | File | Purpose | When to Use |
 |------|---------|-------------|
-| **[RTM_GUIDE.md](quality/RTM_GUIDE.md)** | RTM dashboard user guide | Understanding requirements traceability |
-| **[TESTING_GUIDE.md](quality/TESTING_GUIDE.md)** | Comprehensive testing workflows | Running tests, understanding test types |
-| **[QUICK_REFERENCE.md](quality/QUICK_REFERENCE.md)** | Quick command cheatsheet | Need commands fast |
-| **[DATABASE_GUIDE.md](quality/DATABASE_GUIDE.md)** | Database RTM management | Database RTM operations |
-| **[TROUBLESHOOTING.md](quality/TROUBLESHOOTING.md)** | Common issues & solutions | Fixing problems |
-| **[README.md](quality/README.md)** | Quality reports overview | Understanding quality reports |
+| [RTM_GUIDE.md](quality/RTM_GUIDE.md) | RTM dashboard user guide | Understanding requirements traceability |
+| [TESTING_GUIDE.md](quality/TESTING_GUIDE.md) | Comprehensive testing workflows | Running tests, understanding test types |
+| [QUICK_REFERENCE.md](quality/QUICK_REFERENCE.md) | Quick command cheatsheet | Need commands fast |
+| [DATABASE_GUIDE.md](quality/DATABASE_GUIDE.md) | Database RTM management | Database RTM operations |
+| [TROUBLESHOOTING.md](quality/TROUBLESHOOTING.md) | Common issues & solutions | Fixing problems |
+| [README.md](quality/README.md) | Quality reports overview | Understanding quality reports |
 
-### **Technical Documentation (`docs/technical/`)**
+### Technical Documentation (docs/technical/)
 Implementation details and architecture:
 
 | Directory | Purpose | When to Use |
 |-----------|---------|-------------|
-| **[cross-cutting-architecture/](docs/technical/cross-cutting-architecture/)** | System architecture | Understanding system design |
-| **[bdd-scenarios/](docs/technical/bdd-scenarios/)** | BDD test scenarios | Writing executable specifications |
-| **[api-docs/](docs/technical/api-docs/)** | API documentation | API reference |
-| **[development-workflow.md](docs/technical/development-workflow.md)** | Complete dev workflow | End-to-end development process |
-| **[quality-assurance.md](docs/technical/quality-assurance.md)** | Code quality standards | Quality gates and standards |
+| [cross-cutting-architecture/](docs/technical/cross-cutting-architecture/) | System architecture | Understanding system design |
+| [bdd-scenarios/](docs/technical/bdd-scenarios/) | BDD test scenarios | Writing executable specifications |
+| [api-docs/](docs/technical/api-docs/) | API documentation | API reference |
+| [development-workflow.md](docs/technical/development-workflow.md) | Complete dev workflow | End-to-end development process |
+| [quality-assurance.md](docs/technical/quality-assurance.md) | Code quality standards | Quality gates and standards |
+| [documentation-workflow.md](docs/technical/documentation-workflow.md) | Documentation process | Maintaining documentation |
+| [github-issue-creation.md](docs/technical/github-issue-creation.md) | Issue management workflow | Creating and updating issues correctly |
 
-### **Context Documentation (`docs/context/`)**
+### Context Documentation (docs/context/)
 Stable decisions and compliance:
 
 | Directory | Purpose | When to Use |
 |-----------|---------|-------------|
-| **[decisions/](docs/context/decisions/)** | Architecture Decision Records | Understanding why decisions were made |
-| **[compliance/](docs/context/compliance/)** | GDPR & legal requirements | Ensuring compliance |
+| [decisions/](docs/context/decisions/) | Architecture Decision Records | Understanding why decisions were made |
+| [compliance/](docs/context/compliance/) | GDPR & legal requirements | Ensuring compliance |
 
-### **Development Tools (`tools/`)**
+### Development Tools (	ools/)
 Scripts and utilities:
 
 | Tool | Purpose | When to Use |
 |------|---------|-------------|
-| **[rtm-db.py](tools/rtm-db.py)** | RTM database management | Managing RTM data |
-| **[sync_github_issues.py](tools/sync_github_issues.py)** | GitHub issue sync | Syncing issues to RTM |
-| **[collect_test_functions.py](tools/collect_test_functions.py)** | Test function extraction | Collecting test metadata |
+| [rtm-db.py](tools/rtm-db.py) | RTM database management | Managing RTM data |
+| [github_sync_manager.py](tools/github_sync_manager.py) | GitHub issue sync | Syncing issues to RTM |
+| [collect_test_functions.py](tools/collect_test_functions.py) | Test function extraction | Collecting test metadata |
 
 ---
 
-## üîÑ Common Workflows
+## Common Workflows
 
-### **New Feature Development**
-1. **Plan**: Read [`.claude/daily-dev.md`](.claude/daily-dev.md) ‚Üí Create [GitHub Issue](../../issues/new/choose)
-2. **Implement**: Follow [development workflow](docs/technical/development-workflow.md)
-3. **Test**: Use [testing guide](quality/TESTING_GUIDE.md)
-4. **Document**: Update with [`.claude/documentation.md`](.claude/documentation.md)
-5. **Trace**: Update [RTM dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html)
+### New Feature Development
+1. Plan: review [development workflow](docs/technical/development-workflow.md) and create a [GitHub Issue](../../issues/new/choose)
+2. Implement: follow engineering steps in the development workflow guide
+3. Test: run suites from the [testing guide](quality/TESTING_GUIDE.md)
+4. Document: update relevant guides listed above
+5. Trace: sync progress with the [RTM dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html)
 
-### **Bug Fix**
-1. **Diagnose**: Check [troubleshooting guide](quality/TROUBLESHOOTING.md)
-2. **Fix**: Use [`.claude/daily-dev.md`](.claude/daily-dev.md) for commands
-3. **Validate**: Run tests per [testing guide](quality/TESTING_GUIDE.md)
-4. **Document**: Update defect in [GitHub Issues](../../issues)
+### Bug Fix
+1. Diagnose: check the [troubleshooting guide](quality/TROUBLESHOOTING.md)
+2. Fix: apply the development workflow
+3. Validate: run targeted tests
+4. Document: update the associated GitHub issue
 
-### **Code Review**
-1. **Review**: Use [`.claude/test-review.md`](.claude/test-review.md)
-2. **Test**: Run comprehensive tests
-3. **Quality**: Check against [quality standards](docs/technical/quality-assurance.md)
+### Code Review
+1. Review: follow the expectations in [quality-assurance.md](docs/technical/quality-assurance.md)
+2. Test: execute the suites defined in the testing guide
+3. Report: capture findings in the relevant GitHub issue or pull request
 
-### **Design Changes**
-1. **Design**: Use [`.claude/ux-ui-design.md`](.claude/ux-ui-design.md)
-2. **Implement**: Switch to [`.claude/daily-dev.md`](.claude/daily-dev.md)
-3. **Validate**: Use [`.claude/test-review.md`](.claude/test-review.md)
-
----
-
-## üìä Documentation Status
-
-### **Database RTM System** ‚úÖ Active
-- **Dashboard**: http://localhost:8000/api/rtm/reports/matrix?format=html
-- **Guide**: [quality/RTM_GUIDE.md](quality/RTM_GUIDE.md)
-- **Database**: `gonogo.db` (SQLite)
-- **Status**: 98.7% data quality, production-ready
-
-### **Test Suite** ‚úÖ Excellent
-- **Total Tests**: 482 (426 non-BDD, 56 BDD)
-- **Quality Grade**: A+ (99.5% legitimate)
-- **Guide**: [quality/TESTING_GUIDE.md](quality/TESTING_GUIDE.md)
-- **Analysis**: [test_cleanup_recommendations.md](test_cleanup_recommendations.md)
-
-### **Agent Documentation** ‚úÖ Complete
-- **Location**: `.claude/`
-- **Status**: 5 specialized agents, task-focused
-- **Update**: 2025-09-22 (agent-specialized system)
+### Design Changes
+1. Research: consult design guidelines in docs/ (e.g., accessibility, UI standards)
+2. Implement: follow the development workflow
+3. Validate: run regression and accessibility checks as needed
 
 ---
 
-## üÜò Emergency Quick Reference
+## Documentation Status
 
-### **Server Issues**
-```bash
+### Database RTM System ó Active
+- Dashboard: http://localhost:8000/api/rtm/reports/matrix?format=html
+- Guide: [quality/RTM_GUIDE.md](quality/RTM_GUIDE.md)
+- Database: gonogo.db (SQLite)
+- Status: 98.7% data quality, production-ready
+
+### Test Suite ó Excellent
+- Total Tests: 482 (426 non-BDD, 56 BDD)
+- Quality Grade: A+ (99.5% legitimate)
+- Guide: [quality/TESTING_GUIDE.md](quality/TESTING_GUIDE.md)
+- Analysis: [test_cleanup_recommendations.md](test_cleanup_recommendations.md)
+
+---
+
+## Emergency Quick Reference
+
+### Server Issues
+`
 # Kill zombie processes (Windows)
 netstat -ano | findstr :8000 && taskkill /F /PID <PID>
 
 # Kill zombie processes (macOS/Linux)
 lsof -ti:8000 | xargs kill -9
-```
+`
 
-### **Database Issues**
-```bash
+### Database Issues
+`
 # Health check
 python tools/rtm-db.py admin health-check
 
 # Emergency backup
 python tools/rtm-db.py data export --output emergency_backup.json
-```
+`
 
-### **Test Failures**
-```bash
+### Test Failures
+`
 # Run with verbose output
 pytest tests/ -v --tb=short
 
 # Run specific test
 pytest tests/path/to/test.py::test_name -v
-```
+`
 
-**üìñ Full Emergency Procedures**: [.claude/emergency.md](.claude/emergency.md)
-
----
-
-## üîó External Links
-
-- **[GitHub Repository](https://github.com/your-org/gonogo)** - Source code
-- **[GitHub Issues](../../issues)** - Project management
-- **[RTM Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html)** - Requirements traceability (requires server running)
-- **[DigitalOcean Deployment](https://cloud.digitalocean.com/)** - Production environment
+More troubleshooting detail: [quality/TROUBLESHOOTING.md](quality/TROUBLESHOOTING.md)
 
 ---
 
-## üìù Documentation Maintenance
+## External Links
 
-### **When to Update This Map**
-- ‚úÖ New documentation file created
-- ‚úÖ Documentation moved or renamed
-- ‚úÖ New workflow added
-- ‚úÖ Documentation structure changed
+- [GitHub Repository](https://github.com/your-org/gonogo) ñ Source code
+- [GitHub Issues](../../issues) ñ Project management
+- [RTM Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html) ñ Requirements traceability (requires server running)
+- [DigitalOcean Deployment](https://cloud.digitalocean.com/) ñ Production environment
 
-### **How to Update**
-1. Edit this file: `DOCUMENTATION_MAP.md`
-2. Update relevant agent docs in `.claude/`
+---
+
+## Documentation Maintenance
+
+### When to Update This Map
+- New documentation file created
+- Documentation moved or renamed
+- New workflow added
+- Documentation structure changed
+
+### How to Update
+1. Edit this file: DOCUMENTATION_MAP.md
+2. Update supporting references in docs/
 3. Update [docs/README.md](docs/README.md) if needed
-4. Commit with message: `docs: update documentation map`
+4. Commit with message: docs: update documentation map
 
 ---
 
-**üìå Quick Start**: New to the project? Start with [README.md](README.md) ‚Üí [CLAUDE.md](CLAUDE.md) ‚Üí Choose your agent ‚Üí Start coding!
+Quick start: begin with [README.md](README.md) ? [docs/technical/development-workflow.md](docs/technical/development-workflow.md) ? run tests with [quality/TESTING_GUIDE.md](quality/TESTING_GUIDE.md).
 
-**üéØ Remember**: This is a living document. Keep it updated as documentation evolves.
+This is a living documentókeep it accurate as the project evolves.

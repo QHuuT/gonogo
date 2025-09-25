@@ -219,7 +219,7 @@ Security-Impact: High
 - [ ] Run linting: `black src/ tests/ && isort src/ tests/ && flake8 src/ tests/`
 - [ ] Run type checking: `mypy src/`
 - [ ] Update documentation if needed
-- [ ] Update CLAUDE.md if project structure changed
+- [ ] Update DOCUMENTATION_MAP.md if project structure changed
 - [ ] Verify GDPR compliance if personal data involved
 
 ### **Code Review Checklist**

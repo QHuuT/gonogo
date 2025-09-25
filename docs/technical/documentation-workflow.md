@@ -110,7 +110,7 @@ Update **continuously** during development:
 1. **Create ADR**: New file in `docs/context/decisions/`
 2. **Update GitHub Issues**: Reference ADR in relevant issues
 3. **Update Technical Docs**: Implement ADR decisions in architecture docs
-4. **Update CLAUDE.md**: If workflow or project structure changes
+4. **Update DOCUMENTATION_MAP.md**: If workflow or project structure changes
 
 ## 📝 Documentation Cross-Reference Strategy
 

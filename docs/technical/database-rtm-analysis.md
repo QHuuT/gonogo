@@ -66,7 +66,7 @@ This document provides a comprehensive analysis of the current RTM system and ou
 - **Reporting**: Health scores, PR comments, failure issues
 
 #### 3.3 Development Workflow Integration
-- **RTM Updates**: Part of commit protocol per CLAUDE.md
+- **RTM Updates**: Part of commit protocol per development workflow guide
 - **Link Generation**: CLI tools for consistent link formatting
 - **Documentation**: RTM referenced in multiple workflow documents
 
@@ -82,7 +82,7 @@ This document provides a comprehensive analysis of the current RTM system and ou
 
 **Configuration Dependencies:**
 - `config/rtm-automation.yml` - RTM automation settings
-- `CLAUDE.md` - Development workflow references
+- `DOCUMENTATION_MAP.md` - Development documentation references
 - `docs/technical/development-workflow.md` - RTM update procedures
 
 #### 4.2 Indirect Dependencies (Reference RTM in documentation)
