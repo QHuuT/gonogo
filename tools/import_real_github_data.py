@@ -215,12 +215,26 @@ class GitHubDataImporter:
         """Clear existing sample data from database."""
         print("Clearing existing sample data...")
 
-        self.db_session.query(Defect).delete()
-        self.db_session.query(Test).delete()
-        self.db_session.query(UserStory).delete()
-        self.db_session.query(Epic).delete()
-        self.db_session.commit()
+        # Clear tables only if they exist, handle missing tables gracefully
+        tables_to_clear = [
+            (Defect, "defects"),
+            (Test, "tests"),
+            (UserStory, "user_stories"),
+            (Epic, "epics")
+        ]
 
+        for model_class, table_name in tables_to_clear:
+            try:
+                count = self.db_session.query(model_class).count()
+                if count > 0:
+                    self.db_session.query(model_class).delete()
+                    print(f"  Cleared {count} records from {table_name}")
+                else:
+                    print(f"  {table_name} table is empty")
+            except Exception as e:
+                print(f"  {table_name} table doesn't exist or error: {e}")
+
+        self.db_session.commit()
         print("[OK] Existing data cleared")
 
     def import_epics(self) -> Dict[str, int]:
