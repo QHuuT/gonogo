@@ -1751,7 +1751,10 @@
                 .force('link', d3.forceLink(capabilityLinks).id(d => d.id).distance(200))
                 .force('charge', d3.forceManyBody().strength(-600))
                 .force('center', d3.forceCenter(width / 2, height / 2))
-                .force('collision', d3.forceCollide().radius(d => 40 + d.epics.length * 4));
+                .force('collision', d3.forceCollide().radius(d => {
+                    const epicCount = Array.isArray(d.epics) ? d.epics.length : 0;
+                    return 40 + epicCount * 4;
+                }));
 
             simulation.alpha(1).restart();
 
