@@ -1103,7 +1103,11 @@
                     is_resolved: dep.is_resolved
                 }));
 
-            renderVisualization();
+            if (currentLayer === 'capability') {
+                renderCapabilityView();
+            } else {
+                renderVisualization();
+            }
         }
 
         // Render the visualization
