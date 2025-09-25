@@ -82,6 +82,10 @@ class Test(TraceabilityBase):
     component = Column(String(50), nullable=True, index=True)
     # Values: frontend, backend, database, security, testing, ci-cd, documentation
 
+    # Test category (smoke, edge, regression, performance, error-handling, compliance-gdpr, compliance-rgaa, compliance-doc, compliance-project-management)
+    test_category = Column(String(50), nullable=True, index=True)
+    # Values: smoke, edge, regression, performance, error-handling, compliance-gdpr, compliance-rgaa, compliance-doc, compliance-project-management
+
     # Indexes for performance
     __table_args__ = (
         Index("idx_test_epic_type", "epic_id", "test_type"),
@@ -195,6 +199,7 @@ class Test(TraceabilityBase):
                 "tests_gdpr_compliance": self.tests_gdpr_compliance,
                 "tests_security_aspects": self.tests_security_aspects,
                 "component": self.component,
+                "test_category": self.test_category,
                 "last_error_message": self.last_error_message,
             }
         )

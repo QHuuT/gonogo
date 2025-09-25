@@ -12,11 +12,15 @@ from src.security.gdpr.service import GDPRService
 
 
 @pytest.mark.epic("EP-00003")
+@pytest.mark.test_type("integration")
 @pytest.mark.component("security")
+@pytest.mark.test_category("undefined")
+@pytest.mark.priority("undefined")
 class TestGDPRIntegration:
     """Integration tests for GDPR service with database."""
 
-    @pytest.mark.component("security")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_full_consent_lifecycle(self, db_session):
         """Test complete consent lifecycle: record -> query -> withdraw."""
 
@@ -44,7 +48,8 @@ class TestGDPRIntegration:
         active_consents_after = service.get_active_consents(consent_id)
         assert active_consents_after[ConsentType.ANALYTICS] is False
 
-    @pytest.mark.component("security")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_multiple_consent_types_single_user(self, db_session):
         """Test that a user can have multiple consent types."""
 
@@ -74,7 +79,8 @@ class TestGDPRIntegration:
         functional_consents = service.get_active_consents(functional_id)
         assert functional_consents[ConsentType.FUNCTIONAL] is False
 
-    @pytest.mark.component("security")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_data_subject_request_full_workflow(self, db_session):
         """Test complete data subject request workflow."""
 
@@ -126,7 +132,8 @@ class TestGDPRIntegration:
         assert request.completed_at is not None
         assert request.response_data == response_data
 
-    @pytest.mark.component("security")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_anonymization_workflow(self, db_session):
         """Test data anonymization workflow for expired data."""
 
@@ -166,7 +173,8 @@ class TestGDPRIntegration:
         assert record.ip_address_hash is None
         assert record.user_agent_hash is None
 
-    @pytest.mark.component("security")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_overdue_requests_detection(self, db_session):
         """Test detection of overdue data subject requests."""
 
@@ -197,7 +205,8 @@ class TestGDPRIntegration:
         overdue_ids = [req.id for req in overdue_requests]
         assert request_id in overdue_ids
 
-    @pytest.mark.component("security")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_compliance_report_generation(self, db_session):
         """Test generation of comprehensive compliance report."""
 
@@ -229,7 +238,8 @@ class TestGDPRIntegration:
         assert report["pending_data_subject_requests"] >= 1
         assert 0 <= report["compliance_score"] <= 100
 
-    @pytest.mark.component("security")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_gdpr_data_processing_record_creation(self, db_session):
         """Test creation of data processing records for Article 30 compliance."""
 
@@ -271,7 +281,8 @@ class TestGDPRIntegration:
         assert "email" in record.data_categories
         assert record.retention_period_days == 1095
 
-    @pytest.mark.component("security")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_consent_expiration_handling(self, db_session):
         """Test that expired consents are properly handled."""
 

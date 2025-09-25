@@ -295,6 +295,7 @@ python tools/github_issue_creation_demo.py
 | **Security** | `pytest --auto-defects tests/security/ -v` | Security and GDPR compliance |
 | **BDD** | `pytest --link-scenarios --auto-defects tests/bdd/ -v` | Behavior-driven scenarios |
 
+
 ### **By Test Scope**
 
 | Scope | Command | When to Use |
@@ -303,6 +304,289 @@ python tools/github_issue_creation_demo.py
 | **Test File** | `pytest --auto-defects tests/unit/test_file.py -v` | Testing specific module |
 | **Test Directory** | `pytest --auto-defects tests/unit/models/ -v` | Testing component area |
 | **Full Suite** | `pytest --sync-tests --link-scenarios --auto-defects tests/ -v` | Complete validation |
+
+## 🏷️ **Test Tagging with Pytest Markers**
+
+### **Class-Level vs Method-Level Markers**
+
+**Understanding Marker Inheritance:**
+- **Class-level markers** apply to ALL test methods in the class (like defaults)
+- **Method-level markers** apply to specific test methods (and can override class markers)
+
+#### **Best Practice: Which Markers Go Where?**
+
+| Marker | Recommended Level | Reason |
+|--------|------------------|--------|
+| `@pytest.mark.epic()` | **Class-level** | All tests in a class usually belong to same epic |
+| `@pytest.mark.user_story()` | **Class-level** | All tests in a class usually test same user story |
+| `@pytest.mark.test_type()` | **Class-level** | All tests in a class are same type (unit/integration/etc) |
+| `@pytest.mark.component()` | **Class-level** | All tests in a class usually test same component |
+| `@pytest.mark.priority()` | **Method-level** | Each test has different priority |
+| `@pytest.mark.test_category()` | **Method-level** | Each test has different category (smoke/edge/etc) |
+
+### **All Markers for RTM Database Linkage**
+
+#### **Python Tests - Class-Level Markers (Apply to ALL methods)**
+```python
+import pytest
+
+@pytest.mark.epic("EP-XXXXX")              # Epic linkage (required) - CLASS LEVEL
+@pytest.mark.user_story("US-XXXXX")        # User Story linkage (required) - CLASS LEVEL
+@pytest.mark.test_type("unit")             # Test type - CLASS LEVEL
+@pytest.mark.component("backend")          # Component - CLASS LEVEL
+class TestFeature:
+    """All methods inherit epic, user_story, test_type, and component"""
+
+    @pytest.mark.priority("critical")           # METHOD LEVEL - specific to this test
+    @pytest.mark.test_category("smoke")         # METHOD LEVEL - specific to this test
+    def test_critical_functionality(self):
+        assert True
+
+    @pytest.mark.priority("low")                # METHOD LEVEL - different priority
+    @pytest.mark.test_category("edge")          # METHOD LEVEL - different category
+    def test_edge_case(self):
+        assert True
+```
+
+#### **Python Tests - When to Override at Method Level**
+```python
+@pytest.mark.component("backend")          # Default: backend
+class TestAPI:
+
+    def test_backend_logic(self):
+        # Uses class marker: component="backend"
+        assert True
+
+    @pytest.mark.component("frontend")     # Override: this test is frontend
+    def test_frontend_integration(self):
+        # Overrides class marker for this specific test
+        assert True
+```
+
+#### **BDD Tests - Complete Tag Set**
+```gherkin
+# Feature-level tags (apply to ALL scenarios in the feature)
+@epic:EP-XXXXX @user_story:US-XXXXX @component:backend @test_type:bdd
+Feature: Feature Name
+
+  # Scenario-level tags (apply to THIS scenario only)
+  @priority:high @test_category:smoke
+  Scenario: Critical smoke test scenario
+    Given a precondition
+    When an action occurs
+    Then a result is expected
+
+  # Edge case scenario
+  @priority:low @test_category:edge
+  Scenario: Edge case scenario
+    Given an edge case condition
+    When an unusual action occurs
+    Then the system handles it gracefully
+
+  # RGAA compliance scenario
+  @priority:high @test_category:compliance-rgaa
+  Scenario: Keyboard navigation works
+    Given a user with keyboard-only access
+    When they navigate the interface
+    Then all features are keyboard accessible
+
+  # GDPR compliance scenario
+  @priority:critical @test_category:compliance-gdpr
+  Scenario: User can delete personal data
+    Given a user with personal data stored
+    When they request data deletion
+    Then all personal data is removed
+
+  # Project management compliance scenario
+  @priority:high @test_category:compliance-project-management
+  Scenario: Epic template enforces required fields
+    Given a user creating a new epic
+    When they use the epic template
+    Then all required fields are enforced
+
+  # Error handling scenario
+  @priority:medium @test_category:error-handling
+  Scenario: System handles invalid input gracefully
+    Given a user submits invalid data
+    When the system processes the request
+    Then an appropriate error message is displayed
+    And the system remains stable
+```
+
+**Feature-level vs Scenario-level Tags:**
+- **Feature-level** (before `Feature:`): epic, user_story, component, test_type → applies to ALL scenarios
+- **Scenario-level** (before `Scenario:`): priority, test_category → applies to SPECIFIC scenario only
+
+### **Practical Examples**
+
+#### **Example 1: Integration Test Class**
+```python
+# Class-level: Shared by all 5 methods
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00005")
+@pytest.mark.test_type("integration")
+@pytest.mark.component("backend")
+class TestComponentAPI:
+    """All 5 test methods inherit the 4 class markers"""
+
+    @pytest.mark.priority("high")
+    @pytest.mark.test_category("smoke")
+    def test_list_components(self):
+        # Has: EP-00005, US-00005, integration, backend, high, smoke
+        pass
+
+    @pytest.mark.priority("medium")
+    @pytest.mark.test_category("regression")
+    def test_component_statistics(self):
+        # Has: EP-00005, US-00005, integration, backend, medium, regression
+        pass
+
+    @pytest.mark.priority("low")
+    @pytest.mark.test_category("edge")
+    def test_nonexistent_component(self):
+        # Has: EP-00005, US-00005, integration, backend, low, edge
+        pass
+```
+
+#### **Example 2: Unit Test Class**
+```python
+# Class-level: Shared markers
+@pytest.mark.epic("EP-00001")
+@pytest.mark.user_story("US-00010")
+@pytest.mark.test_type("unit")
+@pytest.mark.component("backend")
+class TestUserAuthentication:
+
+    @pytest.mark.priority("critical")
+    @pytest.mark.test_category("smoke")
+    def test_valid_login(self):
+        pass
+
+    @pytest.mark.priority("high")
+    @pytest.mark.test_category("error-handling")
+    def test_invalid_password(self):
+        pass
+
+    @pytest.mark.priority("critical")
+    @pytest.mark.test_category("compliance-gdpr")
+    def test_consent_required(self):
+        pass
+```
+
+#### **Example 3: GDPR Compliance Tests**
+```python
+@pytest.mark.epic("EP-00003")
+@pytest.mark.user_story("US-00020")
+@pytest.mark.test_type("integration")
+@pytest.mark.component("security")
+class TestGDPRCompliance:
+    """All GDPR tests in one class"""
+
+    @pytest.mark.priority("critical")
+    @pytest.mark.test_category("compliance-gdpr")
+    def test_user_data_deletion(self):
+        pass
+
+    @pytest.mark.priority("critical")
+    @pytest.mark.test_category("compliance-gdpr")
+    def test_consent_workflow(self):
+        pass
+
+    @pytest.mark.priority("high")
+    @pytest.mark.test_category("compliance-gdpr")
+    def test_data_export(self):
+        pass
+```
+
+### **Complete Marker Reference**
+
+| Marker | Python Syntax | BDD Syntax | Values |
+|--------|---------------|------------|--------|
+| **Epic** | `@pytest.mark.epic("EP-XXXXX")` | `@epic:EP-XXXXX` | EP-00001, EP-00002, etc. |
+| **User Story** | `@pytest.mark.user_story("US-XXXXX")` | `@user_story:US-XXXXX` | US-00001, US-00002, etc. |
+| **Component** | `@pytest.mark.component("value")` | `@component:value` | backend, frontend, security, database |
+| **Priority** | `@pytest.mark.priority("value")` | `@priority:value` | critical, high, medium, low |
+| **Test Type** | `@pytest.mark.test_type("value")` | `@test_type:value` | unit, integration, functional, e2e, security, bdd |
+| **Test Category** | `@pytest.mark.test_category("value")` | `@test_category:value` | smoke, edge, regression, performance, error-handling, compliance-gdpr, compliance-rgaa, compliance-doc, compliance-project-management |
+
+**Note**: Epic and User Story markers are required for RTM database traceability. Component, priority, test_type, and test_category are optional but recommended.
+
+### **Quick Reference: Marker Placement**
+
+```python
+# ✅ RECOMMENDED: Class-level for shared properties
+@pytest.mark.epic("EP-XXXXX")           # CLASS: Same epic for all tests
+@pytest.mark.user_story("US-XXXXX")     # CLASS: Same user story
+@pytest.mark.test_type("integration")   # CLASS: All are integration tests
+@pytest.mark.component("backend")       # CLASS: All test backend
+class TestSuite:
+
+    # ✅ Method-level for specific properties
+    @pytest.mark.priority("critical")        # METHOD: This test is critical
+    @pytest.mark.test_category("smoke")      # METHOD: This is a smoke test
+    def test_critical_feature(self):
+        pass
+
+    @pytest.mark.priority("low")             # METHOD: This test is low priority
+    @pytest.mark.test_category("edge")       # METHOD: This is an edge case
+    def test_edge_case(self):
+        pass
+
+# ❌ AVOID: Repeating same markers on every method
+class TestSuite:
+    @pytest.mark.epic("EP-XXXXX")           # Repetitive
+    @pytest.mark.user_story("US-XXXXX")     # Repetitive
+    @pytest.mark.test_type("integration")   # Repetitive
+    @pytest.mark.component("backend")       # Repetitive
+    @pytest.mark.priority("high")
+    @pytest.mark.test_category("smoke")
+    def test_one(self):
+        pass
+
+    @pytest.mark.epic("EP-XXXXX")           # Repetitive
+    @pytest.mark.user_story("US-XXXXX")     # Repetitive
+    @pytest.mark.test_type("integration")   # Repetitive
+    @pytest.mark.component("backend")       # Repetitive
+    @pytest.mark.priority("low")
+    @pytest.mark.test_category("edge")
+    def test_two(self):
+        pass
+```
+
+### **Examples from Codebase**
+
+```python
+# From tests/unit/test_rtm.py
+@pytest.mark.epic("EP-00005")
+@pytest.mark.user_story("US-00060")
+def test_rtm_filter_by_epic():
+    assert filter_tests_by_epic("EP-00005") is not None
+
+# Multiple tests for same epic
+@pytest.mark.epic("EP-00001")
+@pytest.mark.user_story("US-00010")
+def test_blog_post_creation():
+    assert create_blog_post("title", "content") is not None
+
+@pytest.mark.epic("EP-00001")
+@pytest.mark.user_story("US-00011")
+def test_blog_post_editing():
+    assert edit_blog_post(1, "new content") == True
+```
+
+### **Marker Discovery**
+
+After tagging tests, sync them to the RTM database:
+
+```bash
+# Discover and sync test markers to database
+pytest --sync-tests --collect-only
+
+# Or use the test-db integration tool
+python tools/test-db-integration.py discover tests
+```
+
+The markers will appear in the RTM dashboard and link tests to requirements automatically.
 
 ## 🏷️ **Flag Reference Guide**
 

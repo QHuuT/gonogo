@@ -94,6 +94,25 @@ body:
     validations:
       required: false
 
+  - type: dropdown
+    id: test-category
+    attributes:
+      label: Test Category
+      description: Test execution category for organization and filtering
+      options:
+        - smoke
+        - edge
+        - regression
+        - performance
+        - error-handling
+        - compliance-gdpr
+        - compliance-rgaa
+        - compliance-doc
+        - compliance-project-management
+      default: 0
+    validations:
+      required: false
+
   - type: input
     id: test-file-path
     attributes:
@@ -204,11 +223,60 @@ body:
   - type: markdown
     attributes:
       value: |
+        ## Implementation Example
+
+        **Python Test with Markers:**
+        ```python
+        @pytest.mark.epic("EP-00001")
+        @pytest.mark.user_story("US-00010")
+        @pytest.mark.component("backend")
+        @pytest.mark.priority("high")
+        @pytest.mark.test_category("smoke")
+        def test_user_login():
+            assert authenticate_user("user", "password")
+
+        # RGAA compliance test example
+        @pytest.mark.test_category("compliance-rgaa")
+        @pytest.mark.priority("high")
+        def test_keyboard_navigation():
+            assert all_features_keyboard_accessible()
+
+        # GDPR compliance test example
+        @pytest.mark.test_category("compliance-gdpr")
+        @pytest.mark.priority("critical")
+        def test_user_data_deletion():
+            assert user_can_delete_all_data()
+
+        # Project management compliance test example
+        @pytest.mark.test_category("compliance-project-management")
+        @pytest.mark.priority("high")
+        def test_epic_template_enforces_fields():
+            assert epic_template_has_required_fields()
+
+        # Error handling test example
+        @pytest.mark.test_category("error-handling")
+        @pytest.mark.priority("medium")
+        def test_invalid_input_handled_gracefully():
+            assert system_handles_invalid_input_without_crash()
+        ```
+
+        **BDD Test with Tags:**
+        ```gherkin
+        @epic:EP-00001 @user_story:US-00010 @component:backend @test_category:smoke
+        Feature: User Authentication
+
+          Scenario: User logs in successfully
+            Given a registered user
+            When they enter valid credentials
+            Then they are logged in
+        ```
+
         ## Next Steps
 
         1. Test will be reviewed and integrated into test suite
-        2. Component will be inherited from parent User Story
-        3. Test execution will be tracked in RTM reports
-        4. Implementation follows project testing standards
+        2. Component will be inherited from parent User Story if not specified
+        3. Test markers will be synced to RTM database: `python tools/test-db-integration.py discover tests`
+        4. Test execution will be tracked in RTM reports
+        5. Implementation follows project testing standards
 
         **Traceability** - This test will be automatically linked to the parent user story and tracked in the RTM.

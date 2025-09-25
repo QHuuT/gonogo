@@ -16,7 +16,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 @pytest.mark.epic("EP-00001")
+@pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
+@pytest.mark.test_category("undefined")
+@pytest.mark.priority("undefined")
 class TestRTMBrowserClicks:
     """Test RTM by actually clicking buttons in a real browser"""
 
@@ -42,8 +45,6 @@ class TestRTMBrowserClicks:
         yield driver
         driver.quit()
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_click_filter_button_and_check_behavior(self, driver):
         """Click an actual filter button and see what happens"""
         print("Opening RTM interface...")
@@ -141,8 +142,6 @@ class TestRTMBrowserClicks:
 
             pytest.fail(f"Failed to click filter button: {e}")
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_epic_toggle_still_works_after_filter(self, driver):
         """Test that epic toggle still works independently"""
         print("Testing epic toggle functionality...")
@@ -197,8 +196,6 @@ class TestRTMBrowserClicks:
                 print(f"JavaScript errors: {js_errors}")
             pytest.fail(f"Epic toggle failed: {e}")
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_javascript_console_for_errors(self, driver):
         """Check browser console for JavaScript errors"""
         print("Checking for JavaScript errors...")
@@ -232,8 +229,6 @@ class TestRTMBrowserClicks:
 
         print("OK No critical JavaScript errors found")
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_filter_functions_are_defined(self, driver):
         """Test that JavaScript filter functions are actually defined"""
         print("Checking if JavaScript functions are defined...")
@@ -265,8 +260,6 @@ class TestRTMBrowserClicks:
             except Exception as e:
                 pytest.fail(f"Error checking function {func_name}: {e}")
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_actual_function_execution(self, driver):
         """Test actually calling the JavaScript functions"""
         print("Testing actual JavaScript function execution...")
@@ -318,6 +311,7 @@ class TestRTMBrowserClicks:
 
 
 @pytest.mark.epic("EP-00001")
+@pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
 def test_browser_behavior():
     """Standalone test function"""

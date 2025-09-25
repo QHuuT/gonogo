@@ -13,7 +13,10 @@ import requests
 
 
 @pytest.mark.epic("EP-00005")
+@pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
+@pytest.mark.test_category("undefined")
+@pytest.mark.priority("undefined")
 class TestRTMFilterRegression:
     """Test RTM filter functionality via HTTP requests (Robot Framework ready)"""
 
@@ -35,7 +38,6 @@ class TestRTMFilterRegression:
         """Pytest fixture for server check"""
         self.check_server_running()
 
-    @pytest.mark.component("backend")
     def test_rtm_interface_loads_successfully(self):
         """Test that RTM interface loads without errors"""
         response = requests.get(f"{self.RTM_URL}?format=html")
@@ -46,7 +48,6 @@ class TestRTMFilterRegression:
         assert "filter" in response.text.lower()
         print("OK RTM interface loads successfully")
 
-    @pytest.mark.component("backend")
     def test_filter_buttons_generate_correct_onclick_handlers(self):
         """Test that filter buttons have correct onclick handlers"""
         response = requests.get(f"{self.RTM_URL}?format=html")
@@ -85,7 +86,6 @@ class TestRTMFilterRegression:
                 "in_progress",
             ], f"Invalid filter value: {filter_value}"
 
-    @pytest.mark.component("backend")
     def test_epic_toggle_handlers_present(self):
         """Test that epic headers have toggleEpicDetails onclick handlers"""
         response = requests.get(f"{self.RTM_URL}?format=html")
@@ -101,7 +101,6 @@ class TestRTMFilterRegression:
         for epic_id in epic_matches:
             assert re.match(r"EP-\d{5}", epic_id), f"Invalid epic ID format: {epic_id}"
 
-    @pytest.mark.component("backend")
     def test_javascript_file_loads_correctly(self):
         """Test that rtm-interactions.js loads and contains required functions"""
         response = requests.get(f"{self.BASE_URL}/static/js/rtm-interactions.js")
@@ -135,7 +134,6 @@ class TestRTMFilterRegression:
         ), f"filterDefects should have 3 parameters, found {len(params)}"
         print(f"OK filterDefects function has correct 3-parameter signature: {params}")
 
-    @pytest.mark.component("backend")
     def test_status_filter_backend_functionality(self):
         """Test that backend filtering works correctly"""
         # Test global status filter
@@ -167,7 +165,6 @@ class TestRTMFilterRegression:
         assert response.status_code == 200
         print("OK Defect status filter backend works")
 
-    @pytest.mark.component("backend")
     def test_filter_buttons_do_not_interfere_with_epic_structure(self):
         """Test that filter buttons are not inside epic headers (preventing epic collapse)"""
         response = requests.get(f"{self.RTM_URL}?format=html")
@@ -197,7 +194,6 @@ class TestRTMFilterRegression:
 
         print("OK Filter buttons are properly separated from epic headers")
 
-    @pytest.mark.component("backend")
     def test_no_javascript_syntax_errors_in_generated_html(self):
         """Test that generated HTML doesn't have JavaScript syntax errors"""
         response = requests.get(f"{self.RTM_URL}?format=html")
@@ -223,7 +219,6 @@ class TestRTMFilterRegression:
 
         print("OK No JavaScript syntax errors found in onclick handlers")
 
-    @pytest.mark.component("backend")
     def test_filter_functions_parameter_compatibility(self):
         """Test that filter function calls match expected parameter counts"""
         response = requests.get(f"{self.RTM_URL}?format=html")

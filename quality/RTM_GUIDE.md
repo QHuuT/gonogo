@@ -78,7 +78,8 @@ Each epic is displayed as an interactive card with:
 - **Enhanced Metrics Dashboard**: Card-based test statistics
 - **Test Type Distribution**: Visual breakdown by type
 - **Filter Buttons**: E2E Only, Unit, Integration, Security, All Tests
-- **Traceability Table**: Type, File, Function/Scenario, Last Execution, Status
+- **Category Filters**: Smoke, Edge, Regression, Performance, Compliance (GDPR, RGAA, Doc) tests
+- **Traceability Table**: Type, Category, Component, File, Function/Scenario, Last Execution, Status
 
 #### 3. Defects Section 🐛
 - **Filter Buttons**: All, Critical, High, Medium, Low, Open, Resolved
@@ -100,7 +101,10 @@ Each epic is displayed as an interactive card with:
 ### Advanced Filtering
 - **Epic Level**: Filter by epic status (Planned, In Progress, etc.)
 - **User Story Level**: Filter by implementation status
-- **Test Level**: Filter by test type (Unit, Integration, E2E, Security)
+- **Test Level**:
+  - Filter by test type (Unit, Integration, E2E, Security, BDD)
+  - Filter by test category (Smoke, Edge, Regression, Performance, Error-Handling, Compliance-GDPR, Compliance-RGAA, Compliance-Doc, Compliance-Project-Management)
+  - Filter by component (Frontend, Backend, Security, Database)
 - **Defect Level**: Filter by priority and status
 - **Cross-filtering**: Filters work independently and can be combined
 
@@ -696,6 +700,56 @@ for epic in data["epics"]:
   with:
     name: rtm-report
     path: rtm_report.html
+```
+
+## 📊 Test Database Schema
+
+### Test Model Fields
+
+The Test model in the RTM database includes the following fields for comprehensive test tracking:
+
+| Field | Type | Description | Values |
+|-------|------|-------------|--------|
+| **test_type** | String | Type of test | unit, integration, e2e, security, bdd |
+| **test_category** | String | Test category for organization | smoke, edge, regression, performance, error-handling, compliance-gdpr, compliance-rgaa, compliance-doc, compliance-project-management |
+| **component** | String | System component being tested | frontend, backend, security, database |
+| **test_priority** | String | Test execution priority | critical, high, medium, low |
+| **test_file_path** | String | Path to test file | tests/unit/test_example.py |
+| **test_function_name** | String | Test function or scenario name | test_user_authentication |
+| **last_execution_status** | String | Last execution result | passed, failed, skipped, error, not_run |
+| **last_execution_time** | DateTime | Timestamp of last execution | 2025-09-24 06:38:00 |
+| **execution_count** | Integer | Total executions | 42 |
+| **failure_count** | Integer | Total failures | 3 |
+
+### Marker Extraction
+
+Tests are automatically discovered and synced to the database with markers extracted from:
+
+**Python Tests:**
+```python
+@pytest.mark.epic("EP-00001")
+@pytest.mark.user_story("US-00010")
+@pytest.mark.component("backend")
+@pytest.mark.priority("high")
+@pytest.mark.test_category("smoke")
+def test_example():
+    assert True
+```
+
+**BDD Tests:**
+```gherkin
+@epic:EP-00001 @user_story:US-00010 @component:backend @test_category:smoke
+Feature: Feature Name
+```
+
+### Syncing Tests to Database
+
+```bash
+# Discover and sync all tests with markers
+python tools/test-db-integration.py discover tests
+
+# Tests are automatically linked to epics and user stories
+# Markers are extracted and stored in database fields
 ```
 
 ## 📈 Best Practices

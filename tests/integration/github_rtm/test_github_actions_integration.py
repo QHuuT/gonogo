@@ -77,6 +77,10 @@ class MockGitHubIssue:
 
 @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
 @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+@pytest.mark.test_type("integration")
+@pytest.mark.component("undefined")
+@pytest.mark.test_category("undefined")
+@pytest.mark.priority("undefined")
 class TestGitHubDatabaseSync:
     """Test GitHub → Database synchronization functionality."""
 
@@ -497,6 +501,10 @@ class TestGitHubDatabaseSync:
 
 @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
 @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+@pytest.mark.test_type("integration")
+@pytest.mark.component("undefined")
+@pytest.mark.test_category("undefined")
+@pytest.mark.priority("undefined")
 class TestGitHubActionsWorkflowIntegration:
     """Test the complete GitHub Actions workflow integration."""
 

@@ -18,7 +18,10 @@ import pytest
 
 
 @pytest.mark.epic("EP-00005")
+@pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
+@pytest.mark.test_category("undefined")
+@pytest.mark.priority("undefined")
 class TestRTMFilterIntegration:
     """Integration tests for RTM filter functionality."""
 
@@ -27,7 +30,8 @@ class TestRTMFilterIntegration:
         self.test_output_dir = Path("quality/reports/test_rtm_filters")
         self.test_output_dir.mkdir(exist_ok=True)
 
-    @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_rtm_report_generation(self):
         """Test that RTM reports can be generated successfully."""
         # Generate a test RTM report
@@ -45,7 +49,8 @@ class TestRTMFilterIntegration:
         expected_output = Path("quality/reports/dynamic_rtm/rtm_matrix_complete.html")
         assert expected_output.exists(), "RTM report was not generated"
 
-    @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_rtm_html_structure_for_filtering(self):
         """Test that generated RTM HTML has correct structure for filtering."""
         # First generate the report
@@ -113,7 +118,6 @@ class TestRTMFilterIntegration:
             "rtm-interactions.js" in html_content
         ), "RTM interactions JavaScript not referenced"
 
-    @pytest.mark.component("backend")
     def test_javascript_functions_are_exposed(self):
         """Test that JavaScript functions are properly exposed to global scope."""
         # Read the JavaScript file
@@ -133,7 +137,6 @@ class TestRTMFilterIntegration:
         )
         assert "window.filterDefects = filterDefects;" in js_content
 
-    @pytest.mark.component("backend")
     def test_filter_button_data_attributes_consistency(self):
         """Test that filter buttons have consistent data attributes."""
         # Generate fresh report
@@ -188,7 +191,6 @@ class TestRTMFilterIntegration:
                 pattern in html_content
             ), f"Defect filter pattern not found: {pattern}"
 
-    @pytest.mark.component("backend")
     def test_epic_specific_filter_groups(self):
         """Test that each epic has its own filter groups."""
         # Generate fresh report
@@ -222,7 +224,6 @@ class TestRTMFilterIntegration:
                 # This might be OK if the epic has no user stories, just warn
                 print(f"Warning: No user story filter group found for {epic_id}")
 
-    @pytest.mark.component("backend")
     def test_javascript_selector_compatibility(self):
         """Test that JavaScript selectors match the generated HTML structure."""
         # Generate fresh report
@@ -273,7 +274,6 @@ class TestRTMFilterIntegration:
             ".defect-filter-section" in js_content
         ), "Defect filter section selector not in JavaScript"
 
-    @pytest.mark.component("backend")
     def test_filter_count_display_elements(self):
         """Test that filter count display elements exist."""
         # Generate fresh report
@@ -302,7 +302,6 @@ class TestRTMFilterIntegration:
             or "defect-count-display" in html_content
         ), "Defect count display not found"
 
-    @pytest.mark.component("backend")
     def test_animation_classes_and_functionality(self):
         """Test that animation-related classes and functionality are present."""
         js_file = Path("static/js/rtm-interactions.js")
@@ -316,7 +315,6 @@ class TestRTMFilterIntegration:
         assert "hidden" in js_content, "Hidden class handling not found"
         assert "transition" in js_content, "Transition handling not found"
 
-    @pytest.mark.component("backend")
     def test_error_handling_and_logging(self):
         """Test that error handling and console logging are implemented."""
         js_file = Path("static/js/rtm-interactions.js")
@@ -327,7 +325,6 @@ class TestRTMFilterIntegration:
         assert "console.warn(" in js_content, "Console warning not found"
         assert "not found" in js_content, "Error messages not found"
 
-    @pytest.mark.component("backend")
     def test_accessibility_features(self):
         """Test that accessibility features are implemented."""
         # Generate fresh report
@@ -358,7 +355,6 @@ class TestRTMFilterIntegration:
             "announceToScreenReader(" in js_content
         ), "Screen reader announcements not found"
 
-    @pytest.mark.component("backend")
     def test_multiple_epic_independence(self):
         """Test that filtering one epic doesn't affect others."""
         # This test verifies that the selectors are epic-specific
@@ -388,11 +384,14 @@ class TestRTMFilterIntegration:
             ), f"Epic-specific container not found for {epic_id}"
 
 
+@pytest.mark.epic("EP-00005")
+@pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
+@pytest.mark.test_category("undefined")
+@pytest.mark.priority("undefined")
 class TestRTMFilterRegression:
     """Regression tests to ensure the filtering fix doesn't break existing functionality."""
 
-    @pytest.mark.component("backend")
     def test_epic_expand_collapse_still_works(self):
         """Test that epic expand/collapse functionality is not broken by filter fixes."""
         js_file = Path("static/js/rtm-interactions.js")
@@ -407,7 +406,6 @@ class TestRTMFilterRegression:
             "window.toggleEpicDetails = toggleEpicDetails;" in js_content
         ), "toggleEpicDetails not exposed globally"
 
-    @pytest.mark.component("backend")
     def test_search_functionality_preserved(self):
         """Test that search functionality is not broken by filter fixes."""
         js_file = Path("static/js/rtm-interactions.js")
@@ -420,7 +418,6 @@ class TestRTMFilterRegression:
         ), "performSearch function not found"
         assert "searchTerm" in js_content, "Search term handling not found"
 
-    @pytest.mark.component("backend")
     def test_export_functionality_preserved(self):
         """Test that export functionality is not broken by filter fixes."""
         js_file = Path("static/js/rtm-interactions.js")

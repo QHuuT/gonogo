@@ -25,6 +25,10 @@ from shared.testing.database_integration import (
 
 @pytest.mark.epic("EP-00005", "EP-00057", "EP-99999")
 @pytest.mark.user_story("US-00057")
+@pytest.mark.test_type("integration")
+@pytest.mark.component("undefined")
+@pytest.mark.test_category("undefined")
+@pytest.mark.priority("undefined")
 class TestDatabaseIntegrationWorkflow:
     """Integration tests for complete test-database integration workflow."""
 
@@ -66,12 +70,20 @@ Test file for EP-00057 functionality.
 
 @pytest.mark.epic("EP-00005", "EP-00057", "EP-99999")
 @pytest.mark.user_story("US-00057")
+@pytest.mark.test_type("integration")
+@pytest.mark.component("undefined")
+@pytest.mark.test_category("undefined")
+@pytest.mark.priority("undefined")
 def test_database_integration():
     """Test database integration functionality - EP-00057."""
     assert True
 
 @pytest.mark.epic("EP-00005", "EP-00057", "EP-99999")
 @pytest.mark.user_story("US-00057")
+@pytest.mark.test_type("integration")
+@pytest.mark.component("undefined")
+@pytest.mark.test_category("undefined")
+@pytest.mark.priority("undefined")
 def test_another_function():
     """Another test without Epic reference."""
     assert True

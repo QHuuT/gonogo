@@ -25,7 +25,10 @@
       "Bash(gh run view:*)",
       "Bash(pip install:*)",
       "Bash(git push:*)",
-      "Bash(gh api:*)"
+      "Bash(gh api:*)",
+      "Bash(cat:*)",
+      "Bash(PYTHONPATH=. python tools/collect_pytest_markers.py --output test_associations.json)",
+      "Bash(set PYTHONPATH=src)"
     ],
     "deny": [],
     "ask": []

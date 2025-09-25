@@ -21,7 +21,10 @@ from be.models.traceability import Epic, UserStory
 
 @pytest.mark.epic("EP-00005")
 @pytest.mark.user_story("US-00055")
+@pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
+@pytest.mark.test_category("undefined")
+@pytest.mark.priority("undefined")
 class TestRTMDatabaseCLIIntegration:
     """Integration tests for RTM Database CLI."""
 
@@ -50,7 +53,10 @@ class TestRTMDatabaseCLIIntegration:
 
     @pytest.mark.epic("EP-00005")
     @pytest.mark.user_story("US-00055")
+    @pytest.mark.test_type("integration")
     @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_cli_help(self):
         """Test CLI help command."""
         result = self.run_cli_command("--help")
@@ -59,7 +65,10 @@ class TestRTMDatabaseCLIIntegration:
 
     @pytest.mark.epic("EP-00005")
     @pytest.mark.user_story("US-00055")
+    @pytest.mark.test_type("integration")
     @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_admin_health_check(self):
         """Test database health check command."""
         result = self.run_cli_command("admin", "health-check")
@@ -68,7 +77,10 @@ class TestRTMDatabaseCLIIntegration:
 
     @pytest.mark.epic("EP-00005")
     @pytest.mark.user_story("US-00055")
+    @pytest.mark.test_type("integration")
     @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_create_and_query_epic(self):
         """Test creating and querying an Epic."""
         # Create epic
@@ -101,7 +113,10 @@ class TestRTMDatabaseCLIIntegration:
 
     @pytest.mark.epic("EP-00005")
     @pytest.mark.user_story("US-00055")
+    @pytest.mark.test_type("integration")
     @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_create_user_story_with_epic(self):
         """Test creating User Story linked to Epic."""
         # Create parent epic first
@@ -142,7 +157,10 @@ class TestRTMDatabaseCLIIntegration:
 
     @pytest.mark.epic("EP-00005")
     @pytest.mark.user_story("US-00055")
+    @pytest.mark.test_type("integration")
     @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_epic_progress_calculation(self):
         """Test Epic progress calculation."""
         # Create epic and user story
@@ -169,7 +187,10 @@ class TestRTMDatabaseCLIIntegration:
 
     @pytest.mark.epic("EP-00005")
     @pytest.mark.user_story("US-00055")
+    @pytest.mark.test_type("integration")
     @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_json_output_format(self):
         """Test JSON output format."""
         # Create test epic
@@ -190,7 +211,10 @@ class TestRTMDatabaseCLIIntegration:
 
     @pytest.mark.epic("EP-00005")
     @pytest.mark.user_story("US-00055")
+    @pytest.mark.test_type("integration")
     @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_data_export(self):
         """Test data export functionality."""
         # Create test data
@@ -231,7 +255,10 @@ class TestRTMDatabaseCLIIntegration:
 
     @pytest.mark.epic("EP-00005")
     @pytest.mark.user_story("US-00055")
+    @pytest.mark.test_type("integration")
     @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_admin_validation(self):
         """Test database validation functionality."""
         # Create valid data
@@ -255,7 +282,10 @@ class TestRTMDatabaseCLIIntegration:
 
     @pytest.mark.epic("EP-00005")
     @pytest.mark.user_story("US-00055")
+    @pytest.mark.test_type("integration")
     @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_create_epic_duplicate_error(self):
         """Test error handling for duplicate Epic creation."""
         # Create epic via database
@@ -277,7 +307,10 @@ class TestRTMDatabaseCLIIntegration:
 
     @pytest.mark.epic("EP-00005")
     @pytest.mark.user_story("US-00055")
+    @pytest.mark.test_type("integration")
     @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_user_story_epic_not_found(self):
         """Test error handling when parent Epic not found."""
         result = self.run_cli_command(
@@ -297,7 +330,10 @@ class TestRTMDatabaseCLIIntegration:
 
     @pytest.mark.epic("EP-00005")
     @pytest.mark.user_story("US-00055")
+    @pytest.mark.test_type("integration")
     @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_verbose_mode(self):
         """Test verbose output mode."""
         result = self.run_cli_command(
@@ -317,7 +353,10 @@ class TestRTMDatabaseCLIIntegration:
 
     @pytest.mark.epic("EP-00005")
     @pytest.mark.user_story("US-00055")
+    @pytest.mark.test_type("integration")
     @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     def test_cli_error_handling(self):
         """Test CLI error handling for invalid commands."""
         # Test invalid subcommand
@@ -328,6 +367,10 @@ class TestRTMDatabaseCLIIntegration:
         result = self.run_cli_command("entities", "create-epic")
         assert result.returncode != 0
 
+    @pytest.mark.test_type("integration")
+    @pytest.mark.component("backend")
+    @pytest.mark.test_category("undefined")
+    @pytest.mark.priority("undefined")
     @pytest.mark.skipif(True, reason="Requires markdown test file")
     def test_import_rtm_functionality(self):
         """Test RTM import functionality (requires test markdown file)."""

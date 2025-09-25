@@ -13,12 +13,13 @@ import pytest
 
 
 @pytest.mark.epic("EP-00001")
+@pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
+@pytest.mark.test_category("undefined")
+@pytest.mark.priority("undefined")
 class TestRTMFilterValidation:
     """Validation tests for RTM filter functionality."""
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_existing_rtm_report_structure(self):
         """Test that existing RTM reports have correct structure for filtering."""
         # Use existing demo report
@@ -47,8 +48,6 @@ class TestRTMFilterValidation:
         # Test filter buttons
         assert 'onclick="filter' in html_content, "Filter onclick handlers not found"
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_javascript_fixes_applied(self):
         """Test that the JavaScript fixes have been correctly applied."""
         js_file = Path("static/js/rtm-interactions.js")
@@ -83,8 +82,6 @@ class TestRTMFilterValidation:
         )
         assert "window.filterDefects = filterDefects;" in js_content
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_filter_function_parameter_matching(self):
         """Test that filter function parameters match HTML onclick calls."""
         js_file = Path("static/js/rtm-interactions.js")
@@ -118,8 +115,6 @@ class TestRTMFilterValidation:
             filter_us_match
         ), "filterUserStoriesByStatus function signature doesn't match expected parameters"
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_css_selector_improvements(self):
         """Test that CSS selectors have been improved to match HTML structure."""
         js_file = Path("static/js/rtm-interactions.js")
@@ -145,8 +140,6 @@ class TestRTMFilterValidation:
             ".defect-filter-section + table tbody" in js_content
         ), "Defect filter selector missing"
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_button_state_management_fix(self):
         """Test that button state management has been fixed for defect buttons."""
         js_file = Path("static/js/rtm-interactions.js")
@@ -168,8 +161,6 @@ class TestRTMFilterValidation:
             "'filter-button--active', 'active'" in js_content
         ), "Both active classes not managed"
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_error_handling_improvements(self):
         """Test that error handling and debugging have been improved."""
         js_file = Path("static/js/rtm-interactions.js")
@@ -187,8 +178,6 @@ class TestRTMFilterValidation:
             "No filter buttons found" in js_content
         ), "Button error messages not found"
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_regression_prevention(self):
         """Test that existing functionality hasn't been broken."""
         js_file = Path("static/js/rtm-interactions.js")
@@ -211,8 +200,6 @@ class TestRTMFilterValidation:
             "announceToScreenReader(" in js_content
         ), "Screen reader announcements missing"
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_initialization_and_exposure(self):
         """Test that initialization and global function exposure work correctly."""
         js_file = Path("static/js/rtm-interactions.js")
@@ -237,8 +224,6 @@ class TestRTMFilterValidation:
         for exposure in global_exposures:
             assert exposure in js_content, f"Global exposure missing: {exposure}"
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_animation_and_ux_features(self):
         """Test that animation and UX features are preserved."""
         js_file = Path("static/js/rtm-interactions.js")
@@ -256,12 +241,13 @@ class TestRTMFilterValidation:
 
 
 @pytest.mark.epic("EP-00001")
+@pytest.mark.test_type("integration")
 @pytest.mark.component("backend")
+@pytest.mark.test_category("undefined")
+@pytest.mark.priority("undefined")
 class TestRTMFilterUnitValidation:
     """Unit-level validation of the specific fixes."""
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_selector_string_correctness(self):
         """Test that the new selector strings are correctly formatted."""
         # These are the exact selectors that should be in the JavaScript
@@ -291,8 +277,6 @@ class TestRTMFilterUnitValidation:
             ".defect-filter-section" in expected_defect_selector
         ), "Defect selector format incorrect"
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_data_attribute_mapping(self):
         """Test that data attribute mapping is correct."""
         # Expected data attribute patterns
@@ -311,8 +295,6 @@ class TestRTMFilterUnitValidation:
             ), f"Invalid data attribute pattern: {pattern}"
             assert "-" in pattern, f"Data attribute should use kebab-case: {pattern}"
 
-    @pytest.mark.epic("EP-00001")
-    @pytest.mark.component("backend")
     def test_filter_group_naming_convention(self):
         """Test that filter group naming follows consistent convention."""
         epic_id = "EP-00001"

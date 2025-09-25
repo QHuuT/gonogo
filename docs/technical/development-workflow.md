@@ -76,16 +76,38 @@ This document defines the complete development workflow for GoNoGo, integrating 
    - Feature: authentication.feature:user_login
    - Feature: authentication.feature:user_logout
    ```
-10. **Run BDD Tests** (should fail - RED phase)
+10. **Tag Tests with RTM Markers** for traceability:
+    ```python
+    # Python tests - use pytest markers
+    @pytest.mark.epic("EP-00001")
+    @pytest.mark.user_story("US-00010")
+    @pytest.mark.component("backend")
+    @pytest.mark.priority("high")
+    @pytest.mark.test_category("smoke")
+    def test_user_login():
+        assert authenticate_user("user", "pass")
+
+    # Compliance test example
+    @pytest.mark.test_category("compliance-gdpr")
+    @pytest.mark.priority("critical")
+    def test_user_data_deletion():
+        assert user_can_delete_all_data()
+    ```
+    ```gherkin
+    # BDD tests - use feature tags
+    @epic:EP-00001 @user_story:US-00010 @component:backend @test_category:smoke
+    Feature: User Authentication
+    ```
+11. **Run BDD Tests** (should fail - RED phase)
     ```bash
     pytest tests/bdd/ -v --tb=short
     ```
-11. **Implement Minimum Code** to make tests pass (GREEN phase)
-12. **Refactor** while keeping tests green (REFACTOR phase)
-13. **Run Full Test Suite** to ensure no regressions
+12. **Implement Minimum Code** to make tests pass (GREEN phase)
+13. **Refactor** while keeping tests green (REFACTOR phase)
+14. **Run Full Test Suite** to ensure no regressions
 
 ### **Phase 3: Documentation & Traceability**
-14. **UPDATE RTM** using database tools:
+15. **UPDATE RTM** using database tools:
     ```bash
     # Update user story status in database
     python tools/github_sync_manager.py --epic EP-XXXXX
@@ -96,14 +118,22 @@ This document defines the complete development workflow for GoNoGo, integrating 
     # Or check via CLI
     python tools/rtm-db.py query user-stories --format table
     ```
-15. **Update Technical Docs** if architecture changed (see [Documentation Workflow](documentation-workflow.md))
-16. **Verify GDPR Compliance** if personal data involved
-17. **Update CLAUDE.md** if workflow or structure changed
+16. **Sync Test Markers to Database** for RTM integration:
+    ```bash
+    # Discover and sync all test markers to RTM database
+    python tools/test-db-integration.py discover tests
+
+    # Verify tests are linked correctly
+    python tools/rtm-db.py query tests --format table
+    ```
+17. **Update Technical Docs** if architecture changed (see [Documentation Workflow](documentation-workflow.md))
+18. **Verify GDPR Compliance** if personal data involved
+19. **Update CLAUDE.md** if workflow or structure changed
 
 ### **Phase 4: Quality Gates (MANDATORY) - Enhanced with Structured Logging**
 **📖 Complete Testing Guide**: See [Testing Guide](../../quality/TESTING_GUIDE.md) for comprehensive workflows and server management
 
-18. **Run Tests with Structured Logging** (generates logs automatically):
+20. **Run Tests with Structured Logging** (generates logs automatically):
     ```bash
     # All tests with structured logging (creates quality/logs/test_execution.log)
     pytest tests/ -v
@@ -113,7 +143,7 @@ This document defines the complete development workflow for GoNoGo, integrating 
     pytest --mode=verbose --type=unit   # Unit tests with detailed output
     pytest --mode=detailed --type=integration  # Integration with full debugging
     ```
-19. **Generate Interactive Test Report** (review for failures and trends):
+21. **Generate Interactive Test Report** (review for failures and trends):
     ```bash
     # Generate comprehensive HTML report from test logs
     python tools/report_generator.py --input quality/logs/

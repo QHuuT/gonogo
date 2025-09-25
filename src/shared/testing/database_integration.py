@@ -33,6 +33,11 @@ class TestDiscovery:
         self.user_story_pattern = re.compile(r"US-(\d{5})")
         self.defect_pattern = re.compile(r"DEF-(\d{5})")
 
+        # Pytest marker patterns
+        self.component_pattern = re.compile(r'@pytest\.mark\.component\(["\']([^"\']+)["\']\)')
+        self.priority_pattern = re.compile(r'@pytest\.mark\.priority\(["\']([^"\']+)["\']\)')
+        self.test_category_pattern = re.compile(r'@pytest\.mark\.test_category\(["\']([^"\']+)["\']\)')
+
     def discover_tests(self, root_dir: Path = None) -> List[Dict]:
         """
         Discover all test files and extract metadata.
@@ -89,6 +94,9 @@ class TestDiscovery:
                         "bdd_scenario_name": self._extract_bdd_scenario_name(
                             node, content
                         ),
+                        "component": self._extract_component(content),
+                        "priority": self._extract_priority(content),
+                        "test_category": self._extract_test_category(content),
                     }
                     test_functions.append(test_metadata)
 
@@ -128,6 +136,21 @@ class TestDiscovery:
                     if decorator.args and isinstance(decorator.args[-1], ast.Constant):
                         return decorator.args[-1].value
         return None
+
+    def _extract_component(self, content: str) -> Optional[str]:
+        """Extract component from pytest.mark.component marker."""
+        match = self.component_pattern.search(content)
+        return match.group(1) if match else None
+
+    def _extract_priority(self, content: str) -> Optional[str]:
+        """Extract priority from pytest.mark.priority marker."""
+        match = self.priority_pattern.search(content)
+        return match.group(1) if match else None
+
+    def _extract_test_category(self, content: str) -> Optional[str]:
+        """Extract test_category from pytest.mark.test_category marker."""
+        match = self.test_category_pattern.search(content)
+        return match.group(1) if match else None
 
 
 class TestDatabaseSync:
@@ -197,6 +220,9 @@ class TestDatabaseSync:
             existing_test.title = test_data["title"]
             existing_test.test_type = test_data["test_type"]
             existing_test.bdd_scenario_name = test_data["bdd_scenario_name"]
+            existing_test.component = test_data.get("component")
+            existing_test.test_priority = test_data.get("priority") or "medium"
+            existing_test.test_category = test_data.get("test_category")
             return "updated"
         else:
             # Create new test
@@ -206,6 +232,9 @@ class TestDatabaseSync:
                 title=test_data["title"],
                 test_function_name=test_data["test_function_name"],
                 bdd_scenario_name=test_data["bdd_scenario_name"],
+                component=test_data.get("component"),
+                test_priority=test_data.get("priority") or "medium",
+                test_category=test_data.get("test_category"),
                 description=f"Auto-discovered test from {test_data['test_file_path']}:{test_data['line_number']}",
             )
             db.add(test)
