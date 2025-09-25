@@ -1708,9 +1708,61 @@
             const capabilityNodes = aggregateEpicsToCapabilities();
             const capabilityLinks = aggregateEpicDependenciesToCapabilities(capabilityNodes);
 
-            // Draw capability nodes and links
-            drawCapabilityNodes(capabilityNodes);
-            drawCapabilityLinks(capabilityLinks);
+            if (capabilityNodes.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            const containerNode = document.getElementById('dependency-graph');
+            const rect = containerNode.getBoundingClientRect();
+            const width = rect.width;
+            const height = rect.height;
+
+            const link = g.append('g')
+                .selectAll('.capability-link')
+                .data(capabilityLinks)
+                .enter()
+                .append('line')
+                .attr('class', 'capability-link')
+                .style('stroke', '#999')
+                .style('stroke-width', d => Math.max(1, d.count))
+                .style('opacity', 0.6);
+
+            const node = g.append('g')
+                .selectAll('.capability-node')
+                .data(capabilityNodes)
+                .enter()
+                .append('g')
+                .attr('class', 'capability-node');
+
+            node.append('circle')
+                .attr('r', d => 30 + d.epics.length * 5)
+                .attr('class', d => `capability-cluster cap-${d.id}`)
+                .style('opacity', 0.8);
+
+            node.append('text')
+                .attr('class', 'capability-label')
+                .attr('text-anchor', 'middle')
+                .attr('dy', 5)
+                .text(d => d.name);
+
+            simulation
+                .nodes(capabilityNodes)
+                .force('link', d3.forceLink(capabilityLinks).id(d => d.id).distance(200))
+                .force('charge', d3.forceManyBody().strength(-600))
+                .force('center', d3.forceCenter(width / 2, height / 2))
+                .force('collision', d3.forceCollide().radius(d => 40 + d.epics.length * 4));
+
+            simulation.alpha(1).restart();
+
+            simulation.on('tick', () => {
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+                link
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+            });
         }
 
         // Utility functions
