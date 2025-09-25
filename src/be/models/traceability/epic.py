@@ -522,54 +522,63 @@ class Epic(TraceabilityBase):
         """Get metrics tailored for specific dashboard personas."""
         all_metrics = self.calculate_all_metrics()
 
-        if persona.lower() == "pm":  # Project Manager
+        timeline_metrics = all_metrics.get("timeline_metrics", {})
+        velocity_metrics = all_metrics.get("velocity_metrics", {})
+        business_metrics = all_metrics.get("business_metrics", {})
+        predictive_metrics = all_metrics.get("predictive_metrics", {})
+        quality_metrics = all_metrics.get("quality_metrics", {})
+
+        persona_key = persona.lower()
+
+        if persona_key == "pm":  # Project Manager
             return {
-                "timeline": all_metrics["timeline_metrics"],
-                "velocity": all_metrics["velocity_metrics"],
+                "timeline": timeline_metrics,
+                "velocity": velocity_metrics,
                 "risk": {
-                    "overall_risk_score": all_metrics["predictive_metrics"]["overall_risk_score"],
-                    "success_probability": all_metrics["predictive_metrics"]["success_probability"],
-                    "risk_factors": all_metrics["predictive_metrics"]["risk_factors"]
+                    "overall_risk_score": predictive_metrics.get("overall_risk_score", 0),
+                    "success_probability": predictive_metrics.get("success_probability", 0),
+                    "risk_factors": predictive_metrics.get("risk_factors", []),
                 },
                 "team_productivity": {
-                    "velocity_per_team_member": all_metrics["velocity_metrics"].get("velocity_per_team_member", 0),
-                    "team_size": self.team_size
-                }
+                    "velocity_per_team_member": velocity_metrics.get("velocity_per_team_member", 0),
+                    "team_size": self.team_size,
+                },
             }
-        elif persona.lower() == "po":  # Product Owner
+        elif persona_key == "po":  # Product Owner
             return {
-                "business_value": all_metrics["business_metrics"],
+                "business_value": business_metrics,
                 "scope": {
-                    "scope_creep_percentage": all_metrics["velocity_metrics"]["scope_creep_percentage"],
-                    "scope_creep_points": all_metrics["velocity_metrics"]["scope_creep_points"]
+                    "scope_creep_percentage": velocity_metrics.get("scope_creep_percentage", 0),
+                    "scope_creep_points": velocity_metrics.get("scope_creep_points", 0),
                 },
                 "stakeholder": {
-                    "satisfaction_score": self.stakeholder_satisfaction_score,
-                    "satisfaction_grade": all_metrics["business_metrics"]["stakeholder_satisfaction_grade"]
+                    "satisfaction_score": self.stakeholder_satisfaction_score or 0,
+                    "satisfaction_grade": business_metrics.get("stakeholder_satisfaction_grade", "Unknown"),
                 },
                 "adoption": {
-                    "user_adoption_rate": self.user_adoption_rate
-                }
+                    "user_adoption_rate": self.user_adoption_rate or 0,
+                },
             }
-        elif persona.lower() == "qa":  # Quality Assurance
+        elif persona_key == "qa":  # Quality Assurance
             return {
-                "quality": all_metrics["quality_metrics"],
+                "quality": quality_metrics,
                 "defects": {
                     "defect_count": len(self.defects) if self.defects else 0,
-                    "defect_density": self.defect_density
+                    "defect_density": self.defect_density or 0,
                 },
                 "testing": {
-                    "test_coverage": self.test_coverage_percentage,
-                    "test_count": len(self.tests) if self.tests else 0
+                    "test_coverage": self.test_coverage_percentage or 0,
+                    "test_count": len(self.tests) if self.tests else 0,
                 },
                 "technical_debt": {
-                    "debt_hours": self.technical_debt_hours,
-                    "code_review_score": self.code_review_score
-                }
+                    "debt_hours": self.technical_debt_hours or 0,
+                    "code_review_score": self.code_review_score or 0,
+                },
             }
         else:
             # Return all metrics for unknown personas
             return all_metrics
+
 
     def to_dict(self):
         """Convert to dictionary with Epic-specific fields."""
