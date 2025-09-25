@@ -69,6 +69,7 @@ docs/
   - [Security Architecture](technical/cross-cutting-architecture/security-architecture.md) - Security and GDPR implementation
   - [Integration Patterns](technical/cross-cutting-architecture/integration-patterns.md) - Service communication patterns
   - [BDD Scenarios](technical/bdd-scenarios/) - Executable specifications
+  - [Multi-Persona Traceability Dashboard](technical/technical-epics/developer-tooling/multipersona-dashboard.md) - Epic EP-00010 implementation status
 
 ### For End Users
 - **[User Documentation](user/)** - End-user guides and help

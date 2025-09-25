@@ -7,37 +7,37 @@ Quick navigation guide to find the right documentation for your needs.
 ## I Want To...
 
 ### Start Development
-- [docs/technical/development-workflow.md](docs/technical/development-workflow.md) – End-to-end engineering workflow
-- [quality/TESTING_GUIDE.md](quality/TESTING_GUIDE.md) – Test strategy and commands
-- [quality/QUICK_REFERENCE.md](quality/QUICK_REFERENCE.md) – Common development commands
+- [docs/technical/development-workflow.md](docs/technical/development-workflow.md) - End-to-end engineering workflow
+- [quality/TESTING_GUIDE.md](quality/TESTING_GUIDE.md) - Test strategy and commands
+- [quality/QUICK_REFERENCE.md](quality/QUICK_REFERENCE.md) - Common development commands
 
 ### Understand the Project
-- [README.md](README.md) – Project overview, quick start, features
-- [docs/README.md](docs/README.md) – Full documentation index
+- [README.md](README.md) - Project overview, quick start, features
+- [docs/README.md](docs/README.md) - Full documentation index
 
 ### Create or Track Work
-- [GitHub Issues](../../issues) – Active project management
-- [Issue Templates](../../issues/new/choose) – Create Epics, User Stories, Defects
+- [GitHub Issues](../../issues) - Active project management
+- [Issue Templates](../../issues/new/choose) - Create Epics, User Stories, Defects
 
 ### View Requirements & Traceability
-- [RTM Web Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html) – Interactive requirements matrix
-- [quality/RTM_GUIDE.md](quality/RTM_GUIDE.md) – How to use the RTM dashboard
+- [RTM Web Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html) - Interactive requirements matrix
+- [quality/RTM_GUIDE.md](quality/RTM_GUIDE.md) - How to use the RTM dashboard
 
 ### Run Tests
-- [quality/TESTING_GUIDE.md](quality/TESTING_GUIDE.md) – Comprehensive testing workflows
-- [quality/QUICK_REFERENCE.md](quality/QUICK_REFERENCE.md) – Quick command reference
+- [quality/TESTING_GUIDE.md](quality/TESTING_GUIDE.md) - Comprehensive testing workflows
+- [quality/QUICK_REFERENCE.md](quality/QUICK_REFERENCE.md) - Quick command reference
 
 ### Fix Issues or Debug
-- [quality/TROUBLESHOOTING.md](quality/TROUBLESHOOTING.md) – Common issues & solutions
-- [quality/DATABASE_GUIDE.md](quality/DATABASE_GUIDE.md) – Database troubleshooting
+- [quality/TROUBLESHOOTING.md](quality/TROUBLESHOOTING.md) - Common issues & solutions
+- [quality/DATABASE_GUIDE.md](quality/DATABASE_GUIDE.md) - Database troubleshooting
 
 ### Understand Architecture
-- [docs/technical/cross-cutting-architecture/](docs/technical/cross-cutting-architecture/) – System design
-- [docs/context/decisions/](docs/context/decisions/) – Architecture Decision Records (ADRs)
+- [docs/technical/cross-cutting-architecture/](docs/technical/cross-cutting-architecture/) - System design
+- [docs/context/decisions/](docs/context/decisions/) - Architecture Decision Records (ADRs)
 
 ### Ensure Compliance
-- [docs/context/compliance/gdpr-requirements.md](docs/context/compliance/gdpr-requirements.md) – GDPR requirements
-- [docs/traceability/gdpr-compliance-map.md](docs/traceability/gdpr-compliance-map.md) – Compliance mapping
+- [docs/context/compliance/gdpr-requirements.md](docs/context/compliance/gdpr-requirements.md) - GDPR requirements
+- [docs/traceability/gdpr-compliance-map.md](docs/traceability/gdpr-compliance-map.md) - Compliance mapping
 
 ---
 
@@ -73,6 +73,7 @@ Implementation details and architecture:
 | [quality-assurance.md](docs/technical/quality-assurance.md) | Code quality standards | Quality gates and standards |
 | [documentation-workflow.md](docs/technical/documentation-workflow.md) | Documentation process | Maintaining documentation |
 | [github-issue-creation.md](docs/technical/github-issue-creation.md) | Issue management workflow | Creating and updating issues correctly |
+| [technical/technical-epics/developer-tooling/multipersona-dashboard.md](docs/technical/technical-epics/developer-tooling/multipersona-dashboard.md) | Epic EP-00010 implementation status | Multi-persona dashboard work |
 
 ### Context Documentation (docs/context/)
 Stable decisions and compliance:
@@ -122,13 +123,13 @@ Scripts and utilities:
 
 ## Documentation Status
 
-### Database RTM System — Active
+### Database RTM System - Active
 - Dashboard: http://localhost:8000/api/rtm/reports/matrix?format=html
 - Guide: [quality/RTM_GUIDE.md](quality/RTM_GUIDE.md)
 - Database: gonogo.db (SQLite)
 - Status: 98.7% data quality, production-ready
 
-### Test Suite — Excellent
+### Test Suite - Excellent
 - Total Tests: 482 (426 non-BDD, 56 BDD)
 - Quality Grade: A+ (99.5% legitimate)
 - Guide: [quality/TESTING_GUIDE.md](quality/TESTING_GUIDE.md)
@@ -171,10 +172,10 @@ More troubleshooting detail: [quality/TROUBLESHOOTING.md](quality/TROUBLESHOOTIN
 
 ## External Links
 
-- [GitHub Repository](https://github.com/your-org/gonogo) – Source code
-- [GitHub Issues](../../issues) – Project management
-- [RTM Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html) – Requirements traceability (requires server running)
-- [DigitalOcean Deployment](https://cloud.digitalocean.com/) – Production environment
+- [GitHub Repository](https://github.com/your-org/gonogo) - Source code
+- [GitHub Issues](../../issues) - Project management
+- [RTM Dashboard](http://localhost:8000/api/rtm/reports/matrix?format=html) - Requirements traceability (requires server running)
+- [DigitalOcean Deployment](https://cloud.digitalocean.com/) - Production environment
 
 ---
 
@@ -194,6 +195,6 @@ More troubleshooting detail: [quality/TROUBLESHOOTING.md](quality/TROUBLESHOOTIN
 
 ---
 
-Quick start: begin with [README.md](README.md) ? [docs/technical/development-workflow.md](docs/technical/development-workflow.md) ? run tests with [quality/TESTING_GUIDE.md](quality/TESTING_GUIDE.md).
+Quick start: begin with [README.md](README.md) - [docs/technical/development-workflow.md](docs/technical/development-workflow.md) - run tests with [quality/TESTING_GUIDE.md](quality/TESTING_GUIDE.md).
 
-This is a living document—keep it accurate as the project evolves.
+This is a living document - keep it accurate as the project evolves.
