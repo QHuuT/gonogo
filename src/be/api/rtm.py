@@ -19,7 +19,7 @@ from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session
 
 from ..database import get_db
-from ..models.traceability import Defect, Epic, GitHubSync, Test, UserStory
+from ..models.traceability import Capability, Defect, Epic, EpicDependency, GitHubSync, Test, UserStory
 from ..services.rtm_report_generator import RTMReportGenerator
 
 router = APIRouter(prefix="/api/rtm", tags=["RTM"])
@@ -31,6 +31,31 @@ templates = Jinja2Templates(directory="src/be/templates")
 def rtm_dashboard(request: Request):
     """Serve the RTM Dashboard web interface."""
     return templates.TemplateResponse("rtm_dashboard.html", {"request": request})
+
+
+@router.get("/", response_class=HTMLResponse)
+def dashboard_home(request: Request):
+    """Dashboard home page with navigation to different dashboards."""
+    return templates.TemplateResponse("multipersona_dashboard.html", {"request": request})
+
+
+@router.get("/dashboard/multipersona", response_class=HTMLResponse)
+def multipersona_dashboard(request: Request):
+    """Serve the Multi-Persona Dashboard web interface (US-00072)."""
+    return templates.TemplateResponse("multipersona_dashboard.html", {"request": request})
+
+
+@router.get("/dashboard/dependencies", response_class=HTMLResponse)
+def dependency_visualizer(request: Request):
+    """Serve the Epic Dependencies Visualizer web interface with D3.js (US-00030)."""
+    return templates.TemplateResponse("dependency_visualizer.html", {"request": request})
+
+
+
+@router.get("/dashboard/capabilities", response_class=HTMLResponse)
+def capability_portfolio_dashboard(request: Request):
+    """Serve the Capability Portfolio Dashboard web interface (US-00063)."""
+    return templates.TemplateResponse("capability_portfolio.html", {"request": request})
 
 
 # Epic CRUD Operations
@@ -839,3 +864,389 @@ def export_report(
         media_type=media_type,
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
+
+
+# Epic Advanced Metrics Endpoints (US-00071) - Multi-persona dashboard
+
+@router.get("/epics/{epic_id}/metrics")
+def get_epic_metrics(
+    epic_id: str,
+    persona: Optional[str] = Query(None, description="Dashboard persona: PM, PO, QA"),
+    force_refresh: bool = Query(False, description="Force metrics recalculation"),
+    db: Session = Depends(get_db)
+):
+    """Get comprehensive metrics for an Epic, optionally filtered by persona."""
+    epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
+    if not epic:
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+
+    if persona:
+        metrics = epic.get_persona_specific_metrics(persona)
+        return {
+            "epic_id": epic_id,
+            "persona": persona.upper(),
+            "metrics": metrics,
+            "last_updated": epic.last_metrics_update.isoformat() if epic.last_metrics_update else None
+        }
+    else:
+        metrics = epic.update_metrics(force_recalculate=force_refresh)
+        return {
+            "epic_id": epic_id,
+            "metrics": metrics,
+            "last_updated": epic.last_metrics_update.isoformat() if epic.last_metrics_update else None
+        }
+
+
+@router.post("/epics/{epic_id}/metrics/update")
+def update_epic_metrics(
+    epic_id: str,
+    velocity_points_per_sprint: Optional[float] = None,
+    team_size: Optional[int] = None,
+    test_coverage_percentage: Optional[float] = None,
+    code_review_score: Optional[float] = None,
+    stakeholder_satisfaction_score: Optional[float] = None,
+    business_impact_score: Optional[float] = None,
+    roi_percentage: Optional[float] = None,
+    user_adoption_rate: Optional[float] = None,
+    technical_debt_hours: Optional[int] = None,
+    planned_start_date: Optional[str] = None,
+    planned_end_date: Optional[str] = None,
+    actual_start_date: Optional[str] = None,
+    actual_end_date: Optional[str] = None,
+    estimated_duration_days: Optional[int] = None,
+    db: Session = Depends(get_db)
+):
+    """Update Epic metrics values and recalculate derived metrics."""
+    epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
+    if not epic:
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+
+    # Update provided metrics
+    if velocity_points_per_sprint is not None:
+        epic.velocity_points_per_sprint = velocity_points_per_sprint
+    if team_size is not None:
+        epic.team_size = team_size
+    if test_coverage_percentage is not None:
+        epic.test_coverage_percentage = test_coverage_percentage
+    if code_review_score is not None:
+        epic.code_review_score = code_review_score
+    if stakeholder_satisfaction_score is not None:
+        epic.stakeholder_satisfaction_score = stakeholder_satisfaction_score
+    if business_impact_score is not None:
+        epic.business_impact_score = business_impact_score
+    if roi_percentage is not None:
+        epic.roi_percentage = roi_percentage
+    if user_adoption_rate is not None:
+        epic.user_adoption_rate = user_adoption_rate
+    if technical_debt_hours is not None:
+        epic.technical_debt_hours = technical_debt_hours
+    if estimated_duration_days is not None:
+        epic.estimated_duration_days = estimated_duration_days
+
+    # Update date fields
+    if planned_start_date:
+        try:
+            epic.planned_start_date = datetime.fromisoformat(planned_start_date)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid planned_start_date format. Use ISO format.")
+
+    if planned_end_date:
+        try:
+            epic.planned_end_date = datetime.fromisoformat(planned_end_date)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid planned_end_date format. Use ISO format.")
+
+    if actual_start_date:
+        try:
+            epic.actual_start_date = datetime.fromisoformat(actual_start_date)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid actual_start_date format. Use ISO format.")
+
+    if actual_end_date:
+        try:
+            epic.actual_end_date = datetime.fromisoformat(actual_end_date)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid actual_end_date format. Use ISO format.")
+
+    # Save changes and recalculate metrics
+    db.commit()
+    metrics = epic.update_metrics(force_recalculate=True)
+
+    return {
+        "epic_id": epic_id,
+        "message": "Epic metrics updated successfully",
+        "updated_metrics": metrics,
+        "last_updated": epic.last_metrics_update.isoformat()
+    }
+
+
+@router.get("/epics/{epic_id}/metrics/timeline")
+def get_epic_timeline_metrics(epic_id: str, db: Session = Depends(get_db)):
+    """Get timeline and schedule metrics for an Epic."""
+    epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
+    if not epic:
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+
+    timeline_metrics = epic.calculate_timeline_metrics()
+    return {
+        "epic_id": epic_id,
+        "timeline_metrics": timeline_metrics
+    }
+
+
+@router.get("/epics/{epic_id}/metrics/velocity")
+def get_epic_velocity_metrics(epic_id: str, db: Session = Depends(get_db)):
+    """Get velocity and productivity metrics for an Epic."""
+    epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
+    if not epic:
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+
+    velocity_metrics = epic.calculate_velocity_metrics()
+    return {
+        "epic_id": epic_id,
+        "velocity_metrics": velocity_metrics
+    }
+
+
+@router.get("/epics/{epic_id}/metrics/quality")
+def get_epic_quality_metrics(epic_id: str, db: Session = Depends(get_db)):
+    """Get quality and technical debt metrics for an Epic."""
+    epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
+    if not epic:
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+
+    quality_metrics = epic.calculate_quality_metrics()
+    return {
+        "epic_id": epic_id,
+        "quality_metrics": quality_metrics
+    }
+
+
+@router.get("/epics/{epic_id}/metrics/business")
+def get_epic_business_metrics(epic_id: str, db: Session = Depends(get_db)):
+    """Get business value and stakeholder metrics for an Epic."""
+    epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
+    if not epic:
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+
+    business_metrics = epic.calculate_business_metrics()
+    return {
+        "epic_id": epic_id,
+        "business_metrics": business_metrics
+    }
+
+
+@router.get("/epics/{epic_id}/metrics/predictions")
+def get_epic_predictive_metrics(epic_id: str, db: Session = Depends(get_db)):
+    """Get predictive analytics and risk assessment for an Epic."""
+    epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
+    if not epic:
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+
+    predictive_metrics = epic.calculate_predictive_metrics()
+    return {
+        "epic_id": epic_id,
+        "predictive_metrics": predictive_metrics
+    }
+
+
+@router.get("/dashboard/metrics")
+def get_dashboard_metrics(
+    persona: str = Query(..., description="Dashboard persona: PM, PO, QA"),
+    epic_filter: Optional[str] = Query(None, description="Filter by epic_id"),
+    status_filter: Optional[str] = Query(None, description="Filter by status"),
+    component_filter: Optional[str] = Query(None, description="Filter by component"),
+    db: Session = Depends(get_db)
+):
+    """Get aggregated metrics for the multi-persona dashboard."""
+
+    # Build query with filters
+    query = db.query(Epic)
+
+    if epic_filter:
+        query = query.filter(Epic.epic_id == epic_filter)
+    if status_filter:
+        query = query.filter(Epic.status == status_filter)
+    if component_filter:
+        query = query.filter(Epic.component == component_filter)
+
+    epics = query.all()
+
+    if not epics:
+        return {
+            "persona": persona.upper(),
+            "message": "No epics found matching the criteria",
+            "epics": [],
+            "summary": {}
+        }
+
+    # Collect persona-specific metrics for all epics
+    epic_metrics = []
+    for epic in epics:
+        metrics = epic.get_persona_specific_metrics(persona)
+        epic_metrics.append({
+            "epic_id": epic.epic_id,
+            "title": epic.title,
+            "status": epic.status,
+            "completion_percentage": epic.completion_percentage,
+            "priority": epic.priority,
+            "metrics": metrics
+        })
+
+    # Calculate aggregated summary based on persona
+    summary = calculate_dashboard_summary(epic_metrics, persona)
+
+    return {
+        "persona": persona.upper(),
+        "epics": epic_metrics,
+        "summary": summary,
+        "filters_applied": {
+            "epic_filter": epic_filter,
+            "status_filter": status_filter,
+            "component_filter": component_filter
+        }
+    }
+
+
+def calculate_dashboard_summary(epic_metrics: List[dict], persona: str) -> dict:
+    """Calculate aggregated summary metrics for dashboard personas."""
+    if not epic_metrics:
+        return {}
+
+    total_epics = len(epic_metrics)
+
+    if persona.lower() == "pm":
+        # Project Manager summary
+        at_risk_count = sum(1 for epic in epic_metrics
+                           if epic["metrics"].get("risk", {}).get("overall_risk_score", 0) > 30)
+        avg_velocity = sum(epic["metrics"].get("velocity", {}).get("velocity_points_per_sprint", 0)
+                          for epic in epic_metrics) / total_epics
+
+        return {
+            "total_epics": total_epics,
+            "at_risk_epics": at_risk_count,
+            "risk_percentage": (at_risk_count / total_epics) * 100,
+            "average_velocity": round(avg_velocity, 2),
+            "schedule_health": "Good" if at_risk_count < total_epics * 0.3 else "Needs Attention"
+        }
+
+    elif persona.lower() == "po":
+        # Product Owner summary
+        avg_satisfaction = sum(epic["metrics"].get("stakeholder", {}).get("satisfaction_score", 0)
+                              for epic in epic_metrics) / total_epics
+        high_scope_creep = sum(1 for epic in epic_metrics
+                              if epic["metrics"].get("scope", {}).get("scope_creep_percentage", 0) > 20)
+
+        return {
+            "total_epics": total_epics,
+            "average_satisfaction": round(avg_satisfaction, 1),
+            "scope_creep_issues": high_scope_creep,
+            "satisfaction_grade": "Good" if avg_satisfaction >= 7 else "Needs Improvement",
+            "business_health": "Healthy" if high_scope_creep < total_epics * 0.3 else "Monitor"
+        }
+
+    elif persona.lower() == "qa":
+        # Quality Assurance summary
+        avg_coverage = sum(epic["metrics"].get("testing", {}).get("test_coverage", 0)
+                          for epic in epic_metrics) / total_epics
+        high_defect_density = sum(1 for epic in epic_metrics
+                                 if epic["metrics"].get("defects", {}).get("defect_density", 0) > 0.5)
+
+        return {
+            "total_epics": total_epics,
+            "average_test_coverage": round(avg_coverage, 1),
+            "high_defect_epics": high_defect_density,
+            "coverage_grade": "Good" if avg_coverage >= 80 else "Needs Improvement",
+            "quality_health": "Good" if high_defect_density < total_epics * 0.2 else "Attention Required"
+        }
+
+    else:
+        return {"total_epics": total_epics}
+
+
+# Temporary dependency endpoints for visualizer (US-00073)
+# TODO: Move to epic_dependencies.py when server import issues resolved
+
+@router.get("/dependencies")
+def get_dependencies(db: Session = Depends(get_db)):
+    """Temporary endpoint for dependency visualization."""
+    try:
+        from ..models.traceability.epic_dependency import EpicDependency
+        dependencies = db.query(EpicDependency).filter(EpicDependency.is_active == True).all()
+
+        result = []
+        for dep in dependencies:
+            result.append({
+                "id": dep.id,
+                "parent_epic_id": dep.parent_epic_id,
+                "dependent_epic_id": dep.dependent_epic_id,
+                "dependency_type": dep.dependency_type,
+                "priority": dep.priority,
+                "reason": dep.reason,
+                "estimated_impact_days": dep.estimated_impact_days,
+                "is_active": dep.is_active,
+                "created_at": dep.created_at.isoformat() if dep.created_at else None
+            })
+
+        return result
+    except Exception as e:
+        # Return empty list if dependencies not set up yet
+        return []
+
+
+@router.get("/dependencies/analysis/critical-path")
+def get_critical_path(db: Session = Depends(get_db)):
+    """Get critical path analysis for dependencies."""
+    try:
+        from ..models.traceability.epic_dependency import DependencyGraph
+        epics = db.query(Epic).all()
+        graph = DependencyGraph()
+
+        # Add epics to graph
+        for epic in epics:
+            graph.add_epic(epic.id, epic.epic_id, epic.title)
+
+        # Add dependencies
+        from ..models.traceability.epic_dependency import EpicDependency
+        dependencies = db.query(EpicDependency).filter(EpicDependency.is_active == True).all()
+        for dep in dependencies:
+            graph.add_dependency(dep.parent_epic_id, dep.dependent_epic_id, dep.dependency_type, dep.priority)
+
+        critical_path = graph.find_critical_path()
+
+        return {
+            "critical_path": critical_path,
+            "path_length": len(critical_path),
+            "total_impact": sum(dep.get("impact_days", 0) for dep in critical_path)
+        }
+    except Exception:
+        return {"critical_path": [], "path_length": 0, "total_impact": 0}
+
+
+@router.get("/dependencies/analysis/cycles")
+def detect_cycles(db: Session = Depends(get_db)):
+    """Detect circular dependencies."""
+    try:
+        from ..models.traceability.epic_dependency import DependencyGraph
+        epics = db.query(Epic).all()
+        graph = DependencyGraph()
+
+        # Add epics to graph
+        for epic in epics:
+            graph.add_epic(epic.id, epic.epic_id, epic.title)
+
+        # Add dependencies
+        from ..models.traceability.epic_dependency import EpicDependency
+        dependencies = db.query(EpicDependency).filter(EpicDependency.is_active == True).all()
+        for dep in dependencies:
+            graph.add_dependency(dep.parent_epic_id, dep.dependent_epic_id, dep.dependency_type, dep.priority)
+
+        cycles = graph.detect_cycles()
+
+        return {
+            "has_cycles": len(cycles) > 0,
+            "cycles": cycles,
+            "cycle_count": len(cycles)
+        }
+    except Exception:
+        return {"has_cycles": False, "cycles": [], "cycle_count": 0}

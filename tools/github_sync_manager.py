@@ -25,7 +25,7 @@ sys.path.insert(0, str(src_path))
 
 try:
     from be.database import get_db_session
-    from be.models.traceability import Defect, Epic, GitHubSync, Test, UserStory
+    from be.models.traceability import Defect, Epic, GitHubSync, Test, UserStory, Capability
 
     DATABASE_AVAILABLE = True
 except ImportError as e:
@@ -160,6 +160,47 @@ class GitHubSyncManager:
             return "defect"
         else:
             return "unknown"
+
+    def get_capability_id_from_labels(self, labels: List[Dict]) -> Optional[str]:
+        """Extract capability ID from GitHub labels."""
+        for label in labels:
+            label_name = label.get("name", "")
+            if label_name.startswith("capability/"):
+                # Extract CAP-XXXXX from capability/CAP-00004
+                capability_part = label_name.replace("capability/", "")
+                if capability_part.startswith("CAP-"):
+                    return capability_part
+        return None
+
+    def get_or_create_capability(self, capability_id: str) -> Optional[int]:
+        """Get or create capability by ID, return the database ID."""
+        capability = self.db_session.query(Capability).filter_by(capability_id=capability_id).first()
+
+        if not capability:
+            # Create new capability with basic info
+            capability_name = self.get_capability_name_from_id(capability_id)
+            capability = Capability(
+                capability_id=capability_id,
+                name=capability_name,
+                description=f"Auto-created from GitHub label {capability_id}"
+            )
+            self.db_session.add(capability)
+            self.db_session.flush()  # Get the ID without committing
+
+            if self.verbose:
+                print(f"  [CREATED] Capability {capability_id}: {capability_name}")
+
+        return capability.id
+
+    def get_capability_name_from_id(self, capability_id: str) -> str:
+        """Map capability ID to human-readable name."""
+        capability_names = {
+            "CAP-00001": "GitHub Integration",
+            "CAP-00002": "Requirements Traceability",
+            "CAP-00003": "Blog Platform",
+            "CAP-00004": "GDPR Compliance"
+        }
+        return capability_names.get(capability_id, f"Capability {capability_id}")
 
     def sync_user_stories(self, epic_filter: Optional[str] = None) -> List[SyncResult]:
         """Sync user stories with GitHub issues."""
@@ -296,11 +337,25 @@ class GitHubSyncManager:
             old_status = epic.status
             new_status = "completed" if github_issue["state"] == "closed" else "active"
 
-            needs_update = old_status != new_status
+            # Check capability assignment from labels
+            old_capability_id = epic.capability_id
+            new_capability_db_id = None
+            capability_label_id = self.get_capability_id_from_labels(github_issue.get("labels", []))
+
+            if capability_label_id:
+                new_capability_db_id = self.get_or_create_capability(capability_label_id)
+
+            # Check if status or capability needs update
+            status_needs_update = old_status != new_status
+            capability_needs_update = old_capability_id != new_capability_db_id
+            needs_update = status_needs_update or capability_needs_update
 
             if needs_update:
                 if not self.dry_run:
-                    epic.status = new_status
+                    if status_needs_update:
+                        epic.status = new_status
+                    if capability_needs_update:
+                        epic.capability_id = new_capability_db_id
 
                     # Track sync operation
                     self._track_sync_operation(
@@ -311,7 +366,14 @@ class GitHubSyncManager:
 
                 if self.verbose:
                     action = "[DRY-RUN]" if self.dry_run else "[UPDATED]"
-                    print(f"  {action} {epic.epic_id}: {old_status} -> {new_status}")
+                    update_msg = f"  {action} {epic.epic_id}:"
+                    if status_needs_update:
+                        update_msg += f" status {old_status} -> {new_status}"
+                    if capability_needs_update:
+                        cap_old = f"CAP-{old_capability_id}" if old_capability_id else "None"
+                        cap_new = capability_label_id if capability_label_id else "None"
+                        update_msg += f" capability {cap_old} -> {cap_new}"
+                    print(update_msg)
 
             results.append(
                 SyncResult(

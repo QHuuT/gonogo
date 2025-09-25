@@ -8,6 +8,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from .api.rtm import router as rtm_router
+from .api.epic_dependencies import router as epic_dependencies_router
+from .api.capabilities import router as capabilities_router
 from .database import check_database_health
 
 app = FastAPI(
@@ -18,6 +20,8 @@ app = FastAPI(
 
 # Include API routes
 app.include_router(rtm_router)
+app.include_router(epic_dependencies_router)
+app.include_router(capabilities_router)
 
 # Static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -37,3 +41,7 @@ async def health_check():
     """Health check endpoint with database status."""
     db_health = check_database_health()
     return {"status": "healthy", "service": "gonogo-blog-rtm", "database": db_health}
+
+# Force reload 1758799468.9461117
+
+# Template refresh 1758799613.5726986

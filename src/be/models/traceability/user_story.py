@@ -123,6 +123,15 @@ class UserStory(TraceabilityBase):
         if github_data.get("body"):
             self.description = github_data["body"]
 
+        # Extract component from GitHub labels
+        if github_data.get("labels"):
+            for label in github_data["labels"]:
+                label_name = label.get("name", "")
+                if label_name.startswith("component/"):
+                    component_name = label_name.replace("component/", "")
+                    self.component = component_name
+                    break
+
     def get_github_derived_status(self) -> str:
         """Calculate implementation status from GitHub issue state and labels."""
         # If issue is closed, it's completed

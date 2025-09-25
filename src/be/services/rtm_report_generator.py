@@ -1224,52 +1224,9 @@ class RTMReportGenerator:
             }
         });
 
-        // Component filtering functionality
-        function filterByComponent(component) {
-            // Update button states
-            document.querySelectorAll('.component-filter-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
 
-            // Filter epic cards
-            const epicCards = document.querySelectorAll('.epic-card');
-            let visibleCount = 0;
 
-            epicCards.forEach(card => {
-                const cardComponents = card.getAttribute('data-components') || '';
-                let shouldShow = false;
 
-                if (component === 'all') {
-                    shouldShow = true;
-                } else {
-                    // Check if the card has the component (case-insensitive, handles comma-separated)
-                    shouldShow = cardComponents.toLowerCase().includes(component.toLowerCase());
-                }
-
-                if (shouldShow) {
-                    card.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            // Update filter results count
-            updateFilterResultsCount(visibleCount, epicCards.length, component);
-        }
-
-        function updateFilterResultsCount(visibleCount, totalCount, filterType) {
-            const resultsDiv = document.querySelector('.search-results-count');
-            if (resultsDiv) {
-                if (filterType === 'all') {
-                    resultsDiv.style.display = 'none';
-                } else {
-                    resultsDiv.style.display = 'block';
-                    resultsDiv.innerHTML = `<p>Showing ${visibleCount} of ${totalCount} epics filtered by component: <strong>${filterType}</strong></p>`;
-                }
-            }
-        }
 
         // Initialize component filter on page load
         document.addEventListener('DOMContentLoaded', function() {
