@@ -254,10 +254,8 @@ class GitHubDataImporter:
                 print(f"[WARNING] Could not extract epic ID from: {issue['title']}")
                 continue
 
-            # Skip if epic already exists
-            if epic_id in epic_mapping:
-                print(f"[WARNING] Duplicate epic {epic_id}, skipping")
-                continue
+            # Check if epic already exists in database
+            existing_epic = self.db_session.query(Epic).filter(Epic.epic_id == epic_id).first()
 
             # Clean epic title by removing epic ID prefix (handle both ": " and " - " separators)
             cleaned_title = issue["title"]
@@ -266,29 +264,44 @@ class GitHubDataImporter:
                     cleaned_title = cleaned_title.replace(separator, "", 1)
                     break
 
-            epic = Epic(
-                epic_id=epic_id,
-                title=cleaned_title,
-                description=issue.get("body", "")[:500] if issue.get("body") else "",
-                business_value="Imported from GitHub",
-                priority=self.get_priority_from_labels(issue.get("labels", [])),
-                status=self.get_status_from_state_and_labels(
+            if existing_epic:
+                # Update existing epic
+                existing_epic.title = cleaned_title
+                existing_epic.description = issue.get("body", "")[:500] if issue.get("body") else ""
+                existing_epic.priority = self.get_priority_from_labels(issue.get("labels", []))
+                existing_epic.status = self.get_status_from_state_and_labels(
                     issue["state"], issue.get("labels", [])
-                ),
-                github_issue_number=issue["number"],
-                created_at=datetime.fromisoformat(
-                    issue["createdAt"].replace("Z", "+00:00")
-                ),
-                updated_at=datetime.fromisoformat(
+                )
+                existing_epic.github_issue_number = issue["number"]
+                existing_epic.updated_at = datetime.fromisoformat(
                     issue["updatedAt"].replace("Z", "+00:00")
-                ),
-            )
+                )
+                epic_mapping[epic_id] = existing_epic.id
+                print(f"  {epic_id}: {existing_epic.title} (UPDATED)")
+            else:
+                # Create new epic
+                epic = Epic(
+                    epic_id=epic_id,
+                    title=cleaned_title,
+                    description=issue.get("body", "")[:500] if issue.get("body") else "",
+                    business_value="Imported from GitHub",
+                    priority=self.get_priority_from_labels(issue.get("labels", [])),
+                    status=self.get_status_from_state_and_labels(
+                        issue["state"], issue.get("labels", [])
+                    ),
+                    github_issue_number=issue["number"],
+                    created_at=datetime.fromisoformat(
+                        issue["createdAt"].replace("Z", "+00:00")
+                    ),
+                    updated_at=datetime.fromisoformat(
+                        issue["updatedAt"].replace("Z", "+00:00")
+                    ),
+                )
 
-            self.db_session.add(epic)
-            self.db_session.flush()  # Get the ID
-            epic_mapping[epic_id] = epic.id
-
-            print(f"  {epic_id}: {epic.title}")
+                self.db_session.add(epic)
+                self.db_session.flush()  # Get the ID
+                epic_mapping[epic_id] = epic.id
+                print(f"  {epic_id}: {epic.title} (NEW)")
 
         self.db_session.commit()
         print(f"[OK] Imported {len(epic_mapping)} epics")
@@ -304,6 +317,8 @@ class GitHubDataImporter:
 
         print(f"Importing {len(us_issues)} user stories...")
 
+        processed_us_ids = set()  # Track processed user story IDs
+
         for issue in us_issues:
             us_id = self.extract_user_story_id(issue["title"], issue.get("body", ""))
             if not us_id:
@@ -311,6 +326,12 @@ class GitHubDataImporter:
                     f"[WARNING] Could not extract user story ID from: {issue['title']}"
                 )
                 continue
+
+            # Skip if we've already processed this user story ID in this run
+            if us_id in processed_us_ids:
+                print(f"[WARNING] Duplicate user story {us_id} in GitHub issues, skipping second occurrence")
+                continue
+            processed_us_ids.add(us_id)
 
             # Try to find parent epic from body
             body = issue.get("body", "")
@@ -353,33 +374,51 @@ class GitHubDataImporter:
                 print(f"[WARNING] No epic found for {us_id}, skipping")
                 continue
 
-            user_story = UserStory(
-                user_story_id=us_id,
-                epic_id=epic_db_id,
-                github_issue_number=issue["number"],
-                github_issue_state=issue[
-                    "state"
-                ],  # Store GitHub state for proper status calculation
-                github_labels=str(
-                    issue.get("labels", [])
-                ),  # Store GitHub labels for status calculation
-                title=issue["title"].replace(f"{us_id}: ", ""),
-                description=issue.get("body", "")[:500] if issue.get("body") else "",
-                story_points=self.extract_story_points(issue.get("body", "")),
-                priority=self.get_priority_from_labels(issue.get("labels", [])),
-                implementation_status=self.get_status_from_state_and_labels(
-                    issue["state"], issue.get("labels", [])
-                ),
-                created_at=datetime.fromisoformat(
-                    issue["createdAt"].replace("Z", "+00:00")
-                ),
-                updated_at=datetime.fromisoformat(
-                    issue["updatedAt"].replace("Z", "+00:00")
-                ),
-            )
+            # Check if user story already exists
+            existing_us = self.db_session.query(UserStory).filter(UserStory.user_story_id == us_id).first()
 
-            self.db_session.add(user_story)
-            print(f"  {us_id}: {user_story.title}")
+            if existing_us:
+                # Update existing user story
+                existing_us.epic_id = epic_db_id
+                existing_us.github_issue_number = issue["number"]
+                existing_us.github_issue_state = issue["state"]
+                existing_us.github_labels = str(issue.get("labels", []))
+                existing_us.title = issue["title"].replace(f"{us_id}: ", "")
+                existing_us.description = issue.get("body", "")[:500] if issue.get("body") else ""
+                existing_us.story_points = self.extract_story_points(issue.get("body", ""))
+                existing_us.priority = self.get_priority_from_labels(issue.get("labels", []))
+                existing_us.implementation_status = self.get_status_from_state_and_labels(
+                    issue["state"], issue.get("labels", [])
+                )
+                existing_us.updated_at = datetime.fromisoformat(
+                    issue["updatedAt"].replace("Z", "+00:00")
+                )
+                print(f"  {us_id}: {existing_us.title} (UPDATED)")
+            else:
+                # Create new user story
+                user_story = UserStory(
+                    user_story_id=us_id,
+                    epic_id=epic_db_id,
+                    github_issue_number=issue["number"],
+                    github_issue_state=issue["state"],
+                    github_labels=str(issue.get("labels", [])),
+                    title=issue["title"].replace(f"{us_id}: ", ""),
+                    description=issue.get("body", "")[:500] if issue.get("body") else "",
+                    story_points=self.extract_story_points(issue.get("body", "")),
+                    priority=self.get_priority_from_labels(issue.get("labels", [])),
+                    implementation_status=self.get_status_from_state_and_labels(
+                        issue["state"], issue.get("labels", [])
+                    ),
+                    created_at=datetime.fromisoformat(
+                        issue["createdAt"].replace("Z", "+00:00")
+                    ),
+                    updated_at=datetime.fromisoformat(
+                        issue["updatedAt"].replace("Z", "+00:00")
+                    ),
+                )
+
+                self.db_session.add(user_story)
+                print(f"  {us_id}: {user_story.title} (NEW)")
 
         self.db_session.commit()
         print(f"[OK] Imported user stories")
@@ -518,8 +557,8 @@ class GitHubDataImporter:
             return False
 
         try:
-            # Clear existing sample data
-            self.clear_existing_data()
+            # PRESERVE existing data - only update/add new issues
+            print("Preserving existing data, updating only changed issues...")
 
             # Import in order: epics first, then user stories, defects, then tests
             epic_mapping = self.import_epics()
