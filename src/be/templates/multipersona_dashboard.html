@@ -474,10 +474,6 @@
                 <label for="component-filter">Component:</label>
                 <select id="component-filter">
                     <option value="">All Components</option>
-                    <option value="backend">Backend</option>
-                    <option value="frontend">Frontend</option>
-                    <option value="database">Database</option>
-                    <option value="testing">Testing</option>
                 </select>
             </div>
             <button onclick="refreshDashboard()" class="persona-btn" style="margin-left: auto;">
@@ -544,6 +540,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Multi-Persona Dashboard initialized');
             loadEpicFilters();
+            loadComponentFilters();
             switchPersona('PM');
         });
 
@@ -588,6 +585,28 @@
                 });
             } catch (error) {
                 console.error('Failed to load epic filters:', error);
+            }
+        }
+
+        async function loadComponentFilters() {
+            try {
+                const response = await axios.get('/api/rtm/components/');
+                const components = Array.isArray(response.data) ? response.data : [];
+
+                const select = document.getElementById('component-filter');
+                select.innerHTML = '<option value="">All Components</option>';
+
+                components
+                    .filter(Boolean)
+                    .sort((a, b) => a.localeCompare(b))
+                    .forEach(component => {
+                        const option = document.createElement('option');
+                        option.value = component;
+                        option.textContent = component.charAt(0).toUpperCase() + component.slice(1);
+                        select.appendChild(option);
+                    });
+            } catch (error) {
+                console.error('Failed to load component filters:', error);
             }
         }
 
