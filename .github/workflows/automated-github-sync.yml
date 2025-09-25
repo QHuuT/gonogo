@@ -1,0 +1,179 @@
+name: Automated GitHub → Database Sync
+
+on:
+  # Run every 6 hours
+  schedule:
+    - cron: '0 */6 * * *'
+
+  # Run when GitHub issues are created/updated
+  issues:
+    types: [opened, edited, closed, reopened]
+
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      force_full_sync:
+        description: 'Force full sync (clears existing data)'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: write
+  issues: read
+
+jobs:
+  sync-github-to-database:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -e ".[dev]"
+          pip install requests
+
+      - name: Initialize database with migrations
+        run: |
+          alembic upgrade head
+
+      - name: Download existing database if available
+        continue-on-error: true
+        run: |
+          # Try to download the existing database from repo artifacts
+          gh run download --repo ${{ github.repository }} --name rtm-database || echo "No existing database found"
+          if [ -f gonogo.db ]; then
+            echo "📥 Downloaded existing database"
+            ls -la gonogo.db
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync GitHub issues to database
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FORCE_FULL_SYNC: ${{ github.event.inputs.force_full_sync || 'false' }}
+        run: |
+          echo "🔄 Starting automated GitHub → Database sync"
+          echo "Force full sync: $FORCE_FULL_SYNC"
+
+          if [ "$FORCE_FULL_SYNC" = "true" ]; then
+            echo "🧹 Force full sync requested - will clear existing data"
+            python tools/import_real_github_data.py --import
+          else
+            echo "📥 Incremental sync - preserving existing data"
+            python tools/import_real_github_data.py --import
+          fi
+
+      - name: Verify database content
+        run: |
+          echo "📊 Database content verification:"
+          python -c "
+          from src.be.database import get_db_session
+          from src.be.models.traceability import Epic, UserStory, Defect, Test
+
+          db = get_db_session()
+          try:
+              epic_count = db.query(Epic).count()
+              us_count = db.query(UserStory).count()
+              defect_count = db.query(Defect).count()
+              test_count = db.query(Test).count()
+
+              print(f'✅ Database sync completed:')
+              print(f'   📈 Epics: {epic_count}')
+              print(f'   📋 User Stories: {us_count}')
+              print(f'   🐛 Defects: {defect_count}')
+              print(f'   🧪 Tests: {test_count}')
+
+              if epic_count == 0 and us_count == 0:
+                  print('⚠️ WARNING: Database appears to be empty!')
+                  exit(1)
+          finally:
+              db.close()
+          "
+
+      - name: Upload database as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtm-database
+          path: gonogo.db
+          retention-days: 90
+
+      - name: Commit database to repository
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action - RTM Sync"
+
+          if [ -f gonogo.db ]; then
+            # Check if database has changed
+            if git diff --quiet gonogo.db 2>/dev/null; then
+              echo "📊 Database unchanged, no commit needed"
+            else
+              echo "💾 Database updated, committing changes"
+              git add gonogo.db
+              git commit -m "automated: sync RTM database from GitHub issues
+
+              📊 Automated sync: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+              🔄 Source: GitHub Issues → RTM Database
+              📈 Trigger: ${{ github.event_name }}
+
+              🤖 Generated with GitHub Actions
+              " || echo "No changes to commit"
+
+              git push origin ${{ github.ref_name }}
+              echo "✅ Database changes pushed to repository"
+            fi
+          else
+            echo "❌ Database file not found after sync"
+            exit 1
+          fi
+
+      - name: Generate RTM report
+        continue-on-error: true
+        run: |
+          echo "📊 Generating RTM report..."
+
+          # Start server in background
+          python -m uvicorn src.be.main:app --host 0.0.0.0 --port 8000 &
+          SERVER_PID=$!
+
+          # Wait for server to start
+          sleep 10
+
+          # Generate HTML report
+          curl -f "http://localhost:8000/api/rtm/reports/matrix?format=html" -o rtm_report.html
+
+          # Kill server
+          kill $SERVER_PID 2>/dev/null || true
+
+          echo "✅ RTM report generated"
+
+      - name: Upload RTM report
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtm-report-${{ github.run_number }}
+          path: rtm_report.html
+          retention-days: 30
+
+      - name: Sync summary
+        run: |
+          echo "🎉 Automated GitHub → Database sync completed!"
+          echo ""
+          echo "📊 **Sync Results:**"
+          echo "- ✅ GitHub issues synced to database"
+          echo "- 💾 Database committed to repository"
+          echo "- 📊 RTM report generated"
+          echo "- 🗂️ Artifacts uploaded"
+          echo ""
+          echo "🌐 **Next Steps:**"
+          echo "- Pull latest changes to get updated database: \`git pull\`"
+          echo "- Start local RTM server: \`python -m uvicorn src.be.main:app --reload --host 0.0.0.0 --port 8000\`"
+          echo "- View RTM dashboard: http://localhost:8000/api/rtm/reports/matrix?format=html"
