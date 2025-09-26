@@ -9,6 +9,8 @@ from pathlib import Path
 from collections import defaultdict
 
 class TestDiagnostics:
+    __test__ = False  # Tell pytest this is not a test class
+
     def __init__(self, test_root='tests'):
         self.test_root = Path(test_root)
         self.results = defaultdict(list)

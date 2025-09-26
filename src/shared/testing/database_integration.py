@@ -20,6 +20,8 @@ from be.models.traceability import Defect, Epic, Test, UserStory
 class TestDiscovery:
     """Discovers and analyzes test files for database integration."""
 
+    __test__ = False  # Tell pytest this is not a test class
+
     def __init__(self):
         self.test_patterns = {
             "unit": ["tests/unit/**/*.py"],
@@ -156,6 +158,8 @@ class TestDiscovery:
 class TestDatabaseSync:
     """Synchronizes discovered tests with the database."""
 
+    __test__ = False  # Tell pytest this is not a test class
+
     def __init__(self):
         self.discovery = TestDiscovery()
 
@@ -269,6 +273,8 @@ class TestDatabaseSync:
 
 class TestExecutionTracker:
     """Tracks test execution results and updates database."""
+
+    __test__ = False  # Tell pytest this is not a test class
 
     def __init__(self):
         self.db_session = None

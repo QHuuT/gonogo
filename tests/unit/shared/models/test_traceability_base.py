@@ -23,6 +23,7 @@ class TestEntity(TraceabilityBase):
     """Test entity for testing base functionality."""
 
     __tablename__ = "test_entities"
+    __test__ = False  # Tell pytest this is not a test class
 
 
 @pytest.fixture

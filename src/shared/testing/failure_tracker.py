@@ -48,6 +48,7 @@ class FailureSeverity(Enum):
 @dataclass
 class TestFailure:
     """Represents a single test failure with full context."""
+    __test__ = False  # Tell pytest this is not a test class
 
     id: Optional[int] = None
     test_id: str = ""

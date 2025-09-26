@@ -21,6 +21,8 @@ from be.models.traceability.user_story import UserStory
 
 
 class TestCoverageReporter:
+    __test__ = False  # Tell pytest this is not a test class
+
     def __init__(self, database_url="sqlite:///./gonogo.db"):
         self.database_url = database_url
         self.session = None

@@ -30,6 +30,7 @@ class Test(TraceabilityBase):
     """Test entity for BDD scenarios, unit tests, and integration tests."""
 
     __tablename__ = "tests"
+    __test__ = False  # Tell pytest this is not a test class
 
     # Test identification
     test_type = Column(String(50), nullable=False, index=True)
