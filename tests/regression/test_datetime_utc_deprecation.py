@@ -94,7 +94,8 @@ class TestDatetimeUTCDeprecationRegression:
             "src/security/gdpr/service.py",
             "src/shared/testing/failure_tracker.py",
             "tools/rtm-db.py",
-            "src/be/api/rtm.py"
+            "src/be/api/rtm.py",
+            "tests/unit/security/test_gdpr_compliance.py"
         ]
 
         deprecated_pattern = re.compile(r'datetime\.utcnow\(\)')
@@ -197,3 +198,21 @@ class TestDatetimeUTCDeprecationRegression:
         # Verify that the module can be imported without datetime deprecation warnings
         # This test ensures that the CLI tool uses proper datetime patterns
         assert hasattr(rtm_db_cli, 'cli')  # Main CLI function should exist
+
+    def test_gdpr_compliance_datetime_handling(self):
+        """Test that GDPR compliance tests use proper datetime patterns."""
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always", DeprecationWarning)
+
+            # Import GDPR compliance test module
+            from tests.unit.security.test_gdpr_compliance import TestGDPRSecurity
+
+            # Filter for datetime.utcnow deprecation warnings from our code
+            utcnow_warnings = [
+                warning for warning in w
+                if "datetime.utcnow() is deprecated" in str(warning.message)
+                and "test_gdpr_compliance.py" in str(warning.filename)
+            ]
+
+            # Should have no warnings from our test code
+            assert len(utcnow_warnings) == 0, f"Found {len(utcnow_warnings)} utcnow deprecation warnings in GDPR compliance tests"

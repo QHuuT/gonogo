@@ -5,7 +5,7 @@ GDPR compliance service for managing consent and data subject rights.
 import hashlib
 import json
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from typing import Dict, List, Optional
 
 from sqlalchemy import and_, text
@@ -71,7 +71,7 @@ class GDPRService:
         # Set expiration based on consent type
         expires_at = None
         if consent_type in [ConsentType.ANALYTICS, ConsentType.MARKETING]:
-            expires_at = datetime.now(datetime.UTC) + timedelta(days=365)  # 1 year
+            expires_at = datetime.now(UTC) + timedelta(days=365)  # 1 year
 
         consent_record = ConsentRecord(
             consent_id=consent_id,
@@ -111,7 +111,7 @@ class GDPRService:
 
         # Timing attack resistance: Always perform similar operations
         # regardless of whether consent exists
-        withdrawal_time = datetime.now(datetime.UTC)
+        withdrawal_time = datetime.now(UTC)
 
         if consent:
             # Valid consent: perform actual withdrawal
@@ -164,7 +164,7 @@ class GDPRService:
         )
 
         # Check for expired consents
-        now = datetime.now(datetime.UTC)
+        now = datetime.now(UTC)
         active_consents = {}
 
         for consent in consents:
@@ -207,7 +207,7 @@ class GDPRService:
             request_type=request_type.value,
             contact_email_hash=email_hash,
             description=description,
-            due_date=datetime.now(datetime.UTC) + timedelta(days=30),
+            due_date=datetime.now(UTC) + timedelta(days=30),
         )
 
         self.db.add(request)
@@ -243,7 +243,7 @@ class GDPRService:
             return False
 
         request.status = "completed"
-        request.completed_at = datetime.now(datetime.UTC)
+        request.completed_at = datetime.now(UTC)
         request.response_data = response_data
         request.completion_notes = notes
 
@@ -258,7 +258,7 @@ class GDPRService:
             .filter(
                 and_(
                     DataSubjectRequest.status == "pending",
-                    DataSubjectRequest.due_date < datetime.now(datetime.UTC),
+                    DataSubjectRequest.due_date < datetime.now(UTC),
                 )
             )
             .all()
@@ -329,7 +329,7 @@ class GDPRService:
             self.db.query(ConsentRecord)
             .filter(
                 and_(
-                    ConsentRecord.expires_at < datetime.now(datetime.UTC),
+                    ConsentRecord.expires_at < datetime.now(UTC),
                     ConsentRecord.withdrawn_at.is_(None),
                 )
             )
@@ -337,12 +337,12 @@ class GDPRService:
         )
 
         for consent in expired_consents:
-            consent.withdrawn_at = datetime.now(datetime.UTC)
+            consent.withdrawn_at = datetime.now(UTC)
             consent.withdrawal_reason = "expired"
             processed_count += 1
 
         # Process old IP address hashes (anonymize after 30 days)
-        thirty_days_ago = datetime.now(datetime.UTC) - timedelta(days=30)
+        thirty_days_ago = datetime.now(UTC) - timedelta(days=30)
         old_records = (
             self.db.query(ConsentRecord)
             .filter(
@@ -398,7 +398,7 @@ class GDPRService:
             "compliance_score": self._calculate_compliance_score(
                 total_consents, pending_requests, overdue_requests
             ),
-            "last_anonymization_run": datetime.now(datetime.UTC).isoformat(),
+            "last_anonymization_run": datetime.now(UTC).isoformat(),
         }
 
     def _calculate_compliance_score(

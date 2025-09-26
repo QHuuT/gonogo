@@ -4,7 +4,7 @@ Focus on security aspects of data handling and privacy.
 """
 
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 import pytest
 
@@ -423,8 +423,8 @@ class TestGDPRSecurity:
         )
 
         # Set creation date to 4 years ago (beyond 3-year retention)
-        record.created_at = datetime.utcnow() - timedelta(days=1461)  # 4 years
-        record.expires_at = datetime.utcnow() - timedelta(days=1096)  # Expired
+        record.created_at = datetime.now(UTC) - timedelta(days=1461)  # 4 years
+        record.expires_at = datetime.now(UTC) - timedelta(days=1096)  # Expired
         db_session.commit()
 
         # Run anonymization
