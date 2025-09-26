@@ -160,7 +160,8 @@ class TestUserStory:
         user_story.update_from_github(github_data)
 
         assert user_story.implementation_status == "completed"
-`r`n    @pytest.mark.epic("EP-00001", "EP-00005")
+
+    @pytest.mark.epic("EP-00001", "EP-00005")
     @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_calculate_test_coverage_no_tests(self, user_story):
         """Test test coverage calculation with no tests."""

@@ -11,6 +11,7 @@
     "components": [
       "backend"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\backend\\test_rtm_filter_functionality.py"
   },
@@ -22,6 +23,7 @@
     "components": [
       "backend"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\backend\\test_rtm_javascript.py"
   },
@@ -33,6 +35,7 @@
     "components": [
       "security"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\security\\test_gdpr_compliance.py"
   },
@@ -44,6 +47,7 @@
     "components": [
       "security"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\security\\test_gdpr_service.py"
   },
@@ -55,26 +59,28 @@
     "components": [
       "security"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\security\\test_input_validation.py"
   },
   "unit\\shared\\test_github_label_mapper.py": {
     "user_stories": [
+      "US-00004",
       "US-00003",
-      "US-00002",
-      "US-00001",
       "US-00015",
-      "US-00004"
+      "US-00001",
+      "US-00002"
     ],
     "epics": [
+      "EP-00003",
       "EP-00001",
-      "EP-00002",
       "EP-00004",
-      "EP-00003"
+      "EP-00002"
     ],
     "components": [
       "shared"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\shared\\test_github_label_mapper.py"
   },
@@ -86,6 +92,7 @@
     "components": [
       "shared"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\shared\\test_main_app.py"
   },
@@ -97,6 +104,7 @@
     "components": [
       "shared"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\shared\\test_runner_plugin_demo.py"
   },
@@ -110,24 +118,26 @@
     "components": [
       "shared"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\shared\\test_structured_logging_demo.py"
   },
   "unit\\shared\\test_unicode_encoding_validation.py": {
     "user_stories": [
+      "US-00001",
       "US-00003",
       "US-00002",
-      "US-00001",
       "US-00031"
     ],
     "epics": [
+      "EP-00003",
       "EP-00001",
-      "EP-00002",
-      "EP-00003"
+      "EP-00002"
     ],
     "components": [
       "shared"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\shared\\test_unicode_encoding_validation.py"
   },
@@ -140,6 +150,7 @@
       "EP-00005"
     ],
     "components": [],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\tools\\test_github_sync_manager.py"
   },
@@ -155,6 +166,7 @@
     "components": [
       "shared"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\shared\\models\\test_epic_model.py"
   },
@@ -169,6 +181,7 @@
     "components": [
       "shared"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\shared\\models\\test_test_model.py"
   },
@@ -182,14 +195,15 @@
     "components": [
       "shared"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\shared\\models\\test_traceability_base.py"
   },
   "unit\\shared\\models\\test_user_story_model.py": {
     "user_stories": [
+      "US-00001",
       "US-00002",
-      "US-00052",
-      "US-00001"
+      "US-00052"
     ],
     "epics": [
       "EP-00001",
@@ -198,22 +212,28 @@
     "components": [
       "shared"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\shared\\models\\test_user_story_model.py"
   },
   "unit\\shared\\shared\\testing\\test_database_integration.py": {
     "user_stories": [
-      "US-99999",
-      "US-00057"
+      "US-00057",
+      "US-99999"
     ],
     "epics": [
-      "EP-12345",
       "EP-99999",
-      "EP-00005",
-      "EP-00057"
+      "EP-12345",
+      "EP-00057",
+      "EP-00005"
     ],
     "components": [
       "shared"
+    ],
+    "defects": [
+      "DEF-00006",
+      "DEF-12345",
+      "DEF-00001"
     ],
     "test_type": "unit",
     "file_path": "tests\\unit\\shared\\shared\\testing\\test_database_integration.py"
@@ -228,6 +248,7 @@
     "components": [
       "shared"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\shared\\shared\\testing\\test_failure_tracker.py"
   },
@@ -242,6 +263,7 @@
     "components": [
       "backend"
     ],
+    "defects": [],
     "test_type": "unit",
     "file_path": "tests\\unit\\backend\\tools\\test_rtm_db_cli.py"
   },
@@ -253,6 +275,7 @@
       "EP-00005"
     ],
     "components": [],
+    "defects": [],
     "test_type": "integration",
     "file_path": "tests\\integration\\component_system\\test_component_api.py"
   },
@@ -262,10 +285,11 @@
     ],
     "epics": [
       "EP-99999",
-      "EP-00005",
-      "EP-00057"
+      "EP-00057",
+      "EP-00005"
     ],
     "components": [],
+    "defects": [],
     "test_type": "integration",
     "file_path": "tests\\integration\\database_workflow\\test_database_integration_workflow.py"
   },
@@ -277,27 +301,31 @@
     "components": [
       "security"
     ],
+    "defects": [],
     "test_type": "integration",
     "file_path": "tests\\integration\\gdpr_compliance\\test_gdpr_integration.py"
   },
   "integration\\github_rtm\\test_github_actions_integration.py": {
     "user_stories": [
-      "US-00011",
       "US-00003",
-      "US-00020",
-      "US-00002",
-      "US-00056",
+      "US-00011",
+      "US-00010",
       "US-00001",
-      "US-00010"
+      "US-00056",
+      "US-00002",
+      "US-00020"
     ],
     "epics": [
-      "EP-00001",
       "EP-00006",
+      "EP-00001",
       "EP-00005",
       "EP-00007"
     ],
     "components": [
       "backend"
+    ],
+    "defects": [
+      "DEF-00001"
     ],
     "test_type": "integration",
     "file_path": "tests\\integration\\github_rtm\\test_github_actions_integration.py"
@@ -312,21 +340,26 @@
     "components": [
       "backend"
     ],
+    "defects": [],
     "test_type": "integration",
     "file_path": "tests\\integration\\rtm_api\\test_dashboard_persona_demo.py"
   },
   "integration\\rtm_api\\test_rtm_api.py": {
     "user_stories": [
-      "US-00054",
-      "US-00001"
+      "US-00001",
+      "US-00054"
     ],
     "epics": [
-      "EP-00001",
       "EP-99999",
+      "EP-00001",
       "EP-00005"
     ],
     "components": [
       "backend"
+    ],
+    "defects": [
+      "DEF-00001",
+      "DEF-00002"
     ],
     "test_type": "integration",
     "file_path": "tests\\integration\\rtm_api\\test_rtm_api.py"
@@ -341,6 +374,7 @@
     "components": [
       "backend"
     ],
+    "defects": [],
     "test_type": "integration",
     "file_path": "tests\\integration\\rtm_database\\test_rtm_db_integration.py"
   },
@@ -352,6 +386,7 @@
     "components": [
       "backend"
     ],
+    "defects": [],
     "test_type": "integration",
     "file_path": "tests\\integration\\rtm_filter\\test_rtm_filter_integration.py"
   },
@@ -363,6 +398,7 @@
     "components": [
       "backend"
     ],
+    "defects": [],
     "test_type": "integration",
     "file_path": "tests\\integration\\rtm_filter\\test_rtm_filter_regression.py"
   },
@@ -375,6 +411,7 @@
     "components": [
       "backend"
     ],
+    "defects": [],
     "test_type": "integration",
     "file_path": "tests\\integration\\rtm_filter\\test_rtm_filter_validation.py"
   },
@@ -387,13 +424,14 @@
     "components": [
       "backend"
     ],
+    "defects": [],
     "test_type": "integration",
     "file_path": "tests\\integration\\rtm_general\\test_rtm_actual_behavior.py"
   },
   "integration\\rtm_plugin\\test_plugin_system.py": {
     "user_stories": [
-      "US-00014",
       "US-00017",
+      "US-00014",
       "US-12345"
     ],
     "epics": [
@@ -403,6 +441,7 @@
     "components": [
       "backend"
     ],
+    "defects": [],
     "test_type": "integration",
     "file_path": "tests\\integration\\rtm_plugin\\test_plugin_system.py"
   },
@@ -415,16 +454,17 @@
     "components": [
       "backend"
     ],
+    "defects": [],
     "test_type": "integration",
     "file_path": "tests\\integration\\rtm_ui\\test_rtm_browser_clicks.py"
   },
   "integration\\rtm_workflow\\test_rtm_end_to_end.py": {
     "user_stories": [
       "US-00003",
-      "US-00002",
       "US-00001",
-      "US-00014",
-      "US-00017"
+      "US-00017",
+      "US-00002",
+      "US-00014"
     ],
     "epics": [
       "EP-00001",
@@ -434,6 +474,7 @@
     "components": [
       "backend"
     ],
+    "defects": [],
     "test_type": "integration",
     "file_path": "tests\\integration\\rtm_workflow\\test_rtm_end_to_end.py"
   },
@@ -445,6 +486,7 @@
     "components": [
       "backend"
     ],
+    "defects": [],
     "test_type": "e2e",
     "file_path": "tests\\e2e\\complete_blog_workflow\\test_blog_workflow.py"
   },
@@ -454,6 +496,7 @@
     "components": [
       "backend"
     ],
+    "defects": [],
     "test_type": "bdd",
     "file_path": "tests\\bdd\\step_definitions\\test_blog_content_steps.py"
   },
@@ -463,6 +506,7 @@
     "components": [
       "security"
     ],
+    "defects": [],
     "test_type": "bdd",
     "file_path": "tests\\bdd\\step_definitions\\test_gdpr_consent_steps.py"
   },
@@ -470,13 +514,14 @@
     "user_stories": [],
     "epics": [],
     "components": [],
+    "defects": [],
     "test_type": "bdd",
     "file_path": "tests\\bdd\\step_definitions\\test_github_label_steps.py"
   },
   "bdd\\features\\blog-content.feature": {
     "user_stories": [
-      "US-00002",
-      "US-00001"
+      "US-00001",
+      "US-00002"
     ],
     "epics": [
       "EP-00001"
@@ -484,13 +529,14 @@
     "components": [
       "security"
     ],
+    "defects": [],
     "test_type": "bdd",
     "file_path": "tests\\bdd\\features\\blog-content.feature"
   },
   "bdd\\features\\comment-system.feature": {
     "user_stories": [
-      "US-00003",
       "US-00004",
+      "US-00003",
       "US-00005"
     ],
     "epics": [
@@ -499,19 +545,21 @@
     "components": [
       "security"
     ],
+    "defects": [],
     "test_type": "bdd",
     "file_path": "tests\\bdd\\features\\comment-system.feature"
   },
   "bdd\\features\\gdpr-consent.feature": {
     "user_stories": [
-      "US-00007",
       "US-00006",
+      "US-00007",
       "US-00008"
     ],
     "epics": [
       "EP-00003"
     ],
     "components": [],
+    "defects": [],
     "test_type": "bdd",
     "file_path": "tests\\bdd\\features\\gdpr-consent.feature"
   },
@@ -524,6 +572,7 @@
     "components": [
       "security"
     ],
+    "defects": [],
     "test_type": "bdd",
     "file_path": "tests\\bdd\\features\\gdpr-rights.feature"
   },
@@ -531,6 +580,7 @@
     "user_stories": [],
     "epics": [],
     "components": [],
+    "defects": [],
     "test_type": "bdd",
     "file_path": "tests\\bdd\\features\\github-integration.feature"
   },
@@ -538,6 +588,7 @@
     "user_stories": [],
     "epics": [],
     "components": [],
+    "defects": [],
     "test_type": "bdd",
     "file_path": "tests\\bdd\\features\\scenario-template.feature"
   }

@@ -33,6 +33,8 @@ def test_detailed_mode_marker():
     assert test_data["number"] == 42
 
 
+@pytest.mark.epic("EP-00007")
+@pytest.mark.component("shared")
 class TestRunnerPluginDemo:
     """Demo test class for plugin functionality."""
 
@@ -49,3 +51,4 @@ class TestRunnerPluginDemo:
     def test_standard_mode_compatible(self):
         """Test that works with standard mode."""
         assert len("hello") == 5
+

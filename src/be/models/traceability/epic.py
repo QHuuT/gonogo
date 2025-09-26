@@ -9,12 +9,15 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 Architecture Decision: ADR-003 - Hybrid GitHub + Database RTM Architecture
 """
 
+import json
+
 from sqlalchemy import Boolean, Column, DateTime, Float, Index, Integer, String, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime, timedelta
 from typing import Optional, Dict, List
 
 from .base import TraceabilityBase
+from .epic_metric_history import EpicMetricHistory
 
 
 class Epic(TraceabilityBase):
@@ -78,7 +81,10 @@ class Epic(TraceabilityBase):
 
     # Tracking and history
     last_metrics_update = Column(DateTime, nullable=True)  # When metrics were last calculated
-    metrics_calculation_frequency = Column(String(20), default="daily", nullable=False)  # daily, weekly, etc.
+    metrics_calculation_frequency = Column(String(20), default="daily", nullable=False)
+
+    metrics_cache = Column(Text, nullable=True)
+    metrics_cache_updated_at = Column(DateTime, nullable=True, index=True)  # daily, weekly, etc.
 
     # Epic Label Management (US-00006)
     epic_label_name = Column(String(50), nullable=True, index=True)
@@ -105,6 +111,13 @@ class Epic(TraceabilityBase):
 
     # Defects - indirect relationship through user stories and tests
     defects = relationship("Defect", back_populates="epic")
+
+    metric_history = relationship(
+        "EpicMetricHistory",
+        back_populates="epic",
+        cascade="all, delete-orphan",
+        order_by="EpicMetricHistory.captured_at.desc()",
+    )
 
     # Dependencies - Epic dependency relationships (US-00070)
     dependencies_as_parent = relationship(
@@ -326,6 +339,44 @@ class Epic(TraceabilityBase):
 
     # Advanced Metrics Methods (US-00071) - Multi-persona dashboard calculations
 
+    def is_metrics_cache_stale(self, max_age_minutes: int = 15) -> bool:
+        """Return True if the cached metrics are older than allowed."""
+        if not self.metrics_cache_updated_at:
+            return True
+        return datetime.now() - self.metrics_cache_updated_at > timedelta(minutes=max_age_minutes)
+
+    def cache_metrics(self, metrics: Dict, session=None, record_history: bool = True) -> None:
+        """Persist the latest metrics snapshot and optionally record history."""
+        metrics_json = json.dumps(metrics)
+        self.metrics_cache = metrics_json
+        self.metrics_cache_updated_at = datetime.now()
+
+        if record_history and session is not None and self.id is not None:
+            history_entry = EpicMetricHistory(
+                epic_id=self.id,
+                metrics=metrics_json,
+                captured_at=self.metrics_cache_updated_at,
+            )
+            session.add(history_entry)
+
+    def get_cached_metrics(
+        self,
+        session=None,
+        refresh: bool = False,
+        record_history: bool = False,
+        max_age_minutes: int = 15,
+    ) -> Dict:
+        """Return cached metrics, refreshing if the cache is stale."""
+        if refresh or not self.metrics_cache or self.is_metrics_cache_stale(max_age_minutes):
+            metrics = self.update_metrics(
+                force_recalculate=True,
+                session=session,
+                record_history=record_history,
+            )
+        else:
+            metrics = json.loads(self.metrics_cache)
+        return metrics
+
     def calculate_all_metrics(self) -> Dict:
         """Calculate all advanced metrics for dashboard views."""
         return {
@@ -356,7 +407,7 @@ class Epic(TraceabilityBase):
         # Duration estimates
         metrics["estimated_duration_days"] = self.estimated_duration_days
         metrics["actual_duration_days"] = self.actual_duration_days
-        metrics["is_overdue"] = self.planned_end_date and datetime.now() > self.planned_end_date if self.planned_end_date else False
+        metrics["is_overdue"] = bool(self.planned_end_date and datetime.now() > self.planned_end_date) if self.planned_end_date else False
 
         return metrics
 
@@ -451,20 +502,21 @@ class Epic(TraceabilityBase):
 
         return metrics
 
-    def calculate_estimated_completion_date(self) -> Optional[datetime]:
+    def calculate_estimated_completion_date(self) -> Optional[str]:
         """Calculate estimated completion date based on current velocity."""
         if not self.velocity_points_per_sprint or self.velocity_points_per_sprint <= 0:
             return None
 
         remaining_points = self.total_story_points - self.completed_story_points
         if remaining_points <= 0:
-            return datetime.now()  # Already completed
+            return datetime.now().isoformat()  # Already completed
 
         # Assume 2-week sprints
         sprints_remaining = remaining_points / self.velocity_points_per_sprint
         days_remaining = sprints_remaining * 14  # 14 days per sprint
 
-        return datetime.now() + timedelta(days=days_remaining)
+        estimated_date = datetime.now() + timedelta(days=days_remaining)
+        return estimated_date.isoformat()
 
     def calculate_overall_quality_score(self) -> float:
         """Calculate overall quality score (0-10)."""
@@ -495,7 +547,7 @@ class Epic(TraceabilityBase):
         elif score >= 3: return "Below Average"
         else: return "Poor"
 
-    def update_metrics(self, force_recalculate: bool = False) -> Dict:
+    def update_metrics(self, force_recalculate: bool = False, session=None, record_history: bool = False) -> Dict:
         """Update all metrics and return calculated values."""
         now = datetime.now()
 
@@ -516,11 +568,16 @@ class Epic(TraceabilityBase):
         # Update last calculation time
         self.last_metrics_update = now
 
-        return self.calculate_all_metrics()
+        # Calculate and cache the metrics
+        metrics = self.calculate_all_metrics()
+        self.cache_metrics(metrics, session=session, record_history=record_history)
 
-    def get_persona_specific_metrics(self, persona: str) -> Dict:
+        return metrics
+
+    def get_persona_specific_metrics(self, persona: str, session=None, thresholds=None) -> Dict:
         """Get metrics tailored for specific dashboard personas."""
-        all_metrics = self.calculate_all_metrics()
+        # Use cached metrics if available, otherwise calculate fresh
+        all_metrics = self.get_cached_metrics(session=session, refresh=False, record_history=False)
 
         timeline_metrics = all_metrics.get("timeline_metrics", {})
         velocity_metrics = all_metrics.get("velocity_metrics", {})
@@ -531,7 +588,7 @@ class Epic(TraceabilityBase):
         persona_key = persona.lower()
 
         if persona_key == "pm":  # Project Manager
-            return {
+            metrics = {
                 "timeline": timeline_metrics,
                 "velocity": velocity_metrics,
                 "risk": {
@@ -545,7 +602,7 @@ class Epic(TraceabilityBase):
                 },
             }
         elif persona_key == "po":  # Product Owner
-            return {
+            metrics = {
                 "business_value": business_metrics,
                 "scope": {
                     "scope_creep_percentage": velocity_metrics.get("scope_creep_percentage", 0),
@@ -560,7 +617,7 @@ class Epic(TraceabilityBase):
                 },
             }
         elif persona_key == "qa":  # Quality Assurance
-            return {
+            metrics = {
                 "quality": quality_metrics,
                 "defects": {
                     "defect_count": len(self.defects) if self.defects else 0,
@@ -577,7 +634,75 @@ class Epic(TraceabilityBase):
             }
         else:
             # Return all metrics for unknown personas
-            return all_metrics
+            metrics = all_metrics
+
+        # Apply threshold evaluation if thresholds service is provided
+        if thresholds:
+            metrics = self._apply_threshold_evaluation(metrics, persona_key, thresholds)
+
+        return metrics
+
+    def _apply_threshold_evaluation(self, metrics: Dict, persona: str, thresholds) -> Dict:
+        """Apply threshold evaluation to metrics."""
+        def evaluate_recursive(data: Dict, scope: str) -> Dict:
+            result = {}
+            for key, value in data.items():
+                if isinstance(value, dict):
+                    result[key] = evaluate_recursive(value, scope)
+                elif isinstance(value, (int, float)):
+                    result[key] = {
+                        "value": value,
+                        "status": thresholds.evaluate(scope, key, value)
+                    }
+                else:
+                    result[key] = value
+            return result
+
+        return evaluate_recursive(metrics, persona)
+
+    def get_cached_metrics_only(self) -> Optional[Dict]:
+        """Return only cached metrics without any recalculation, or None if cache is empty."""
+        if not self.metrics_cache:
+            return None
+        try:
+            return json.loads(self.metrics_cache)
+        except json.JSONDecodeError:
+            return None
+
+    def force_refresh_metrics(self, session=None, record_history: bool = True) -> Dict:
+        """Force recalculation and caching of all metrics."""
+        return self.update_metrics(force_recalculate=True, session=session, record_history=record_history)
+
+    def get_metric_history(self, session=None, limit: int = 10) -> List[Dict]:
+        """Get historical metric snapshots for trend analysis."""
+        if session is None or self.id is None:
+            return []
+
+        history_entries = (
+            session.query(EpicMetricHistory)
+            .filter(EpicMetricHistory.epic_id == self.id)
+            .order_by(EpicMetricHistory.captured_at.desc())
+            .limit(limit)
+            .all()
+        )
+
+        result = []
+        for entry in history_entries:
+            try:
+                metrics_data = json.loads(entry.metrics)
+                result.append({
+                    "captured_at": entry.captured_at.isoformat(),
+                    "metrics": metrics_data
+                })
+            except json.JSONDecodeError:
+                continue
+
+        return result
+
+    def clear_metrics_cache(self):
+        """Clear the cached metrics and force recalculation on next access."""
+        self.metrics_cache = None
+        self.metrics_cache_updated_at = None
 
 
     def to_dict(self):
@@ -653,3 +778,5 @@ class Epic(TraceabilityBase):
 
     def __repr__(self):
         return f"<Epic(epic_id='{self.epic_id}', title='{self.title}', status='{self.status}', completion={self.completion_percentage:.1f}%)>"
+
+

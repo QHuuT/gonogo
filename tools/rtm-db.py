@@ -513,7 +513,7 @@ def health_check(ctx):
         defect_count = db.query(Defect).count()
         sync_count = db.query(GitHubSync).count()
 
-        console.print("[green]Database connection successful[/green]")
+        click.echo("Database connection successful")
 
         # Health metrics table
         health_table = Table(title="Database Health Status")

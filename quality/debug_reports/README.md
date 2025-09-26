@@ -86,31 +86,177 @@ Security-related debugging and hardening measures.
 # [YYYYMMDD] - [Issue Title]
 
 ## Issue Summary
-- **Problem**:
-- **Impact**:
-- **Severity**:
-- **Discovery Date**:
-- **Resolution Date**:
+- **Problem**: [Clear description of the issue]
+- **Impact**: [What was affected - users, features, performance, etc.]
+- **Severity**: Critical | High | Medium | Low
+- **Discovery Date**: [YYYY-MM-DD HH:MM]
+- **Resolution Date**: [YYYY-MM-DD HH:MM]
+- **Resolution Time**: [Duration from discovery to fix]
+- **Reporter**: [Who discovered the issue]
+- **Environment**: [Production | Staging | Development | Test]
+
+## Debugging Information
+
+### Error Details
+```
+[Include full error messages, exceptions, or failure descriptions]
+```
+
+### Stack Trace
+```
+[Full stack trace if available - critical for debugging]
+```
+
+### Log Excerpts
+```
+[Relevant log entries showing the issue]
+```
+
+### Environment Context
+- **OS**: [Windows/Linux/macOS version]
+- **Python Version**: [e.g., 3.13.7]
+- **Dependencies**: [Key package versions if relevant]
+- **Database**: [SQLite version, file size, etc.]
+- **Browser**: [If web-related issue]
+- **Network**: [If connectivity-related]
+
+### Reproduction Steps
+1. [Step-by-step instructions to reproduce the issue]
+2. [Include specific commands, URLs, or user actions]
+3. [Note any timing or sequence dependencies]
+
+### Data State
+- **Database State**: [Relevant table counts, data conditions]
+- **File System**: [File permissions, disk space, etc.]
+- **Configuration**: [Relevant config values]
+- **User Context**: [Logged in user, permissions, etc.]
 
 ## Root Cause Analysis
+
 ### Investigation Process
+[Detailed investigation steps taken to identify the root cause]
+- [Tools used: debugger, logs, database queries, etc.]
+- [Hypotheses tested and ruled out]
+- [Key breakthrough moments in investigation]
+
 ### Root Cause
+[Technical explanation of what caused the problem]
+
 ### Contributing Factors
+[Secondary causes or conditions that enabled the issue]
+
+### Timeline
+- **[HH:MM]** - [Issue first occurred/discovered]
+- **[HH:MM]** - [Investigation began]
+- **[HH:MM]** - [Key findings or breakthrough]
+- **[HH:MM]** - [Root cause identified]
+- **[HH:MM]** - [Fix implemented]
+- **[HH:MM]** - [Fix verified]
 
 ## Solution Implemented
+
 ### Fix Description
+[What was changed to resolve the issue]
+
 ### Code Changes
+**Files Modified:**
+- `path/to/file1.py` - [Description of changes]
+- `path/to/file2.py` - [Description of changes]
+
+**Before/After Code Snippets:**
+```python
+# Before (problematic code)
+[original code]
+
+# After (fixed code)
+[new code]
+```
+
+### Configuration Changes
+[Any config file modifications, environment variable changes]
+
+### Database Changes
+[Schema updates, data migrations, index additions]
+
 ### Testing
+[How the fix was validated]
+- **Unit Tests**: [New/modified tests]
+- **Manual Testing**: [Verification steps]
+- **Performance Testing**: [If performance-related]
 
 ## Prevention Measures
+
 ### Regression Tests
+[Tests added to prevent this issue from recurring]
+- **Test Files**: [List of test files created/modified]
+- **Test Coverage**: [What scenarios are now covered]
+- **Automation**: [How tests are integrated into CI/CD]
+
 ### Monitoring
+[Additional monitoring or alerts implemented]
+- **Metrics**: [What is now being tracked]
+- **Alerts**: [When and how team is notified]
+- **Dashboards**: [Visual monitoring added]
+
 ### Process Improvements
+[Changes to development/deployment processes]
+- **Code Review**: [New checklist items]
+- **Testing**: [Additional testing requirements]
+- **Documentation**: [Knowledge sharing improvements]
+
+### Early Detection
+[How similar issues can be caught earlier]
+- **Static Analysis**: [New linting rules, type checking]
+- **Integration Tests**: [Additional test scenarios]
+- **Performance Monitoring**: [Metrics to watch]
 
 ## Lessons Learned
+
 ### What Went Well
+[Positive aspects of the debugging and resolution process]
+
 ### What Could Be Improved
+[Areas for process enhancement or tools needed]
+
 ### Knowledge Gained
+[Technical insights for future reference]
+- **Technical**: [New understanding of system behavior]
+- **Process**: [Workflow improvements identified]
+- **Tools**: [Better debugging techniques discovered]
+
+## Reference Information
+
+### Related Issues
+- **GitHub Issues**: [#123, #456]
+- **Epic/User Story**: [EP-00005, US-00055]
+- **Similar Past Issues**: [Links to related debug reports]
+
+### Documentation Updated
+- [List of docs that were updated as a result]
+- [New documentation created]
+
+### Team Communication
+- **Notifications Sent**: [When and to whom]
+- **Knowledge Sharing**: [Team meetings, documentation]
+- **Stakeholder Updates**: [Customer/management communication]
+
+## Appendix
+
+### Additional Logs
+```
+[Extended log files, debug output, or raw data]
+```
+
+### Screenshots
+[If UI-related, include before/after screenshots]
+
+### Performance Data
+[Metrics, timing data, resource usage before/after]
+
+### External References
+- [Stack Overflow posts consulted]
+- [Documentation references]
+- [Third-party issue trackers]
 ```
 
 ## Maintenance

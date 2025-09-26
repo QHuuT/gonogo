@@ -14,6 +14,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filterTestsByType uses correct CSS selectors."
       },
       {
@@ -28,6 +29,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filterUserStoriesByStatus uses correct CSS selectors."
       },
       {
@@ -42,6 +44,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filterDefects uses correct CSS selectors."
       },
       {
@@ -56,6 +59,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that updateFilterButtonStates handles defect buttons correctly."
       },
       {
@@ -70,6 +74,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that updateFilterButtonStates handles standard buttons correctly."
       },
       {
@@ -84,6 +89,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filter functions look for correct data attributes."
       },
       {
@@ -98,6 +104,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filter buttons have correct data attributes."
       },
       {
@@ -112,6 +119,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filter functions target correct CSS classes."
       },
       {
@@ -126,6 +134,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that epic containers have correct ID structure."
       },
       {
@@ -140,6 +149,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filter values map correctly to data attributes."
       },
       {
@@ -154,6 +164,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that accessibility attributes are correctly handled."
       },
       {
@@ -168,6 +179,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that appropriate console warnings are generated."
       },
       {
@@ -182,6 +194,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filtering works correctly for different epics."
       },
       {
@@ -196,6 +209,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filter functions integrate with animation system."
       },
       {
@@ -210,6 +224,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filter count displays are updated correctly."
       },
       {
@@ -224,6 +239,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that all filter components work together."
       },
       {
@@ -238,6 +254,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that epic expand/collapse doesn't interfere with filtering."
       },
       {
@@ -252,6 +269,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that function parameters match HTML onclick calls."
       },
       {
@@ -266,6 +284,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that selectors are specific enough to avoid conflicts."
       },
       {
@@ -280,6 +299,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that button states are managed consistently."
       }
     ]
@@ -297,6 +317,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Basic test that can run without browser - tests function logic"
       }
     ]
@@ -314,6 +335,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that IP addresses are properly anonymized and cannot be reversed."
       },
       {
@@ -326,6 +348,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that email hashing prevents email enumeration attacks."
       },
       {
@@ -338,6 +361,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that consent IDs are cryptographically unpredictable."
       },
       {
@@ -350,6 +374,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that sensitive data is not accidentally logged."
       },
       {
@@ -362,6 +387,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that consent queries are resistant to SQL injection."
       },
       {
@@ -374,6 +400,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that data subject requests prevent injection attacks."
       },
       {
@@ -386,6 +413,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that operations don't leak information through timing attacks."
       },
       {
@@ -398,6 +426,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that data retention policies are properly enforced."
       },
       {
@@ -410,6 +439,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that sensitive operations require proper authorization."
       },
       {
@@ -422,6 +452,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that right to be forgotten is properly implemented securely."
       },
       {
@@ -434,6 +465,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that only necessary data is collected and stored."
       }
     ]
@@ -451,6 +483,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that consent recording creates unique consent ID."
       },
       {
@@ -463,6 +496,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that IP addresses and user agents are properly hashed."
       },
       {
@@ -475,6 +509,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that consent withdrawal properly updates the record."
       },
       {
@@ -487,6 +522,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that withdrawing non-existent consent returns False."
       },
       {
@@ -499,6 +535,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that withdrawn consents are not included in active consents."
       },
       {
@@ -511,6 +548,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that expired consents are not included in active consents."
       },
       {
@@ -523,6 +561,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that data subject requests hash email addresses."
       },
       {
@@ -535,6 +574,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that data subject requests have proper due dates (30 days)."
       },
       {
@@ -547,6 +587,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that processing a data subject request marks it complete."
       },
       {
@@ -559,6 +600,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that overdue requests are properly identified."
       },
       {
@@ -571,6 +613,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that the hash function produces consistent results."
       },
       {
@@ -583,6 +626,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that different salts produce different hashes."
       },
       {
@@ -595,6 +639,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that consent ID generation creates unique identifiers."
       },
       {
@@ -607,6 +652,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test GDPR compliance score calculation."
       }
     ]
@@ -624,6 +670,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that XSS payloads are properly handled."
       },
       {
@@ -636,6 +683,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test SQL injection prevention in API endpoints."
       },
       {
@@ -648,6 +696,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test prevention of template injection attacks."
       },
       {
@@ -660,6 +709,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test prevention of path traversal attacks."
       },
       {
@@ -672,6 +722,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test prevention of command injection attacks."
       },
       {
@@ -684,6 +735,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test prevention of HTTP header injection attacks."
       },
       {
@@ -696,6 +748,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test prevention of LDAP injection attacks."
       },
       {
@@ -708,6 +761,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test prevention of NoSQL injection attacks."
       },
       {
@@ -720,6 +774,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test prevention of XML injection and XXE attacks."
       },
       {
@@ -732,6 +787,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test file upload security measures."
       },
       {
@@ -744,6 +800,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that appropriate headers are set for security."
       },
       {
@@ -756,6 +813,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that error messages don't disclose sensitive information."
       }
     ]
@@ -773,6 +831,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test initialization with matrix path."
       },
       {
@@ -785,6 +844,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test default epic mappings fallback."
       },
       {
@@ -797,6 +857,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test component determination from epic description."
       },
       {
@@ -809,6 +870,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test parsing epic mappings from matrix file."
       },
       {
@@ -821,6 +883,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test fallback when matrix file doesn't exist."
       },
       {
@@ -833,6 +896,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test basic form value extraction."
       },
       {
@@ -845,6 +909,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test handling of '_No response_' values."
       },
       {
@@ -857,6 +922,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test extraction from different markdown formats."
       },
       {
@@ -869,6 +935,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test priority label mapping."
       },
       {
@@ -881,6 +948,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test epic-to-component label mapping."
       },
       {
@@ -893,6 +961,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test GDPR label mapping based on content."
       },
       {
@@ -905,6 +974,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test release label mapping logic."
       },
       {
@@ -917,6 +987,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test status label mapping."
       },
       {
@@ -929,6 +1000,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test that existing status labels are preserved."
       },
       {
@@ -941,6 +1013,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test full label generation integration."
       },
       {
@@ -953,6 +1026,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test error handling in label generation."
       },
       {
@@ -965,6 +1039,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test IssueData creation and attributes."
       },
       {
@@ -977,6 +1052,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test LabelMapping creation with default priority."
       },
       {
@@ -989,6 +1065,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test LabelMapping creation with custom priority."
       },
       {
@@ -1001,6 +1078,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test complete epic label assignment workflow."
       },
       {
@@ -1013,6 +1091,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test user story label inheritance from parent epic."
       }
     ]
@@ -1030,6 +1109,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that health check endpoint returns correct response."
       },
       {
@@ -1042,6 +1122,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that home endpoint returns coming soon message."
       },
       {
@@ -1054,6 +1135,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that FastAPI app has correct metadata."
       },
       {
@@ -1066,6 +1148,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that static files are properly mounted."
       },
       {
@@ -1078,6 +1161,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that non-existent endpoints return 404."
       },
       {
@@ -1090,6 +1174,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that health endpoint only accepts GET requests."
       },
       {
@@ -1102,6 +1187,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that Jinja2 templates are properly configured."
       },
       {
@@ -1114,6 +1200,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that appropriate headers are set in responses."
       }
     ]
@@ -1131,6 +1218,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test that can detect execution mode (basic functionality demo)."
       },
       {
@@ -1143,6 +1231,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test that can detect test type (basic functionality demo)."
       },
       {
@@ -1155,30 +1244,46 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test with detailed mode marker."
       },
       {
         "name": "test_silent_mode_compatible",
         "class_name": "TestRunnerPluginDemo",
-        "epics": [],
+        "epics": [
+          "EP-00007"
+        ],
         "user_stories": [],
-        "components": [],
+        "components": [
+          "shared"
+        ],
+        "defects": [],
         "docstring": "Test that works well in silent mode."
       },
       {
         "name": "test_verbose_mode_compatible",
         "class_name": "TestRunnerPluginDemo",
-        "epics": [],
+        "epics": [
+          "EP-00007"
+        ],
         "user_stories": [],
-        "components": [],
+        "components": [
+          "shared"
+        ],
+        "defects": [],
         "docstring": "Test that provides good output in verbose mode."
       },
       {
         "name": "test_standard_mode_compatible",
         "class_name": "TestRunnerPluginDemo",
-        "epics": [],
+        "epics": [
+          "EP-00007"
+        ],
         "user_stories": [],
-        "components": [],
+        "components": [
+          "shared"
+        ],
+        "defects": [],
         "docstring": "Test that works with standard mode."
       }
     ]
@@ -1198,6 +1303,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test basic logging operations."
       },
       {
@@ -1212,6 +1318,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test logging for test lifecycle events."
       },
       {
@@ -1226,6 +1333,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test logging for test failures."
       },
       {
@@ -1240,6 +1348,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test GDPR-compliant data sanitization."
       },
       {
@@ -1254,6 +1363,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test JSON log formatting."
       },
       {
@@ -1268,6 +1378,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test human-readable log formatting."
       },
       {
@@ -1282,6 +1393,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test summary report generation."
       },
       {
@@ -1296,6 +1408,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test that configuration information is accessible."
       }
     ]
@@ -1313,6 +1426,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test that tempfile operations handle Unicode characters correctly."
       },
       {
@@ -1325,6 +1439,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test that demonstrates why encoding parameter is mandatory."
       },
       {
@@ -1337,6 +1452,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test different file operation patterns with Unicode content."
       },
       {
@@ -1349,6 +1465,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test content with many emoji characters that often cause encoding issues."
       },
       {
@@ -1361,6 +1478,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test the specific pattern used in RTM link generator that caused the original issue."
       },
       {
@@ -1373,6 +1491,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test YAML config file pattern with Unicode content."
       }
     ]
@@ -1392,6 +1511,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "status/in-progress labels must persist as in_progress implementation status."
       },
       {
@@ -1406,7 +1526,23 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Closed GitHub issues should flip implementation status to completed."
+      },
+      {
+        "name": "test_sync_epics_assigns_default_capability",
+        "class_name": "TestGitHubSyncManagerStatus",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00059"
+        ],
+        "components": [
+          "backend"
+        ],
+        "defects": [],
+        "docstring": "Epics without capability labels should fall back to the canonical mapping."
       }
     ]
   },
@@ -1423,6 +1559,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test basic Epic creation."
       },
       {
@@ -1435,6 +1572,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test Epic can be saved and retrieved."
       },
       {
@@ -1447,6 +1585,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test completion calculation with zero story points."
       },
       {
@@ -1459,6 +1598,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test completion calculation with normal values."
       },
       {
@@ -1471,6 +1611,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test completion calculation when fully complete."
       },
       {
@@ -1483,6 +1624,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test progress update functionality."
       },
       {
@@ -1495,6 +1637,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test progress update with zero total points."
       },
       {
@@ -1507,6 +1650,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test GDPR-related fields."
       },
       {
@@ -1519,6 +1663,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test risk assessment fields."
       },
       {
@@ -1531,6 +1676,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test success criteria field."
       },
       {
@@ -1543,6 +1689,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test dictionary conversion with basic Epic data."
       },
       {
@@ -1555,6 +1702,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test dictionary conversion includes relationship counts."
       },
       {
@@ -1567,6 +1715,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test string representation."
       },
       {
@@ -1579,6 +1728,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test that epic_id must be unique."
       },
       {
@@ -1591,6 +1741,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test valid priority values."
       },
       {
@@ -1603,6 +1754,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test valid risk level values."
       },
       {
@@ -1615,6 +1767,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test default values on Epic creation."
       },
       {
@@ -1627,6 +1780,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test GitHub issue integration fields."
       },
       {
@@ -1639,6 +1793,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test that Epic inherits version tracking from base."
       },
       {
@@ -1651,7 +1806,34 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test that completion_percentage is correctly calculated and stored."
+      },
+      {
+        "name": "test_metrics_cache_and_history",
+        "class_name": null,
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "defects": [],
+        "docstring": "Metrics should cache and append history entries when refreshed."
+      },
+      {
+        "name": "test_persona_metrics_include_statuses",
+        "class_name": null,
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00052"
+        ],
+        "components": [],
+        "defects": [],
+        "docstring": "Persona metrics should expose status annotations from thresholds."
       }
     ]
   },
@@ -1668,6 +1850,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Create a test Test instance."
       },
       {
@@ -1680,6 +1863,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test basic Test creation."
       },
       {
@@ -1692,6 +1876,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test Test can be saved and retrieved."
       },
       {
@@ -1704,6 +1889,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test relationship with Epic."
       },
       {
@@ -1716,6 +1902,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test valid test types."
       },
       {
@@ -1728,6 +1915,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test BDD-specific fields."
       },
       {
@@ -1740,6 +1928,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test GitHub issue references."
       },
       {
@@ -1752,6 +1941,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test updating execution result for successful test."
       },
       {
@@ -1764,6 +1954,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test updating execution result for failed test."
       },
       {
@@ -1776,6 +1967,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test multiple execution result updates."
       },
       {
@@ -1788,6 +1980,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test success rate calculation with no executions."
       },
       {
@@ -1800,6 +1993,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test success rate calculation with all tests passing."
       },
       {
@@ -1812,6 +2006,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test success rate calculation with mixed results."
       },
       {
@@ -1824,6 +2019,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test valid test priority values."
       },
       {
@@ -1836,6 +2032,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test automation-related flags."
       },
       {
@@ -1848,6 +2045,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test code coverage fields."
       },
       {
@@ -1860,6 +2058,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test GDPR and security testing flags."
       },
       {
@@ -1872,6 +2071,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test error message and traceback tracking."
       },
       {
@@ -1884,6 +2084,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test dictionary conversion with basic Test data."
       },
       {
@@ -1896,6 +2097,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test dictionary conversion includes execution data."
       },
       {
@@ -1908,6 +2110,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test string representation."
       },
       {
@@ -1920,6 +2123,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test default values on Test creation."
       },
       {
@@ -1932,6 +2136,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test valid execution status values."
       },
       {
@@ -1944,6 +2149,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test that Test inherits version tracking from base."
       },
       {
@@ -1956,6 +2162,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test that test_file_path is properly indexed for queries."
       }
     ]
@@ -1973,6 +2180,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Create a test entity instance."
       },
       {
@@ -1985,6 +2193,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test basic entity creation."
       },
       {
@@ -1997,6 +2206,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test entity can be saved and retrieved."
       },
       {
@@ -2009,6 +2219,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test git context setting."
       },
       {
@@ -2021,6 +2232,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test marking entity as resolved."
       },
       {
@@ -2033,6 +2245,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test that already completed status is preserved."
       },
       {
@@ -2045,6 +2258,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test adding affected version to new entity."
       },
       {
@@ -2057,6 +2271,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test adding version to existing list."
       },
       {
@@ -2069,6 +2284,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test that duplicate versions are not added."
       },
       {
@@ -2081,6 +2297,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test adding fixed version."
       },
       {
@@ -2093,6 +2310,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test checking if fixed in specific version - positive case."
       },
       {
@@ -2105,6 +2323,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test checking if fixed in specific version - negative case."
       },
       {
@@ -2117,6 +2336,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test checking fixed version on entity with no fixed versions."
       },
       {
@@ -2129,6 +2349,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test handling of invalid JSON in fixed_in_versions."
       },
       {
@@ -2141,6 +2362,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test dictionary conversion with basic data."
       },
       {
@@ -2153,6 +2375,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test dictionary conversion with git context."
       },
       {
@@ -2165,6 +2388,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test string representation."
       },
       {
@@ -2177,6 +2401,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test GitHub integration fields."
       },
       {
@@ -2189,6 +2414,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test version tracking fields."
       },
       {
@@ -2201,6 +2427,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test handling of corrupted JSON in version fields."
       },
       {
@@ -2213,6 +2440,7 @@
           "US-00052"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test handling of None values in version fields."
       }
     ]
@@ -2230,6 +2458,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test basic UserStory creation."
       },
       {
@@ -2242,6 +2471,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test UserStory can be saved and retrieved."
       },
       {
@@ -2254,6 +2484,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test relationship with Epic."
       },
       {
@@ -2266,6 +2497,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test updating from GitHub issue data."
       },
       {
@@ -2278,6 +2510,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test updating from partial GitHub data."
       },
       {
@@ -2290,6 +2523,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "GitHub label updates should refresh implementation status."
       },
       {
@@ -2302,6 +2536,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Closed GitHub issues should mark the story as completed."
       },
       {
@@ -2314,6 +2549,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test test coverage calculation with no tests."
       },
       {
@@ -2326,6 +2562,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test BDD integration fields."
       },
       {
@@ -2338,6 +2575,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test GDPR-related fields."
       },
       {
@@ -2350,6 +2588,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test dependency tracking fields."
       },
       {
@@ -2362,6 +2601,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test valid implementation status values."
       },
       {
@@ -2374,6 +2614,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test sprint assignment."
       },
       {
@@ -2386,6 +2627,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test story points assignment."
       },
       {
@@ -2398,6 +2640,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test acceptance criteria field."
       },
       {
@@ -2410,6 +2653,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test business value field."
       },
       {
@@ -2422,6 +2666,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test dictionary conversion with basic UserStory data."
       },
       {
@@ -2434,6 +2679,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test that to_dict includes test coverage calculation."
       },
       {
@@ -2446,6 +2692,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test string representation."
       },
       {
@@ -2458,6 +2705,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test that GitHub issue numbers must be unique."
       },
       {
@@ -2470,6 +2718,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test that user_story_id must be unique."
       },
       {
@@ -2482,6 +2731,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test default values on UserStory creation."
       },
       {
@@ -2494,6 +2744,7 @@
           "US-00001"
         ],
         "components": [],
+        "defects": [],
         "docstring": "Test that UserStory inherits version tracking from base."
       }
     ]
@@ -2513,6 +2764,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test Epic reference pattern matching."
       },
       {
@@ -2527,6 +2779,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test User Story reference pattern matching."
       },
       {
@@ -2541,6 +2794,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test Defect reference pattern matching."
       },
       {
@@ -2555,6 +2809,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test test title generation from function names."
       },
       {
@@ -2569,6 +2824,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test analyzing a test file with Epic/US references."
       },
       {
@@ -2583,6 +2839,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test analyzing a test file without Epic/US references."
       },
       {
@@ -2597,6 +2854,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test test discovery functionality."
       },
       {
@@ -2611,6 +2869,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test creating a new test record."
       },
       {
@@ -2625,6 +2884,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test updating an existing test record."
       },
       {
@@ -2639,6 +2899,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test successfully linking test to Epic."
       },
       {
@@ -2653,6 +2914,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test linking test to Epic when Epic doesn't exist."
       },
       {
@@ -2667,6 +2929,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test session management."
       },
       {
@@ -2681,6 +2944,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test recording successful test result."
       },
       {
@@ -2695,6 +2959,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test recording test result without session."
       },
       {
@@ -2709,6 +2974,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test recording test result with invalid test ID."
       },
       {
@@ -2723,6 +2989,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test creating defect from test failure."
       },
       {
@@ -2737,6 +3004,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test failure severity determination."
       },
       {
@@ -2751,6 +3019,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test scenario pattern matching."
       },
       {
@@ -2765,6 +3034,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test extracting User Story references from context."
       },
       {
@@ -2779,6 +3049,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test parsing feature file content."
       },
       {
@@ -2793,6 +3064,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test successfully linking scenario to User Story."
       },
       {
@@ -2807,6 +3079,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test linking scenario when User Story doesn't exist."
       },
       {
@@ -2821,6 +3094,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test complete test discovery and sync workflow."
       },
       {
@@ -2835,6 +3109,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test integration with pytest plugin."
       }
     ]
@@ -2854,6 +3129,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test that database tables are created correctly."
       },
       {
@@ -2868,6 +3144,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test automatic failure categorization."
       },
       {
@@ -2882,6 +3159,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test failure severity determination."
       },
       {
@@ -2896,6 +3174,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test recording a new test failure."
       },
       {
@@ -2910,6 +3189,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test that duplicate failures increment occurrence count."
       },
       {
@@ -2924,6 +3204,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test failure statistics generation."
       },
       {
@@ -2938,6 +3219,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test retrieval of top failing tests."
       },
       {
@@ -2952,6 +3234,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test pattern detection functionality."
       },
       {
@@ -2966,6 +3249,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test cleanup of old failure records."
       },
       {
@@ -2980,6 +3264,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test TestFailure object creation and defaults."
       },
       {
@@ -2994,6 +3279,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test that error hash is generated consistently."
       },
       {
@@ -3008,6 +3294,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test that error hash normalizes common variable elements."
       },
       {
@@ -3022,6 +3309,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test FailureCategory enum values."
       },
       {
@@ -3036,6 +3324,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test FailureSeverity enum values."
       },
       {
@@ -3050,6 +3339,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test that tracker handles Unicode content correctly."
       },
       {
@@ -3064,6 +3354,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test handling of very large stack traces."
       },
       {
@@ -3078,6 +3369,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test recording failures concurrently (simulated)."
       },
       {
@@ -3092,6 +3384,7 @@
         "components": [
           "shared"
         ],
+        "defects": [],
         "docstring": "Test handling of malformed or edge case data."
       }
     ]
@@ -3111,6 +3404,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test successful Epic creation."
       },
       {
@@ -3125,6 +3419,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test Epic creation when epic already exists."
       },
       {
@@ -3139,6 +3434,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test successful User Story creation."
       },
       {
@@ -3153,6 +3449,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test User Story creation when parent Epic not found."
       },
       {
@@ -3167,6 +3464,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test successful Test creation."
       },
       {
@@ -3181,6 +3479,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test querying Epics with table format."
       },
       {
@@ -3195,6 +3494,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test querying Epics with JSON format."
       },
       {
@@ -3209,6 +3509,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test querying Epics with status and priority filters."
       },
       {
@@ -3223,6 +3524,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test querying User Stories."
       },
       {
@@ -3237,6 +3539,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test querying User Stories filtered by Epic."
       },
       {
@@ -3251,6 +3554,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test detailed Epic progress report."
       },
       {
@@ -3265,6 +3569,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test Epic progress for non-existent Epic."
       },
       {
@@ -3279,6 +3584,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test data export in JSON format."
       },
       {
@@ -3293,6 +3599,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test database health check."
       },
       {
@@ -3307,6 +3614,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test data validation with no issues found."
       },
       {
@@ -3321,6 +3629,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test data validation with issues found."
       },
       {
@@ -3335,6 +3644,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test database reset without confirmation."
       },
       {
@@ -3349,6 +3659,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test database reset with confirmation."
       },
       {
@@ -3363,6 +3674,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test GitHub sync status with no records."
       },
       {
@@ -3377,6 +3689,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test GitHub sync status with records."
       },
       {
@@ -3391,6 +3704,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test CLI help output."
       },
       {
@@ -3405,6 +3719,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test entities subcommand help."
       },
       {
@@ -3419,6 +3734,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test query subcommand help."
       },
       {
@@ -3433,6 +3749,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test data subcommand help."
       },
       {
@@ -3447,6 +3764,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test admin subcommand help."
       },
       {
@@ -3461,6 +3779,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test github subcommand help."
       },
       {
@@ -3475,6 +3794,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test verbose mode flag."
       },
       {
@@ -3489,6 +3809,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test RTM import with non-existent file."
       },
       {
@@ -3503,6 +3824,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test RTM import with dry run."
       },
       {
@@ -3517,6 +3839,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test complete workflow: create epic -> create user story -> query progress."
       }
     ]
@@ -3536,6 +3859,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test listing all unique components."
       },
       {
@@ -3550,6 +3874,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test component statistics endpoint."
       },
       {
@@ -3564,6 +3889,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test component distribution analytics."
       },
       {
@@ -3578,6 +3904,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test getting all items for a specific component."
       },
       {
@@ -3592,6 +3919,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test epic filtering by component."
       },
       {
@@ -3606,6 +3934,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test user story filtering by component."
       },
       {
@@ -3620,6 +3949,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test defect filtering by component."
       },
       {
@@ -3634,6 +3964,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test test filtering by component."
       },
       {
@@ -3648,6 +3979,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test filtering with non-existent component."
       },
       {
@@ -3662,6 +3994,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test getting items for non-existent component."
       },
       {
@@ -3676,6 +4009,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test filtering with empty component parameter."
       },
       {
@@ -3690,6 +4024,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test component filtering with spaces in component names."
       },
       {
@@ -3704,6 +4039,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that component statistics can handle reasonable data volumes."
       },
       {
@@ -3718,6 +4054,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test filtering with large result sets."
       },
       {
@@ -3732,6 +4069,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that epic progress includes component information."
       },
       {
@@ -3746,6 +4084,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that RTM matrix includes component information."
       },
       {
@@ -3760,6 +4099,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that RTM matrix HTML includes component columns in all subtables."
       },
       {
@@ -3774,6 +4114,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that RTM matrix HTML includes horizontal scrolling support."
       }
     ]
@@ -3793,6 +4134,7 @@
         "components": [
           "database"
         ],
+        "defects": [],
         "docstring": "Test complete test discovery and database sync workflow."
       },
       {
@@ -3807,6 +4149,7 @@
         "components": [
           "database"
         ],
+        "defects": [],
         "docstring": "Test test execution result tracking workflow."
       },
       {
@@ -3821,6 +4164,7 @@
         "components": [
           "database"
         ],
+        "defects": [],
         "docstring": "Test BDD scenario to User Story linking workflow."
       },
       {
@@ -3835,6 +4179,7 @@
         "components": [
           "database"
         ],
+        "defects": [],
         "docstring": "Test complete end-to-end integration workflow."
       },
       {
@@ -3849,6 +4194,7 @@
         "components": [
           "database"
         ],
+        "defects": [],
         "docstring": "Test error handling and recovery in integration workflow."
       },
       {
@@ -3863,6 +4209,7 @@
         "components": [
           "database"
         ],
+        "defects": [],
         "docstring": "Test handling of duplicate test discoveries."
       }
     ]
@@ -3880,6 +4227,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test complete consent lifecycle: record -> query -> withdraw."
       },
       {
@@ -3892,6 +4240,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that a user can have multiple consent types."
       },
       {
@@ -3904,6 +4253,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test complete data subject request workflow."
       },
       {
@@ -3916,6 +4266,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test data anonymization workflow for expired data."
       },
       {
@@ -3928,6 +4279,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test detection of overdue data subject requests."
       },
       {
@@ -3940,6 +4292,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test generation of comprehensive compliance report."
       },
       {
@@ -3952,6 +4305,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test creation of data processing records for Article 30 compliance."
       },
       {
@@ -3964,6 +4318,7 @@
         "components": [
           "security"
         ],
+        "defects": [],
         "docstring": "Test that expired consents are properly handled."
       }
     ]
@@ -3975,8 +4330,8 @@
         "name": "test_epic_sync_creation",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00056",
@@ -3985,14 +4340,15 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test creating Epic from GitHub issue."
       },
       {
         "name": "test_epic_sync_update",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00056",
@@ -4001,14 +4357,15 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test updating existing Epic from GitHub issue."
       },
       {
         "name": "test_user_story_sync_with_epic_reference",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00056",
@@ -4017,14 +4374,15 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test creating User Story with Epic reference."
       },
       {
         "name": "test_user_story_sync_closed_issue",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00056",
@@ -4033,14 +4391,15 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test User Story sync when GitHub issue is closed."
       },
       {
         "name": "test_defect_sync_creation",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00056",
@@ -4049,14 +4408,15 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test creating Defect from GitHub issue."
       },
       {
         "name": "test_sync_status_recording",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00056",
@@ -4065,14 +4425,15 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test that sync status is properly recorded."
       },
       {
         "name": "test_sync_status_recording_failure",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00056",
@@ -4081,14 +4442,15 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test that sync failures are properly recorded."
       },
       {
         "name": "test_epic_progress_calculation",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00056",
@@ -4097,14 +4459,15 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test Epic progress calculation when User Stories are completed."
       },
       {
         "name": "test_epic_progress_without_story_points",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00056",
@@ -4113,14 +4476,15 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test Epic progress calculation when User Stories have no story points."
       },
       {
         "name": "test_epic_status_update_on_completion",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00056",
@@ -4129,14 +4493,15 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test that Epic status is updated when progress reaches 100%."
       },
       {
         "name": "test_parsing_functions",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00056",
@@ -4145,14 +4510,15 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test various parsing functions used in sync."
       },
       {
         "name": "test_issue_type_detection",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00056",
@@ -4161,14 +4527,15 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test issue type detection from title and labels."
       },
       {
         "name": "test_entity_id_extraction",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00056",
@@ -4177,6 +4544,7 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test entity ID extraction from titles."
       },
       {
@@ -4191,6 +4559,7 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test that workflow triggers on correct GitHub events."
       },
       {
@@ -4205,6 +4574,7 @@
         "components": [
           "ci-cd"
         ],
+        "defects": [],
         "docstring": "Test that workflow jobs have correct dependencies."
       }
     ]
@@ -4224,6 +4594,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": ""
       },
       {
@@ -4238,6 +4609,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": ""
       },
       {
@@ -4252,6 +4624,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": ""
       }
     ]
@@ -4271,14 +4644,15 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Create test database tables and clean up after each test."
       },
       {
         "name": "test_create_epic",
         "class_name": "TestEpicAPI",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00054",
@@ -4287,14 +4661,15 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test creating a new Epic."
       },
       {
         "name": "test_list_epics",
         "class_name": "TestEpicAPI",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00054",
@@ -4303,14 +4678,15 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test listing Epics."
       },
       {
         "name": "test_list_epics_with_filters",
         "class_name": "TestEpicAPI",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00054",
@@ -4319,14 +4695,15 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test listing Epics with filters."
       },
       {
         "name": "test_get_epic",
         "class_name": "TestEpicAPI",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00054",
@@ -4335,14 +4712,15 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test getting a specific Epic."
       },
       {
         "name": "test_get_epic_not_found",
         "class_name": "TestEpicAPI",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00054",
@@ -4351,14 +4729,15 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test getting a non-existent Epic."
       },
       {
         "name": "test_update_epic",
         "class_name": "TestEpicAPI",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00054",
@@ -4367,14 +4746,15 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test updating an Epic."
       },
       {
         "name": "test_delete_epic",
         "class_name": "TestEpicAPI",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00054",
@@ -4383,14 +4763,15 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test deleting an Epic."
       },
       {
         "name": "test_create_user_story",
         "class_name": "TestUserStoryAPI",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00054",
@@ -4399,14 +4780,15 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test creating a new User Story."
       },
       {
         "name": "test_list_user_stories",
         "class_name": "TestUserStoryAPI",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00054",
@@ -4415,14 +4797,15 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test listing User Stories."
       },
       {
         "name": "test_list_user_stories_by_epic",
         "class_name": "TestUserStoryAPI",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00054",
@@ -4431,14 +4814,15 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test listing User Stories filtered by Epic."
       },
       {
         "name": "test_get_user_story",
         "class_name": "TestUserStoryAPI",
         "epics": [
-          "EP-00005",
-          "EP-00001"
+          "EP-00001",
+          "EP-00005"
         ],
         "user_stories": [
           "US-00054",
@@ -4447,6 +4831,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test getting a specific User Story."
       },
       {
@@ -4461,6 +4846,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test creating a new Test."
       },
       {
@@ -4475,6 +4861,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test listing Tests."
       },
       {
@@ -4489,6 +4876,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test listing Tests with filters."
       },
       {
@@ -4503,6 +4891,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test updating test execution results."
       },
       {
@@ -4517,6 +4906,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test creating a new Defect."
       },
       {
@@ -4531,6 +4921,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test listing Defects."
       },
       {
@@ -4545,6 +4936,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test listing Defects with filters."
       },
       {
@@ -4559,6 +4951,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test Epic progress analytics."
       },
       {
@@ -4573,6 +4966,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test RTM overview analytics."
       },
       {
@@ -4587,6 +4981,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test pagination in list endpoints."
       },
       {
@@ -4601,6 +4996,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test a complete RTM workflow."
       }
     ]
@@ -4620,6 +5016,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test CLI help command."
       },
       {
@@ -4634,6 +5031,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test database health check command."
       },
       {
@@ -4648,6 +5046,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test creating and querying an Epic."
       },
       {
@@ -4662,6 +5061,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test creating User Story linked to Epic."
       },
       {
@@ -4676,6 +5076,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test Epic progress calculation."
       },
       {
@@ -4690,6 +5091,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test JSON output format."
       },
       {
@@ -4704,6 +5106,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test data export functionality."
       },
       {
@@ -4718,6 +5121,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test database validation functionality."
       },
       {
@@ -4732,6 +5136,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test error handling for duplicate Epic creation."
       },
       {
@@ -4746,6 +5151,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test error handling when parent Epic not found."
       },
       {
@@ -4760,6 +5166,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test verbose output mode."
       },
       {
@@ -4774,6 +5181,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test CLI error handling for invalid commands."
       },
       {
@@ -4788,6 +5196,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test RTM import functionality (requires test markdown file)."
       }
     ]
@@ -4805,6 +5214,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that RTM reports can be generated successfully."
       },
       {
@@ -4817,6 +5227,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that generated RTM HTML has correct structure for filtering."
       },
       {
@@ -4829,6 +5240,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that JavaScript functions are properly exposed to global scope."
       },
       {
@@ -4841,6 +5253,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filter buttons have consistent data attributes."
       },
       {
@@ -4853,6 +5266,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that each epic has its own filter groups."
       },
       {
@@ -4865,6 +5279,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that JavaScript selectors match the generated HTML structure."
       },
       {
@@ -4877,6 +5292,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filter count display elements exist."
       },
       {
@@ -4889,6 +5305,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that animation-related classes and functionality are present."
       },
       {
@@ -4901,6 +5318,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that error handling and console logging are implemented."
       },
       {
@@ -4913,6 +5331,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that accessibility features are implemented."
       },
       {
@@ -4925,6 +5344,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filtering one epic doesn't affect others."
       },
       {
@@ -4937,6 +5357,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that epic expand/collapse functionality is not broken by filter fixes."
       },
       {
@@ -4949,6 +5370,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that search functionality is not broken by filter fixes."
       },
       {
@@ -4961,6 +5383,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that export functionality is not broken by filter fixes."
       }
     ]
@@ -4978,6 +5401,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that RTM interface loads without errors"
       },
       {
@@ -4990,6 +5414,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filter buttons have correct onclick handlers"
       },
       {
@@ -5002,6 +5427,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that epic headers have toggleEpicDetails onclick handlers"
       },
       {
@@ -5014,6 +5440,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that rtm-interactions.js loads and contains required functions"
       },
       {
@@ -5026,6 +5453,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that backend filtering works correctly"
       },
       {
@@ -5038,6 +5466,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filter buttons are not inside epic headers (preventing epic collapse)"
       },
       {
@@ -5050,6 +5479,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that generated HTML doesn't have JavaScript syntax errors"
       },
       {
@@ -5062,6 +5492,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filter function calls match expected parameter counts"
       }
     ]
@@ -5079,6 +5510,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that existing RTM reports have correct structure for filtering."
       },
       {
@@ -5091,6 +5523,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that the JavaScript fixes have been correctly applied."
       },
       {
@@ -5103,6 +5536,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filter function parameters match HTML onclick calls."
       },
       {
@@ -5115,6 +5549,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that CSS selectors have been improved to match HTML structure."
       },
       {
@@ -5127,6 +5562,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that button state management has been fixed for defect buttons."
       },
       {
@@ -5139,6 +5575,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that error handling and debugging have been improved."
       },
       {
@@ -5151,6 +5588,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that existing functionality hasn't been broken."
       },
       {
@@ -5163,6 +5601,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that initialization and global function exposure work correctly."
       },
       {
@@ -5175,6 +5614,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that animation and UX features are preserved."
       },
       {
@@ -5187,6 +5627,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that the new selector strings are correctly formatted."
       },
       {
@@ -5199,6 +5640,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that data attribute mapping is correct."
       },
       {
@@ -5211,6 +5653,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filter group naming follows consistent convention."
       }
     ]
@@ -5228,6 +5671,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that status filter buttons actually redirect to filtered URLs"
       },
       {
@@ -5240,6 +5684,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that defect filter buttons actually redirect to filtered URLs"
       },
       {
@@ -5252,6 +5697,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that epic headers still have toggle functionality and aren't affected by filters"
       },
       {
@@ -5264,6 +5710,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that 'all' filters actually clear parameters"
       },
       {
@@ -5276,6 +5723,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that different filter types can be applied independently"
       },
       {
@@ -5288,6 +5736,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that filter buttons exist and have the correct onclick handlers"
       },
       {
@@ -5300,6 +5749,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test the exact scenario that was reported as broken"
       },
       {
@@ -5312,6 +5762,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Standalone function for direct testing"
       }
     ]
@@ -5331,6 +5782,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test plugin manager initialization."
       },
       {
@@ -5345,6 +5797,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test manual plugin registration."
       },
       {
@@ -5359,6 +5812,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test plugin retrieval methods."
       },
       {
@@ -5373,6 +5827,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test plugin listing functionality."
       },
       {
@@ -5387,6 +5842,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test registration with invalid plugin type."
       },
       {
@@ -5401,6 +5857,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test GitHub issue link generator."
       },
       {
@@ -5415,6 +5872,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test standard validator."
       },
       {
@@ -5429,6 +5887,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test standard markdown parser."
       },
       {
@@ -5443,6 +5902,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test plugin discovery with temporary plugin files."
       },
       {
@@ -5457,6 +5917,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test plugin discovery with invalid plugin files."
       },
       {
@@ -5471,6 +5932,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test custom link generator integration."
       },
       {
@@ -5485,6 +5947,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test custom validator integration."
       },
       {
@@ -5499,6 +5962,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test plugin priority system."
       }
     ]
@@ -5516,6 +5980,7 @@
         "components": [
           "frontend"
         ],
+        "defects": [],
         "docstring": "Click an actual filter button and see what happens"
       },
       {
@@ -5528,6 +5993,7 @@
         "components": [
           "frontend"
         ],
+        "defects": [],
         "docstring": "Test that epic toggle still works independently"
       },
       {
@@ -5540,6 +6006,7 @@
         "components": [
           "frontend"
         ],
+        "defects": [],
         "docstring": "Check browser console for JavaScript errors"
       },
       {
@@ -5552,6 +6019,7 @@
         "components": [
           "frontend"
         ],
+        "defects": [],
         "docstring": "Test that JavaScript filter functions are actually defined"
       },
       {
@@ -5564,6 +6032,7 @@
         "components": [
           "frontend"
         ],
+        "defects": [],
         "docstring": "Test actually calling the JavaScript functions"
       },
       {
@@ -5576,6 +6045,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Standalone test function"
       }
     ]
@@ -5595,6 +6065,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test RTM generator with real file structure."
       },
       {
@@ -5609,6 +6080,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test RTM update functionality with real files."
       },
       {
@@ -5623,6 +6095,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test CLI tool with real project structure."
       },
       {
@@ -5637,6 +6110,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test plugin system discovery and loading."
       },
       {
@@ -5651,6 +6125,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test different configuration scenarios."
       },
       {
@@ -5665,6 +6140,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test error handling in integration scenarios."
       },
       {
@@ -5679,6 +6155,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test accuracy of generated links."
       },
       {
@@ -5693,6 +6170,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test validation report generation."
       },
       {
@@ -5707,6 +6185,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test performance with large RTM file."
       }
     ]
@@ -5724,6 +6203,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test basic blog access and health check workflow."
       },
       {
@@ -5736,6 +6216,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test complete GDPR consent and data subject request flow."
       },
       {
@@ -5748,6 +6229,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that security headers are properly set across all endpoints."
       },
       {
@@ -5760,6 +6242,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test complete data lifecycle from creation to deletion."
       },
       {
@@ -5772,6 +6255,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test compliance monitoring and reporting workflow."
       },
       {
@@ -5784,6 +6268,7 @@
         "components": [
           "backend"
         ],
+        "defects": [],
         "docstring": "Test that errors are handled gracefully across all workflows."
       }
     ]

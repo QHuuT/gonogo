@@ -269,3 +269,128 @@ class TestEpic:
         # Test direct calculation
         calculated = epic.calculate_completion_percentage()
         assert calculated == 40.0
+
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
+    def test_metrics_cache_and_history(self, db_session, epic):
+        """Metrics should cache and append history entries when refreshed."""
+        db_session.add(epic)
+        db_session.commit()
+
+        metrics = epic.update_metrics(force_recalculate=True, session=db_session, record_history=True)
+        db_session.commit()
+        db_session.refresh(epic)
+
+        assert epic.metrics_cache is not None
+        assert epic.metrics_cache_updated_at is not None
+        assert len(epic.metric_history) == 1
+
+        cached_metrics = epic.get_cached_metrics(session=db_session)
+        assert cached_metrics == metrics
+
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
+    def test_persona_metrics_include_statuses(self, db_session, epic):
+        """Persona metrics should expose status annotations from thresholds."""
+        from src.shared.metrics.thresholds import get_threshold_service
+
+        epic.total_story_points = 10
+        epic.completed_story_points = 5
+        epic.velocity_points_per_sprint = 5
+        epic.team_size = 2
+        epic.test_coverage_percentage = 85
+        epic.code_review_score = 8
+        epic.technical_debt_hours = 30
+
+        db_session.add(epic)
+        db_session.commit()
+
+        epic.update_metrics(force_recalculate=True, session=db_session, record_history=True)
+        db_session.commit()
+
+        thresholds = get_threshold_service()
+
+        pm_metrics = epic.get_persona_specific_metrics('PM', session=db_session, thresholds=thresholds)
+        assert 'timeline' in pm_metrics
+        assert 'velocity' in pm_metrics
+
+        qa_metrics = epic.get_persona_specific_metrics('QA', session=db_session, thresholds=thresholds)
+        assert 'quality' in qa_metrics
+        assert 'testing' in qa_metrics
+
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
+    def test_cache_stale_detection(self, db_session, epic):
+        """Test cache staleness detection."""
+        from datetime import datetime, timedelta
+
+        db_session.add(epic)
+        db_session.commit()
+
+        # Cache should be stale initially
+        assert epic.is_metrics_cache_stale()
+
+        # After caching, should not be stale
+        epic.cache_metrics({"test": "data"}, session=db_session)
+        assert not epic.is_metrics_cache_stale()
+
+        # Should be stale after some time
+        epic.metrics_cache_updated_at = datetime.now() - timedelta(minutes=20)
+        assert epic.is_metrics_cache_stale(max_age_minutes=15)
+
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
+    def test_metrics_history_trend(self, db_session, epic):
+        """Test metric history tracking for trend analysis."""
+        db_session.add(epic)
+        db_session.commit()
+
+        # Generate multiple metric snapshots
+        epic.velocity_points_per_sprint = 5
+        epic.force_refresh_metrics(session=db_session, record_history=True)
+        db_session.commit()
+
+        epic.velocity_points_per_sprint = 7
+        epic.force_refresh_metrics(session=db_session, record_history=True)
+        db_session.commit()
+
+        epic.velocity_points_per_sprint = 6
+        epic.force_refresh_metrics(session=db_session, record_history=True)
+        db_session.commit()
+
+        # Check history
+        history = epic.get_metric_history(session=db_session, limit=5)
+        assert len(history) == 3
+
+        # Verify trend data
+        velocities = [h['metrics']['velocity_metrics']['velocity_points_per_sprint'] for h in history]
+        assert 6 in velocities  # Most recent
+        assert 7 in velocities
+        assert 5 in velocities
+
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
+    @pytest.mark.user_story("US-00052")
+    def test_cache_only_access(self, db_session, epic):
+        """Test accessing only cached metrics without recalculation."""
+        db_session.add(epic)
+        db_session.commit()
+
+        # Should return None when no cache
+        cached = epic.get_cached_metrics_only()
+        assert cached is None
+
+        # Cache some metrics
+        test_metrics = {"velocity": 5, "completion": 25}
+        epic.cache_metrics(test_metrics, session=db_session)
+        db_session.commit()
+
+        # Should return cached data
+        cached = epic.get_cached_metrics_only()
+        assert cached == test_metrics
+
+        # Clear cache
+        epic.clear_metrics_cache()
+        assert epic.get_cached_metrics_only() is None
+
+
+

@@ -118,7 +118,7 @@ def count_actual_test_functions():
 
             for py_file in py_files:
                 try:
-                    content = py_file.read_text()
+                    content = py_file.read_text(encoding='utf-8', errors='ignore')
                     functions = [line for line in content.split('\n') if line.strip().startswith('def test_')]
                     total_functions += len(functions)
                     if len(functions) > 0:

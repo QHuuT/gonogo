@@ -19,7 +19,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 # Import all models to ensure they're registered with Base.metadata
 from src.be.models.traceability.base import Base
 from src.be.models.traceability import (
-    Epic, UserStory, Defect, Test, GitHubSync
+    Epic, EpicMetricHistory, EpicDependency, UserStory, Defect, Test,
+    GitHubSync, Capability, CapabilityDependency
 )
 
 # this is the Alembic Config object, which provides

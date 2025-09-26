@@ -20,7 +20,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 # Load the module directly from the source file to avoid namespace collision
-repo_root = Path(__file__).parent.parent.parent.parent.parent
+repo_root = Path(__file__).parent.parent.parent.parent.parent.parent
 failure_tracker_path = repo_root / "src" / "shared" / "testing" / "failure_tracker.py"
 
 spec = importlib.util.spec_from_file_location("failure_tracker", failure_tracker_path)

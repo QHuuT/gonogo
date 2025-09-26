@@ -11,7 +11,7 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 import os
 from typing import Generator
 
-from sqlalchemy import MetaData, create_engine
+from sqlalchemy import MetaData, create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -94,7 +94,7 @@ def check_database_health() -> dict:
         db = get_db_session()
         try:
             # Simple query to test connectivity
-            db.execute("SELECT 1")
+            db.execute(text("SELECT 1"))
             return {
                 "status": "healthy",
                 "database_url": (

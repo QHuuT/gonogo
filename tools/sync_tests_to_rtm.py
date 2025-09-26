@@ -82,12 +82,13 @@ class RTMTestSynchronizer:
             test_name = test_path.stem
             test_file_path = str(test_path).replace('\\', '/')
 
-            existing_test = self.session.query(Test).filter(
+            existing_tests = self.session.query(Test).filter(
                 Test.test_file_path == test_file_path
-            ).first()
+            ).all()
 
-            if existing_test:
-                test_record = existing_test
+            if existing_tests:
+                test_record = existing_tests[0]
+                duplicate_records = existing_tests[1:]
                 action = "UPDATE"
             else:
                 test_record = Test(
@@ -96,6 +97,7 @@ class RTMTestSynchronizer:
                     test_type=assoc['test_type']
                 )
                 self.session.add(test_record)
+                duplicate_records = []
                 action = "CREATE"
 
             components = ','.join(assoc['components']) if assoc['components'] else None
@@ -136,6 +138,13 @@ class RTMTestSynchronizer:
 
             if defect_linked:
                 self.stats['defect_links'] += 1
+
+            # Propagate synchronised metadata to duplicate records if any
+            for duplicate in duplicate_records:
+                duplicate.epic_id = test_record.epic_id
+                duplicate.component = test_record.component
+                duplicate.github_user_story_number = test_record.github_user_story_number
+                duplicate.github_defect_number = test_record.github_defect_number
 
             self.session.commit()
 

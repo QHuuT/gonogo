@@ -474,6 +474,64 @@ class TestRTMDatabaseCLI:
     @pytest.mark.epic("EP-00005", "EP-99999")
     @pytest.mark.user_story("US-00055")
     @pytest.mark.component("backend")
+    def test_admin_health_check_with_orphaned_records(self, mock_get_db):
+        """Test health check with orphaned records detected."""
+        mock_get_db.return_value = self.mock_db
+
+        # Mock count queries
+        mock_query = Mock()
+        self.mock_db.query.return_value = mock_query
+        mock_query.count.side_effect = [
+            5, 10, 15, 3, 2,  # Epic, US, Test, Defect, Sync counts
+        ]
+        mock_query.filter.return_value.count.side_effect = [2, 3]  # Orphaned counts (US, Tests)
+
+        result = self.runner.invoke(rtm_db_cli.cli, ["admin", "health-check"])
+
+        assert result.exit_code == 0
+        assert "Database connection successful" in result.output
+        # Note: Orphaned record warnings use Rich console.print, so not testable via click output
+
+    @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
+    def test_admin_health_check_database_error(self, mock_get_db):
+        """Test health check handles database connection errors gracefully."""
+        mock_get_db.side_effect = Exception("Database connection failed")
+
+        result = self.runner.invoke(rtm_db_cli.cli, ["admin", "health-check"])
+
+        assert result.exit_code == 0  # Click doesn't propagate exceptions by default
+        # Note: Error message uses Rich console.print, so not testable via click output
+
+    @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
+    def test_admin_health_check_output_format_regression(self, mock_get_db):
+        """Regression test: Ensure health check message uses click.echo() for testability."""
+        mock_get_db.return_value = self.mock_db
+
+        # Mock count queries with zero values
+        mock_query = Mock()
+        self.mock_db.query.return_value = mock_query
+        mock_query.count.side_effect = [0, 0, 0, 0, 0]  # All counts zero
+        mock_query.filter.return_value.count.side_effect = [0, 0]  # No orphaned records
+
+        result = self.runner.invoke(rtm_db_cli.cli, ["admin", "health-check"])
+
+        assert result.exit_code == 0
+        # This is the key regression test - ensure the success message is captured
+        assert "Database connection successful" in result.output
+        # Verify this is plain text, not Rich markup
+        assert "[green]" not in result.output
+        assert "[/green]" not in result.output
+
+    @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_admin_validate_no_issues(self, mock_get_db):
         """Test data validation with no issues found."""
         mock_get_db.return_value = self.mock_db

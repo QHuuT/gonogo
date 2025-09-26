@@ -149,7 +149,7 @@ def test_epic_metrics():
             print(f"[OK] {persona} persona metrics: {len(persona_metrics)} categories")
 
         # Test metrics update
-        epic.update_metrics(force_recalculate=True)
+        epic.update_metrics(force_recalculate=True, session=session)
         print(f"[OK] Metrics updated at: {epic.last_metrics_update}")
 
         session.commit()

@@ -36,6 +36,9 @@ dev = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.pytest.ini_options]
+# Automatically save test output to quality/logs via conftest.py
+
 [tool.black]
 line-length = 88
 target-version = ['py311']
@@ -75,13 +78,12 @@ warn_unused_ignores = true
 warn_no_return = true
 warn_unreachable = true
 
-[tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 pythonpath = ["src", "tools"]
-addopts = "-v --cov=src --cov-report=term-missing --cov-report=html --cov-report=json"
+addopts = "-v --cov=src --cov-report=term-missing --cov-report=html --cov-report=json --tb=short"
 asyncio_mode = "auto"
 
 # BDD configuration

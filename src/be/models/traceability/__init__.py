@@ -13,6 +13,7 @@ from .base import Base, TraceabilityBase
 from .capability import Capability, CapabilityDependency
 from .defect import Defect
 from .epic import Epic
+from .epic_metric_history import EpicMetricHistory
 from .epic_dependency import EpicDependency
 from .github_sync import GitHubSync
 from .test import Test
@@ -23,6 +24,7 @@ __all__ = [
     "TraceabilityBase",
     "Base",
     "Epic",
+    "EpicMetricHistory",
     "EpicDependency",
     "UserStory",
     "Defect",
