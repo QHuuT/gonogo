@@ -24,8 +24,7 @@ from datetime import datetime
 
 
 def extract_failures_and_traces(log_content):
-    """Extract all test failures and their complete stack traces with numbered tags."""
-    failures = []
+    """Extract all test failures, group similar ones, and return complete stack traces with numbered tags."""
     lines = log_content.split('\n')
 
     # Find all FAILED test lines
@@ -35,7 +34,10 @@ def extract_failures_and_traces(log_content):
             failed_tests.append((i, line.strip()))
 
     if not failed_tests:
-        return [], []
+        return [], [], []
+
+    # Group similar failures
+    failure_groups = group_similar_failures(failed_tests, log_content)
 
     # Find the FAILURES section which contains stack traces
     failures_section_start = None
@@ -63,7 +65,7 @@ def extract_failures_and_traces(log_content):
     else:
         failure_details = ""
 
-    return failed_tests, failure_details
+    return failed_tests, failure_groups, failure_details
 
 
 def add_failure_tags(failure_lines, failed_tests):
@@ -122,7 +124,104 @@ def add_failure_tags(failure_lines, failed_tests):
     return '\n'.join(tagged_lines)
 
 
-def create_summary_header(failed_tests, errors, warnings, total_tests_info):
+def group_similar_failures(failed_tests, log_content):
+    """Group similar test failures by failure type and error message."""
+    failure_groups = {}
+    lines = log_content.split('\n')
+
+    for line_num, test_line in failed_tests:
+        # Extract test name and failure reason
+        test_name = test_line.split(' FAILED ')[0].strip()
+
+        # Find the actual failure details in the FAILURES section
+        failure_type, failure_message = extract_failure_type_and_message(test_name, lines)
+
+        # Create group key based on failure type and normalized message
+        group_key = create_failure_group_key(failure_type, failure_message)
+
+        if group_key not in failure_groups:
+            failure_groups[group_key] = {
+                'type': failure_type,
+                'message': normalize_failure_message(failure_message),
+                'affected_tests': [],
+                'count': 0
+            }
+
+        failure_groups[group_key]['affected_tests'].append(test_name)
+        failure_groups[group_key]['count'] += 1
+
+    return list(failure_groups.values())
+
+
+def extract_failure_type_and_message(test_name, lines):
+    """Extract failure type and message for a specific test from the failure details."""
+    # Find the test name in the failure section
+    test_method = test_name.split('::')[-1] if '::' in test_name else test_name
+
+    in_test_failure = False
+    failure_type = "TestFailure"
+    failure_message = "Test failed"
+
+    for i, line in enumerate(lines):
+        # Look for the failure separator line for this test
+        if test_method in line and line.startswith('_') and line.endswith('_'):
+            in_test_failure = True
+            continue
+
+        # If we're in the test failure section, look for error patterns
+        if in_test_failure:
+            # Stop when we hit the next test failure or end of section
+            if line.startswith('_') and line.endswith('_') and test_method not in line:
+                break
+
+            # Look for common assertion/error patterns
+            if 'AssertionError:' in line:
+                failure_type = "AssertionError"
+                failure_message = line.split('AssertionError:')[1].strip() if ':' in line else line.strip()
+                break
+            elif 'assert ' in line and (' == ' in line or ' != ' in line or ' in ' in line):
+                failure_type = "AssertionError"
+                failure_message = line.strip()
+                break
+            elif any(error in line for error in ['Error:', 'Exception:', 'ImportError:', 'AttributeError:', 'KeyError:', 'ValueError:', 'TypeError:']):
+                # Extract error type and message
+                for error_pattern in ['Error:', 'Exception:']:
+                    if error_pattern in line:
+                        error_parts = line.split(error_pattern, 1)
+                        if len(error_parts) == 2:
+                            failure_type = error_parts[0].split()[-1] + "Error" if error_parts[0] else "Error"
+                            failure_message = error_parts[1].strip()
+                            break
+                break
+            elif '>' in line and ('assert' in line.lower() or 'expect' in line.lower()):
+                failure_type = "AssertionError"
+                failure_message = line.strip()
+                break
+
+    return failure_type, failure_message
+
+
+def create_failure_group_key(failure_type, message):
+    """Create a grouping key for similar failures."""
+    # Normalize the message for grouping similar failures
+    normalized = re.sub(r'\d+', '<NUM>', message)  # Replace numbers
+    normalized = re.sub(r'[\'"][^\'\"]*[\'"]', '<STRING>', normalized)  # Replace strings
+    normalized = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '<EMAIL>', normalized)  # Replace emails
+    normalized = re.sub(r'\b(?:\d{1,3}\.){3}\d{1,3}\b', '<IP>', normalized)  # Replace IPs
+    normalized = re.sub(r'0x[0-9a-fA-F]+', '<HEX>', normalized)  # Replace hex values
+    normalized = re.sub(r'/[^/\s]+/', '<PATH>/', normalized)  # Replace paths
+
+    return f"{failure_type}:{normalized[:60]}"
+
+
+def normalize_failure_message(message):
+    """Normalize failure message for display."""
+    if len(message) > 150:
+        return message[:150] + "..."
+    return message
+
+
+def create_summary_header(failed_tests, failure_groups, errors, warnings, total_tests_info):
     """Create a summary header for the processed log."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -136,16 +235,26 @@ ISSUES OVERVIEW:
 {'-'*50}
 """
 
-    # Failures section
+    # Failures section - show both grouped and individual counts
     if failed_tests:
-        header += f"[FAILED] {len(failed_tests)} test(s) failed:\n\n"
-        for i, (line_num, test_line) in enumerate(failed_tests, 1):
-            # Extract just the test name from the line
-            if '::' in test_line:
-                test_name = test_line.split(' FAILED ')[0].strip()
-                header += f"[FAILED TEST NO-{i}] {test_name}\n"
-            else:
-                header += f"[FAILED TEST NO-{i}] {test_line}\n"
+        if failure_groups and len(failure_groups) < len(failed_tests):
+            # Show grouping when there are similar failures
+            total_failures = sum(group['count'] for group in failure_groups)
+            header += f"[FAILED] {len(failure_groups)} failure group(s), {total_failures} total test(s) failed:\n\n"
+            for i, group in enumerate(failure_groups, 1):
+                count_text = f" ({group['count']} test{'s' if group['count'] > 1 else ''})" if group['count'] > 1 else ""
+                failure_summary = group['message'][:60] + "..." if len(group['message']) > 60 else group['message']
+                header += f"[FAILURE GROUP NO-{i}] {group['type']}{count_text}: {failure_summary}\n"
+        else:
+            # Show individual failures when no meaningful grouping
+            header += f"[FAILED] {len(failed_tests)} test(s) failed:\n\n"
+            for i, (line_num, test_line) in enumerate(failed_tests, 1):
+                # Extract just the test name from the line
+                if '::' in test_line:
+                    test_name = test_line.split(' FAILED ')[0].strip()
+                    header += f"[FAILED TEST NO-{i}] {test_name}\n"
+                else:
+                    header += f"[FAILED TEST NO-{i}] {test_line}\n"
     else:
         header += "[SUCCESS] No test failures found!\n"
 
@@ -473,6 +582,34 @@ def format_warnings_section(warning_groups):
     return section
 
 
+def format_failure_groups_section(failure_groups):
+    """Format the failure groups section with grouped failures and detailed information."""
+    if not failure_groups:
+        return ""
+
+    total_failures = sum(group['count'] for group in failure_groups)
+    section = f"\n{'='*80}\n"
+    section += f"FAILURE GROUP DETAILS ({len(failure_groups)} failure group(s), {total_failures} total test(s) failed):\n"
+    section += f"{'='*80}\n\n"
+
+    for i, group in enumerate(failure_groups, 1):
+        count_text = f" ({group['count']} test{'s' if group['count'] > 1 else ''})" if group['count'] > 1 else ""
+        section += f"[FAILURE GROUP NO-{i}] {group['type']}{count_text}\n"
+        section += f"{'='*60}\n"
+        section += f"Failure Pattern: {group['message']}\n"
+
+        if group['affected_tests']:
+            section += f"Affected Tests:\n"
+            for test in group['affected_tests'][:10]:  # Show up to 10 tests
+                section += f"  - {test}\n"
+            if len(group['affected_tests']) > 10:
+                section += f"  ... and {len(group['affected_tests']) - 10} more tests\n"
+
+        section += f"{'='*60}\n\n"
+
+    return section
+
+
 def extract_test_summary(log_content):
     """Extract the test execution summary from the log."""
     lines = log_content.split('\n')
@@ -516,15 +653,21 @@ def process_log_file(input_file, output_file=None):
         return False
 
     # Extract failures, errors, warnings and stack traces
-    failed_tests, failure_details = extract_failures_and_traces(original_content)
+    failed_tests, failure_groups, failure_details = extract_failures_and_traces(original_content)
     errors, warnings = extract_errors_and_warnings(original_content)
     test_summary = extract_test_summary(original_content)
 
     # Create the processed content
-    header = create_summary_header(failed_tests, errors, warnings, test_summary)
+    header = create_summary_header(failed_tests, failure_groups, errors, warnings, test_summary)
     processed_content = header
 
-    # Add failure details (highest priority)
+    # Add failure group details (highest priority) if there are meaningful groups
+    if failure_groups and len(failure_groups) < len(failed_tests):
+        failure_groups_section = format_failure_groups_section(failure_groups)
+        if failure_groups_section:
+            processed_content += failure_groups_section
+
+    # Add detailed failure information
     if failure_details:
         processed_content += f"\n{'='*80}\n"
         processed_content += "DETAILED FAILURE INFORMATION:\n"
@@ -563,22 +706,28 @@ def process_log_file(input_file, output_file=None):
 
         # Report findings
         if failed_tests:
-            print(f"[FAILURES] Found {len(failed_tests)} failed test(s)")
+            if failure_groups and len(failure_groups) < len(failed_tests):
+                total_failures = sum(group['count'] for group in failure_groups)
+                print(f"[FAILURES] Found {len(failure_groups)} failure group(s) ({total_failures} total failed test(s))")
+            else:
+                print(f"[FAILURES] Found {len(failed_tests)} failed test(s)")
         else:
             print("[SUCCESS] No test failures found!")
 
         if errors:
-            print(f"[ERRORS] Found {len(errors)} error(s)")
+            total_errors = sum(group['count'] for group in errors)
+            print(f"[ERRORS] Found {len(errors)} error group(s) ({total_errors} total error(s))")
         else:
             print("[SUCCESS] No errors found!")
 
         if warnings:
-            print(f"[WARNINGS] Found {len(warnings)} warning(s)")
+            total_warnings = sum(group['count'] for group in warnings)
+            print(f"[WARNINGS] Found {len(warnings)} warning group(s) ({total_warnings} total warning(s))")
         else:
             print("[SUCCESS] No warnings found!")
 
         if failed_tests or errors or warnings:
-            print(f"[INFO] Issues are now prioritized at the top of: {output_file}")
+            print(f"[INFO] Issues are now grouped and prioritized at the top of: {output_file}")
 
         return True
 
