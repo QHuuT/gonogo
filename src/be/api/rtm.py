@@ -22,6 +22,7 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models.traceability import Capability, Defect, Epic, EpicDependency, GitHubSync, Test, UserStory
 from ..services.rtm_report_generator import RTMReportGenerator
+from ...shared.metrics.thresholds import get_threshold_service
 
 router = APIRouter(prefix="/api/rtm", tags=["RTM"])
 templates = Jinja2Templates(directory="src/be/templates")
@@ -1121,10 +1122,12 @@ def get_dashboard_metrics(
             "summary": {}
         }
 
+    thresholds = get_threshold_service()
+
     # Collect persona-specific metrics for all epics
     epic_metrics = []
     for epic in epics:
-        metrics = epic.get_persona_specific_metrics(persona)
+        metrics = epic.get_persona_specific_metrics(persona, session=db, thresholds=thresholds)
         epic_metrics.append({
             "epic_id": epic.epic_id,
             "title": epic.title,
@@ -1195,6 +1198,13 @@ def get_dashboard_metrics_demo(
     }
 
 
+def _extract_metric_value(metric_data, default=0):
+    """Extract numeric value from threshold-evaluated metric data."""
+    if isinstance(metric_data, dict) and "value" in metric_data:
+        return metric_data["value"] or default
+    return metric_data if metric_data is not None else default
+
+
 def calculate_dashboard_summary(epic_metrics: List[dict], persona: str) -> dict:
     """Calculate aggregated summary metrics for dashboard personas."""
     if not epic_metrics:
@@ -1208,22 +1218,22 @@ def calculate_dashboard_summary(epic_metrics: List[dict], persona: str) -> dict:
         at_risk_count = sum(
             1
             for epic in epic_metrics
-            if epic["metrics"].get("risk", {}).get("overall_risk_score", 0) > 30
+            if _extract_metric_value(epic["metrics"].get("risk", {}).get("overall_risk_score", 0)) > 30
         )
         avg_velocity = sum(
-            epic["metrics"].get("velocity", {}).get("velocity_points_per_sprint", 0) or 0
+            _extract_metric_value(epic["metrics"].get("velocity", {}).get("velocity_points_per_sprint", 0))
             for epic in epic_metrics
         ) / total_epics
         avg_schedule_variance = sum(
-            epic["metrics"].get("timeline", {}).get("schedule_variance_days", 0) or 0
+            _extract_metric_value(epic["metrics"].get("timeline", {}).get("schedule_variance_days", 0))
             for epic in epic_metrics
         ) / total_epics
         avg_velocity_per_member = sum(
-            epic["metrics"].get("team_productivity", {}).get("velocity_per_team_member", 0) or 0
+            _extract_metric_value(epic["metrics"].get("team_productivity", {}).get("velocity_per_team_member", 0))
             for epic in epic_metrics
         ) / total_epics
         avg_success_probability = sum(
-            epic["metrics"].get("risk", {}).get("success_probability", 0) or 0
+            _extract_metric_value(epic["metrics"].get("risk", {}).get("success_probability", 0))
             for epic in epic_metrics
         ) / total_epics
 
@@ -1240,24 +1250,24 @@ def calculate_dashboard_summary(epic_metrics: List[dict], persona: str) -> dict:
 
     elif persona_key == "po":
         avg_satisfaction = sum(
-            epic["metrics"].get("stakeholder", {}).get("satisfaction_score", 0) or 0
+            _extract_metric_value(epic["metrics"].get("stakeholder", {}).get("satisfaction_score", 0))
             for epic in epic_metrics
         ) / total_epics
         high_scope_creep = sum(
             1
             for epic in epic_metrics
-            if epic["metrics"].get("scope", {}).get("scope_creep_percentage", 0) > 20
+            if _extract_metric_value(epic["metrics"].get("scope", {}).get("scope_creep_percentage", 0)) > 20
         )
         avg_roi = sum(
-            epic["metrics"].get("business_value", {}).get("roi_percentage", 0) or 0
+            _extract_metric_value(epic["metrics"].get("business_value", {}).get("roi_percentage", 0))
             for epic in epic_metrics
         ) / total_epics
         avg_adoption = sum(
-            epic["metrics"].get("adoption", {}).get("user_adoption_rate", 0) or 0
+            _extract_metric_value(epic["metrics"].get("adoption", {}).get("user_adoption_rate", 0))
             for epic in epic_metrics
         ) / total_epics
         avg_scope_creep_percentage = sum(
-            epic["metrics"].get("scope", {}).get("scope_creep_percentage", 0) or 0
+            _extract_metric_value(epic["metrics"].get("scope", {}).get("scope_creep_percentage", 0))
             for epic in epic_metrics
         ) / total_epics
 
@@ -1273,14 +1283,22 @@ def calculate_dashboard_summary(epic_metrics: List[dict], persona: str) -> dict:
         }
 
     elif persona_key == "qa":
-        avg_coverage = sum((epic["metrics"].get("testing", {}).get("test_coverage", 0) or 0)
-                           for epic in epic_metrics) / total_epics
-        high_defect_density = sum(1 for epic in epic_metrics
-                                  if epic["metrics"].get("defects", {}).get("defect_density", 0) > 0.5)
-        avg_defect_density = sum((epic["metrics"].get("defects", {}).get("defect_density", 0) or 0)
-                                  for epic in epic_metrics) / total_epics
-        avg_technical_debt = sum((epic["metrics"].get("technical_debt", {}).get("debt_hours", 0) or 0)
-                                   for epic in epic_metrics) / total_epics
+        avg_coverage = sum(
+            _extract_metric_value(epic["metrics"].get("testing", {}).get("test_coverage", 0))
+            for epic in epic_metrics
+        ) / total_epics
+        high_defect_density = sum(
+            1 for epic in epic_metrics
+            if _extract_metric_value(epic["metrics"].get("defects", {}).get("defect_density", 0)) > 0.5
+        )
+        avg_defect_density = sum(
+            _extract_metric_value(epic["metrics"].get("defects", {}).get("defect_density", 0))
+            for epic in epic_metrics
+        ) / total_epics
+        avg_technical_debt = sum(
+            _extract_metric_value(epic["metrics"].get("technical_debt", {}).get("debt_hours", 0))
+            for epic in epic_metrics
+        ) / total_epics
 
         return {
             "total_epics": total_epics,

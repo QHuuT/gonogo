@@ -73,6 +73,9 @@ python tools/rtm-db.py admin validate      # Data integrity
 - **logs/** - Structured test execution logs and failure tracking
 - **archives/** - Compressed historical reports and metadata
 
+### **Debug & Analysis Documentation**
+- **debug_reports/** - Detailed debug reports and regression prevention (YYYYMMDD-shortname.md format)
+
 ## 📊 Report Types Overview
 
 ### 1. Coverage Reports
@@ -276,6 +279,36 @@ python tools/archive_cleanup.py --apply
 - **JSON data**: 180 days retention, compress after 30 days
 - **Log files**: 60 days retention, compress after 7 days
 - **Database files**: 365 days retention, compress after 90 days
+
+### 7. Debug Reports
+**Purpose**: Document detailed debugging efforts and regression prevention measures
+**Location**: `quality/debug_reports/`
+**Format**: Manual creation following YYYYMMDD-shortname.md naming convention
+
+#### When to Create Debug Reports
+- Significant debugging efforts (>2 hours investigation)
+- 500 errors or critical system failures
+- Performance regressions
+- Security vulnerabilities
+- Complex bug fixes requiring regression tests
+
+#### Report Structure
+- **Issue Summary**: Problem description, impact, timeline
+- **Root Cause Analysis**: Investigation process and findings
+- **Solution Implemented**: Code changes and testing approach
+- **Prevention Measures**: Regression tests and monitoring added
+- **Lessons Learned**: Knowledge for future debugging
+
+#### Examples
+- `20250926-metrics-api-500-error-regression-tests.md` - Comprehensive analysis of dashboard metrics API failure
+- `20250925-database-connection-timeout-analysis.md` - Database performance investigation
+- `20250924-epic-model-performance-optimization.md` - Model query optimization
+
+#### Key Benefits
+- **Knowledge Preservation**: Team debugging expertise documented
+- **Regression Prevention**: Comprehensive test suites created
+- **Pattern Recognition**: Identify systemic issues over time
+- **Onboarding Support**: Help new team members understand system complexities
 
 ---
 

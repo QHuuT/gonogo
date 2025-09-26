@@ -50,6 +50,7 @@ Testing & Quality:
 ├── quality/                                # Quality assurance system
 │   ├── logs/                               # Structured test execution logs
 │   ├── reports/                            # Interactive HTML reports & analysis
+│   ├── debug_reports/                      # Detailed debug analysis & regression tests (YYYYMMDD format)
 │   └── archives/                           # Test data retention & cleanup
 └── tools/                                  # 70+ automation & management tools
 ```
@@ -82,7 +83,7 @@ Testing & Quality:
 ├── src/                                    # Source code (FastAPI backend)
 ├── tests/                                  # BDD + unit/integration/e2e tests
 ├── tools/                                  # 70+ automation scripts & utilities
-├── quality/                                # Test logging, reports, archives
+├── quality/                                # Test logging, reports, debug analysis, archives
 ├── migrations/                             # Database schema migrations
 └── static/                                 # Static web assets
 ```
@@ -314,6 +315,7 @@ git push origin main
 - **Test Reports**: quality/reports/test_report.html
 - **Failure Analysis**: quality/reports/failure_analysis_report.html
 - **Coverage Reports**: quality/reports/coverage/
+- **Debug Reports**: quality/debug_reports/ (detailed bug analysis & regression prevention)
 - **GitHub Issue Templates**: quality/reports/issue_template_*.md
 
 ### For Project Management
@@ -398,6 +400,7 @@ git push origin main
 - [**Testing Guide**](quality/TESTING_GUIDE.md) - Comprehensive testing workflows
 - [**Quality Reports Guide**](quality/README.md) - Complete guide to all quality reports
 - [**Database Guide**](quality/DATABASE_GUIDE.md) - Database inspection and management
+- [**Debug Reports**](quality/debug_reports/) - Detailed debugging analysis and regression prevention
 
 ### **🏗️ Architecture & Decisions**
 - [**Architecture Decision Records**](docs/context/decisions/) - Key technical decisions
@@ -430,6 +433,7 @@ git push origin main
 - **Capability Portfolio**: http://localhost:8000/api/rtm/dashboard/capabilities
 - **Interactive Test Reports**: quality/reports/test_report.html
 - **Failure Analysis**: quality/reports/failure_analysis_report.html
+- **Debug Analysis Reports**: quality/debug_reports/ (regression prevention & detailed debugging)
 
 ### **🛠️ Common Commands**
 ```bash

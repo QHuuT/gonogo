@@ -519,6 +519,7 @@ conn.close()
 - [Quality Reports Guide](README.md) - Complete quality reporting overview
 - [Testing Guide](TESTING_GUIDE.md) - Testing workflows and RTM integration
 - [RTM Guide](RTM_GUIDE.md) - RTM dashboard and web interface
+- [Debug Reports](debug_reports/) - Detailed debugging analysis and regression prevention
 - [Quick Reference](QUICK_REFERENCE.md) - Common database commands
 
 ---

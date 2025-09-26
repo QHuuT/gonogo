@@ -1158,6 +1158,12 @@ cat quality/logs/daily_20250926_*.log
 # Defect management
 python tools/github_issue_creation_demo.py --dry-run
 python tools/github_issue_creation_demo.py
+
+# Debug analysis and regression prevention
+# See quality/debug_reports/ for detailed debugging documentation
+# Format: quality/debug_reports/YYYYMMDD-issue-description.md
 ```
 
 **🎉 Use this guide as your single source of truth for all testing activities!**
+
+For detailed debugging analysis and regression prevention, see [Debug Reports](debug_reports/) documentation.
