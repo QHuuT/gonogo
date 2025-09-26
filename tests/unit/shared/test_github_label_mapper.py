@@ -498,7 +498,7 @@ class TestLabelMapperIntegration:
         matrix_file = tmp_path / "requirements-matrix.md"
         matrix_file.write_text(matrix_content)
 
-        return GitHubIssueLabelMapper(matrix_file)
+        return GitHubIssueLabelMapper(matrix_file, use_database=False)
 
     @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
     @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
@@ -597,3 +597,67 @@ class TestLabelMapperIntegration:
         }
 
         assert set(labels) == expected_labels
+
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
+    def test_database_vs_file_mapper_regression(self, tmp_path):
+        """Regression test for database vs file-based epic mapper configuration.
+
+        This test documents the issue where integration tests intended to test
+        file-based parsing were accidentally using database mappings due to
+        the default use_database=True parameter.
+        """
+        # Create matrix content with specific component mapping
+        matrix_content = """
+        # Requirements Traceability Matrix
+
+        | Epic | Req ID | Requirement Description | Priority | User Story |
+        |------|--------|------------------------|----------|------------|
+        | **EP-00003** | **GDPR-001** | Privacy and Consent Management | Critical | US-006 |
+        """
+
+        matrix_file = tmp_path / "test-matrix.md"
+        matrix_file.write_text(matrix_content)
+
+        # Create mapper with database enabled (the problematic case)
+        database_mapper = GitHubIssueLabelMapper(matrix_file, use_database=True)
+
+        # Create mapper with database disabled (the intended case for file-based testing)
+        file_mapper = GitHubIssueLabelMapper(matrix_file, use_database=False)
+
+        # Verify they use different epic mapper types
+        assert type(database_mapper.epic_mapper).__name__ == "DatabaseEpicMapper"
+        assert type(file_mapper.epic_mapper).__name__ == "TraceabilityMatrixParser"
+
+        # Test the same epic ID with both mappers
+        database_mappings = database_mapper.epic_mapper.get_epic_mappings()
+        file_mappings = file_mapper.epic_mapper.get_epic_mappings()
+
+        # Verify that EP-00003 has different mappings in database vs file
+        if "EP-00003" in database_mappings and "EP-00003" in file_mappings:
+            db_mapping = database_mappings["EP-00003"]
+            file_mapping = file_mappings["EP-00003"]
+
+            # Document the difference that caused the original issue
+            # Database has EP-00003 as backend, file parser correctly identifies it as gdpr
+            assert db_mapping["component"] == "backend", "Database mapping should be backend"
+            assert file_mapping["component"] == "gdpr", "File mapping should be gdpr from Privacy and Consent Management"
+            assert file_mapping["epic_label"] == "privacy-consent", "File mapping should have privacy-consent label"
+
+        # Verify integration test behavior: file-based mapper should be used for testing matrix parsing
+        test_issue = IssueData(
+            title="EP-00003: Privacy Test",
+            body="### Epic ID\n\nEP-00003",
+            existing_labels=[],
+            issue_number=1
+        )
+
+        # File-based mapper should return gdpr component
+        file_labels = file_mapper.map_epic_labels(test_issue)
+        assert "component/gdpr" in file_labels, "File mapper should map EP-00003 to gdpr component"
+        assert "epic/privacy-consent" in file_labels, "File mapper should include privacy-consent epic label"
+
+        # Database mapper returns backend component (demonstrating the original problem)
+        db_labels = database_mapper.map_epic_labels(test_issue)
+        if db_labels:  # Only check if database mapping exists
+            assert "component/backend" in db_labels, "Database mapper maps EP-00003 to backend component"
