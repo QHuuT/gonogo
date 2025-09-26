@@ -76,7 +76,7 @@ def create_epic(ctx, epic_id, title, description, business_value, priority, stat
         # Check if epic already exists
         existing = db.query(Epic).filter(Epic.epic_id == epic_id).first()
         if existing:
-            console.print(f"[red]Error: Epic {epic_id} already exists[/red]")
+            click.echo(f"Epic {epic_id} already exists")
             return
 
         epic = Epic(
@@ -90,13 +90,13 @@ def create_epic(ctx, epic_id, title, description, business_value, priority, stat
         db.add(epic)
         db.commit()
 
-        console.print(f"[green]Created Epic {epic_id}: {title}[/green]")
+        click.echo(f"Created Epic {epic_id}")
         if ctx.obj["verbose"]:
-            console.print(f"Priority: {priority}, Status: {status}")
+            click.echo(f"Priority: {priority}, Status: {status}")
 
     except IntegrityError as e:
         db.rollback()
-        console.print(f"[red]Database error: {e}[/red]")
+        click.echo(f"Database error: {e}")
     finally:
         db.close()
 
@@ -128,7 +128,7 @@ def create_user_story(
         # Find parent epic
         epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
         if not epic:
-            console.print(f"[red]Error: Epic {epic_id} not found[/red]")
+            click.echo(f"Epic {epic_id} not found")
             return
 
         # Check if user story already exists
@@ -136,9 +136,7 @@ def create_user_story(
             db.query(UserStory).filter(UserStory.user_story_id == user_story_id).first()
         )
         if existing:
-            console.print(
-                f"[red]Error: User Story {user_story_id} already exists[/red]"
-            )
+            click.echo(f"User Story {user_story_id} already exists")
             return
 
         user_story = UserStory(
@@ -153,15 +151,13 @@ def create_user_story(
         db.add(user_story)
         db.commit()
 
-        console.print(f"[green]Created User Story {user_story_id}: {title}[/green]")
+        click.echo(f"Created User Story {user_story_id}")
         if ctx.obj["verbose"]:
-            console.print(
-                f"Epic: {epic_id}, GitHub Issue: #{github_issue}, Points: {story_points}"
-            )
+            click.echo(f"Epic: {epic_id}, GitHub Issue: #{github_issue}, Points: {story_points}")
 
     except IntegrityError as e:
         db.rollback()
-        console.print(f"[red]Database error: {e}[/red]")
+        click.echo(f"Database error: {e}")
     finally:
         db.close()
 
@@ -188,7 +184,7 @@ def create_test(ctx, test_type, test_file, title, epic_id, function_name, bdd_sc
             if epic:
                 epic_db_id = epic.id
             else:
-                console.print(f"[yellow]Warning: Epic {epic_id} not found[/yellow]")
+                click.echo(f"Warning: Epic {epic_id} not found")
 
         test = Test(
             test_type=test_type,
@@ -201,13 +197,13 @@ def create_test(ctx, test_type, test_file, title, epic_id, function_name, bdd_sc
         db.add(test)
         db.commit()
 
-        console.print(f"[green]Created Test: {title}[/green]")
+        click.echo(f"Created Test: {title}")
         if ctx.obj["verbose"]:
-            console.print(f"Type: {test_type}, File: {test_file}")
+            click.echo(f"Type: {test_type}, File: {test_file}")
 
     except IntegrityError as e:
         db.rollback()
-        console.print(f"[red]Database error: {e}[/red]")
+        click.echo(f"Database error: {e}")
     finally:
         db.close()
 
@@ -239,7 +235,7 @@ def epics(ctx, format, status, priority):
 
         if format == "json":
             data = [epic.to_dict() for epic in epics_list]
-            console.print(json.dumps(data, indent=2, default=str))
+            click.echo(json.dumps(data, indent=2, default=str))
         else:
             table = Table(title="RTM Epics")
             table.add_column("Epic ID", style="cyan")
@@ -280,7 +276,7 @@ def user_stories(ctx, epic_id, status, format):
             if epic:
                 query_obj = query_obj.filter(UserStory.epic_id == epic.id)
             else:
-                console.print(f"[red]Epic {epic_id} not found[/red]")
+                click.echo(f"Epic {epic_id} not found")
                 return
 
         if status:
@@ -290,7 +286,7 @@ def user_stories(ctx, epic_id, status, format):
 
         if format == "json":
             data = [us.to_dict() for us in user_stories_list]
-            console.print(json.dumps(data, indent=2, default=str))
+            click.echo(json.dumps(data, indent=2, default=str))
         else:
             table = Table(title="RTM User Stories")
             table.add_column("US ID", style="cyan")
@@ -335,7 +331,7 @@ def epic_progress(ctx, epic_id, format):
     try:
         epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
         if not epic:
-            console.print(f"[red]Epic {epic_id} not found[/red]")
+            click.echo(f"Epic {epic_id} not found")
             return
 
         user_stories = db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
@@ -381,12 +377,12 @@ def epic_progress(ctx, epic_id, format):
                     "open_defects": open_defects,
                 },
             }
-            console.print(json.dumps(data, indent=2, default=str))
+            click.echo(json.dumps(data, indent=2, default=str))
         else:
-            console.print(f"\n[bold cyan]Epic Progress Report: {epic_id}[/bold cyan]")
-            console.print(f"[white]Title: {epic.title}[/white]")
-            console.print(f"[white]Status: {epic.status}[/white]")
-            console.print(f"[white]Priority: {epic.priority}[/white]\n")
+            click.echo(f"\nEpic Progress Report: {epic_id}")
+            click.echo(f"Title: {epic.title}")
+            click.echo(f"Status: {epic.status}")
+            click.echo(f"Priority: {epic.priority}\n")
 
             # Progress metrics table
             metrics_table = Table(title="Progress Metrics")
@@ -485,14 +481,12 @@ def export(ctx, output, format, include_tests):
                 json.dump(data, f, indent=2, default=str)
         elif format == "markdown":
             # TODO: Implement markdown export format
-            console.print("[yellow]Markdown export not yet implemented[/yellow]")
+            click.echo("Markdown export not yet implemented")
             return
 
-        console.print(f"[green]Exported RTM data to {output}[/green]")
+        click.echo(f"Exported RTM data to {output}")
         if ctx.obj["verbose"]:
-            console.print(
-                f"Exported {len(data['epics'])} epics, {len(data['user_stories'])} user stories"
-            )
+            click.echo(f"Exported {len(data['epics'])} epics, {len(data['user_stories'])} user stories")
 
     finally:
         db.close()

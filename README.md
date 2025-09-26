@@ -171,18 +171,20 @@ pytest tests/ -v
 
 ### 🔍 Phase 3: Quality Assurance & Logging
 
-#### **Enhanced Test Execution with Structured Logging**
+#### **Enhanced Test Execution with Automatic Logging & Failure Tagging**
 ```bash
-# Run tests with automatic structured logging
-pytest tests/ -v  # Creates quality/logs/test_execution.log
+# Run tests with automatic structured logging and failure tagging
+pytest tests/unit/ -v          # Creates quality/logs/pytest_unit_output_TIMESTAMP.log
+pytest tests/integration/ -v   # Creates quality/logs/pytest_integration_output_TIMESTAMP.log
+pytest tests/security/ -v      # Creates quality/logs/pytest_security_output_TIMESTAMP.log
+pytest tests/ -v               # Creates quality/logs/pytest_all_output_TIMESTAMP.log
 
-# Enhanced execution modes
-pytest --mode=silent --type=all     # All tests, minimal output
-pytest --mode=verbose --type=unit   # Unit tests with detail
-pytest --mode=detailed --type=integration  # Full debugging
+# All test runs automatically create:
+# 1. Raw log: pytest_TYPE_output_TIMESTAMP.log
+# 2. Processed log: processed_pytest_TYPE_output_TIMESTAMP.log (with failure tags)
 ```
 
-#### **Interactive Test Reports & Analysis**
+#### **Interactive Test Reports & Failure Analysis**
 ```bash
 # Generate comprehensive HTML report from test logs
 python tools/report_generator.py --input quality/logs/
@@ -195,6 +197,10 @@ python tools/failure_tracking_demo.py
 # Generate log-failure correlation analysis
 python tools/log_correlation_demo.py
 # View: quality/reports/log_correlation_report.json
+
+# Quick failure navigation in processed logs
+grep "FAILED TEST NO-" quality/logs/processed_*.log  # Find all tagged failures
+head -50 quality/logs/processed_*.log               # View failure summary
 ```
 
 #### **Quality Gates (MANDATORY)**
@@ -353,7 +359,8 @@ git push origin main
 - **BDD Framework**: pytest-bdd with Gherkin feature files
 - **Unit Testing**: pytest with comprehensive fixtures
 - **Coverage**: pytest-cov with HTML/JSON/terminal reporting
-- **Test Logging**: Structured JSON logging with failure tracking
+- **Test Logging**: Automatic structured logging with numbered failure tagging ([FAILED TEST NO-X])
+- **Failure Navigation**: Processed logs with tagged failures for easy debugging
 - **Quality Tools**: black, isort, flake8, mypy for code quality
 - **Security Testing**: GDPR compliance and security test suites
 
@@ -427,10 +434,14 @@ git push origin main
 ### **🛠️ Common Commands**
 ```bash
 # Development workflow
-pytest tests/ -v                                    # Run tests with logging
+pytest tests/ -v                                    # Run tests with automatic logging & failure tagging
 python tools/report_generator.py --input quality/logs/  # Generate reports
 python tools/github_sync_manager.py --epic EP-00001     # Sync RTM data
 black src/ tests/ && isort src/ tests/             # Format code
+
+# Quick failure investigation
+grep "FAILED TEST NO-" quality/logs/processed_*.log     # Find tagged failures
+head -50 quality/logs/processed_*.log                   # View failure summary
 ```
 
 ## 🏆 Project Capabilities Summary
@@ -455,9 +466,10 @@ GoNoGo represents a **comprehensive, enterprise-grade development framework** th
 
 **✅ Testing & Quality Excellence**
 - Comprehensive BDD framework with pytest-bdd integration
-- Structured test logging with JSON output and automated analysis
+- Automatic structured test logging with numbered failure tagging ([FAILED TEST NO-X])
 - Interactive HTML reports with filtering and timeline visualization
 - Failure pattern recognition with automated GitHub issue creation
+- Processed logs with tagged failures for instant navigation and debugging
 - Test archive management with intelligent retention policies
 - GDPR compliance testing integrated into CI pipeline
 

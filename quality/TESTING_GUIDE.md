@@ -6,8 +6,10 @@
 
 ### **Daily Development Testing**
 ```bash
-# Quick unit tests (most frequent)
+# Quick unit tests (most frequent) - Automatic logging with failure tagging
 pytest tests/unit/ -v
+# Creates: quality/logs/pytest_unit_output_TIMESTAMP.log
+# Creates: quality/logs/processed_pytest_unit_output_TIMESTAMP.log (with [FAILED TEST NO-X] tags)
 
 # Unit tests with defect tracking
 python tools/test-db-integration.py run tests --auto-defects --test-type unit
@@ -97,21 +99,81 @@ wmic process where "name='python.exe' and commandline like '%uvicorn%'" get proc
 
 ### 🔄 **1. Daily Development Cycle**
 
-#### **Quick Testing by Type (No RTM Integration)**
+#### **Quick Testing by Type (Automatic Logging)**
+
+**Note:** All pytest commands now automatically:
+- Save output to `quality/logs/pytest_TYPE_output_TIMESTAMP.log`
+- Create processed log with failures first: `processed_pytest_TYPE_output_TIMESTAMP.log`
+- Display clean output on screen
+
 ```bash
-# Fast unit tests - development feedback
-pytest tests/unit/ -v
+# Fast unit tests - development feedback (automatically logged)
+python -m pytest tests/unit/ -v
 pytest tests/unit/test_specific_file.py -v
 pytest tests/unit/test_specific_file.py::test_specific_function -v
 
-# Integration tests - service interactions
-pytest tests/integration/ -v
+# Integration tests - service interactions (automatically logged)
+python -m pytest tests/integration/ -v
 
-# Security tests - GDPR, auth, validation
-pytest tests/security/ -v
+# Security tests - GDPR, auth, validation (automatically logged)
+python -m pytest tests/security/ -v
 
-# E2E tests - full user workflows
-pytest tests/e2e/ -v
+# E2E tests - full user workflows (automatically logged)
+python -m pytest tests/e2e/ -v
+```
+
+**📊 Automatic Logging & Failure Tagging System:**
+All pytest commands automatically create structured logs with failure tagging:
+```bash
+# Every pytest run automatically creates TWO log files:
+# 1. Raw log: quality/logs/pytest_TYPE_output_TIMESTAMP.log
+# 2. Processed log: quality/logs/processed_pytest_TYPE_output_TIMESTAMP.log
+
+# Examples:
+pytest tests/unit/ -v       # → pytest_unit_output_20250926_183348.log
+pytest tests/integration/ -v # → pytest_integration_output_20250926_183348.log
+pytest tests/security/ -v   # → pytest_security_output_20250926_183348.log
+
+# Quick failure navigation:
+grep "FAILED TEST NO-" quality/logs/processed_*.log  # Find all tagged failures
+head -50 quality/logs/processed_*.log               # View failure summary
+```
+
+### **🏷️ Failure Tagging System**
+
+When tests fail, the system automatically creates numbered tags for easy navigation:
+
+**Processed Log Structure:**
+```bash
+# Summary section with numbered failures:
+[FAILED TEST NO-1] tests/unit/backend/tools/test_rtm_db_cli.py::TestRTMDatabaseCLI::test_query_epics_json_format
+[FAILED TEST NO-2] tests/unit/backend/tools/test_rtm_db_cli.py::TestRTMDatabaseCLI::test_epic_progress_not_found
+
+# Detailed sections with matching tags:
+================================================================================
+[FAILED TEST NO-1] TestRTMDatabaseCLI.test_query_epics_json_format
+================================================================================
+# ... detailed stack trace ...
+
+================================================================================
+[FAILED TEST NO-2] TestRTMDatabaseCLI.test_epic_progress_not_found
+================================================================================
+# ... detailed stack trace ...
+```
+
+**Quick Navigation Commands:**
+```bash
+# Find specific failure
+grep "FAILED TEST NO-1" quality/logs/processed_*.log
+
+# List all failures
+grep "FAILED TEST NO-" quality/logs/processed_*.log
+
+# View failure summary (first 50 lines show overview)
+head -50 quality/logs/processed_*.log
+
+# Reference specific failures in discussions
+# Example: "See [FAILED TEST NO-3] for the authentication issue"
 ```
 
 #### **Testing by Codebase Components (No RTM Integration)**
@@ -514,14 +576,14 @@ class TestGDPRCompliance:
 ### **Quick Reference: Marker Placement**
 
 ```python
-# ✅ RECOMMENDED: Class-level for shared properties
+# RECOMMENDED: Class-level for shared properties
 @pytest.mark.epic("EP-XXXXX")           # CLASS: Same epic for all tests
 @pytest.mark.user_story("US-XXXXX")     # CLASS: Same user story
 @pytest.mark.test_type("integration")   # CLASS: All are integration tests
 @pytest.mark.component("backend")       # CLASS: All test backend
 class TestSuite:
 
-    # ✅ Method-level for specific properties
+    # Method-level for specific properties
     @pytest.mark.priority("critical")        # METHOD: This test is critical
     @pytest.mark.test_category("smoke")      # METHOD: This is a smoke test
     def test_critical_feature(self):
@@ -532,7 +594,7 @@ class TestSuite:
     def test_edge_case(self):
         pass
 
-# ❌ AVOID: Repeating same markers on every method
+# AVOID: Repeating same markers on every method
 class TestSuite:
     @pytest.mark.epic("EP-XXXXX")           # Repetitive
     @pytest.mark.user_story("US-XXXXX")     # Repetitive
@@ -728,6 +790,115 @@ start quality/reports/dynamic_rtm/rtm_matrix_complete.html  # Windows
 open quality/reports/dynamic_rtm/rtm_matrix_complete.html   # macOS
 ```
 
+### **📝 Test Output Logging**
+
+Save detailed test output to `quality/logs/` for later review and debugging.
+
+#### **Automatic Logging (Recommended) - NEW SYSTEM**
+```bash
+# Simple commands with automatic logging and failure tagging
+pytest tests/unit/shared/models/test_epic_model.py -v  # Auto-creates logs with timestamps
+pytest tests/unit/ -v                                  # Auto-creates logs with timestamps
+pytest -k "cache" -v                                  # Auto-creates logs with timestamps
+
+# All commands automatically create:
+# 1. quality/logs/pytest_TYPE_output_TIMESTAMP.log (raw log)
+# 2. quality/logs/processed_pytest_TYPE_output_TIMESTAMP.log (with [FAILED TEST NO-X] tags)
+```
+
+#### **Manual Logging (Legacy - Only if Needed)**
+```bash
+# Only use if you need custom file names
+python -m pytest tests/unit/shared/models/test_epic_model.py -v 2>&1 | tee quality/logs/test_output_$(date +%Y%m%d_%H%M%S).log
+python -m pytest tests/unit/ -v 2>&1 | tee quality/logs/all_unit_tests_$(date +%Y%m%d_%H%M%S).log
+python -m pytest -k "cache" -v 2>&1 | tee quality/logs/cache_tests_$(date +%Y%m%d_%H%M%S).log
+```
+
+#### **Only Save to File (Silent)**
+```bash
+# Save to file without screen output
+python -m pytest tests/unit/shared/models/test_epic_model.py -v > quality/logs/test_output_$(date +%Y%m%d_%H%M%S).log 2>&1
+```
+
+#### **Windows-Compatible (if date command doesn't work)**
+```bash
+# Fixed filename approach
+python -m pytest tests/unit/shared/models/test_epic_model.py -v 2>&1 | tee quality/logs/test_output_20250926.log
+```
+
+#### **View Saved Test Logs**
+```bash
+# View complete log file
+cat quality/logs/test_output_20250926.log
+
+# View only test results (PASSED/FAILED)
+grep -A 10 -B 5 "PASSED\|FAILED" quality/logs/test_output_20250926.log
+
+# List all test log files
+ls -la quality/logs/test_*.log
+
+# View latest test log
+ls -t quality/logs/test_*.log | head -1 | xargs cat
+```
+
+#### **📋 Post-Process Logs (Put Failures First)**
+
+**Process any test log to show failures and stack traces at the top:**
+```bash
+# Process a specific log file
+python tools/process_test_logs.py quality/logs/unit_tests_20250926.log
+
+# Process with custom output name
+python tools/process_test_logs.py quality/logs/unit_tests_20250926.log --output quality/logs/failures_first.log
+
+# Process the latest test log automatically
+python tools/process_test_logs.py $(ls -t quality/logs/test_*.log | head -1)
+```
+
+**What the post-processor does:**
+- **Extracts all failed tests** and lists them at the top
+- **Includes complete stack traces** for each failure
+- **Provides failure summary** with count and test names
+- **Preserves original log** at the bottom for complete reference
+- **Creates timestamped processed file** (e.g., `processed_unit_tests_20250926.log`)
+
+**Quick failure review:**
+```bash
+# View just the failure summary (first 50 lines)
+head -50 quality/logs/processed_unit_tests_20250926.log
+
+# View all failures and their stack traces
+head -200 quality/logs/processed_unit_tests_20250926.log
+```
+
+**View automatically processed logs:**
+```bash
+# View latest processed unit test log (failures first)
+head -50 $(ls -t quality/logs/processed_pytest_unit_output_*.log | head -1)
+
+# View latest processed security test log
+head -50 $(ls -t quality/logs/processed_pytest_security_output_*.log | head -1)
+
+# List all processed logs (these are created automatically)
+ls -la quality/logs/processed_pytest_*_output_*.log
+
+# List raw logs (these are also created automatically)
+ls -la quality/logs/pytest_*_output_*.log
+
+# Manual processing (usually not needed since it's automatic)
+python tools/process_test_logs.py quality/logs/pytest_unit_output_TIMESTAMP.log
+```
+
+#### **What's Included in Test Logs**
+- Test discovery and collection details
+- Individual test results (PASSED/FAILED/SKIPPED)
+- Complete coverage reports
+- All warnings and deprecation notices
+- Full stack traces for failures
+- Performance and timing information
+- Database migration outputs
+- Plugin and configuration details
+
 ### **Database Queries**
 ```bash
 # View test execution status
@@ -876,18 +1047,32 @@ python tools/rtm_report_generator.py --html
 ## 🎯 **Recommended Daily Workflows**
 
 ### **👨‍💻 Developer Workflow**
+
+**📋 Screen Output Only (Quick Feedback):**
 ```bash
-# 1. Start of day - quick health check
+# 1. Start of day - quick health check (screen only)
 pytest tests/unit/ -v
 
-# 2. During development - frequent unit testing
+# 2. During development - frequent unit testing (screen only)
 pytest --auto-defects tests/unit/your_module/ -v
 
-# 3. Before committing - integration check
+# 3. Before committing - integration check (screen only)
 pytest --auto-defects tests/integration/ -v
 
-# 4. Before push - full suite
+# 4. Before push - full suite (screen only)
 pytest --sync-tests --link-scenarios --auto-defects tests/ -v
+```
+
+**💾 With Saved Output (Documentation & Debugging):**
+```bash
+# 1. Start of day - health check with log
+python -m pytest tests/unit/ -v 2>&1 | tee quality/logs/daily_health_check_$(date +%Y%m%d_%H%M%S).log
+
+# 2. Before committing - save integration results
+python -m pytest --auto-defects tests/integration/ -v 2>&1 | tee quality/logs/pre_commit_$(date +%Y%m%d_%H%M%S).log
+
+# 3. Before push - full suite with complete log
+python -m pytest --sync-tests --link-scenarios --auto-defects tests/ -v 2>&1 | tee quality/logs/full_suite_$(date +%Y%m%d_%H%M%S).log
 ```
 
 ### **🔍 QA Testing Workflow**
@@ -939,16 +1124,36 @@ python tools/github_issue_creation_demo.py
 
 ## 🎯 **TL;DR - Most Important Commands**
 
+### **Quick Testing (Screen Output Only)**
 ```bash
-# Daily development
+# Daily development - quick feedback
 pytest --auto-defects tests/unit/ -v
 
-# Before committing
+# Before committing - verify functionality
 pytest --sync-tests --link-scenarios --auto-defects tests/ -v
+```
 
-# Quality reports
+### **Testing with Saved Logs (Recommended for Documentation)**
+```bash
+# Daily development with logs
+python -m pytest --auto-defects tests/unit/ -v 2>&1 | tee quality/logs/daily_$(date +%Y%m%d_%H%M%S).log
+
+# Before committing with full logs
+python -m pytest --sync-tests --link-scenarios --auto-defects tests/ -v 2>&1 | tee quality/logs/commit_$(date +%Y%m%d_%H%M%S).log
+
+# For Windows (if date doesn't work)
+python -m pytest tests/unit/ -v 2>&1 | tee quality/logs/test_output_$(date +%Y%m%d).log
+```
+
+### **Quality Reports & Analysis**
+```bash
+# Generate reports from logs
 python tools/report_generator.py --input quality/logs/test_execution.log
 python tools/rtm_report_generator.py --html
+
+# View saved test logs
+ls -la quality/logs/test_*.log
+cat quality/logs/daily_20250926_*.log
 
 # Defect management
 python tools/github_issue_creation_demo.py --dry-run

@@ -320,17 +320,25 @@ class TestRTMDatabaseCLI:
         """Test querying User Stories filtered by Epic."""
         mock_get_db.return_value = self.mock_db
 
-        # Mock epic lookup and user story query
-        mock_query = Mock()
+        # Mock epic lookup query for epic-id filtering
+        mock_epic_query = Mock()
+        mock_epic_query.filter.return_value.first.return_value = self.mock_epic
+
+        # Mock user story query
+        mock_us_query = Mock()
+        mock_us_query.filter.return_value = mock_us_query
+        mock_us_query.all.return_value = [self.mock_user_story]
+
+        # Mock epic lookup query for display (inside the loop)
+        mock_epic_display_query = Mock()
+        mock_epic_display_query.filter.return_value.first.return_value = self.mock_epic
+
+        # Set up query side effects in order
         self.mock_db.query.side_effect = [
-            Mock(),
-            mock_query,
-        ]  # Epic query, UserStory query
-        self.mock_db.query.return_value.filter.return_value.first.return_value = (
-            self.mock_epic
-        )
-        mock_query.filter.return_value = mock_query
-        mock_query.all.return_value = [self.mock_user_story]
+            mock_us_query,              # UserStory query (first call)
+            mock_epic_query,            # Epic lookup by epic_id (second call)
+            mock_epic_display_query,    # Epic lookup by id for display (third call, inside loop)
+        ]
 
         result = self.runner.invoke(
             rtm_db_cli.cli, ["query", "user-stories", "--epic-id", "EP-00005"]
@@ -430,8 +438,12 @@ class TestRTMDatabaseCLI:
                 assert "defects" in data
                 assert "export_timestamp" in data
 
-            # Cleanup
-            tmp_path.unlink()
+            # Cleanup (Windows-safe)
+            try:
+                tmp_path.unlink()
+            except PermissionError:
+                # Windows sometimes holds file handles, ignore cleanup errors
+                pass
 
     @patch("rtm_db_cli.get_db_session")
     @pytest.mark.epic("EP-00005", "EP-99999")
