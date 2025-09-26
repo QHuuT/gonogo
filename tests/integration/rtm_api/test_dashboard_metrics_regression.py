@@ -41,9 +41,6 @@ app.dependency_overrides[get_db] = override_get_db
 
 
 @pytest.fixture(scope="function")
-@pytest.mark.epic("EP-00010")
-@pytest.mark.user_story("US-00071")
-@pytest.mark.component("backend")
 def test_db():
     """Create test database tables and clean up after each test."""
     Base.metadata.create_all(bind=test_engine)

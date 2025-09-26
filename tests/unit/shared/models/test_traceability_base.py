@@ -37,8 +37,6 @@ def db_session():
 
 
 @pytest.fixture
-@pytest.mark.epic("EP-00005")
-@pytest.mark.user_story("US-00052")
 def test_entity():
     """Create a test entity instance."""
     return TestEntity(

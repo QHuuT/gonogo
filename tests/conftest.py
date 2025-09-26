@@ -63,6 +63,12 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "bdd: marks tests as BDD scenarios"
     )
+    config.addinivalue_line(
+        "markers", "integration: marks tests as integration tests"
+    )
+    config.addinivalue_line(
+        "markers", "test_category(category): categorizes tests by specific category (smoke, performance, etc.)"
+    )
 
 
 @pytest.fixture(scope="session")
