@@ -2,8 +2,14 @@
 """
 Test Log Post-Processor
 
-Processes test log files to extract failures and stack traces,
+Processes test log files to extract and prioritize failures, errors, and warnings,
 placing them at the top for easy review.
+
+Processing order:
+1. Test failures (highest priority)
+2. Errors (second priority)
+3. Warnings (third priority)
+4. Complete original log
 
 Usage:
     python tools/process_test_logs.py quality/logs/unit_tests_20250926.log
@@ -116,20 +122,21 @@ def add_failure_tags(failure_lines, failed_tests):
     return '\n'.join(tagged_lines)
 
 
-def create_summary_header(failed_tests, total_tests_info):
+def create_summary_header(failed_tests, errors, warnings, total_tests_info):
     """Create a summary header for the processed log."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     header = f"""
 {'='*80}
-TEST FAILURE SUMMARY - PROCESSED LOG
+TEST LOG ANALYSIS - PROCESSED LOG
 Generated: {timestamp}
 {'='*80}
 
-FAILED TESTS OVERVIEW:
+ISSUES OVERVIEW:
 {'-'*50}
 """
 
+    # Failures section
     if failed_tests:
         header += f"[FAILED] {len(failed_tests)} test(s) failed:\n\n"
         for i, (line_num, test_line) in enumerate(failed_tests, 1):
@@ -144,11 +151,326 @@ FAILED TESTS OVERVIEW:
 
     header += f"\n{'-'*50}\n"
 
+    # Errors section
+    if errors:
+        total_errors = sum(group['count'] for group in errors)
+        header += f"[ERRORS] {len(errors)} error group(s), {total_errors} total error(s) found:\n\n"
+        for i, error_group in enumerate(errors, 1):
+            count_text = f" ({error_group['count']} occurrences)" if error_group['count'] > 1 else ""
+            error_summary = error_group['message'][:60] + "..." if len(error_group['message']) > 60 else error_group['message']
+            header += f"[ERROR GROUP NO-{i}] {error_group['type']}{count_text}: {error_summary}\n"
+    else:
+        header += "[SUCCESS] No errors found!\n"
+
+    header += f"\n{'-'*50}\n"
+
+    # Warnings section
+    if warnings:
+        total_warnings = sum(group['count'] for group in warnings)
+        header += f"[WARNINGS] {len(warnings)} warning group(s), {total_warnings} total warning(s) found:\n\n"
+        for i, warning_group in enumerate(warnings, 1):
+            count_text = f" ({warning_group['count']} occurrences)" if warning_group['count'] > 1 else ""
+            warning_summary = warning_group['message'][:60] + "..." if len(warning_group['message']) > 60 else warning_group['message']
+            header += f"[WARNING GROUP NO-{i}] {warning_group['type']}{count_text}: {warning_summary}\n"
+    else:
+        header += "[SUCCESS] No warnings found!\n"
+
+    header += f"\n{'-'*50}\n"
+
     # Add test summary if available
     if total_tests_info:
         header += f"EXECUTION SUMMARY:\n{total_tests_info}\n{'-'*50}\n"
 
     return header
+
+
+def extract_errors_and_warnings(log_content):
+    """Extract and group errors and warnings from the log content with smart grouping."""
+    lines = log_content.split('\n')
+
+    # Extract pytest warning summary counts
+    warning_groups = extract_pytest_warning_groups(log_content)
+
+    # Extract individual errors with grouping
+    error_groups = extract_and_group_errors(lines)
+
+    return error_groups, warning_groups
+
+
+def extract_pytest_warning_groups(log_content):
+    """Extract warning groups from pytest warnings summary with counts."""
+    lines = log_content.split('\n')
+    warning_groups = {}
+
+    # Find warnings summary section
+    in_warnings_section = False
+    warning_counts = {}
+
+    for i, line in enumerate(lines):
+        # Start of warnings summary
+        if "warnings summary" in line:
+            in_warnings_section = True
+            continue
+
+        # End of warnings summary (next section starts)
+        if in_warnings_section and line.startswith("===="):
+            break
+
+        if in_warnings_section:
+            # Parse aggregated warning counts per file
+            if " warnings" in line and ": " in line:
+                # e.g., "tests/unit/security/test_gdpr_compliance.py: 28 warnings"
+                match = re.search(r'(.+?):\s+(\d+)\s+warnings?', line)
+                if match:
+                    file_path = match.group(1).strip()
+                    count = int(match.group(2))
+                    warning_counts[file_path] = warning_counts.get(file_path, 0) + count
+
+            # Parse warning details and group by type
+            elif "Warning:" in line or "warning" in line.lower():
+                warning_type = extract_warning_type(line)
+                if warning_type:
+                    if warning_type not in warning_groups:
+                        warning_groups[warning_type] = {
+                            'type': warning_type,
+                            'message': extract_warning_message(line),
+                            'locations': [],
+                            'count': 0
+                        }
+
+                    # Add location if we can extract it
+                    location = extract_location_from_line(line, lines, i)
+                    if location:
+                        warning_groups[warning_type]['locations'].append(location)
+
+    # Calculate total counts for each warning type
+    for warning_type, group in warning_groups.items():
+        # Estimate count based on similar patterns in the log
+        group['count'] = estimate_warning_count(warning_type, log_content, warning_counts)
+
+    return list(warning_groups.values())
+
+
+def extract_and_group_errors(lines):
+    """Extract and group errors by type."""
+    error_groups = {}
+
+    # Common error patterns with grouping keys - more precise to avoid false positives
+    error_patterns = [
+        (r'AssertionError:\s*(.+)', 'AssertionError'),
+        (r'PermissionError:\s*(.+)', 'PermissionError'),
+        (r'ImportError:\s*(.+)', 'ImportError'),
+        (r'AttributeError:\s*(.+)', 'AttributeError'),
+        (r'KeyError:\s*(.+)', 'KeyError'),
+        (r'ValueError:\s*(.+)', 'ValueError'),
+        (r'TypeError:\s*(.+)', 'TypeError'),
+        (r'ConnectionError:\s*(.+)', 'ConnectionError'),
+        (r'FileNotFoundError:\s*(.+)', 'FileNotFoundError'),
+        (r'Exception:\s*(.+)', 'Exception'),
+        # More specific ERROR patterns to avoid false positives
+        (r'ERROR\s+at\s+(.+)', 'ERROR'),
+        (r'ERROR:\s+(.+)', 'ERROR'),
+        (r'FAILED\s+[^P](.+)', 'FAILED'),  # Exclude "FAILED PASSED" which is not an error
+        # Generic error pattern - be more restrictive
+        (r'(\w+Error):\s*(.+)', 'GenericError')
+    ]
+
+    for i, line in enumerate(lines):
+        line_stripped = line.strip()
+        if not line_stripped:
+            continue
+
+        # Skip pytest progress indicators and other false positives
+        if any(skip_pattern in line_stripped for skip_pattern in [
+            'PASSED [', 'FAILED [', 'SKIPPED [',  # pytest progress indicators
+            '% passed', '% failed', '% skipped',   # percentage indicators
+            'warnings summary',                     # section headers
+            '====', '----'                         # separators
+        ]):
+            continue
+
+        for pattern, error_type in error_patterns:
+            match = re.search(pattern, line_stripped, re.IGNORECASE)
+            if match:
+                error_message = match.group(1).strip()
+
+                # Create group key based on error type and similar message
+                group_key = create_error_group_key(error_type, error_message)
+
+                if group_key not in error_groups:
+                    error_groups[group_key] = {
+                        'type': error_type,
+                        'message': normalize_error_message(error_message),
+                        'locations': [],
+                        'count': 0
+                    }
+
+                # Add location
+                location = f"Line {i + 1}"
+                file_location = extract_file_from_error_context(lines, i)
+                if file_location:
+                    location = f"{file_location}:{i + 1}"
+
+                error_groups[group_key]['locations'].append(location)
+                error_groups[group_key]['count'] += 1
+                break
+
+    return list(error_groups.values())
+
+
+def extract_warning_type(line):
+    """Extract warning type from a warning line."""
+    warning_types = [
+        'DeprecationWarning', 'UserWarning', 'FutureWarning', 'PendingDeprecationWarning',
+        'RuntimeWarning', 'SyntaxWarning', 'ImportWarning', 'ResourceWarning',
+        'PytestDeprecationWarning', 'PytestUnknownMarkWarning', 'PytestCollectionWarning',
+        'MovedIn20Warning', 'PydanticDeprecatedSince20', 'LegacyAPIWarning'
+    ]
+
+    for warning_type in warning_types:
+        if warning_type in line:
+            return warning_type
+
+    if "Warning" in line:
+        return "Warning"
+
+    return None
+
+
+def extract_warning_message(line):
+    """Extract the core warning message."""
+    # Remove file paths and line numbers, keep the essential message
+    if ":" in line:
+        parts = line.split(":")
+        for part in reversed(parts):
+            if len(part.strip()) > 20 and not part.strip().isdigit():
+                return part.strip()[:100] + "..."
+
+    return line.strip()[:100] + "..."
+
+
+def extract_location_from_line(line, lines, index):
+    """Extract file location from warning line or context."""
+    # Look for file paths in the line or nearby lines
+    file_patterns = [
+        r'([A-Za-z]:[\\\/].+\.py):\d+',
+        r'(tests[\\\/].+\.py):\d+',
+        r'(src[\\\/].+\.py):\d+',
+        r'([\\\/].+\.py):\d+'
+    ]
+
+    # Check current line and a few lines before
+    for check_line in lines[max(0, index-2):index+1]:
+        for pattern in file_patterns:
+            match = re.search(pattern, check_line)
+            if match:
+                return match.group(1)
+
+    return f"Line {index + 1}"
+
+
+def estimate_warning_count(warning_type, log_content, warning_counts):
+    """Estimate the count of warnings based on file counts and content analysis."""
+    # Sum up counts from files that likely contain this warning type
+    total_count = 0
+
+    # Count occurrences of the warning type in the content
+    type_occurrences = log_content.count(warning_type)
+
+    if type_occurrences > 0:
+        # Use actual count if we can determine it
+        total_count = type_occurrences
+    else:
+        # Estimate based on file warning counts
+        total_count = sum(warning_counts.values()) // len(warning_counts) if warning_counts else 1
+
+    return max(1, total_count)
+
+
+def create_error_group_key(error_type, message):
+    """Create a grouping key for similar errors."""
+    # Normalize the message for grouping
+    normalized = re.sub(r'\d+', 'N', message)  # Replace numbers
+    normalized = re.sub(r'[\'"][^\'\"]*[\'"]', 'STRING', normalized)  # Replace strings
+    normalized = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', 'EMAIL', normalized)  # Replace emails
+    normalized = re.sub(r'\b(?:\d{1,3}\.){3}\d{1,3}\b', 'IP', normalized)  # Replace IPs
+
+    return f"{error_type}:{normalized[:50]}"
+
+
+def normalize_error_message(message):
+    """Normalize error message for display."""
+    if len(message) > 100:
+        return message[:100] + "..."
+    return message
+
+
+def extract_file_from_error_context(lines, index):
+    """Extract file path from error context."""
+    # Look for file paths in nearby lines
+    for i in range(max(0, index-5), min(len(lines), index+3)):
+        line = lines[i]
+        if ".py:" in line and ("tests/" in line or "src/" in line):
+            match = re.search(r'([^\s]+\.py)', line)
+            if match:
+                return match.group(1)
+    return None
+
+
+def format_errors_section(error_groups):
+    """Format the errors section with grouped errors and numbered tags."""
+    if not error_groups:
+        return ""
+
+    total_errors = sum(group['count'] for group in error_groups)
+    section = f"\n{'='*80}\n"
+    section += f"ERROR DETAILS ({len(error_groups)} error group(s), {total_errors} total error(s) found):\n"
+    section += f"{'='*80}\n\n"
+
+    for i, group in enumerate(error_groups, 1):
+        count_text = f" ({group['count']} occurrence{'s' if group['count'] > 1 else ''})" if group['count'] > 1 else ""
+        section += f"[ERROR GROUP NO-{i}] {group['type']}{count_text}\n"
+        section += f"{'='*60}\n"
+        section += f"Message: {group['message']}\n"
+
+        if group['locations']:
+            section += f"Locations:\n"
+            for location in group['locations'][:5]:  # Show up to 5 locations
+                section += f"  - {location}\n"
+            if len(group['locations']) > 5:
+                section += f"  ... and {len(group['locations']) - 5} more locations\n"
+
+        section += f"{'='*60}\n\n"
+
+    return section
+
+
+def format_warnings_section(warning_groups):
+    """Format the warnings section with grouped warnings and numbered tags."""
+    if not warning_groups:
+        return ""
+
+    total_warnings = sum(group['count'] for group in warning_groups)
+    section = f"\n{'='*80}\n"
+    section += f"WARNING DETAILS ({len(warning_groups)} warning group(s), {total_warnings} total warning(s) found):\n"
+    section += f"{'='*80}\n\n"
+
+    for i, group in enumerate(warning_groups, 1):
+        count_text = f" ({group['count']} occurrence{'s' if group['count'] > 1 else ''})" if group['count'] > 1 else ""
+        section += f"[WARNING GROUP NO-{i}] {group['type']}{count_text}\n"
+        section += f"{'='*60}\n"
+        section += f"Message: {group['message']}\n"
+
+        if group['locations']:
+            section += f"Locations:\n"
+            for location in group['locations'][:5]:  # Show up to 5 locations
+                section += f"  - {location}\n"
+            if len(group['locations']) > 5:
+                section += f"  ... and {len(group['locations']) - 5} more locations\n"
+
+        section += f"{'='*60}\n\n"
+
+    return section
 
 
 def extract_test_summary(log_content):
@@ -171,7 +493,7 @@ def extract_test_summary(log_content):
 
 
 def process_log_file(input_file, output_file=None):
-    """Process the test log file to prioritize failures."""
+    """Process the test log file to prioritize failures, errors, and warnings."""
 
     # Read the original log file with multiple encoding attempts
     original_content = None
@@ -193,27 +515,36 @@ def process_log_file(input_file, output_file=None):
         print(f"[ERROR] Could not read {input_file} with any supported encoding")
         return False
 
-    # Extract failures and stack traces
+    # Extract failures, errors, warnings and stack traces
     failed_tests, failure_details = extract_failures_and_traces(original_content)
+    errors, warnings = extract_errors_and_warnings(original_content)
     test_summary = extract_test_summary(original_content)
 
     # Create the processed content
-    header = create_summary_header(failed_tests, test_summary)
-
+    header = create_summary_header(failed_tests, errors, warnings, test_summary)
     processed_content = header
 
+    # Add failure details (highest priority)
     if failure_details:
         processed_content += f"\n{'='*80}\n"
         processed_content += "DETAILED FAILURE INFORMATION:\n"
         processed_content += f"{'='*80}\n\n"
         processed_content += failure_details
-        processed_content += f"\n\n{'='*80}\n"
-        processed_content += "COMPLETE ORIGINAL LOG:\n"
-        processed_content += f"{'='*80}\n\n"
-    else:
-        processed_content += f"\n{'='*80}\n"
-        processed_content += "COMPLETE ORIGINAL LOG:\n"
-        processed_content += f"{'='*80}\n\n"
+
+    # Add error details (second priority)
+    error_section = format_errors_section(errors)
+    if error_section:
+        processed_content += error_section
+
+    # Add warning details (third priority)
+    warning_section = format_warnings_section(warnings)
+    if warning_section:
+        processed_content += warning_section
+
+    # Add separator before original log
+    processed_content += f"\n{'='*80}\n"
+    processed_content += "COMPLETE ORIGINAL LOG:\n"
+    processed_content += f"{'='*80}\n\n"
 
     # Append the complete original log
     processed_content += original_content
@@ -230,11 +561,24 @@ def process_log_file(input_file, output_file=None):
 
         print(f"[SUCCESS] Processed log created: {output_file}")
 
+        # Report findings
         if failed_tests:
             print(f"[FAILURES] Found {len(failed_tests)} failed test(s)")
-            print(f"[INFO] Failures are now at the top of: {output_file}")
         else:
             print("[SUCCESS] No test failures found!")
+
+        if errors:
+            print(f"[ERRORS] Found {len(errors)} error(s)")
+        else:
+            print("[SUCCESS] No errors found!")
+
+        if warnings:
+            print(f"[WARNINGS] Found {len(warnings)} warning(s)")
+        else:
+            print("[SUCCESS] No warnings found!")
+
+        if failed_tests or errors or warnings:
+            print(f"[INFO] Issues are now prioritized at the top of: {output_file}")
 
         return True
 
@@ -245,7 +589,7 @@ def process_log_file(input_file, output_file=None):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Process test logs to prioritize failures and stack traces",
+        description="Process test logs to prioritize failures, errors, warnings, and stack traces",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
