@@ -854,7 +854,7 @@ def get_dashboard_data(db: Session = Depends(get_db)):
     # Recent activity (last 7 days)
     from datetime import datetime, timedelta
 
-    recent_date = datetime.utcnow() - timedelta(days=7)
+    recent_date = datetime.now(datetime.UTC) - timedelta(days=7)
 
     recent_tests = (
         db.query(Test).filter(Test.last_execution_time >= recent_date).count()
@@ -863,7 +863,7 @@ def get_dashboard_data(db: Session = Depends(get_db)):
     recent_defects = db.query(Defect).filter(Defect.created_at >= recent_date).count()
 
     return {
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(datetime.UTC).isoformat(),
         "epic_status": epic_status,
         "user_story_status": us_status,
         "test_execution": test_status,

@@ -13,7 +13,7 @@ Architecture Decision: ADR-003 - Hybrid GitHub + Database RTM Architecture
 import argparse
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -470,7 +470,7 @@ def export(ctx, output, format, include_tests):
             "epics": [epic.to_dict() for epic in db.query(Epic).all()],
             "user_stories": [us.to_dict() for us in db.query(UserStory).all()],
             "defects": [defect.to_dict() for defect in db.query(Defect).all()],
-            "export_timestamp": datetime.utcnow().isoformat(),
+            "export_timestamp": datetime.now(UTC).isoformat(),
         }
 
         if include_tests:

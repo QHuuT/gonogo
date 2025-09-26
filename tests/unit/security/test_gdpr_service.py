@@ -3,7 +3,7 @@ Unit tests for GDPR service.
 Testing pyramid: Unit tests (70% of total tests)
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 import pytest
 
@@ -166,13 +166,13 @@ class TestGDPRService:
 
         service = GDPRService(db_session)
 
-        before_creation = datetime.utcnow()
+        before_creation = datetime.now(UTC)
 
         request_id = service.create_data_subject_request(
             request_type=DataSubjectRights.ERASURE, contact_email="user@example.com"
         )
 
-        after_creation = datetime.utcnow()
+        after_creation = datetime.now(UTC)
 
         # Verify due date is set correctly
         from src.security.gdpr.models import DataSubjectRequest
@@ -244,7 +244,7 @@ class TestGDPRService:
         )
 
         # Set due date to yesterday
-        request.due_date = datetime.utcnow() - timedelta(days=1)
+        request.due_date = datetime.now(UTC) - timedelta(days=1)
         db_session.commit()
 
         # Check for overdue requests

@@ -13,7 +13,7 @@ import json
 import re
 import sqlite3
 from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -73,9 +73,9 @@ class TestFailure:
         if not self.error_hash:
             self.error_hash = self._generate_error_hash()
         if not self.first_seen:
-            self.first_seen = datetime.utcnow()
+            self.first_seen = datetime.now(UTC)
         if not self.last_seen:
-            self.last_seen = datetime.utcnow()
+            self.last_seen = datetime.now(UTC)
         if self.metadata is None:
             self.metadata = {}
 
@@ -349,7 +349,7 @@ class FailureTracker:
 
     def get_failure_statistics(self, days: int = 30) -> FailureStatistics:
         """Get statistical analysis of failures over specified period."""
-        since_date = (datetime.utcnow() - timedelta(days=days)).isoformat()
+        since_date = (datetime.now(UTC) - timedelta(days=days)).isoformat()
 
         with sqlite3.connect(self.db_path) as conn:
             # Total and unique failures
@@ -534,7 +534,7 @@ class FailureTracker:
 
     def cleanup_old_failures(self, days: int = 90):
         """Clean up old failure records to manage database size."""
-        cutoff_date = (datetime.utcnow() - timedelta(days=days)).isoformat()
+        cutoff_date = (datetime.now(UTC) - timedelta(days=days)).isoformat()
 
         with sqlite3.connect(self.db_path) as conn:
             deleted_count = conn.execute(
