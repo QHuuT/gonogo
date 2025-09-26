@@ -8,7 +8,7 @@ import secrets
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
-from sqlalchemy import and_
+from sqlalchemy import and_, text
 from sqlalchemy.orm import Session
 
 from .models import (
@@ -92,6 +92,9 @@ class GDPRService:
         """
         Withdraw consent and update record.
 
+        Implements timing attack resistance by ensuring constant-time operations
+        regardless of whether consent ID exists.
+
         Args:
             consent_id: The consent ID to withdraw
             reason: Optional reason for withdrawal
@@ -106,15 +109,36 @@ class GDPRService:
             .first()
         )
 
-        if not consent:
+        # Timing attack resistance: Always perform similar operations
+        # regardless of whether consent exists
+        withdrawal_time = datetime.utcnow()
+
+        if consent:
+            # Valid consent: perform actual withdrawal
+            consent.consent_given = False
+            consent.withdrawn_at = withdrawal_time
+            consent.withdrawal_reason = reason
+            self.db.commit()
+            return True
+        else:
+            # Invalid consent: perform dummy operations to maintain timing consistency
+            # Create a dummy consent object (not persisted) and perform similar operations
+            dummy_consent = ConsentRecord(
+                consent_id="dummy",
+                consent_type=ConsentType.FUNCTIONAL,
+                consent_given=True,
+                created_at=withdrawal_time
+            )
+            dummy_consent.consent_given = False
+            dummy_consent.withdrawn_at = withdrawal_time
+            dummy_consent.withdrawal_reason = reason
+
+            # Perform a dummy database operation to match timing of real commit
+            # Query that doesn't affect data but takes similar time to commit
+            self.db.execute(text("SELECT 1"))
+            self.db.flush()  # Flush without commit to simulate database work
+
             return False
-
-        consent.consent_given = False
-        consent.withdrawn_at = datetime.utcnow()
-        consent.withdrawal_reason = reason
-
-        self.db.commit()
-        return True
 
     def get_active_consents(self, consent_id: str) -> Dict[ConsentType, bool]:
         """

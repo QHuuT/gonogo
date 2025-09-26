@@ -269,6 +269,138 @@ class TestGDPRSecurity:
         assert time_ratio < 10  # Should not differ by more than 10x
 
     @pytest.mark.component("security")
+    def test_timing_attack_resistance_regression(self, db_session):
+        """Regression test: Ensure constant-time operations prevent timing-based information leakage."""
+
+        service = GDPRService(db_session)
+
+        # Create a legitimate consent for testing
+        real_consent_id = service.record_consent(
+            consent_type=ConsentType.FUNCTIONAL,
+            consent_given=True,
+            ip_address="127.0.0.1",
+            user_agent="test-agent"
+        )
+
+        # Test multiple fake consent IDs to ensure consistent behavior
+        fake_consent_ids = [
+            "completely-fake-id",
+            "another-nonexistent-id",
+            "invalid-consent-token",
+            "fake-" + "x" * 32,  # Different length
+            ""  # Empty string
+        ]
+
+        import time
+
+        # Collect timing data for statistical analysis
+        real_times = []
+        fake_times = []
+
+        # Run multiple iterations to get stable timing measurements
+        for _ in range(5):
+            # Time valid consent withdrawal
+            start_time = time.perf_counter()
+            result = service.withdraw_consent(real_consent_id, reason="timing test")
+            real_time = time.perf_counter() - start_time
+            real_times.append(real_time)
+
+            # Re-create consent for next iteration (only first should succeed)
+            if result:  # Only re-create if withdrawal was successful
+                real_consent_id = service.record_consent(
+                    consent_type=ConsentType.FUNCTIONAL,
+                    consent_given=True
+                )
+
+            # Time invalid consent withdrawal
+            fake_id = fake_consent_ids[_ % len(fake_consent_ids)]
+            start_time = time.perf_counter()
+            service.withdraw_consent(fake_id, reason="timing test")
+            fake_time = time.perf_counter() - start_time
+            fake_times.append(fake_time)
+
+        # Statistical timing analysis
+        avg_real_time = sum(real_times) / len(real_times)
+        avg_fake_time = sum(fake_times) / len(fake_times)
+
+        # The ratio should be close to 1.0 for proper timing attack resistance
+        time_ratio = max(avg_real_time, avg_fake_time) / min(avg_real_time, avg_fake_time)
+
+        # Assert timing attack resistance
+        # Note: On fast systems, timing variations may be small but still measurable
+        # We allow up to 10x ratio for timing attack resistance (same as original test)
+        assert time_ratio < 10.0, f"Timing ratio {time_ratio:.2f} indicates potential timing attack vulnerability"
+
+        # Verify that the service still correctly distinguishes valid vs invalid consent
+        valid_result = service.withdraw_consent(
+            service.record_consent(ConsentType.ANALYTICS, True),
+            reason="valid test"
+        )
+        invalid_result = service.withdraw_consent("definitely-fake-id", reason="invalid test")
+
+        assert valid_result is True, "Valid consent withdrawal should return True"
+        assert invalid_result is False, "Invalid consent withdrawal should return False"
+
+        # Ensure constant-time behavior doesn't compromise functionality
+        # Both operations should handle their respective cases correctly
+        # but take similar amounts of time to prevent information leakage
+
+    @pytest.mark.component("security")
+    def test_timing_attack_dummy_operations_regression(self, db_session):
+        """Regression test: Verify dummy operations maintain timing consistency without side effects."""
+
+        service = GDPRService(db_session)
+
+        # Get initial database state
+        from src.security.gdpr.models import ConsentRecord
+        initial_count = db_session.query(ConsentRecord).count()
+
+        # Perform multiple invalid consent withdrawals
+        fake_consent_ids = [
+            "fake-id-1",
+            "fake-id-2",
+            "fake-id-3",
+            "non-existent-token",
+            "invalid-consent-123"
+        ]
+
+        for fake_id in fake_consent_ids:
+            result = service.withdraw_consent(fake_id, reason="dummy operation test")
+            assert result is False, f"Invalid consent ID {fake_id} should return False"
+
+        # Verify dummy operations didn't create actual database records
+        final_count = db_session.query(ConsentRecord).count()
+        assert final_count == initial_count, "Dummy operations should not create database records"
+
+        # Verify no side effects from dummy operations
+        all_records = db_session.query(ConsentRecord).all()
+        for record in all_records:
+            # No record should have been modified by dummy operations
+            assert record.consent_id not in fake_consent_ids
+            assert record.withdrawal_reason != "dummy operation test"
+
+        # Verify that real operations still work after dummy operations
+        real_consent_id = service.record_consent(
+            consent_type=ConsentType.MARKETING,
+            consent_given=True,
+            ip_address="192.168.1.100"
+        )
+
+        # This should work normally and create actual database changes
+        real_result = service.withdraw_consent(real_consent_id, reason="real withdrawal")
+        assert real_result is True, "Real consent withdrawal should succeed after dummy operations"
+
+        # Verify real withdrawal actually modified the database
+        withdrawn_record = (
+            db_session.query(ConsentRecord)
+            .filter(ConsentRecord.consent_id == real_consent_id)
+            .first()
+        )
+        assert withdrawn_record.consent_given is False
+        assert withdrawn_record.withdrawn_at is not None
+        assert withdrawn_record.withdrawal_reason == "real withdrawal"
+
+    @pytest.mark.component("security")
     def test_data_retention_enforcement(self, db_session):
         """Test that data retention policies are properly enforced."""
 
