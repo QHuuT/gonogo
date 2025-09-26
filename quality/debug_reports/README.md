@@ -6,17 +6,21 @@ This folder contains detailed debug reports and analysis documentation for issue
 
 All debug reports should follow this naming pattern:
 ```
-[F-|W-]YYYYMMDD-short-descriptive-name.md
+[F-|E-|W-]YYYYMMDD-short-descriptive-name.md
 ```
 
 ### Prefixes
 - **F-** (Failure): System failures, critical errors, broken functionality, test failures
+- **E-** (Error): System errors, cleanup issues, teardown problems, environmental errors
 - **W-** (Warning): Performance issues, potential problems, non-critical issues, improvement opportunities
 
 **Examples:**
-- `F-20250926-cli-commands-rich-console-testability.md` (Test failures)
+- `F-20250926-cli-rich-console-testability.md` (Test failures)
+- `F-20250926-gdpr-consent-id-test-logic-flaw.md` (Test logic flaw)
+- `E-20250925-windows-file-cleanup-teardown-errors.md` (System cleanup errors)
 - `F-20250925-database-connection-timeout-analysis.md` (System failure)
 - `W-20250924-epic-model-performance-optimization.md` (Performance warning)
+- `E-20250923-pytest-teardown-permission-errors.md` (Environmental errors)
 - `F-20250923-api-500-error-regression-tests.md` (Critical failure)
 - `W-20250922-memory-usage-trends-analysis.md` (Resource warning)
 
@@ -68,6 +72,23 @@ Documentation of system outages and critical issues.
 - **F-** Authentication/authorization failures
 - **F-** Data corruption or loss incidents
 
+### 🔥 E- (Error) Reports
+System errors and environmental issues that don't represent functional failures.
+
+#### 🧹 Cleanup and Teardown Errors (E-)
+Documentation of system cleanup and teardown issues.
+- **E-** Windows file permission errors during test teardown
+- **E-** Database cleanup failures in test environments
+- **E-** Temporary file deletion errors
+- **E-** Resource cleanup timeouts
+
+#### 🌍 Environmental Errors (E-)
+System environment and configuration related errors.
+- **E-** OS-specific compatibility issues
+- **E-** Development environment setup problems
+- **E-** CI/CD pipeline environment errors
+- **E-** Container or virtualization issues
+
 ### ⚠️ W- (Warning) Reports
 Non-critical issues requiring attention and analysis.
 
@@ -105,10 +126,12 @@ Documentation of process enhancements and preventive measures.
 
    # Search by file patterns and prefixes
    ls quality/debug_reports/F-*cli*        # Failure reports related to CLI
+   ls quality/debug_reports/E-*teardown*   # Error reports related to teardown
    ls quality/debug_reports/W-*performance* # Warning reports related to performance
    ls quality/debug_reports/F-*test*       # Failure reports related to testing
-   ls quality/debug_reports/W-*            # All warning reports
    ls quality/debug_reports/F-*            # All failure reports
+   ls quality/debug_reports/E-*            # All error reports
+   ls quality/debug_reports/W-*            # All warning reports
    ```
 
 2. **Review related reports** to identify patterns:
@@ -156,10 +179,12 @@ Documentation of process enhancements and preventive measures.
 
    # Prefix and component-based search
    find quality/debug_reports/ -name "F-*component*"  # Failure reports for component
+   find quality/debug_reports/ -name "E-*component*"  # Error reports for component
    find quality/debug_reports/ -name "W-*component*"  # Warning reports for component
 
    # Recent reports check by type
    ls -la quality/debug_reports/F-* | head -5        # Recent failure reports
+   ls -la quality/debug_reports/E-* | head -5        # Recent error reports
    ls -la quality/debug_reports/W-* | head -5        # Recent warning reports
    ls -la quality/debug_reports/ | head -10          # All recent reports
    ```
@@ -232,10 +257,11 @@ Changed multiple CLI commands from Rich console output to Click echo:
 
 ### Bug Report Template
 ```markdown
-# [F-|W-][YYYYMMDD] - [Issue Title]
+# [F-|E-|W-][YYYYMMDD]-[descriptive-slug] - [Issue Title]
 
 **Prefix Selection Guide:**
 - Use **F-** for: System failures, critical errors, broken functionality, test failures, security vulnerabilities
+- Use **E-** for: System errors, cleanup issues, teardown problems, environmental errors
 - Use **W-** for: Performance issues, potential problems, non-critical issues, improvement opportunities
 
 ## Issue Summary

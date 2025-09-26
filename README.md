@@ -50,7 +50,7 @@ Testing & Quality:
 ├── quality/                                # Quality assurance system
 │   ├── logs/                               # Structured test execution logs
 │   ├── reports/                            # Interactive HTML reports & analysis
-│   ├── debug_reports/                      # Detailed debug analysis & regression tests (YYYYMMDD format)
+│   ├── debug_reports/                      # Detailed debug analysis & regression tests (F-/E-/W- prefixed)
 │   └── archives/                           # Test data retention & cleanup
 └── tools/                                  # 70+ automation & management tools
 ```
@@ -315,7 +315,7 @@ git push origin main
 - **Test Reports**: quality/reports/test_report.html
 - **Failure Analysis**: quality/reports/failure_analysis_report.html
 - **Coverage Reports**: quality/reports/coverage/
-- **Debug Reports**: quality/debug_reports/ (detailed bug analysis & regression prevention)
+- **Debug Reports**: quality/debug_reports/ (F-/E-/W- categorized: failures, errors, warnings)
 - **GitHub Issue Templates**: quality/reports/issue_template_*.md
 
 ### For Project Management
@@ -400,7 +400,7 @@ git push origin main
 - [**Testing Guide**](quality/TESTING_GUIDE.md) - Comprehensive testing workflows
 - [**Quality Reports Guide**](quality/README.md) - Complete guide to all quality reports
 - [**Database Guide**](quality/DATABASE_GUIDE.md) - Database inspection and management
-- [**Debug Reports**](quality/debug_reports/) - Detailed debugging analysis and regression prevention
+- [**Debug Reports**](quality/debug_reports/) - F-/E-/W- categorized debugging analysis and regression prevention
 
 ### **🏗️ Architecture & Decisions**
 - [**Architecture Decision Records**](docs/context/decisions/) - Key technical decisions
@@ -433,7 +433,7 @@ git push origin main
 - **Capability Portfolio**: http://localhost:8000/api/rtm/dashboard/capabilities
 - **Interactive Test Reports**: quality/reports/test_report.html
 - **Failure Analysis**: quality/reports/failure_analysis_report.html
-- **Debug Analysis Reports**: quality/debug_reports/ (regression prevention & detailed debugging)
+- **Debug Analysis Reports**: quality/debug_reports/ (F-/E-/W- categorized regression prevention & detailed debugging)
 
 ### **🛠️ Common Commands**
 ```bash

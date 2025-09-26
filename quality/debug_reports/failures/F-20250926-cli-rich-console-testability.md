@@ -1,4 +1,4 @@
-# F-20250926 - CLI Commands Rich Console Output Testability Issue
+# F-20250926-cli-rich-console-testability - CLI Commands Rich Console Output Testability Issue
 
 ## Issue Summary
 
