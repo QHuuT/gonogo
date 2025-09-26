@@ -242,6 +242,52 @@ class TestStructuredLoggingDemo:
         assert config["environment"] == "test"
         assert config["sanitize_personal_data"] is True
 
+    @pytest.mark.user_story("US-00022")
+    def test_buffer_sanitization_regression(self):
+        """Regression test for GDPR sanitization in memory buffer.
+
+        This test documents the issue where sanitization was only applied to file
+        logging but not to the in-memory buffer returned by get_recent_logs().
+        Both file and buffer should contain sanitized data for GDPR compliance.
+        """
+        # Log message with personal data
+        original_message = "User login: john.doe@company.com from IP 10.0.0.5"
+        sensitive_metadata = {
+            "user_email": "jane.smith@example.org",
+            "client_ip": "192.168.0.100",
+            "user_agent": "Mozilla/5.0",
+            "session_token": "abc123xyz789",
+        }
+
+        self.logger.info(original_message, metadata=sensitive_metadata)
+
+        # Get entry from buffer (this was the bug - buffer wasn't sanitized)
+        recent_logs = self.logger.get_recent_logs(1)
+        buffer_entry = recent_logs[0]
+
+        # Verify message is sanitized in buffer
+        assert "[EMAIL_REDACTED]" in buffer_entry.message, "Email should be redacted in buffer message"
+        assert "[IP_REDACTED]" in buffer_entry.message, "IP should be redacted in buffer message"
+        assert "john.doe@company.com" not in buffer_entry.message, "Original email should not be in buffer"
+        assert "10.0.0.5" not in buffer_entry.message, "Original IP should not be in buffer"
+
+        # Verify metadata is sanitized in buffer
+        if buffer_entry.metadata:
+            metadata_str = str(buffer_entry.metadata)
+            assert "jane.smith@example.org" not in metadata_str, "Email should be redacted in buffer metadata"
+            assert "192.168.0.100" not in metadata_str, "IP should be redacted in buffer metadata"
+
+        # Verify file logging is also sanitized (create test formatter to check)
+        from src.shared.logging.formatters import JSONFormatter
+
+        formatter = JSONFormatter()
+        json_output = formatter.format(buffer_entry)
+
+        assert "[EMAIL_REDACTED]" in json_output, "Email should be redacted in JSON output"
+        assert "[IP_REDACTED]" in json_output, "IP should be redacted in JSON output"
+        assert "john.doe@company.com" not in json_output, "Original email should not be in JSON"
+        assert "10.0.0.5" not in json_output, "Original IP should not be in JSON"
+
     def teardown_method(self):
         """Clean up after each test."""
         self.logger.close()

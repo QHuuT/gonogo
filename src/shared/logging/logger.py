@@ -166,9 +166,25 @@ class StructuredLogger:
         # Apply sanitization
         entry_dict = self.sanitizer.sanitize_log_entry(entry_dict)
 
-        # Add to buffer
+        # Create sanitized entry for buffer (GDPR compliance)
+        sanitized_entry = LogEntry(
+            timestamp=entry.timestamp,
+            level=entry.level,
+            message=self.sanitizer.sanitize_text(entry.message),
+            test_id=entry.test_id,
+            test_name=entry.test_name,
+            test_status=entry.test_status,
+            duration_ms=entry.duration_ms,
+            environment=entry.environment,
+            session_id=entry.session_id,
+            metadata=self.sanitizer.sanitize_log_entry(entry.metadata or {}) if entry.metadata else None,
+            stack_trace=entry.stack_trace,
+            tags=entry.tags,
+        )
+
+        # Add sanitized entry to buffer
         with self._lock:
-            self._log_buffer.append(entry)
+            self._log_buffer.append(sanitized_entry)
             if len(self._log_buffer) > self._max_buffer_size:
                 self._log_buffer.pop(0)  # Remove oldest entry
 
