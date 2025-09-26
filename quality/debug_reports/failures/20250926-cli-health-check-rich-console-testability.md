@@ -2,12 +2,12 @@
 
 ## Issue Summary
 
-- **Problem**: RTM database CLI commands (health check, validate, reset, and GitHub sync status) test failures due to Rich console output not being captured by Click test runner
-- **Impact**: Test suite failure blocking development workflow, inability to validate CLI health check, validate, reset, and GitHub sync status command functionality
+- **Problem**: RTM database CLI commands (health check, validate, reset, GitHub sync status, and import RTM) test failures due to Rich console output not being captured by Click test runner
+- **Impact**: Test suite failure blocking development workflow, inability to validate CLI health check, validate, reset, GitHub sync status, and import RTM command functionality
 - **Severity**: Medium (test failure, functional feature working but not testable)
 - **Discovery Date**: 2025-09-26
 - **Resolution Date**: 2025-09-26
-- **Resolution Time**: ~120 minutes (30 min health check + 45 min validate command + 15 min reset command + 30 min GitHub sync status command)
+- **Resolution Time**: ~135 minutes (30 min health check + 45 min validate command + 15 min reset command + 30 min GitHub sync status command + 15 min import RTM command)
 
 ## Root Cause Analysis
 
@@ -61,7 +61,17 @@
     console.print("[yellow]No sync records found[/yellow]")
     ```
 
-11. **Systemic Pattern Confirmation**: This is a confirmed systemic issue affecting multiple CLI commands where Rich formatting needs to be replaced with `click.echo()` for testability
+11. **Import RTM Pattern Discovery**: Fifth occurrence found in import RTM command:
+    ```
+    AssertionError: assert 'File /nonexistent/file.md not found' in ''
+    ```
+
+12. **Import RTM CLI Analysis**: Examined import RTM command in `tools/rtm-db.py:432`
+    ```python
+    console.print(f"[red]Error: File {file_path} not found[/red]")
+    ```
+
+13. **Systemic Pattern Confirmation**: This is a confirmed systemic issue affecting multiple CLI commands where Rich formatting needs to be replaced with `click.echo()` for testability
 
 ### Root Cause
 
@@ -71,6 +81,7 @@
 2. **Validate Command**: `console.print("[green]All validation checks passed[/green]")` and `console.print(f"[red]Found {len(issues)} validation issues:[/red]")` for status messages
 3. **Reset Command**: `console.print("[red]This will delete ALL RTM data. Use --confirm to proceed.[/red]")`, `console.print("[green]Database reset completed[/green]")`, and `console.print(f"[red]Reset failed: {e}[/red]")` for all user messages
 4. **GitHub Sync Status Command**: `console.print("[yellow]No sync records found[/yellow]")` for status message
+5. **Import RTM Command**: `console.print(f"[red]Error: File {file_path} not found[/red]")` for file not found error
 
 **Technical Root Cause**: Click's test runner only captures output from `click.echo()`, `print()`, or similar standard output functions. Rich console output is rendered directly to the terminal and bypasses Click's output capture mechanism.
 
@@ -132,6 +143,15 @@ console.print("[yellow]No sync records found[/yellow]")
 click.echo("No sync records found")
 ```
 
+**Import RTM Command:**
+```python
+# Before (not testable)
+console.print(f"[red]Error: File {file_path} not found[/red]")
+
+# After (testable)
+click.echo(f"File {file_path} not found")
+```
+
 **Error Handling Additions:**
 ```python
 # Validate Command - Before (no error handling)
@@ -176,6 +196,7 @@ def sync_status(ctx):
 - **Line 614**: Replaced `console.print("[green]Database reset completed[/green]")` with `click.echo("Database reset completed")`
 - **Line 618**: Replaced `console.print(f"[red]Reset failed: {e}[/red]")` with `click.echo(f"Reset failed: {e}")`
 - **Line 659**: Replaced `console.print("[yellow]No sync records found[/yellow]")` with `click.echo("No sync records found")`
+- **Line 432**: Replaced `console.print(f"[red]Error: File {file_path} not found[/red]")` with `click.echo(f"File {file_path} not found")`
 - **Lines 551-592**: Added proper try-catch error handling for database operations
 - **Lines 649-689**: Restructured GitHub sync status error handling from try-finally to try-except with proper database connection error handling
 
@@ -202,6 +223,11 @@ def sync_status(ctx):
 - **Records Test**: Verified existing test `test_github_sync_status_with_records` continues to pass
 - **Error Handling Test**: Verified new test `test_github_sync_status_database_error` passes with proper error handling
 - **Manual Testing**: Confirmed CLI command maintains functionality while improving testability and error handling
+
+**Import RTM Command:**
+- **Original Test**: Verified existing test `test_import_rtm_file_not_found` now passes
+- **Regression Test**: Verified new test `test_import_rtm_file_not_found_output_format_regression` passes with output format validation
+- **Manual Testing**: Confirmed CLI command maintains functionality while improving testability
 
 ## Prevention Measures
 
@@ -235,7 +261,14 @@ Added comprehensive regression tests in `tests/unit/backend/tools/test_rtm_db_cl
     - No Rich formatting tags ([yellow], [/yellow]) present in output
 12. **`test_github_sync_status_database_error`**: Tests error handling when database connection fails
 
-**Total Coverage**: 17 CLI tests (4 health check + 6 validate + 5 reset + 2 GitHub sync status) ensuring comprehensive regression prevention
+**Import RTM Command Tests:**
+13. **`test_import_rtm_file_not_found_output_format_regression`**: **Key regression test** specifically validates:
+    - "File not found" message is captured in test output
+    - Message uses plain text (not Rich markup)
+    - No Rich formatting tags ([red], [/red]) present in output
+    - No "Error:" prefix from Rich version present in output
+
+**Total Coverage**: 18 CLI tests (4 health check + 6 validate + 5 reset + 2 GitHub sync status + 1 import RTM) ensuring comprehensive regression prevention
 
 ### Output Method Guidelines
 
@@ -302,7 +335,7 @@ The new regression tests cover:
 - **Previous Similar Issue**: Dashboard metrics API threshold evaluation format issue (resolved 2025-09-26)
 - **Pattern Type**: CLI output compatibility issues with testing frameworks - **SYSTEMIC ISSUE CONFIRMED**
 - **Epic Context**: EP-00005 (RTM system stability and testing)
-- **Commands Affected**: health-check, validate, reset, and GitHub sync status commands (all resolved in this report)
+- **Commands Affected**: health-check, validate, reset, GitHub sync status, and import RTM commands (all resolved in this report)
 
 ## Future Considerations
 

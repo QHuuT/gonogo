@@ -919,6 +919,24 @@ class TestRTMDatabaseCLI:
     @pytest.mark.epic("EP-00005", "EP-99999")
     @pytest.mark.user_story("US-00055")
     @pytest.mark.component("backend")
+    def test_import_rtm_file_not_found_output_format_regression(self, mock_migrator):
+        """Regression test: Ensure import RTM file not found message uses click.echo() for testability."""
+        result = self.runner.invoke(
+            rtm_db_cli.cli, ["data", "import-rtm", "/nonexistent/test.md"]
+        )
+
+        assert result.exit_code == 0
+        # This is the key regression test - ensure the file not found message is captured
+        assert "File /nonexistent/test.md not found" in result.output
+        # Verify this is plain text, not Rich markup
+        assert "[red]" not in result.output
+        assert "[/red]" not in result.output
+        assert "Error:" not in result.output  # Should not include "Error:" prefix from Rich version
+
+    @patch("rtm_db_cli.RTMDataMigrator")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_import_rtm_dry_run(self, mock_migrator):
         """Test RTM import with dry run."""
         with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".md") as tmp:

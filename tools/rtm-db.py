@@ -429,7 +429,7 @@ def data():
 def import_rtm(ctx, file_path, dry_run):
     """Import RTM data from markdown file."""
     if not Path(file_path).exists():
-        console.print(f"[red]Error: File {file_path} not found[/red]")
+        click.echo(f"File {file_path} not found")
         return
 
     if dry_run:
