@@ -69,6 +69,7 @@ class JSONFormatter:
 
 class TestFormatter:
     """Human-readable formatter optimized for test output."""
+    __test__ = False  # Tell pytest this is not a test class
 
     def __init__(
         self,
