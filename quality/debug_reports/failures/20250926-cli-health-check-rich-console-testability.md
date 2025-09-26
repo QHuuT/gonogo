@@ -2,12 +2,12 @@
 
 ## Issue Summary
 
-- **Problem**: RTM database CLI commands (health check, validate, and reset) test failures due to Rich console output not being captured by Click test runner
-- **Impact**: Test suite failure blocking development workflow, inability to validate CLI health check, validate, and reset command functionality
+- **Problem**: RTM database CLI commands (health check, validate, reset, and GitHub sync status) test failures due to Rich console output not being captured by Click test runner
+- **Impact**: Test suite failure blocking development workflow, inability to validate CLI health check, validate, reset, and GitHub sync status command functionality
 - **Severity**: Medium (test failure, functional feature working but not testable)
 - **Discovery Date**: 2025-09-26
 - **Resolution Date**: 2025-09-26
-- **Resolution Time**: ~90 minutes (30 min health check + 45 min validate command + 15 min reset command)
+- **Resolution Time**: ~120 minutes (30 min health check + 45 min validate command + 15 min reset command + 30 min GitHub sync status command)
 
 ## Root Cause Analysis
 
@@ -51,7 +51,17 @@
    console.print(f"[red]Reset failed: {e}[/red]")
    ```
 
-9. **Systemic Pattern Confirmation**: This is a confirmed systemic issue affecting multiple CLI commands where Rich formatting needs to be replaced with `click.echo()` for testability
+9. **GitHub Sync Status Pattern Discovery**: Fourth occurrence found in GitHub sync status command:
+   ```
+   AssertionError: assert 'No sync records found' in ''
+   ```
+
+10. **GitHub Sync Status CLI Analysis**: Examined GitHub sync status command in `tools/rtm-db.py:659`
+    ```python
+    console.print("[yellow]No sync records found[/yellow]")
+    ```
+
+11. **Systemic Pattern Confirmation**: This is a confirmed systemic issue affecting multiple CLI commands where Rich formatting needs to be replaced with `click.echo()` for testability
 
 ### Root Cause
 
@@ -60,10 +70,13 @@
 1. **Health Check Command**: `console.print("[green]Database connection successful[/green]")` for success message
 2. **Validate Command**: `console.print("[green]All validation checks passed[/green]")` and `console.print(f"[red]Found {len(issues)} validation issues:[/red]")` for status messages
 3. **Reset Command**: `console.print("[red]This will delete ALL RTM data. Use --confirm to proceed.[/red]")`, `console.print("[green]Database reset completed[/green]")`, and `console.print(f"[red]Reset failed: {e}[/red]")` for all user messages
+4. **GitHub Sync Status Command**: `console.print("[yellow]No sync records found[/yellow]")` for status message
 
 **Technical Root Cause**: Click's test runner only captures output from `click.echo()`, `print()`, or similar standard output functions. Rich console output is rendered directly to the terminal and bypasses Click's output capture mechanism.
 
-**Secondary Issue**: Validate command had missing error handling for database connection failures, causing unhandled exceptions and exit code 1.
+**Secondary Issues**:
+- Validate command had missing error handling for database connection failures, causing unhandled exceptions and exit code 1
+- GitHub sync status command had improper error handling structure with `get_db_session()` outside try block
 
 ### Contributing Factors
 
@@ -110,14 +123,23 @@ click.echo("Database reset completed")
 click.echo(f"Reset failed: {e}")
 ```
 
-**Error Handling Addition:**
+**GitHub Sync Status Command:**
 ```python
-# Before (no error handling)
+# Before (not testable)
+console.print("[yellow]No sync records found[/yellow]")
+
+# After (testable)
+click.echo("No sync records found")
+```
+
+**Error Handling Additions:**
+```python
+# Validate Command - Before (no error handling)
 def validate(ctx, fix):
     db = get_db_session()
     # ... operations ...
 
-# After (proper error handling)
+# Validate Command - After (proper error handling)
 def validate(ctx, fix):
     try:
         db = get_db_session()
@@ -125,6 +147,23 @@ def validate(ctx, fix):
         db.close()
     except Exception as e:
         click.echo(f"Database validation failed: {e}")
+
+# GitHub Sync Status - Before (improper error handling)
+def sync_status(ctx):
+    db = get_db_session()  # Outside try block
+    try:
+        # ... operations ...
+    finally:
+        db.close()
+
+# GitHub Sync Status - After (proper error handling)
+def sync_status(ctx):
+    try:
+        db = get_db_session()  # Inside try block
+        # ... operations ...
+        db.close()
+    except Exception as e:
+        click.echo(f"GitHub sync status failed: {e}")
 ```
 
 ### Code Changes
@@ -136,7 +175,9 @@ def validate(ctx, fix):
 - **Line 601**: Replaced `console.print("[red]This will delete ALL RTM data. Use --confirm to proceed.[/red]")` with `click.echo("This will delete ALL RTM data. Use --confirm to proceed.")`
 - **Line 614**: Replaced `console.print("[green]Database reset completed[/green]")` with `click.echo("Database reset completed")`
 - **Line 618**: Replaced `console.print(f"[red]Reset failed: {e}[/red]")` with `click.echo(f"Reset failed: {e}")`
+- **Line 659**: Replaced `console.print("[yellow]No sync records found[/yellow]")` with `click.echo("No sync records found")`
 - **Lines 551-592**: Added proper try-catch error handling for database operations
+- **Lines 649-689**: Restructured GitHub sync status error handling from try-finally to try-except with proper database connection error handling
 
 ### Testing
 
@@ -155,6 +196,12 @@ def validate(ctx, fix):
 - **Original Test**: Verified existing test `test_admin_reset_without_confirm` now passes
 - **Confirmation Test**: Verified existing test `test_admin_reset_with_confirm` now passes with success message
 - **Manual Testing**: Confirmed CLI command maintains functionality while improving testability
+
+**GitHub Sync Status Command:**
+- **Original Test**: Verified existing test `test_github_sync_status_no_records` now passes
+- **Records Test**: Verified existing test `test_github_sync_status_with_records` continues to pass
+- **Error Handling Test**: Verified new test `test_github_sync_status_database_error` passes with proper error handling
+- **Manual Testing**: Confirmed CLI command maintains functionality while improving testability and error handling
 
 ## Prevention Measures
 
@@ -181,7 +228,14 @@ Added comprehensive regression tests in `tests/unit/backend/tools/test_rtm_db_cl
 9. **`test_admin_reset_with_confirm_success_message`**: **Key regression test** ensuring success message uses plain text
 10. **`test_admin_reset_database_error`**: Tests error handling scenarios for reset operations
 
-**Total Coverage**: 15 CLI tests (4 health check + 6 validate + 5 reset) ensuring comprehensive regression prevention
+**GitHub Sync Status Command Tests:**
+11. **`test_github_sync_status_output_format_regression`**: **Key regression test** specifically validates:
+    - "No sync records found" message is captured in test output
+    - Message uses plain text (not Rich markup)
+    - No Rich formatting tags ([yellow], [/yellow]) present in output
+12. **`test_github_sync_status_database_error`**: Tests error handling when database connection fails
+
+**Total Coverage**: 17 CLI tests (4 health check + 6 validate + 5 reset + 2 GitHub sync status) ensuring comprehensive regression prevention
 
 ### Output Method Guidelines
 
@@ -248,7 +302,7 @@ The new regression tests cover:
 - **Previous Similar Issue**: Dashboard metrics API threshold evaluation format issue (resolved 2025-09-26)
 - **Pattern Type**: CLI output compatibility issues with testing frameworks - **SYSTEMIC ISSUE CONFIRMED**
 - **Epic Context**: EP-00005 (RTM system stability and testing)
-- **Commands Affected**: health-check, validate, and reset commands (all resolved in this report)
+- **Commands Affected**: health-check, validate, reset, and GitHub sync status commands (all resolved in this report)
 
 ## Future Considerations
 

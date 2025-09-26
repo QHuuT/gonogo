@@ -646,8 +646,8 @@ def sync(ctx, issue_number, dry_run):
 @click.pass_context
 def sync_status(ctx):
     """Show GitHub synchronization status."""
-    db = get_db_session()
     try:
+        db = get_db_session()
         recent_syncs = (
             db.query(GitHubSync)
             .order_by(GitHubSync.last_sync_time.desc())
@@ -656,7 +656,7 @@ def sync_status(ctx):
         )
 
         if not recent_syncs:
-            console.print("[yellow]No sync records found[/yellow]")
+            click.echo("No sync records found")
             return
 
         table = Table(title="Recent GitHub Sync Status")
@@ -684,8 +684,9 @@ def sync_status(ctx):
 
         console.print(table)
 
-    finally:
         db.close()
+    except Exception as e:
+        click.echo(f"GitHub sync status failed: {e}")
 
 
 if __name__ == "__main__":

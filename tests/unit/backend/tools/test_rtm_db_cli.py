@@ -804,6 +804,41 @@ class TestRTMDatabaseCLI:
 
         assert result.exit_code == 0
 
+    @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
+    def test_github_sync_status_output_format_regression(self, mock_get_db):
+        """Regression test: Ensure GitHub sync status message uses click.echo() for testability."""
+        mock_get_db.return_value = self.mock_db
+
+        # Mock empty query result
+        mock_query = Mock()
+        self.mock_db.query.return_value = mock_query
+        mock_query.order_by.return_value.limit.return_value.all.return_value = []
+
+        result = self.runner.invoke(rtm_db_cli.cli, ["github", "sync-status"])
+
+        assert result.exit_code == 0
+        # This is the key regression test - ensure the no records message is captured
+        assert "No sync records found" in result.output
+        # Verify this is plain text, not Rich markup
+        assert "[yellow]" not in result.output
+        assert "[/yellow]" not in result.output
+
+    @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
+    def test_github_sync_status_database_error(self, mock_get_db):
+        """Test GitHub sync status handles database errors gracefully."""
+        mock_get_db.side_effect = Exception("Database connection failed")
+
+        result = self.runner.invoke(rtm_db_cli.cli, ["github", "sync-status"])
+
+        assert result.exit_code == 0
+        assert "GitHub sync status failed:" in result.output
+
     @pytest.mark.epic("EP-00005", "EP-99999")
     @pytest.mark.user_story("US-00055")
     @pytest.mark.component("backend")
