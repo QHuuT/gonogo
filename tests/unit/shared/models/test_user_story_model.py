@@ -163,6 +163,89 @@ class TestUserStory:
 
     @pytest.mark.epic("EP-00001", "EP-00005")
     @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
+    def test_update_from_github_data_format_compatibility_regression(self, user_story):
+        """Regression test: Ensure update_from_github handles both string and object label formats."""
+
+        # Test 1: Simple string format (test data format)
+        github_data_strings = {
+            "state": "open",
+            "title": "String Labels Test",
+            "body": "Testing simple string label format",
+            "labels": ["bug", "priority-high", "component/frontend"],
+            "assignees": ["developer1"],
+        }
+
+        user_story.update_from_github(github_data_strings)
+
+        assert user_story.github_issue_state == "open"
+        assert user_story.title == "String Labels Test"
+        assert user_story.description == "Testing simple string label format"
+        assert "bug" in user_story.github_labels
+        assert "component/frontend" in user_story.github_labels
+        assert user_story.component == "frontend"  # Should extract component from string label
+
+        # Test 2: GitHub API object format
+        github_data_objects = {
+            "state": "open",
+            "title": "Object Labels Test",
+            "body": "Testing GitHub API object label format",
+            "labels": [
+                {"name": "enhancement"},
+                {"name": "priority-medium"},
+                {"name": "component/backend"},
+                {"name": "status/in-progress"}
+            ],
+            "assignees": [{"login": "developer2"}],
+        }
+
+        user_story.update_from_github(github_data_objects)
+
+        assert user_story.github_issue_state == "open"
+        assert user_story.title == "Object Labels Test"
+        assert user_story.description == "Testing GitHub API object label format"
+        assert "enhancement" in user_story.github_labels
+        assert "component/backend" in user_story.github_labels
+        assert user_story.component == "backend"  # Should extract component from object label
+        assert user_story.implementation_status == "in_progress"  # Should derive status from labels
+
+        # Test 3: Mixed format edge case (shouldn't happen in practice but should be handled)
+        github_data_mixed = {
+            "state": "open",
+            "labels": [
+                "simple-string",
+                {"name": "object-label"},
+                {"name": "component/api"},
+                "another-string"
+            ],
+        }
+
+        user_story.update_from_github(github_data_mixed)
+
+        assert "simple-string" in user_story.github_labels
+        assert "object-label" in user_story.github_labels
+        assert "component/api" in user_story.github_labels
+        assert "another-string" in user_story.github_labels
+        assert user_story.component == "api"  # Should handle mixed format and extract component
+
+        # Test 4: Empty and None labels (edge cases)
+        github_data_empty = {
+            "state": "open",
+            "labels": [],
+        }
+
+        user_story.update_from_github(github_data_empty)
+        # Should not crash and should handle empty labels gracefully
+
+        github_data_none = {
+            "state": "open",
+            # labels key omitted entirely
+        }
+
+        user_story.update_from_github(github_data_none)
+        # Should not crash when labels key is missing
+
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_calculate_test_coverage_no_tests(self, user_story):
         """Test test coverage calculation with no tests."""
         result = user_story.calculate_test_coverage()

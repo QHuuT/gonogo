@@ -129,7 +129,13 @@ class UserStory(TraceabilityBase):
         # Extract component from GitHub labels
         if github_data.get("labels"):
             for label in github_data["labels"]:
-                label_name = label.get("name", "")
+                # Handle both GitHub API format (objects with 'name') and simple string format
+                if isinstance(label, dict):
+                    label_name = label.get("name", "")
+                else:
+                    # Simple string format (used in tests)
+                    label_name = str(label)
+
                 if label_name.startswith("component/"):
                     component_name = label_name.replace("component/", "")
                     self.component = component_name
