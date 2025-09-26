@@ -149,7 +149,7 @@ class TestGitHubSyncManagerStatus:
             .filter(Epic.epic_id == epic.epic_id)
             .one()
         )
-        capability = db_session.query(Capability).get(refreshed_epic.capability_id)
+        capability = db_session.get(Capability, refreshed_epic.capability_id)
         assert capability is not None
         assert capability.capability_id == "CAP-00002"
 

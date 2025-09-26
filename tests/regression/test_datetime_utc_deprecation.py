@@ -1,9 +1,11 @@
 """
-Regression tests for datetime.utcnow() deprecation fixes.
+Regression tests for datetime.utcnow() deprecation fixes and SQLAlchemy 2.0 API usage.
 
-Ensures that code uses datetime.now(datetime.UTC) instead of deprecated datetime.utcnow().
+Ensures that code uses:
+- datetime.now(datetime.UTC) instead of deprecated datetime.utcnow()
+- Session.get() instead of deprecated Query.get()
 
-Related to: DeprecationWarning fixes for datetime module changes
+Related to: DeprecationWarning fixes for datetime module changes and SQLAlchemy 2.0 migration
 """
 
 import warnings
@@ -284,3 +286,76 @@ class TestDatetimeUTCDeprecationRegression:
 
             # Should have no warnings from our test code
             assert len(utcnow_warnings) == 0, f"Found {len(utcnow_warnings)} datetime.utcnow deprecation warnings in failure tracker tests"
+
+    def test_sqlalchemy_legacy_api_usage(self):
+        """Test that code uses SQLAlchemy 2.0 Session.get() instead of deprecated Query.get()."""
+        import re
+        from pathlib import Path
+
+        # Files to check for SQLAlchemy 2.0 patterns
+        files_to_check = [
+            "tests/unit/tools/test_github_sync_manager.py",
+            "tools/github_sync_manager.py",
+            "src/be/services/rtm_parser.py",
+            "src/be/models/traceability/epic.py",
+            "src/be/models/traceability/user_story.py"
+        ]
+
+        # Pattern for deprecated Query.get() usage (not in compatibility checks)
+        deprecated_query_get = re.compile(r'\.query\([^)]+\)\.get\([^)]+\)')
+
+        # Pattern for compatibility check (should be allowed)
+        compatibility_check = re.compile(r'if hasattr\(.*session.*,\s*["\']get["\']\)|else:|else.*\.query\(.*\)\.get\(')
+
+        for file_path in files_to_check:
+            full_path = Path(__file__).parent.parent.parent / file_path
+            if full_path.exists():
+                with open(full_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    lines = content.split('\n')
+
+                # Find deprecated Query.get() usage
+                for line_num, line in enumerate(lines, 1):
+                    if deprecated_query_get.search(line):
+                        # Check if this is part of a compatibility check
+                        context_lines = lines[max(0, line_num-3):line_num+2]
+                        context = '\n'.join(context_lines)
+
+                        if not compatibility_check.search(context):
+                            assert False, f"Found deprecated Query.get() usage at {file_path}:{line_num}\nLine: {line.strip()}\nUse Session.get(Model, primary_key) instead"
+
+    def test_sqlalchemy_session_get_functionality(self):
+        """Test that Session.get() works correctly as replacement for Query.get()."""
+        from sqlalchemy import create_engine
+        from sqlalchemy.orm import sessionmaker
+        from src.security.gdpr.models import Base, ConsentRecord
+        import tempfile
+        import os
+
+        # Create temporary test database
+        with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as temp_file:
+            test_db_url = f"sqlite:///{temp_file.name}"
+
+        try:
+            # Create test database and session
+            engine = create_engine(test_db_url, echo=False)
+            Base.metadata.create_all(bind=engine)
+            TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+            session = TestingSessionLocal()
+
+            # Test that Session.get() method exists and works
+            assert hasattr(session, 'get'), "Session should have get() method in SQLAlchemy 2.0"
+
+            # Test Session.get() with non-existent record (should return None)
+            result = session.get(ConsentRecord, "nonexistent-id")
+            assert result is None, "Session.get() should return None for non-existent records"
+
+            session.close()
+            engine.dispose()
+
+        finally:
+            # Cleanup
+            try:
+                os.unlink(temp_file.name)
+            except (PermissionError, FileNotFoundError):
+                pass  # Ignore cleanup errors
