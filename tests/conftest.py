@@ -52,10 +52,27 @@ def test_db() -> Generator[str, None, None]:
         engine = create_engine(test_db_url, echo=False)
         Base.metadata.create_all(bind=engine)
 
-        yield test_db_url
+        try:
+            yield test_db_url
+        finally:
+            # Properly dispose of the engine to release database connections
+            engine.dispose()
 
-        # Cleanup
-        os.unlink(temp_file.name)
+            # Cleanup - retry deletion with error handling for Windows
+            try:
+                os.unlink(temp_file.name)
+            except PermissionError:
+                # On Windows, sometimes the file is still locked briefly
+                # Try once more after a short delay
+                import time
+                time.sleep(0.1)
+                try:
+                    os.unlink(temp_file.name)
+                except PermissionError:
+                    # If still failing, log but don't crash tests
+                    import warnings
+                    warnings.warn(f"Could not delete temporary test database: {temp_file.name}")
+                    pass
 
 
 @pytest.fixture
