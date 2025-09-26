@@ -13,7 +13,7 @@ import importlib.util
 # Use importlib to explicitly load from the correct source path
 import sys
 import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -289,7 +289,7 @@ class TestFailureTracker:
         # Create an old failure
         old_failure = TestFailure(test_name="old_test", failure_message="Old error")
         # Set an old timestamp
-        old_failure.last_seen = datetime.utcnow() - timedelta(days=100)
+        old_failure.last_seen = datetime.now(UTC) - timedelta(days=100)
 
         # Create a recent failure
         recent_failure = TestFailure(

@@ -95,7 +95,8 @@ class TestDatetimeUTCDeprecationRegression:
             "src/shared/testing/failure_tracker.py",
             "tools/rtm-db.py",
             "src/be/api/rtm.py",
-            "tests/unit/security/test_gdpr_compliance.py"
+            "tests/unit/security/test_gdpr_compliance.py",
+            "tests/unit/shared/shared/testing/test_failure_tracker.py"
         ]
 
         deprecated_pattern = re.compile(r'datetime\.utcnow\(\)')
@@ -265,3 +266,21 @@ class TestDatetimeUTCDeprecationRegression:
 
                 matches = deprecated_pattern.findall(content)
                 assert len(matches) == 0, f"Found {len(matches)} deprecated 'data=' parameter usage in POST requests in {file_path}. Use 'content=' instead."
+
+    def test_test_files_use_timezone_aware_datetime(self):
+        """Test that test files use timezone-aware datetime patterns properly."""
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always", DeprecationWarning)
+
+            # Import the failure tracker test module
+            from tests.unit.shared.shared.testing.test_failure_tracker import TestFailureTracker
+
+            # Filter for datetime.utcnow deprecation warnings from test files
+            utcnow_warnings = [
+                warning for warning in w
+                if "datetime.utcnow() is deprecated" in str(warning.message)
+                and "test_failure_tracker.py" in str(warning.filename)
+            ]
+
+            # Should have no warnings from our test code
+            assert len(utcnow_warnings) == 0, f"Found {len(utcnow_warnings)} datetime.utcnow deprecation warnings in failure tracker tests"
