@@ -39,6 +39,30 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "priority(level): mark test priority (critical, high, medium, low)"
     )
+    config.addinivalue_line(
+        "markers", "test_type(type): categorizes tests by type (unit, integration, etc.)"
+    )
+    config.addinivalue_line(
+        "markers", "detailed: marks tests for detailed debugging mode"
+    )
+    config.addinivalue_line(
+        "markers", "smoke: marks tests as smoke tests (critical functionality)"
+    )
+    config.addinivalue_line(
+        "markers", "functional: marks tests as functional tests"
+    )
+    config.addinivalue_line(
+        "markers", "security: marks tests as security tests"
+    )
+    config.addinivalue_line(
+        "markers", "gdpr: marks tests as GDPR compliance tests"
+    )
+    config.addinivalue_line(
+        "markers", "performance: marks tests as performance tests"
+    )
+    config.addinivalue_line(
+        "markers", "bdd: marks tests as BDD scenarios"
+    )
 
 
 @pytest.fixture(scope="session")
