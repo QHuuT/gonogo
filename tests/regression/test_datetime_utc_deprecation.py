@@ -243,3 +243,25 @@ class TestDatetimeUTCDeprecationRegression:
         # Test None handling
         none_result = service._ensure_timezone_aware(None)
         assert none_result is None
+
+    def test_no_deprecated_content_upload_patterns(self):
+        """Test that test files don't use deprecated content upload patterns."""
+        import re
+        from pathlib import Path
+
+        # Check test files for deprecated 'data=' parameter in POST requests
+        test_files_to_check = [
+            "tests/unit/security/test_input_validation.py"
+        ]
+
+        # Pattern that should be avoided: client.post(..., data=...)
+        deprecated_pattern = re.compile(r'client\.post\([^)]*data=')
+
+        for file_path in test_files_to_check:
+            full_path = Path(__file__).parent.parent.parent / file_path
+            if full_path.exists():
+                with open(full_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+
+                matches = deprecated_pattern.findall(content)
+                assert len(matches) == 0, f"Found {len(matches)} deprecated 'data=' parameter usage in POST requests in {file_path}. Use 'content=' instead."

@@ -339,7 +339,7 @@ class TestInputValidation:
 
         for payload in xml_payloads:
             response = client.post(
-                "/health", data=payload, headers={"Content-Type": "application/xml"}
+                "/health", content=payload, headers={"Content-Type": "application/xml"}
             )
 
             # Should reject or safely handle XML input
