@@ -951,7 +951,38 @@ class TestRTMDatabaseCLI:
             assert "DRY RUN" in result.output
 
             # Cleanup
-            Path(tmp.name).unlink()
+            try:
+                Path(tmp.name).unlink()
+            except (PermissionError, FileNotFoundError):
+                pass  # Windows may lock the file, ignore cleanup errors
+
+    @patch("rtm_db_cli.RTMDataMigrator")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
+    def test_import_rtm_dry_run_output_format_regression(self, mock_migrator):
+        """Regression test: Ensure import RTM dry-run message uses click.echo() for testability."""
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".md") as tmp:
+            tmp.write("# Test RTM File\n")
+            tmp.flush()
+
+            result = self.runner.invoke(
+                rtm_db_cli.cli, ["data", "import-rtm", tmp.name, "--dry-run"]
+            )
+
+            assert result.exit_code == 0
+            # This is the key regression test - ensure the dry-run message is captured
+            assert "DRY RUN: Would import from" in result.output
+            assert tmp.name in result.output
+            # Verify this is plain text, not Rich markup
+            assert "[yellow]" not in result.output
+            assert "[/yellow]" not in result.output
+
+            # Cleanup
+            try:
+                Path(tmp.name).unlink()
+            except (PermissionError, FileNotFoundError):
+                pass  # Windows may lock the file, ignore cleanup errors
 
 
 @pytest.mark.epic("EP-00005", "EP-99999")

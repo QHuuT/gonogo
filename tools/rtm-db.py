@@ -433,7 +433,7 @@ def import_rtm(ctx, file_path, dry_run):
         return
 
     if dry_run:
-        console.print(f"[yellow]DRY RUN: Would import from {file_path}[/yellow]")
+        click.echo(f"DRY RUN: Would import from {file_path}")
         # TODO: Implement dry-run parsing preview
         return
 
