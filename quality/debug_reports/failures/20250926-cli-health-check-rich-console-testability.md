@@ -1,13 +1,13 @@
-# [20250926] - CLI Commands Rich Console Output Testability Issue
+# F-20250926 - CLI Commands Rich Console Output Testability Issue
 
 ## Issue Summary
 
-- **Problem**: RTM database CLI commands (health check and validate) test failures due to Rich console output not being captured by Click test runner
-- **Impact**: Test suite failure blocking development workflow, inability to validate CLI health check and validate command functionality
+- **Problem**: RTM database CLI commands (health check, validate, and reset) test failures due to Rich console output not being captured by Click test runner
+- **Impact**: Test suite failure blocking development workflow, inability to validate CLI health check, validate, and reset command functionality
 - **Severity**: Medium (test failure, functional feature working but not testable)
 - **Discovery Date**: 2025-09-26
 - **Resolution Date**: 2025-09-26
-- **Resolution Time**: ~75 minutes (30 min health check + 45 min validate command)
+- **Resolution Time**: ~90 minutes (30 min health check + 45 min validate command + 15 min reset command)
 
 ## Root Cause Analysis
 
@@ -39,7 +39,19 @@
 
 6. **Testing Framework Compatibility**: Confirmed that Rich console output (`console.print()`) is not captured by Click's `CliRunner.invoke()` test framework, resulting in empty `result.output`
 
-7. **Systemic Pattern Recognition**: This is a systemic issue affecting multiple CLI commands where Rich formatting needs to be replaced with `click.echo()` for testability
+7. **Reset Command Pattern Discovery**: Third occurrence found in reset command:
+   ```
+   AssertionError: assert 'Use --confirm to proceed' in ''
+   ```
+
+8. **Reset CLI Analysis**: Examined reset command in `tools/rtm-db.py:601`, `tools/rtm-db.py:614`, and `tools/rtm-db.py:618`
+   ```python
+   console.print("[red]This will delete ALL RTM data. Use --confirm to proceed.[/red]")
+   console.print("[green]Database reset completed[/green]")
+   console.print(f"[red]Reset failed: {e}[/red]")
+   ```
+
+9. **Systemic Pattern Confirmation**: This is a confirmed systemic issue affecting multiple CLI commands where Rich formatting needs to be replaced with `click.echo()` for testability
 
 ### Root Cause
 
@@ -47,6 +59,7 @@
 
 1. **Health Check Command**: `console.print("[green]Database connection successful[/green]")` for success message
 2. **Validate Command**: `console.print("[green]All validation checks passed[/green]")` and `console.print(f"[red]Found {len(issues)} validation issues:[/red]")` for status messages
+3. **Reset Command**: `console.print("[red]This will delete ALL RTM data. Use --confirm to proceed.[/red]")`, `console.print("[green]Database reset completed[/green]")`, and `console.print(f"[red]Reset failed: {e}[/red]")` for all user messages
 
 **Technical Root Cause**: Click's test runner only captures output from `click.echo()`, `print()`, or similar standard output functions. Rich console output is rendered directly to the terminal and bypasses Click's output capture mechanism.
 
@@ -84,6 +97,19 @@ click.echo("All validation checks passed")
 click.echo(f"Found {len(issues)} validation issues:")
 ```
 
+**Reset Command:**
+```python
+# Before (not testable)
+console.print("[red]This will delete ALL RTM data. Use --confirm to proceed.[/red]")
+console.print("[green]Database reset completed[/green]")
+console.print(f"[red]Reset failed: {e}[/red]")
+
+# After (testable)
+click.echo("This will delete ALL RTM data. Use --confirm to proceed.")
+click.echo("Database reset completed")
+click.echo(f"Reset failed: {e}")
+```
+
 **Error Handling Addition:**
 ```python
 # Before (no error handling)
@@ -107,6 +133,9 @@ def validate(ctx, fix):
 - **Line 516**: Replaced `console.print("[green]Database connection successful[/green]")` with `click.echo("Database connection successful")`
 - **Line 588**: Replaced `console.print("[green]All validation checks passed[/green]")` with `click.echo("All validation checks passed")`
 - **Line 580**: Replaced `console.print(f"[red]Found {len(issues)} validation issues:[/red]")` with `click.echo(f"Found {len(issues)} validation issues:")`
+- **Line 601**: Replaced `console.print("[red]This will delete ALL RTM data. Use --confirm to proceed.[/red]")` with `click.echo("This will delete ALL RTM data. Use --confirm to proceed.")`
+- **Line 614**: Replaced `console.print("[green]Database reset completed[/green]")` with `click.echo("Database reset completed")`
+- **Line 618**: Replaced `console.print(f"[red]Reset failed: {e}[/red]")` with `click.echo(f"Reset failed: {e}")`
 - **Lines 551-592**: Added proper try-catch error handling for database operations
 
 ### Testing
@@ -121,6 +150,11 @@ def validate(ctx, fix):
 - **Issue Detection Test**: Verified `test_admin_validate_with_issues` now passes with corrected output format
 - **Error Handling Test**: Verified `test_admin_validate_database_error` now passes with proper error handling
 - **Manual Testing**: Confirmed CLI command maintains functionality while improving testability and error handling
+
+**Reset Command:**
+- **Original Test**: Verified existing test `test_admin_reset_without_confirm` now passes
+- **Confirmation Test**: Verified existing test `test_admin_reset_with_confirm` now passes with success message
+- **Manual Testing**: Confirmed CLI command maintains functionality while improving testability
 
 ## Prevention Measures
 
@@ -142,7 +176,12 @@ Added comprehensive regression tests in `tests/unit/backend/tools/test_rtm_db_cl
 6. **`test_admin_validate_database_error`**: Tests error handling scenarios
 7. **`test_admin_validate_duplicate_detection`**: Tests duplicate ID detection
 
-**Total Coverage**: 10 CLI tests (4 health check + 6 validate) ensuring comprehensive regression prevention
+**Reset Command Tests:**
+8. **`test_admin_reset_output_format_regression`**: **Key regression test** ensuring warning message uses plain text
+9. **`test_admin_reset_with_confirm_success_message`**: **Key regression test** ensuring success message uses plain text
+10. **`test_admin_reset_database_error`**: Tests error handling scenarios for reset operations
+
+**Total Coverage**: 15 CLI tests (4 health check + 6 validate + 5 reset) ensuring comprehensive regression prevention
 
 ### Output Method Guidelines
 
@@ -209,7 +248,7 @@ The new regression tests cover:
 - **Previous Similar Issue**: Dashboard metrics API threshold evaluation format issue (resolved 2025-09-26)
 - **Pattern Type**: CLI output compatibility issues with testing frameworks - **SYSTEMIC ISSUE CONFIRMED**
 - **Epic Context**: EP-00005 (RTM system stability and testing)
-- **Commands Affected**: health-check and validate commands (both resolved in this report)
+- **Commands Affected**: health-check, validate, and reset commands (all resolved in this report)
 
 ## Future Considerations
 

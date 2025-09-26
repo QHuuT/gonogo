@@ -704,6 +704,68 @@ class TestRTMDatabaseCLI:
     @pytest.mark.epic("EP-00005", "EP-99999")
     @pytest.mark.user_story("US-00055")
     @pytest.mark.component("backend")
+    def test_admin_reset_output_format_regression(self, mock_get_db):
+        """Regression test: Ensure reset messages use click.echo() for testability."""
+        # Test without confirm flag
+        result = self.runner.invoke(rtm_db_cli.cli, ["admin", "reset"])
+
+        assert result.exit_code == 0
+        # This is the key regression test - ensure the warning message is captured
+        assert "Use --confirm to proceed" in result.output
+        # Verify this is plain text, not Rich markup
+        assert "[red]" not in result.output
+        assert "[/red]" not in result.output
+
+    @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
+    def test_admin_reset_with_confirm_success_message(self, mock_get_db):
+        """Regression test: Ensure reset success message uses click.echo() for testability."""
+        mock_get_db.return_value = self.mock_db
+
+        # Mock query for deletion
+        mock_query = Mock()
+        self.mock_db.query.return_value = mock_query
+        mock_query.delete.return_value = None
+
+        result = self.runner.invoke(rtm_db_cli.cli, ["admin", "reset", "--confirm"])
+
+        assert result.exit_code == 0
+        # Regression test - ensure success message is captured
+        assert "Database reset completed" in result.output
+        # Verify this is plain text, not Rich markup
+        assert "[green]" not in result.output
+        assert "[/green]" not in result.output
+
+    @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
+    def test_admin_reset_database_error(self, mock_get_db):
+        """Test reset command handles database errors gracefully."""
+        mock_get_db.return_value = self.mock_db
+
+        # Mock database error during deletion
+        mock_query = Mock()
+        self.mock_db.query.return_value = mock_query
+        mock_query.delete.side_effect = Exception("Database deletion failed")
+
+        result = self.runner.invoke(rtm_db_cli.cli, ["admin", "reset", "--confirm"])
+
+        assert result.exit_code == 0
+        # Regression test - ensure error message is captured
+        assert "Reset failed:" in result.output
+        # Verify this is plain text, not Rich markup
+        assert "[red]" not in result.output
+        assert "[/red]" not in result.output
+        # Verify rollback was called
+        self.mock_db.rollback.assert_called_once()
+
+    @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
     def test_github_sync_status_no_records(self, mock_get_db):
         """Test GitHub sync status with no records."""
         mock_get_db.return_value = self.mock_db

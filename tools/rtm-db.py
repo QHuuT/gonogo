@@ -598,9 +598,7 @@ def validate(ctx, fix):
 def reset(ctx, confirm):
     """Reset database (delete all RTM data)."""
     if not confirm:
-        console.print(
-            "[red]This will delete ALL RTM data. Use --confirm to proceed.[/red]"
-        )
+        click.echo("This will delete ALL RTM data. Use --confirm to proceed.")
         return
 
     db = get_db_session()
@@ -613,11 +611,11 @@ def reset(ctx, confirm):
         db.query(Epic).delete()
         db.commit()
 
-        console.print("[green]Database reset completed[/green]")
+        click.echo("Database reset completed")
 
     except Exception as e:
         db.rollback()
-        console.print(f"[red]Reset failed: {e}[/red]")
+        click.echo(f"Reset failed: {e}")
     finally:
         db.close()
 
