@@ -137,9 +137,6 @@ def test_user_story_linking():
     def test_analyze_test_file_without_references(self):
         """Test analyzing a test file without Epic/US references."""
         test_content = '''
-@pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
-@pytest.mark.user_story("US-00057", "US-99999")
-@pytest.mark.component("shared")
 def test_simple_function():
     """Simple test without references."""
     assert True
@@ -162,6 +159,111 @@ def test_simple_function():
                 tmp_path.unlink()
             except (PermissionError, FileNotFoundError):
                 pass  # Windows may lock the file, ignore cleanup errors
+
+    @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+    @pytest.mark.user_story("US-00057", "US-99999")
+    @pytest.mark.component("shared")
+    def test_analyze_test_file_content_expectation_regression(self):
+        """Regression test: Ensure test content matches expected assertions for reference detection."""
+
+        # This test documents the specific issue that was fixed:
+        # The original test had pytest marks in the content but expected empty references.
+        # This regression test demonstrates the correct behavior:
+
+        # Test 1: Content WITH pytest marks should find those references
+        test_content_with_marks = '''
+@pytest.mark.epic("EP-12345", "EP-67890")
+@pytest.mark.user_story("US-12345", "US-67890")
+@pytest.mark.component("backend")
+def test_function_with_marks():
+    """Test function with pytest marks."""
+    assert True
+'''
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as tmp:
+            tmp.write(test_content_with_marks)
+            tmp.flush()
+            tmp_path = Path(tmp.name)
+
+        try:
+            test_metadata = self.discovery._analyze_test_file(tmp_path, "unit")
+
+            assert len(test_metadata) == 1
+            assert test_metadata[0]["test_function_name"] == "test_function_with_marks"
+            # Should FIND the references that are actually present in pytest marks
+            assert "EP-12345" in test_metadata[0]["epic_references"]
+            assert "EP-67890" in test_metadata[0]["epic_references"]
+            assert "US-12345" in test_metadata[0]["user_story_references"]
+            assert "US-67890" in test_metadata[0]["user_story_references"]
+
+        finally:
+            try:
+                tmp_path.unlink()
+            except (PermissionError, FileNotFoundError):
+                pass
+
+        # Test 2: Content WITHOUT pytest marks should return empty arrays
+        # This is what the original failing test should have looked like
+        test_content_without_marks = '''
+def test_function_without_marks():
+    """Test function without pytest marks."""
+    assert True
+'''
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as tmp:
+            tmp.write(test_content_without_marks)
+            tmp.flush()
+            tmp_path = Path(tmp.name)
+
+        try:
+            test_metadata = self.discovery._analyze_test_file(tmp_path, "unit")
+
+            assert len(test_metadata) == 1
+            assert test_metadata[0]["test_function_name"] == "test_function_without_marks"
+            # Should NOT find any references when there are no pytest marks
+            assert test_metadata[0]["epic_references"] == []
+            assert test_metadata[0]["user_story_references"] == []
+
+        finally:
+            try:
+                tmp_path.unlink()
+            except (PermissionError, FileNotFoundError):
+                pass
+
+        # Test 3: This demonstrates the original bug -
+        # Content WITH marks but assertion expects empty (would fail)
+        test_content_original_bug = '''
+@pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
+@pytest.mark.user_story("US-00057", "US-99999")
+@pytest.mark.component("shared")
+def test_simple_function():
+    """Simple test without references."""
+    assert True
+'''
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as tmp:
+            tmp.write(test_content_original_bug)
+            tmp.flush()
+            tmp_path = Path(tmp.name)
+
+        try:
+            test_metadata = self.discovery._analyze_test_file(tmp_path, "unit")
+
+            assert len(test_metadata) == 1
+            assert test_metadata[0]["test_function_name"] == "test_simple_function"
+
+            # The ORIGINAL BUG: Test expected these to be empty but discovery correctly found them
+            # Original assertion: assert test_metadata[0]["epic_references"] == []  # This would FAIL
+            # Correct behavior: Discovery should find the marks that are actually present
+            assert "EP-00005" in test_metadata[0]["epic_references"]
+            assert "EP-00057" in test_metadata[0]["epic_references"]
+            assert "EP-12345" in test_metadata[0]["epic_references"]
+            assert "EP-99999" in test_metadata[0]["epic_references"]
+            assert "US-00057" in test_metadata[0]["user_story_references"]
+            assert "US-99999" in test_metadata[0]["user_story_references"]
+
+        finally:
+            try:
+                tmp_path.unlink()
+            except (PermissionError, FileNotFoundError):
+                pass
 
     @patch("src.shared.testing.database_integration.Path.glob")
     @pytest.mark.epic("EP-00005", "EP-00057", "EP-12345", "EP-99999")
