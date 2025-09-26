@@ -209,11 +209,12 @@ class TestGitHubIssueLabelMapper:
     @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_map_epic_labels(self, mapper):
         """Test epic-to-component label mapping."""
-        # Mock the instance method instead of the class method
-        mapper.matrix_parser.get_epic_mappings.return_value = {
+        # Mock the epic_mapper method properly
+        mock_get_epic_mappings = Mock(return_value={
             "EP-00001": {"component": "frontend", "epic_label": "blog-content"},
             "EP-00002": {"component": "backend", "epic_label": "comment-system"},
-        }
+        })
+        mapper.epic_mapper.get_epic_mappings = mock_get_epic_mappings
 
         test_cases = [
             ("EP-00001", {"component/frontend", "epic/blog-content"}),
@@ -318,10 +319,11 @@ class TestGitHubIssueLabelMapper:
     @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
     def test_generate_labels_integration(self, mapper):
         """Test full label generation integration."""
-        # Mock the instance method instead of the class method
-        mapper.matrix_parser.get_epic_mappings.return_value = {
+        # Mock the epic_mapper method properly
+        mock_get_epic_mappings = Mock(return_value={
             "EP-00003": {"component": "gdpr", "epic_label": "privacy-consent"}
-        }
+        })
+        mapper.epic_mapper.get_epic_mappings = mock_get_epic_mappings
 
         issue_data = IssueData(
             title="GDPR User Story",
@@ -375,6 +377,48 @@ class TestGitHubIssueLabelMapper:
             result = mapper.generate_labels(issue_data)
             # Should return original labels on error
             assert result == ["original"]
+
+    @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00004", "US-00015")
+    def test_epic_mapper_attribute_regression(self, mapper):
+        """Regression test for epic_mapper attribute naming.
+
+        This test documents the correct attribute name 'epic_mapper' vs the
+        incorrect 'matrix_parser' that was causing AttributeError failures.
+        It validates proper mocking patterns for the epic mapping functionality.
+        """
+        # Verify the mapper has the correct epic_mapper attribute
+        assert hasattr(mapper, 'epic_mapper'), "GitHubIssueLabelMapper should have epic_mapper attribute"
+        assert not hasattr(mapper, 'matrix_parser'), "GitHubIssueLabelMapper should NOT have matrix_parser attribute"
+
+        # Test proper mocking pattern for epic_mapper.get_epic_mappings
+        mock_mappings = {
+            "EP-12345": {"component": "frontend", "epic_label": "test-epic"},
+            "EP-67890": {"component": "backend", "epic_label": "api-epic"},
+        }
+
+        # This is the CORRECT way to mock the epic mapper method
+        mock_get_epic_mappings = Mock(return_value=mock_mappings)
+        mapper.epic_mapper.get_epic_mappings = mock_get_epic_mappings
+
+        # Verify the mock works correctly
+        issue_data = IssueData(
+            title="Test Epic Mapping",
+            body="### Epic ID\n\nEP-12345",
+            existing_labels=[],
+            issue_number=1,
+        )
+
+        result = mapper.map_epic_labels(issue_data)
+        expected_labels = {"component/frontend", "epic/test-epic"}
+        assert result == expected_labels
+
+        # Verify the mock was called
+        mock_get_epic_mappings.assert_called_once()
+
+        # Test that trying to access matrix_parser would fail (demonstrating the original bug)
+        with pytest.raises(AttributeError, match="'GitHubIssueLabelMapper' object has no attribute 'matrix_parser'"):
+            _ = mapper.matrix_parser
 
 
 @pytest.mark.epic("EP-00001", "EP-00002", "EP-00003", "EP-00004")
