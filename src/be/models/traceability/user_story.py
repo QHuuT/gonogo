@@ -117,6 +117,9 @@ class UserStory(TraceabilityBase):
         self.github_labels = str(github_data.get("labels", []))
         self.github_assignees = str(github_data.get("assignees", []))
 
+        # Recalculate implementation status from latest state/labels
+        self.implementation_status = self.get_github_derived_status()
+
         # Update title and description from GitHub
         if github_data.get("title"):
             self.title = github_data["title"]
@@ -211,3 +214,4 @@ class UserStory(TraceabilityBase):
 
     def __repr__(self):
         return f"<UserStory(user_story_id='{self.user_story_id}', epic_id={self.epic_id}, github_issue={self.github_issue_number}, status='{self.implementation_status}')>"
+

@@ -9,6 +9,7 @@ Architecture Decision: ADR-003 - Hybrid GitHub + Database RTM Architecture
 """
 
 import json
+from pathlib import Path
 from datetime import datetime
 from typing import List, Optional
 
@@ -24,6 +25,40 @@ from ..services.rtm_report_generator import RTMReportGenerator
 
 router = APIRouter(prefix="/api/rtm", tags=["RTM"])
 templates = Jinja2Templates(directory="src/be/templates")
+
+DEMO_DATASET_PATH = Path(__file__).resolve().parents[3] / "tests" / "demo" / "multipersona_dashboard_demo.json"
+
+
+def load_demo_dataset() -> dict:
+    """Load curated demo dashboard data."""
+    if not DEMO_DATASET_PATH.exists():
+        raise HTTPException(status_code=500, detail="Demo dataset not available")
+    with DEMO_DATASET_PATH.open('r', encoding='utf-8') as handle:
+        return json.load(handle)
+
+
+def filter_demo_epics(epics: List[dict], epic_filter: Optional[str], status_filter: Optional[str], component_filter: Optional[str]) -> List[dict]:
+    """Apply basic filtering logic to the demo epics collection."""
+    filtered = epics
+
+    if epic_filter:
+        filtered = [epic for epic in filtered if epic.get('epic_id') == epic_filter]
+
+    if status_filter:
+        status_lower = status_filter.lower()
+        filtered = [epic for epic in filtered if str(epic.get('status', '')).lower() == status_lower]
+
+    if component_filter:
+        components = [component.strip().lower() for component in component_filter.split(',') if component.strip()]
+        if components:
+            filtered = [
+                epic
+                for epic in filtered
+                if str(epic.get('component', '')).lower() in components
+            ]
+
+    return filtered
+
 
 
 # Dashboard and Web Interface
@@ -42,6 +77,12 @@ def dashboard_home(request: Request):
 @router.get("/dashboard/multipersona", response_class=HTMLResponse)
 def multipersona_dashboard(request: Request):
     """Serve the Multi-Persona Dashboard web interface (US-00072)."""
+    return templates.TemplateResponse("multipersona_dashboard.html", {"request": request})
+
+
+@router.get("/dashboard/multipersona/demo", response_class=HTMLResponse)
+def multipersona_dashboard_demo(request: Request):
+    """Serve the Multi-Persona Dashboard in demo mode (uses curated data)."""
     return templates.TemplateResponse("multipersona_dashboard.html", {"request": request})
 
 
@@ -1108,6 +1149,52 @@ def get_dashboard_metrics(
     }
 
 
+@router.get("/dashboard/metrics/demo")
+def get_dashboard_metrics_demo(
+    persona: str = Query(..., description="Dashboard persona: PM, PO, QA"),
+    epic_filter: Optional[str] = Query(None, description="Filter by epic_id"),
+    status_filter: Optional[str] = Query(None, description="Filter by status"),
+    component_filter: Optional[str] = Query(None, description="Filter by component"),
+):
+    """Get aggregated metrics for the multi-persona dashboard (demo dataset)."""
+    dataset = load_demo_dataset()
+    all_epics = dataset.get("epics", [])
+    epics = filter_demo_epics(all_epics, epic_filter, status_filter, component_filter)
+
+    if not epics:
+        return {
+            "persona": persona.upper(),
+            "message": "No epics found matching the criteria (demo)",
+            "epics": [],
+            "summary": {}
+        }
+
+    epic_metrics = []
+    for epic in epics:
+        epic_metrics.append({
+            "epic_id": epic.get("epic_id"),
+            "title": epic.get("title", ""),
+            "status": epic.get("status", ""),
+            "completion_percentage": epic.get("completion_percentage", 0),
+            "priority": epic.get("priority", ""),
+            "metrics": epic.get("metrics", {}),
+        })
+
+    summary = calculate_dashboard_summary(epic_metrics, persona)
+
+    return {
+        "persona": persona.upper(),
+        "epics": epic_metrics,
+        "summary": summary,
+        "filters_applied": {
+            "epic_filter": epic_filter,
+            "status_filter": status_filter,
+            "component_filter": component_filter
+        },
+        "mode": "demo",
+    }
+
+
 def calculate_dashboard_summary(epic_metrics: List[dict], persona: str) -> dict:
     """Calculate aggregated summary metrics for dashboard personas."""
     if not epic_metrics:
@@ -1115,46 +1202,91 @@ def calculate_dashboard_summary(epic_metrics: List[dict], persona: str) -> dict:
 
     total_epics = len(epic_metrics)
 
-    if persona.lower() == "pm":
-        # Project Manager summary
-        at_risk_count = sum(1 for epic in epic_metrics
-                           if epic["metrics"].get("risk", {}).get("overall_risk_score", 0) > 30)
-        avg_velocity = sum(epic["metrics"].get("velocity", {}).get("velocity_points_per_sprint", 0)
-                          for epic in epic_metrics) / total_epics
+    persona_key = persona.lower()
+
+    if persona_key == "pm":
+        at_risk_count = sum(
+            1
+            for epic in epic_metrics
+            if epic["metrics"].get("risk", {}).get("overall_risk_score", 0) > 30
+        )
+        avg_velocity = sum(
+            epic["metrics"].get("velocity", {}).get("velocity_points_per_sprint", 0) or 0
+            for epic in epic_metrics
+        ) / total_epics
+        avg_schedule_variance = sum(
+            epic["metrics"].get("timeline", {}).get("schedule_variance_days", 0) or 0
+            for epic in epic_metrics
+        ) / total_epics
+        avg_velocity_per_member = sum(
+            epic["metrics"].get("team_productivity", {}).get("velocity_per_team_member", 0) or 0
+            for epic in epic_metrics
+        ) / total_epics
+        avg_success_probability = sum(
+            epic["metrics"].get("risk", {}).get("success_probability", 0) or 0
+            for epic in epic_metrics
+        ) / total_epics
 
         return {
             "total_epics": total_epics,
             "at_risk_epics": at_risk_count,
             "risk_percentage": (at_risk_count / total_epics) * 100,
             "average_velocity": round(avg_velocity, 2),
+            "average_velocity_per_member": round(avg_velocity_per_member, 2),
+            "average_schedule_variance": round(avg_schedule_variance, 1),
+            "average_success_probability": round(avg_success_probability, 1),
             "schedule_health": "Good" if at_risk_count < total_epics * 0.3 else "Needs Attention"
         }
 
-    elif persona.lower() == "po":
-        # Product Owner summary
-        avg_satisfaction = sum(epic["metrics"].get("stakeholder", {}).get("satisfaction_score", 0)
-                              for epic in epic_metrics) / total_epics
-        high_scope_creep = sum(1 for epic in epic_metrics
-                              if epic["metrics"].get("scope", {}).get("scope_creep_percentage", 0) > 20)
+    elif persona_key == "po":
+        avg_satisfaction = sum(
+            epic["metrics"].get("stakeholder", {}).get("satisfaction_score", 0) or 0
+            for epic in epic_metrics
+        ) / total_epics
+        high_scope_creep = sum(
+            1
+            for epic in epic_metrics
+            if epic["metrics"].get("scope", {}).get("scope_creep_percentage", 0) > 20
+        )
+        avg_roi = sum(
+            epic["metrics"].get("business_value", {}).get("roi_percentage", 0) or 0
+            for epic in epic_metrics
+        ) / total_epics
+        avg_adoption = sum(
+            epic["metrics"].get("adoption", {}).get("user_adoption_rate", 0) or 0
+            for epic in epic_metrics
+        ) / total_epics
+        avg_scope_creep_percentage = sum(
+            epic["metrics"].get("scope", {}).get("scope_creep_percentage", 0) or 0
+            for epic in epic_metrics
+        ) / total_epics
 
         return {
             "total_epics": total_epics,
             "average_satisfaction": round(avg_satisfaction, 1),
+            "average_roi": round(avg_roi, 1),
+            "average_adoption": round(avg_adoption, 1),
+            "average_scope_creep_percentage": round(avg_scope_creep_percentage, 1),
             "scope_creep_issues": high_scope_creep,
             "satisfaction_grade": "Good" if avg_satisfaction >= 7 else "Needs Improvement",
             "business_health": "Healthy" if high_scope_creep < total_epics * 0.3 else "Monitor"
         }
 
-    elif persona.lower() == "qa":
-        # Quality Assurance summary
-        avg_coverage = sum(epic["metrics"].get("testing", {}).get("test_coverage", 0)
-                          for epic in epic_metrics) / total_epics
+    elif persona_key == "qa":
+        avg_coverage = sum((epic["metrics"].get("testing", {}).get("test_coverage", 0) or 0)
+                           for epic in epic_metrics) / total_epics
         high_defect_density = sum(1 for epic in epic_metrics
-                                 if epic["metrics"].get("defects", {}).get("defect_density", 0) > 0.5)
+                                  if epic["metrics"].get("defects", {}).get("defect_density", 0) > 0.5)
+        avg_defect_density = sum((epic["metrics"].get("defects", {}).get("defect_density", 0) or 0)
+                                  for epic in epic_metrics) / total_epics
+        avg_technical_debt = sum((epic["metrics"].get("technical_debt", {}).get("debt_hours", 0) or 0)
+                                   for epic in epic_metrics) / total_epics
 
         return {
             "total_epics": total_epics,
             "average_test_coverage": round(avg_coverage, 1),
+            "average_defect_density": round(avg_defect_density, 2),
+            "average_technical_debt": round(avg_technical_debt, 1),
             "high_defect_epics": high_defect_density,
             "coverage_grade": "Good" if avg_coverage >= 80 else "Needs Improvement",
             "quality_health": "Good" if high_defect_density < total_epics * 0.2 else "Attention Required"
@@ -1250,3 +1382,5 @@ def detect_cycles(db: Session = Depends(get_db)):
         }
     except Exception:
         return {"has_cycles": False, "cycles": [], "cycle_count": 0}
+
+

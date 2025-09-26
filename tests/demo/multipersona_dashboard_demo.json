@@ -1,0 +1,170 @@
+{
+    "epics":  [
+                  {
+                      "epic_id":  "DEMO-OPS-001",
+                      "title":  "Observability Overhaul",
+                      "status":  "in_progress",
+                      "completion_percentage":  72,
+                      "priority":  "high",
+                      "component":  "platform",
+                      "metrics":  {
+                                      "timeline":  {
+                                                       "schedule_variance_days":  -2
+                                                   },
+                                      "velocity":  {
+                                                       "velocity_points_per_sprint":  30.0,
+                                                       "velocity_per_team_member":  10.0
+                                                   },
+                                      "team_productivity":  {
+                                                                "velocity_per_team_member":  10.0
+                                                            },
+                                      "risk":  {
+                                                   "overall_risk_score":  20.0,
+                                                   "success_probability":  80.0
+                                               },
+                                      "scope":  {
+                                                    "scope_creep_percentage":  12.0
+                                                },
+                                      "business_value":  {
+                                                             "roi_percentage":  85.0
+                                                         },
+                                      "adoption":  {
+                                                       "user_adoption_rate":  75.0
+                                                   },
+                                      "stakeholder":  {
+                                                          "satisfaction_score":  8.0
+                                                      },
+                                      "testing":  {
+                                                      "test_coverage":  88.0
+                                                  },
+                                      "defects":  {
+                                                      "defect_density":  0.2
+                                                  },
+                                      "technical_debt":  {
+                                                             "debt_hours":  20.0
+                                                         }
+                                  }
+                  },
+                  {
+                      "epic_id":  "DEMO-PLAT-002",
+                      "title":  "Platform Hardening",
+                      "status":  "in_progress",
+                      "completion_percentage":  58,
+                      "priority":  "critical",
+                      "component":  "backend",
+                      "metrics":  {
+                                      "timeline":  {
+                                                       "schedule_variance_days":  1.0
+                                                   },
+                                      "velocity":  {
+                                                       "velocity_points_per_sprint":  26.0,
+                                                       "velocity_per_team_member":  8.5
+                                                   },
+                                      "team_productivity":  {
+                                                                "velocity_per_team_member":  8.5
+                                                            },
+                                      "risk":  {
+                                                   "overall_risk_score":  35.0,
+                                                   "success_probability":  65.0
+                                               },
+                                      "scope":  {
+                                                    "scope_creep_percentage":  22.0
+                                                },
+                                      "business_value":  {
+                                                             "roi_percentage":  70.0
+                                                         },
+                                      "adoption":  {
+                                                       "user_adoption_rate":  60.0
+                                                   },
+                                      "stakeholder":  {
+                                                          "satisfaction_score":  6.5
+                                                      },
+                                      "testing":  {
+                                                      "test_coverage":  78.0
+                                                  },
+                                      "defects":  {
+                                                      "defect_density":  0.45
+                                                  },
+                                      "technical_debt":  {
+                                                             "debt_hours":  55.0
+                                                         }
+                                  }
+                  },
+                  {
+                      "epic_id":  "DEMO-UX-003",
+                      "title":  "Experience Refresh",
+                      "status":  "planned",
+                      "completion_percentage":  40,
+                      "priority":  "medium",
+                      "component":  "frontend",
+                      "metrics":  {
+                                      "timeline":  {
+                                                       "schedule_variance_days":  4.0
+                                                   },
+                                      "velocity":  {
+                                                       "velocity_points_per_sprint":  20.0,
+                                                       "velocity_per_team_member":  6.5
+                                                   },
+                                      "team_productivity":  {
+                                                                "velocity_per_team_member":  6.5
+                                                            },
+                                      "risk":  {
+                                                   "overall_risk_score":  50.0,
+                                                   "success_probability":  50.0
+                                               },
+                                      "scope":  {
+                                                    "scope_creep_percentage":  18.0
+                                                },
+                                      "business_value":  {
+                                                             "roi_percentage":  95.0
+                                                         },
+                                      "adoption":  {
+                                                       "user_adoption_rate":  82.0
+                                                   },
+                                      "stakeholder":  {
+                                                          "satisfaction_score":  7.8
+                                                      },
+                                      "testing":  {
+                                                      "test_coverage":  83.0
+                                                  },
+                                      "defects":  {
+                                                      "defect_density":  0.35
+                                                  },
+                                      "technical_debt":  {
+                                                             "debt_hours":  75.0
+                                                         }
+                                  }
+                  }
+              ],
+    "expected":  {
+                     "PM":  {
+                                "total_epics":  3,
+                                "at_risk_epics":  2,
+                                "risk_percentage":  66.6667,
+                                "average_velocity":  25.33,
+                                "average_velocity_per_member":  8.33,
+                                "average_schedule_variance":  1.0,
+                                "average_success_probability":  65.0,
+                                "schedule_health":  "Needs Attention"
+                            },
+                     "PO":  {
+                                "total_epics":  3,
+                                "average_satisfaction":  7.4,
+                                "average_roi":  83.3,
+                                "average_adoption":  72.3,
+                                "average_scope_creep_percentage":  17.3,
+                                "scope_creep_issues":  1,
+                                "satisfaction_grade":  "Good",
+                                "business_health":  "Monitor"
+                            },
+                     "QA":  {
+                                "total_epics":  3,
+                                "average_test_coverage":  83.0,
+                                "average_defect_density":  0.33,
+                                "average_technical_debt":  50.0,
+                                "high_defect_epics":  0,
+                                "coverage_grade":  "Good",
+                                "quality_health":  "Good"
+                            }
+                 }
+}

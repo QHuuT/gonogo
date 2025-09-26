@@ -6,9 +6,11 @@
         "name": "test_filter_tests_by_type_selector",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -18,9 +20,11 @@
         "name": "test_filter_user_stories_by_status_selector",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -30,9 +34,11 @@
         "name": "test_filter_defects_selector",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -42,9 +48,11 @@
         "name": "test_update_filter_button_states_defect_handling",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -54,9 +62,11 @@
         "name": "test_update_filter_button_states_standard_handling",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -66,9 +76,11 @@
         "name": "test_filter_data_attributes",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -78,9 +90,11 @@
         "name": "test_filter_button_data_attributes",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -90,9 +104,11 @@
         "name": "test_filter_css_classes",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -102,9 +118,11 @@
         "name": "test_epic_container_structure",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -114,9 +132,11 @@
         "name": "test_filter_values_mapping",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -126,9 +146,11 @@
         "name": "test_aria_attributes",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -138,9 +160,11 @@
         "name": "test_console_warning_scenarios",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -150,9 +174,11 @@
         "name": "test_multiple_epic_filtering",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -162,9 +188,11 @@
         "name": "test_animation_integration",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -174,9 +202,11 @@
         "name": "test_filter_count_display_integration",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -186,9 +216,11 @@
         "name": "test_comprehensive_integration",
         "class_name": "TestRTMFilterFunctionality",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -198,9 +230,11 @@
         "name": "test_epic_collapse_regression",
         "class_name": "TestRTMFilterRegression",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -210,9 +244,11 @@
         "name": "test_parameter_mismatch_prevention",
         "class_name": "TestRTMFilterRegression",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -222,9 +258,11 @@
         "name": "test_selector_specificity",
         "class_name": "TestRTMFilterRegression",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -234,9 +272,11 @@
         "name": "test_button_state_consistency",
         "class_name": "TestRTMFilterRegression",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
-        "user_stories": [],
+        "user_stories": [
+          "US-00046"
+        ],
         "components": [
           "backend"
         ],
@@ -1337,6 +1377,39 @@
       }
     ]
   },
+  "unit\\tools\\test_github_sync_manager.py": {
+    "file_path": "tests\\unit\\tools\\test_github_sync_manager.py",
+    "functions": [
+      {
+        "name": "test_sync_updates_status_from_github_labels",
+        "class_name": "TestGitHubSyncManagerStatus",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00059"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "status/in-progress labels must persist as in_progress implementation status."
+      },
+      {
+        "name": "test_sync_marks_completed_when_issue_closed",
+        "class_name": "TestGitHubSyncManagerStatus",
+        "epics": [
+          "EP-00005"
+        ],
+        "user_stories": [
+          "US-00059"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": "Closed GitHub issues should flip implementation status to completed."
+      }
+    ]
+  },
   "unit\\shared\\models\\test_epic_model.py": {
     "file_path": "tests\\unit\\shared\\models\\test_epic_model.py",
     "functions": [
@@ -2206,6 +2279,30 @@
         ],
         "components": [],
         "docstring": "Test updating from partial GitHub data."
+      },
+      {
+        "name": "test_update_from_github_recalculates_in_progress_status",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "GitHub label updates should refresh implementation status."
+      },
+      {
+        "name": "test_update_from_github_closed_issue_sets_completed",
+        "class_name": "TestUserStory",
+        "epics": [
+          "EP-00001"
+        ],
+        "user_stories": [
+          "US-00001"
+        ],
+        "components": [],
+        "docstring": "Closed GitHub issues should mark the story as completed."
       },
       {
         "name": "test_calculate_test_coverage_no_tests",
@@ -3436,7 +3533,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test listing all unique components."
       },
       {
@@ -3448,7 +3547,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test component statistics endpoint."
       },
       {
@@ -3460,7 +3561,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test component distribution analytics."
       },
       {
@@ -3472,7 +3575,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test getting all items for a specific component."
       },
       {
@@ -3484,7 +3589,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test epic filtering by component."
       },
       {
@@ -3496,7 +3603,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test user story filtering by component."
       },
       {
@@ -3508,7 +3617,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test defect filtering by component."
       },
       {
@@ -3520,7 +3631,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test test filtering by component."
       },
       {
@@ -3532,7 +3645,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test filtering with non-existent component."
       },
       {
@@ -3544,7 +3659,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test getting items for non-existent component."
       },
       {
@@ -3556,7 +3673,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test filtering with empty component parameter."
       },
       {
@@ -3568,7 +3687,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test component filtering with spaces in component names."
       },
       {
@@ -3580,7 +3701,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test that component statistics can handle reasonable data volumes."
       },
       {
@@ -3592,7 +3715,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test filtering with large result sets."
       },
       {
@@ -3604,7 +3729,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test that epic progress includes component information."
       },
       {
@@ -3616,20 +3743,10 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test that RTM matrix includes component information."
-      },
-      {
-        "name": "test_dashboard_data_with_components",
-        "class_name": "TestComponentAPIIntegration",
-        "epics": [
-          "EP-00005"
-        ],
-        "user_stories": [
-          "US-00005"
-        ],
-        "components": [],
-        "docstring": "Test that dashboard data includes component information."
       },
       {
         "name": "test_rtm_matrix_html_component_columns",
@@ -3640,7 +3757,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test that RTM matrix HTML includes component columns in all subtables."
       },
       {
@@ -3652,7 +3771,9 @@
         "user_stories": [
           "US-00005"
         ],
-        "components": [],
+        "components": [
+          "backend"
+        ],
         "docstring": "Test that RTM matrix HTML includes horizontal scrolling support."
       }
     ]
@@ -3669,7 +3790,9 @@
         "user_stories": [
           "US-00057"
         ],
-        "components": [],
+        "components": [
+          "database"
+        ],
         "docstring": "Test complete test discovery and database sync workflow."
       },
       {
@@ -3681,7 +3804,9 @@
         "user_stories": [
           "US-00057"
         ],
-        "components": [],
+        "components": [
+          "database"
+        ],
         "docstring": "Test test execution result tracking workflow."
       },
       {
@@ -3693,7 +3818,9 @@
         "user_stories": [
           "US-00057"
         ],
-        "components": [],
+        "components": [
+          "database"
+        ],
         "docstring": "Test BDD scenario to User Story linking workflow."
       },
       {
@@ -3705,7 +3832,9 @@
         "user_stories": [
           "US-00057"
         ],
-        "components": [],
+        "components": [
+          "database"
+        ],
         "docstring": "Test complete end-to-end integration workflow."
       },
       {
@@ -3717,7 +3846,9 @@
         "user_stories": [
           "US-00057"
         ],
-        "components": [],
+        "components": [
+          "database"
+        ],
         "docstring": "Test error handling and recovery in integration workflow."
       },
       {
@@ -3729,7 +3860,9 @@
         "user_stories": [
           "US-00057"
         ],
-        "components": [],
+        "components": [
+          "database"
+        ],
         "docstring": "Test handling of duplicate test discoveries."
       }
     ]
@@ -3842,181 +3975,284 @@
         "name": "test_epic_sync_creation",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00056",
           "US-00001"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test creating Epic from GitHub issue."
       },
       {
         "name": "test_epic_sync_update",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00056",
           "US-00001"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test updating existing Epic from GitHub issue."
       },
       {
         "name": "test_user_story_sync_with_epic_reference",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00056",
           "US-00001"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test creating User Story with Epic reference."
       },
       {
         "name": "test_user_story_sync_closed_issue",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00056",
           "US-00001"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test User Story sync when GitHub issue is closed."
       },
       {
         "name": "test_defect_sync_creation",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00056",
           "US-00001"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test creating Defect from GitHub issue."
       },
       {
         "name": "test_sync_status_recording",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00056",
           "US-00001"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test that sync status is properly recorded."
       },
       {
         "name": "test_sync_status_recording_failure",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00056",
           "US-00001"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test that sync failures are properly recorded."
       },
       {
         "name": "test_epic_progress_calculation",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00056",
           "US-00001"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test Epic progress calculation when User Stories are completed."
       },
       {
         "name": "test_epic_progress_without_story_points",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00056",
           "US-00001"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test Epic progress calculation when User Stories have no story points."
       },
       {
         "name": "test_epic_status_update_on_completion",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00056",
           "US-00001"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test that Epic status is updated when progress reaches 100%."
       },
       {
         "name": "test_parsing_functions",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00056",
           "US-00001"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test various parsing functions used in sync."
       },
       {
         "name": "test_issue_type_detection",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00056",
           "US-00001"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test issue type detection from title and labels."
       },
       {
         "name": "test_entity_id_extraction",
         "class_name": "TestGitHubDatabaseSync",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00056",
           "US-00001"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test entity ID extraction from titles."
       },
       {
         "name": "test_workflow_trigger_conditions",
         "class_name": "TestGitHubActionsWorkflowIntegration",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [
-          "US-00001"
+          "US-00056"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test that workflow triggers on correct GitHub events."
       },
       {
         "name": "test_job_dependencies",
         "class_name": "TestGitHubActionsWorkflowIntegration",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [
-          "US-00001"
+          "US-00056"
         ],
-        "components": [],
+        "components": [
+          "ci-cd"
+        ],
         "docstring": "Test that workflow jobs have correct dependencies."
+      }
+    ]
+  },
+  "integration\\rtm_api\\test_dashboard_persona_demo.py": {
+    "file_path": "tests\\integration\\rtm_api\\test_dashboard_persona_demo.py",
+    "functions": [
+      {
+        "name": "test_summary_matches_demo_expectations",
+        "class_name": "TestDashboardPersonaDemo",
+        "epics": [
+          "EP-00010"
+        ],
+        "user_stories": [
+          "US-00072"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": ""
+      },
+      {
+        "name": "test_demo_dataset_covers_velocity_and_scope_dimensions",
+        "class_name": "TestDashboardPersonaDemo",
+        "epics": [
+          "EP-00010"
+        ],
+        "user_stories": [
+          "US-00072"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": ""
+      },
+      {
+        "name": "test_demo_dataset_captures_quality_dimensions",
+        "class_name": "TestDashboardPersonaDemo",
+        "epics": [
+          "EP-00010"
+        ],
+        "user_stories": [
+          "US-00072"
+        ],
+        "components": [
+          "backend"
+        ],
+        "docstring": ""
       }
     ]
   },
@@ -4041,9 +4277,11 @@
         "name": "test_create_epic",
         "class_name": "TestEpicAPI",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00054",
           "US-00001"
         ],
         "components": [
@@ -4055,9 +4293,11 @@
         "name": "test_list_epics",
         "class_name": "TestEpicAPI",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00054",
           "US-00001"
         ],
         "components": [
@@ -4069,9 +4309,11 @@
         "name": "test_list_epics_with_filters",
         "class_name": "TestEpicAPI",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00054",
           "US-00001"
         ],
         "components": [
@@ -4083,9 +4325,11 @@
         "name": "test_get_epic",
         "class_name": "TestEpicAPI",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00054",
           "US-00001"
         ],
         "components": [
@@ -4097,9 +4341,11 @@
         "name": "test_get_epic_not_found",
         "class_name": "TestEpicAPI",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00054",
           "US-00001"
         ],
         "components": [
@@ -4111,9 +4357,11 @@
         "name": "test_update_epic",
         "class_name": "TestEpicAPI",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00054",
           "US-00001"
         ],
         "components": [
@@ -4125,9 +4373,11 @@
         "name": "test_delete_epic",
         "class_name": "TestEpicAPI",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00054",
           "US-00001"
         ],
         "components": [
@@ -4139,9 +4389,11 @@
         "name": "test_create_user_story",
         "class_name": "TestUserStoryAPI",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00054",
           "US-00001"
         ],
         "components": [
@@ -4153,9 +4405,11 @@
         "name": "test_list_user_stories",
         "class_name": "TestUserStoryAPI",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00054",
           "US-00001"
         ],
         "components": [
@@ -4167,9 +4421,11 @@
         "name": "test_list_user_stories_by_epic",
         "class_name": "TestUserStoryAPI",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00054",
           "US-00001"
         ],
         "components": [
@@ -4181,9 +4437,11 @@
         "name": "test_get_user_story",
         "class_name": "TestUserStoryAPI",
         "epics": [
+          "EP-00005",
           "EP-00001"
         ],
         "user_stories": [
+          "US-00054",
           "US-00001"
         ],
         "components": [
@@ -4672,7 +4930,9 @@
       {
         "name": "test_epic_expand_collapse_still_works",
         "class_name": "TestRTMFilterRegression",
-        "epics": [],
+        "epics": [
+          "EP-00005"
+        ],
         "user_stories": [],
         "components": [
           "backend"
@@ -4682,7 +4942,9 @@
       {
         "name": "test_search_functionality_preserved",
         "class_name": "TestRTMFilterRegression",
-        "epics": [],
+        "epics": [
+          "EP-00005"
+        ],
         "user_stories": [],
         "components": [
           "backend"
@@ -4692,7 +4954,9 @@
       {
         "name": "test_export_functionality_preserved",
         "class_name": "TestRTMFilterRegression",
-        "epics": [],
+        "epics": [
+          "EP-00005"
+        ],
         "user_stories": [],
         "components": [
           "backend"
@@ -4809,7 +5073,7 @@
         "name": "test_existing_rtm_report_structure",
         "class_name": "TestRTMFilterValidation",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -4821,7 +5085,7 @@
         "name": "test_javascript_fixes_applied",
         "class_name": "TestRTMFilterValidation",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -4833,7 +5097,7 @@
         "name": "test_filter_function_parameter_matching",
         "class_name": "TestRTMFilterValidation",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -4845,7 +5109,7 @@
         "name": "test_css_selector_improvements",
         "class_name": "TestRTMFilterValidation",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -4857,7 +5121,7 @@
         "name": "test_button_state_management_fix",
         "class_name": "TestRTMFilterValidation",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -4869,7 +5133,7 @@
         "name": "test_error_handling_improvements",
         "class_name": "TestRTMFilterValidation",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -4881,7 +5145,7 @@
         "name": "test_regression_prevention",
         "class_name": "TestRTMFilterValidation",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -4893,7 +5157,7 @@
         "name": "test_initialization_and_exposure",
         "class_name": "TestRTMFilterValidation",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -4905,7 +5169,7 @@
         "name": "test_animation_and_ux_features",
         "class_name": "TestRTMFilterValidation",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -4958,7 +5222,7 @@
         "name": "test_clicking_status_filter_actually_filters",
         "class_name": "TestRTMActualBehavior",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -4970,7 +5234,7 @@
         "name": "test_clicking_defect_filter_actually_filters",
         "class_name": "TestRTMActualBehavior",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -4982,7 +5246,7 @@
         "name": "test_epic_headers_still_have_toggle_functionality",
         "class_name": "TestRTMActualBehavior",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -4994,7 +5258,7 @@
         "name": "test_filter_clear_functionality",
         "class_name": "TestRTMActualBehavior",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -5006,7 +5270,7 @@
         "name": "test_multiple_filters_work_independently",
         "class_name": "TestRTMActualBehavior",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -5018,7 +5282,7 @@
         "name": "test_filter_buttons_exist_and_have_correct_onclick",
         "class_name": "TestRTMActualBehavior",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -5030,7 +5294,7 @@
         "name": "test_regression_scenario_specifically",
         "class_name": "TestRTMActualBehavior",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
@@ -5246,11 +5510,11 @@
         "name": "test_click_filter_button_and_check_behavior",
         "class_name": "TestRTMBrowserClicks",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
-          "backend"
+          "frontend"
         ],
         "docstring": "Click an actual filter button and see what happens"
       },
@@ -5258,11 +5522,11 @@
         "name": "test_epic_toggle_still_works_after_filter",
         "class_name": "TestRTMBrowserClicks",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
-          "backend"
+          "frontend"
         ],
         "docstring": "Test that epic toggle still works independently"
       },
@@ -5270,11 +5534,11 @@
         "name": "test_javascript_console_for_errors",
         "class_name": "TestRTMBrowserClicks",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
-          "backend"
+          "frontend"
         ],
         "docstring": "Check browser console for JavaScript errors"
       },
@@ -5282,11 +5546,11 @@
         "name": "test_filter_functions_are_defined",
         "class_name": "TestRTMBrowserClicks",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
-          "backend"
+          "frontend"
         ],
         "docstring": "Test that JavaScript filter functions are actually defined"
       },
@@ -5294,11 +5558,11 @@
         "name": "test_actual_function_execution",
         "class_name": "TestRTMBrowserClicks",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [],
         "components": [
-          "backend"
+          "frontend"
         ],
         "docstring": "Test actually calling the JavaScript functions"
       },
@@ -5323,10 +5587,10 @@
         "name": "test_rtm_generator_with_real_files",
         "class_name": "TestRTMEndToEnd",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [
-          "US-00001"
+          "US-00017"
         ],
         "components": [
           "backend"
@@ -5337,10 +5601,10 @@
         "name": "test_rtm_update_with_real_files",
         "class_name": "TestRTMEndToEnd",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [
-          "US-00001"
+          "US-00017"
         ],
         "components": [
           "backend"
@@ -5351,10 +5615,10 @@
         "name": "test_cli_tool_integration",
         "class_name": "TestRTMEndToEnd",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [
-          "US-00001"
+          "US-00017"
         ],
         "components": [
           "backend"
@@ -5365,10 +5629,10 @@
         "name": "test_plugin_system_integration",
         "class_name": "TestRTMEndToEnd",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [
-          "US-00001"
+          "US-00017"
         ],
         "components": [
           "backend"
@@ -5379,10 +5643,10 @@
         "name": "test_configuration_variations",
         "class_name": "TestRTMEndToEnd",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [
-          "US-00001"
+          "US-00017"
         ],
         "components": [
           "backend"
@@ -5393,10 +5657,10 @@
         "name": "test_error_handling_integration",
         "class_name": "TestRTMEndToEnd",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [
-          "US-00001"
+          "US-00017"
         ],
         "components": [
           "backend"
@@ -5407,10 +5671,10 @@
         "name": "test_link_generation_accuracy",
         "class_name": "TestRTMEndToEnd",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [
-          "US-00001"
+          "US-00017"
         ],
         "components": [
           "backend"
@@ -5421,10 +5685,10 @@
         "name": "test_validation_report_generation",
         "class_name": "TestRTMEndToEnd",
         "epics": [
-          "EP-00001"
+          "EP-00005"
         ],
         "user_stories": [
-          "US-00001"
+          "US-00017"
         ],
         "components": [
           "backend"

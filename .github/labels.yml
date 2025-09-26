@@ -91,26 +91,31 @@
   color: "f9d0c4"
   description: "CI/CD pipeline related"
 
-# Workflow Labels
-- name: "needs-triage"
-  color: "fef2c0"
-  description: "Needs initial review and prioritization"
-
-- name: "needs-refinement"
-  color: "fef2c0"
-  description: "Needs more detail or clarification"
-
-- name: "ready-for-dev"
+# Status Workflow Labels (kept in sync with existing GitHub labels)
+# Note: only slash-style status labels are defined here.
+- name: "status/ready"
   color: "c2e0c6"
   description: "Ready for development"
 
-- name: "ready-for-review"
-  color: "d4c5f9"
-  description: "Ready for code review"
-
-- name: "ready-for-testing"
+- name: "status/testing"
   color: "bfd4f2"
-  description: "Ready for testing"
+  description: "In testing phase"
+
+- name: "status/in-progress"
+  color: "1f6feb"
+  description: "Work in progress"
+
+- name: "status/backlog"
+  color: "fef2c0"
+  description: "Planned, not started"
+
+- name: "status/done"
+  color: "0e8a16"
+  description: "Completed"
+
+- name: "status/review"
+  color: "d4c5f9"
+  description: "In review"
 
 # Special Labels
 - name: "duplicate"
@@ -170,3 +175,21 @@
 - name: "gdpr/data-retention"
   color: "ff6b6b"
   description: "Related to data retention policies"
+
+# Capability Labels
+- name: "capability/CAP-00001"
+  color: "8e44ad"
+  description: "Capability CAP-00001 - GitHub Integration"
+
+- name: "capability/CAP-00002"
+  color: "16a085"
+  description: "Capability CAP-00002 - Requirements Traceability"
+
+- name: "capability/CAP-00003"
+  color: "e67e22"
+  description: "Capability CAP-00003 - Blog Platform"
+
+- name: "capability/CAP-00004"
+  color: "c0392b"
+  description: "Capability CAP-00004 - GDPR Compliance"
+

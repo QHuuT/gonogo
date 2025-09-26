@@ -128,6 +128,40 @@ class TestUserStory:
 
     @pytest.mark.epic("EP-00001", "EP-00005")
     @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
+    def test_update_from_github_recalculates_in_progress_status(self, user_story):
+        """GitHub label updates should refresh implementation status."""
+        user_story.github_issue_state = "open"
+        user_story.github_labels = "[]"
+        user_story.implementation_status = "planned"
+
+        github_data = {
+            "state": "open",
+            "labels": [{"name": "status/in-progress"}],
+            "assignees": [],
+        }
+
+        user_story.update_from_github(github_data)
+
+        assert user_story.implementation_status == "in_progress"
+
+    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
+    def test_update_from_github_closed_issue_sets_completed(self, user_story):
+        """Closed GitHub issues should mark the story as completed."""
+        user_story.github_issue_state = "open"
+        user_story.implementation_status = "in_progress"
+
+        github_data = {
+            "state": "closed",
+            "labels": [],
+            "assignees": [],
+        }
+
+        user_story.update_from_github(github_data)
+
+        assert user_story.implementation_status == "completed"
+`r`n    @pytest.mark.epic("EP-00001", "EP-00005")
+    @pytest.mark.user_story("US-00001", "US-00002", "US-00052")
     def test_calculate_test_coverage_no_tests(self, user_story):
         """Test test coverage calculation with no tests."""
         result = user_story.calculate_test_coverage()

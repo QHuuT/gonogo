@@ -326,6 +326,11 @@
             font-weight: 500;
             text-transform: uppercase;
         }
+        .status-badge.success { background-color: #e8f5e9; color: #2e7d32; }
+        .status-badge.warning { background-color: #fff3e0; color: #ef6c00; }
+        .status-badge.danger { background-color: #ffebee; color: #c62828; }
+        .status-badge.info { background-color: #e3f2fd; color: #1565c0; }
+        .status-badge.neutral { background-color: #eceff1; color: #546e7a; }
 
         .status-planned { background-color: #e3f2fd; color: #1976d2; }
         .status-in-progress { background-color: #fff3e0; color: #f57c00; }
@@ -412,8 +417,11 @@
 <body>
     <!-- Navigation -->
     <nav class="dashboard-nav">
-        <a href="/api/rtm/dashboard/multipersona" class="nav-link active">
-            <i class="fas fa-users"></i> Multi-Persona
+        <a href="/api/rtm/dashboard/multipersona" class="nav-link" id="nav-live">
+            <i class="fas fa-users"></i> Multi-Persona (Live)
+        </a>
+        <a href="/api/rtm/dashboard/multipersona/demo" class="nav-link" id="nav-demo">
+            <i class="fas fa-vial"></i> Multi-Persona (Demo)
         </a>
         <a href="/api/rtm/dashboard/dependencies" class="nav-link">
             <i class="fas fa-project-diagram"></i> Dependencies
@@ -507,6 +515,7 @@
 
     <script>
         // Global state
+        const isDemo = window.location.pathname.includes('/demo');
         let currentPersona = 'PM';
         let dashboardData = null;
         let mainChart = null;
@@ -539,6 +548,14 @@
         // Initialize dashboard on page load
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Multi-Persona Dashboard initialized');
+            // Set active nav based on mode
+            const navLive = document.getElementById('nav-live');
+            const navDemo = document.getElementById('nav-demo');
+            if (isDemo) {
+                navDemo.classList.add('active');
+            } else {
+                navLive.classList.add('active');
+            }
             loadEpicFilters();
             loadComponentFilters();
             switchPersona('PM');
@@ -628,8 +645,9 @@
                 if (statusFilter) params.append('status_filter', statusFilter);
                 if (componentFilter) params.append('component_filter', componentFilter);
 
-                // Fetch dashboard data
-                const response = await axios.get(`/api/rtm/dashboard/metrics?${params.toString()}`);
+                // Fetch dashboard data (switch endpoint based on demo mode)
+                const endpoint = isDemo ? '/api/rtm/dashboard/metrics/demo' : '/api/rtm/dashboard/metrics';
+                const response = await axios.get(`${endpoint}?${params.toString()}`);
                 dashboardData = response.data;
 
                 // Update UI
@@ -643,24 +661,166 @@
             }
         }
 
+        // Formatting helpers
+        function safeNumber(value, fallback = 0) {
+            if (value === null || value === undefined || value === '') {
+                return fallback;
+            }
+            const num = Number(value);
+            return Number.isFinite(num) ? num : fallback;
+        }
+
+        function formatFixed(value, decimals = 1) {
+            return safeNumber(value).toFixed(decimals);
+        }
+
+        function formatPercentage(value, decimals = 1) {
+            return `${formatFixed(value, decimals)}%`;
+        }
+
+        function formatScheduleVariance(days) {
+            const num = safeNumber(days, null);
+            if (num === null) {
+                return 'On schedule';
+            }
+            if (num > 0) {
+                return `+${num.toFixed(1)} days`;
+            }
+            if (num < 0) {
+                return `${Math.abs(num).toFixed(1)} days ahead`;
+            }
+            return 'On schedule';
+        }
+
+        function scheduleVarianceClass(days) {
+            const num = safeNumber(days, null);
+            if (num === null) {
+                return 'neutral';
+            }
+            if (num <= 0) {
+                return 'success';
+            }
+            if (num <= 3) {
+                return 'warning';
+            }
+            return 'danger';
+        }
+
+        function riskLevelClass(percent) {
+            const value = safeNumber(percent);
+            if (value < 20) {
+                return 'success';
+            }
+            if (value < 40) {
+                return 'warning';
+            }
+            return 'danger';
+        }
+
+        function satisfactionClass(score) {
+            const value = safeNumber(score);
+            if (value >= 8) {
+                return 'success';
+            }
+            if (value >= 6) {
+                return 'warning';
+            }
+            return 'danger';
+        }
+
+        function percentageHealthClass(value, goodThreshold = 80, warningThreshold = 60) {
+            const pct = safeNumber(value);
+            if (pct >= goodThreshold) {
+                return 'success';
+            }
+            if (pct >= warningThreshold) {
+                return 'warning';
+            }
+            return 'danger';
+        }
+
+        function getBaseChartOptions() {
+            return {
+                responsive: false,
+                maintainAspectRatio: true,
+                animation: false,
+                animations: false,
+                transitions: {
+                    active: {
+                        animation: {
+                            duration: 0
+                        }
+                    }
+                },
+                hover: {
+                    animationDuration: 0
+                },
+                responsiveAnimationDuration: 0,
+                onResize: () => false,
+                onHover: () => false,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { enabled: false }
+                },
+                scales: {},
+                datasets: {
+                    bar: {
+                        categoryPercentage: 0.7,
+                        barPercentage: 0.9
+                    }
+                }
+            };
+        }
+
+        function mergeOptions(base, overrides) {
+            const source = base && typeof base === 'object' ? (Array.isArray(base) ? base.slice() : { ...base }) : {};
+            if (!overrides || typeof overrides !== 'object') {
+                return source;
+            }
+
+            Object.entries(overrides).forEach(([key, value]) => {
+                if (value && typeof value === 'object' && !Array.isArray(value)) {
+                    source[key] = mergeOptions(source[key], value);
+                } else {
+                    source[key] = value;
+                }
+            });
+
+            return source;
+        }
+
         // Update summary metrics cards
         function updateSummaryMetrics() {
             const container = document.getElementById('summary-metrics');
-            const summary = dashboardData.summary;
+            const summary = dashboardData.summary || {};
 
+            if (!summary || Object.keys(summary).length === 0) {
+                container.innerHTML = '<div class="loading">No summary metrics available for the current filters.</div>';
+                return;
+            }
+
+            const totalEpics = safeNumber(summary.total_epics);
             let metricsHtml = '';
 
             if (currentPersona === 'PM') {
+                const varianceLabel = formatScheduleVariance(summary.average_schedule_variance);
+                const riskPercentage = safeNumber(summary.risk_percentage);
+                const riskClass = riskLevelClass(riskPercentage);
+                const velocity = safeNumber(summary.average_velocity);
+                const velocityPerMember = safeNumber(summary.average_velocity_per_member);
+                const successProbability = safeNumber(summary.average_success_probability);
+                const atRisk = safeNumber(summary.at_risk_epics);
+
                 metricsHtml = `
                     <div class="metric-card ${summary.schedule_health === 'Good' ? 'success' : 'warning'}">
                         <div class="metric-header">
                             <span class="metric-title">Schedule Health</span>
                             <i class="metric-icon fas fa-calendar-check"></i>
                         </div>
-                        <div class="metric-value">${summary.schedule_health || 'N/A'}</div>
-                        <div class="metric-label">Overall Status</div>
+                        <div class="metric-value">${summary.schedule_health || 'Unknown'}</div>
+                        <div class="metric-label">Avg variance ${varianceLabel}</div>
                         <div class="metric-trend">
-                            <span>${summary.at_risk_epics || 0} at-risk epics</span>
+                            <span>${atRisk} of ${totalEpics} epics at risk</span>
                         </div>
                     </div>
 
@@ -669,108 +829,141 @@
                             <span class="metric-title">Average Velocity</span>
                             <i class="metric-icon fas fa-tachometer-alt"></i>
                         </div>
-                        <div class="metric-value">${summary.average_velocity || 0}</div>
-                        <div class="metric-label">Points per Sprint</div>
+                        <div class="metric-value">${formatFixed(velocity, 1)}</div>
+                        <div class="metric-label">Points per sprint</div>
+                        <div class="metric-trend">
+                            <span>${formatFixed(velocityPerMember, 1)} per team member</span>
+                        </div>
                     </div>
 
-                    <div class="metric-card ${(summary.risk_percentage || 0) < 30 ? 'success' : 'danger'}">
+                    <div class="metric-card ${riskClass}">
                         <div class="metric-header">
-                            <span class="metric-title">Risk Level</span>
+                            <span class="metric-title">Portfolio Risk</span>
                             <i class="metric-icon fas fa-exclamation-triangle"></i>
                         </div>
-                        <div class="metric-value">${(summary.risk_percentage || 0).toFixed(1)}%</div>
-                        <div class="metric-label">At Risk</div>
+                        <div class="metric-value">${formatPercentage(riskPercentage)}</div>
+                        <div class="metric-label">High-risk share</div>
+                        <div class="metric-trend">
+                            <span>${formatPercentage(successProbability, 1)} avg success outlook</span>
+                        </div>
                     </div>
 
                     <div class="metric-card secondary">
                         <div class="metric-header">
-                            <span class="metric-title">Total Epics</span>
+                            <span class="metric-title">Active Epics</span>
                             <i class="metric-icon fas fa-list"></i>
                         </div>
-                        <div class="metric-value">${summary.total_epics || 0}</div>
-                        <div class="metric-label">Being Managed</div>
+                        <div class="metric-value">${totalEpics}</div>
+                        <div class="metric-label">Tracked in view</div>
                     </div>
                 `;
             } else if (currentPersona === 'PO') {
+                const satisfaction = safeNumber(summary.average_satisfaction);
+                const roi = safeNumber(summary.average_roi);
+                const adoption = safeNumber(summary.average_adoption);
+                const scopeCreep = safeNumber(summary.average_scope_creep_percentage);
+                const satisfactionClassName = satisfactionClass(satisfaction);
+                const roiClass = roi >= 80 ? 'success' : roi >= 50 ? 'warning' : 'danger';
+                const adoptionClass = adoption >= 70 ? 'success' : adoption >= 50 ? 'warning' : 'danger';
+                const scopeClass = scopeCreep <= 10 ? 'success' : scopeCreep <= 20 ? 'warning' : 'danger';
+                const scopeIssues = safeNumber(summary.scope_creep_issues);
+
                 metricsHtml = `
-                    <div class="metric-card ${(summary.average_satisfaction || 0) >= 7 ? 'success' : 'warning'}">
+                    <div class="metric-card ${satisfactionClassName}">
                         <div class="metric-header">
                             <span class="metric-title">Stakeholder Satisfaction</span>
                             <i class="metric-icon fas fa-heart"></i>
                         </div>
-                        <div class="metric-value">${(summary.average_satisfaction || 0).toFixed(1)}</div>
-                        <div class="metric-label">Average Score (0-10)</div>
+                        <div class="metric-value">${formatFixed(satisfaction, 1)}/10</div>
+                        <div class="metric-label">${summary.satisfaction_grade || 'Unknown'} feedback</div>
                         <div class="metric-trend">
-                            <span>${summary.satisfaction_grade || 'N/A'}</span>
+                            <span>${scopeIssues} epics reporting churn</span>
                         </div>
                     </div>
 
-                    <div class="metric-card ${summary.business_health === 'Healthy' ? 'success' : 'warning'}">
+                    <div class="metric-card ${roiClass}">
                         <div class="metric-header">
-                            <span class="metric-title">Business Health</span>
+                            <span class="metric-title">Average ROI</span>
                             <i class="metric-icon fas fa-chart-line"></i>
                         </div>
-                        <div class="metric-value">${summary.business_health || 'N/A'}</div>
-                        <div class="metric-label">Overall Status</div>
+                        <div class="metric-value">${formatPercentage(roi)}</div>
+                        <div class="metric-label">Projected return</div>
+                        <div class="metric-trend">
+                            <span>Across ${totalEpics} epics</span>
+                        </div>
                     </div>
 
-                    <div class="metric-card ${(summary.scope_creep_issues || 0) === 0 ? 'success' : 'warning'}">
+                    <div class="metric-card ${adoptionClass}">
+                        <div class="metric-header">
+                            <span class="metric-title">User Adoption</span>
+                            <i class="metric-icon fas fa-users"></i>
+                        </div>
+                        <div class="metric-value">${formatPercentage(adoption)}</div>
+                        <div class="metric-label">Adoption rate</div>
+                        <div class="metric-trend">
+                            <span>Scope creep avg ${formatPercentage(scopeCreep)}</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card ${scopeClass}">
                         <div class="metric-header">
                             <span class="metric-title">Scope Control</span>
-                            <i class="metric-icon fas fa-expand-arrows-alt"></i>
+                            <i class="metric-icon fas fa-bullseye"></i>
                         </div>
-                        <div class="metric-value">${summary.scope_creep_issues || 0}</div>
-                        <div class="metric-label">Issues Detected</div>
-                    </div>
-
-                    <div class="metric-card secondary">
-                        <div class="metric-header">
-                            <span class="metric-title">Total Epics</span>
-                            <i class="metric-icon fas fa-list"></i>
+                        <div class="metric-value">${formatPercentage(scopeCreep)}</div>
+                        <div class="metric-label">Average scope creep</div>
+                        <div class="metric-trend">
+                            <span>${totalEpics} epics monitored</span>
                         </div>
-                        <div class="metric-value">${summary.total_epics || 0}</div>
-                        <div class="metric-label">Under Management</div>
                     </div>
                 `;
             } else if (currentPersona === 'QA') {
+                const coverage = safeNumber(summary.average_test_coverage);
+                const defectDensity = safeNumber(summary.average_defect_density);
+                const technicalDebt = safeNumber(summary.average_technical_debt);
+                const coverageClass = percentageHealthClass(coverage);
+                const defectClass = defectDensity <= 0.3 ? 'success' : defectDensity <= 0.6 ? 'warning' : 'danger';
+                const debtClass = technicalDebt <= 40 ? 'success' : technicalDebt <= 80 ? 'warning' : 'danger';
+                const highDefectEpics = safeNumber(summary.high_defect_epics);
+
                 metricsHtml = `
-                    <div class="metric-card ${(summary.average_test_coverage || 0) >= 80 ? 'success' : 'warning'}">
+                    <div class="metric-card ${coverageClass}">
                         <div class="metric-header">
                             <span class="metric-title">Test Coverage</span>
                             <i class="metric-icon fas fa-shield-alt"></i>
                         </div>
-                        <div class="metric-value">${(summary.average_test_coverage || 0).toFixed(1)}%</div>
-                        <div class="metric-label">Average Coverage</div>
-                        <div class="metric-trend">
-                            <span>${summary.coverage_grade || 'N/A'}</span>
-                        </div>
+                        <div class="metric-value">${formatPercentage(coverage)}</div>
+                        <div class="metric-label">${summary.coverage_grade || 'Unknown'}</div>
                     </div>
 
-                    <div class="metric-card ${summary.quality_health === 'Good' ? 'success' : 'warning'}">
+                    <div class="metric-card ${defectClass}">
                         <div class="metric-header">
-                            <span class="metric-title">Quality Health</span>
-                            <i class="metric-icon fas fa-certificate"></i>
-                        </div>
-                        <div class="metric-value">${summary.quality_health || 'N/A'}</div>
-                        <div class="metric-label">Overall Status</div>
-                    </div>
-
-                    <div class="metric-card ${(summary.high_defect_epics || 0) === 0 ? 'success' : 'danger'}">
-                        <div class="metric-header">
-                            <span class="metric-title">High Defect Epics</span>
+                            <span class="metric-title">Defect Density</span>
                             <i class="metric-icon fas fa-bug"></i>
                         </div>
-                        <div class="metric-value">${summary.high_defect_epics || 0}</div>
-                        <div class="metric-label">Needs Attention</div>
+                        <div class="metric-value">${formatFixed(defectDensity, 2)}</div>
+                        <div class="metric-label">Defects per story point</div>
+                        <div class="metric-trend">
+                            <span>${highDefectEpics} high-defect epics</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card ${debtClass}">
+                        <div class="metric-header">
+                            <span class="metric-title">Technical Debt</span>
+                            <i class="metric-icon fas fa-tools"></i>
+                        </div>
+                        <div class="metric-value">${formatFixed(technicalDebt, 1)}h</div>
+                        <div class="metric-label">Remediation effort</div>
                     </div>
 
                     <div class="metric-card secondary">
                         <div class="metric-header">
-                            <span class="metric-title">Total Epics</span>
+                            <span class="metric-title">Epics Under Test</span>
                             <i class="metric-icon fas fa-list"></i>
                         </div>
-                        <div class="metric-value">${summary.total_epics || 0}</div>
-                        <div class="metric-label">Under Test</div>
+                        <div class="metric-value">${totalEpics}</div>
+                        <div class="metric-label">Portfolio size</div>
                     </div>
                 `;
             }
@@ -813,20 +1006,45 @@
 
         // Get persona-specific metric for epic item
         function getPersonaSpecificMetric(epic) {
-            const metrics = epic.metrics;
+            const metrics = epic.metrics || {};
+            const badges = [];
 
             if (currentPersona === 'PM') {
-                const risk = metrics.risk?.overall_risk_score || 0;
-                const riskClass = risk > 50 ? 'danger' : risk > 25 ? 'warning' : 'success';
-                return `<span class="status-badge ${riskClass}">Risk: ${risk}</span>`;
+                const riskScore = safeNumber(metrics.risk?.overall_risk_score);
+                const riskClass = riskScore > 50 ? 'danger' : riskScore > 25 ? 'warning' : 'success';
+                const scheduleVariance = metrics.timeline?.schedule_variance_days;
+                const scheduleClass = scheduleVarianceClass(scheduleVariance);
+                const successProbability = safeNumber(metrics.risk?.success_probability);
+
+                badges.push(`<span class="status-badge ${riskClass}">Risk: ${formatFixed(riskScore, 0)}</span>`);
+                badges.push(`<span class="status-badge ${scheduleClass}">Schedule: ${formatScheduleVariance(scheduleVariance)}</span>`);
+                badges.push(`<span class="status-badge neutral">Success: ${formatPercentage(successProbability, 0)}</span>`);
+
+                return badges.join('');
             } else if (currentPersona === 'PO') {
-                const satisfaction = metrics.stakeholder?.satisfaction_score || 0;
-                const satClass = satisfaction >= 7 ? 'success' : satisfaction >= 5 ? 'warning' : 'danger';
-                return `<span class="status-badge ${satClass}">Satisfaction: ${satisfaction.toFixed(1)}/10</span>`;
+                const satisfaction = safeNumber(metrics.stakeholder?.satisfaction_score);
+                const roi = safeNumber(metrics.business_value?.roi_percentage);
+                const adoption = safeNumber(metrics.adoption?.user_adoption_rate);
+                const roiClass = roi >= 80 ? 'success' : roi >= 50 ? 'warning' : 'danger';
+                const adoptionClass = adoption >= 70 ? 'success' : adoption >= 50 ? 'warning' : 'danger';
+
+                badges.push(`<span class="status-badge ${satisfactionClass(satisfaction)}">Satisfaction: ${formatFixed(satisfaction, 1)}/10</span>`);
+                badges.push(`<span class="status-badge ${roiClass}">ROI: ${formatPercentage(roi, 0)}</span>`);
+                badges.push(`<span class="status-badge ${adoptionClass}">Adoption: ${formatPercentage(adoption, 0)}</span>`);
+
+                return badges.join('');
             } else if (currentPersona === 'QA') {
-                const coverage = metrics.testing?.test_coverage || 0;
-                const covClass = coverage >= 80 ? 'success' : coverage >= 60 ? 'warning' : 'danger';
-                return `<span class="status-badge ${covClass}">Coverage: ${coverage.toFixed(1)}%</span>`;
+                const coverage = safeNumber(metrics.testing?.test_coverage);
+                const defectDensity = safeNumber(metrics.defects?.defect_density);
+                const debt = safeNumber(metrics.technical_debt?.debt_hours);
+                const defectClass = defectDensity <= 0.3 ? 'success' : defectDensity <= 0.6 ? 'warning' : 'danger';
+                const debtClass = debt <= 40 ? 'success' : debt <= 80 ? 'warning' : 'danger';
+
+                badges.push(`<span class="status-badge ${percentageHealthClass(coverage)}">Coverage: ${formatPercentage(coverage, 0)}</span>`);
+                badges.push(`<span class="status-badge ${defectClass}">Defects: ${formatFixed(defectDensity, 2)}</span>`);
+                badges.push(`<span class="status-badge ${debtClass}">Debt: ${formatFixed(debt, 1)}h</span>`);
+
+                return badges.join('');
             }
 
             return '';
@@ -834,14 +1052,11 @@
 
         // Update chart based on persona
         function updateChart() {
-
-            // Completely destroy existing chart first
             if (mainChart) {
                 mainChart.destroy();
                 mainChart = null;
             }
 
-            // Recreate canvas element to ensure clean state
             const oldCanvas = document.getElementById('main-chart');
             const newCanvas = document.createElement('canvas');
             newCanvas.id = 'main-chart';
@@ -849,172 +1064,232 @@
             oldCanvas.parentNode.replaceChild(newCanvas, oldCanvas);
 
             const ctx = newCanvas.getContext('2d');
+            const hasData = Array.isArray(dashboardData.epics) && dashboardData.epics.length > 0;
 
-            let chartData, chartTitle;
-
-            if (currentPersona === 'PM') {
-                chartTitle = 'Team Velocity Trends (Sprint Evolution)';
-                chartData = createVelocityChart();
-            } else if (currentPersona === 'PO') {
-                chartTitle = 'Business Value Realization';
-                chartData = createBusinessValueChart();
-            } else if (currentPersona === 'QA') {
-                chartTitle = 'Quality Metrics Trends';
-                chartData = createQualityChart();
+            if (!hasData) {
+                document.getElementById('chart-title').textContent = 'No metrics available';
+                ctx.font = '16px sans-serif';
+                ctx.fillStyle = '#6c757d';
+                ctx.fillText('No data available for the selected filters.', 40, 120);
+                return;
             }
 
-            document.getElementById('chart-title').textContent = chartTitle;
+            let chartConfig = null;
 
-            // Use line chart for velocity trends, bar for other metrics
-            const chartType = (currentPersona === 'PM' && chartTitle.includes('Velocity')) ? 'line' : 'bar';
+            if (currentPersona === 'PM') {
+                chartConfig = createVelocityChart();
+            } else if (currentPersona === 'PO') {
+                chartConfig = createBusinessValueChart();
+            } else if (currentPersona === 'QA') {
+                chartConfig = createQualityChart();
+            }
+
+            if (!chartConfig) {
+                return;
+            }
+
+            document.getElementById('chart-title').textContent = chartConfig.title || '';
+
+            const options = mergeOptions(getBaseChartOptions(), chartConfig.options || {});
 
             mainChart = new Chart(ctx, {
-                type: chartType,
-                data: chartData,
-                options: {
-                    responsive: false,  // Completely disable responsiveness
-                    maintainAspectRatio: true,
-                    // Nuclear option: disable ALL Chart.js features that could cause updates
-                    animation: false,
-                    animations: false,
-                    transitions: {
-                        active: {
-                            animation: {
-                                duration: 0
-                            }
-                        }
-                    },
-                    hover: {
-                        animationDuration: 0
-                    },
-                    responsiveAnimationDuration: 0,
-                    onResize: function() { return false; }, // Disable resize
-                    onHover: function() { return false; }, // Disable hover
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            enabled: false // Disable tooltips completely
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 5
-                            }
-                        }
-                    },
-                    datasets: {
-                        bar: {
-                            categoryPercentage: 0.8,
-                            barPercentage: 0.9,
-                        }
-                    }
-                }
+                type: chartConfig.type || 'bar',
+                data: chartConfig.data,
+                options: options
             });
-
         }
 
         // Create velocity trend chart for PM - shows evolution over time
         function createVelocityChart() {
             const epics = dashboardData.epics || [];
+            const labels = epics.map(epic => epic.epic_id);
+            const velocityData = epics.map(epic => safeNumber(epic.metrics?.velocity?.velocity_points_per_sprint));
+            const scheduleVarianceData = epics.map(epic => safeNumber(epic.metrics?.timeline?.schedule_variance_days));
 
-            // Create time-based velocity data (last 8 sprints)
-            const sprintLabels = ['Sprint -7', 'Sprint -6', 'Sprint -5', 'Sprint -4', 'Sprint -3', 'Sprint -2', 'Sprint -1', 'Current Sprint'];
-
-            // Calculate team velocity evolution based on active epics
-            const activeEpics = epics.filter(epic => epic.status !== 'completed');
-            const totalCurrentVelocity = epics.reduce((sum, epic) => sum + (epic.metrics.velocity?.velocity_points_per_sprint || 0), 0);
-
-            // Simulate velocity trend (would come from historical data in real system)
-            const baseVelocity = Math.max(totalCurrentVelocity, 20);
-            const velocityTrend = [
-                Math.max(baseVelocity * 0.7, 5),  // Sprint -7 (lower velocity)
-                Math.max(baseVelocity * 0.8, 8),  // Sprint -6
-                Math.max(baseVelocity * 0.85, 12), // Sprint -5
-                Math.max(baseVelocity * 0.9, 15),  // Sprint -4
-                Math.max(baseVelocity * 0.95, 18), // Sprint -3
-                Math.max(baseVelocity * 1.0, 20),  // Sprint -2
-                Math.max(baseVelocity * 1.05, 22), // Sprint -1
-                baseVelocity                       // Current Sprint
-            ];
-
-            const chartData = JSON.parse(JSON.stringify({
-                labels: sprintLabels,
-                datasets: [{
-                    label: 'Team Velocity (Story Points/Sprint)',
-                    data: velocityTrend,
-                    borderColor: '#8e44ad',
-                    backgroundColor: 'rgba(142, 68, 173, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            }));
-
-            return chartData;
+            return {
+                title: 'Velocity vs Schedule Variance',
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Velocity (pts/sprint)',
+                            data: velocityData,
+                            backgroundColor: 'rgba(142, 68, 173, 0.6)',
+                            borderColor: '#8e44ad',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Schedule Variance (days)',
+                            data: scheduleVarianceData,
+                            type: 'line',
+                            yAxisID: 'schedule',
+                            borderColor: '#f39c12',
+                            backgroundColor: 'rgba(243, 156, 18, 0.15)',
+                            fill: false,
+                            tension: 0.35
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Velocity (story points)'
+                            }
+                        },
+                        schedule: {
+                            position: 'right',
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Schedule variance (days)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return `${value} d`;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
         }
 
         // Create business value chart for PO
         function createBusinessValueChart() {
             const epics = dashboardData.epics || [];
-            // Create completely fresh arrays to avoid Chart.js contamination
-            const labels = [...epics.map(epic => epic.epic_id)];
-            const businessData = [...epics.map(epic => epic.metrics.business_value?.business_impact_score || 0)];
-            const satisfactionData = [...epics.map(epic => epic.metrics.stakeholder?.satisfaction_score || 0)];
+            const labels = epics.map(epic => epic.epic_id);
+            const roiData = epics.map(epic => safeNumber(epic.metrics?.business_value?.roi_percentage));
+            const adoptionData = epics.map(epic => safeNumber(epic.metrics?.adoption?.user_adoption_rate));
 
             return {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Business Impact Score',
-                        data: businessData,
-                        borderColor: '#2980b9',
-                        backgroundColor: 'rgba(41, 128, 185, 0.1)',
-                        fill: false,
-                        tension: 0.4
-                    },
-                    {
-                        label: 'Stakeholder Satisfaction',
-                        data: satisfactionData,
-                        borderColor: '#27ae60',
-                        backgroundColor: 'rgba(39, 174, 96, 0.1)',
-                        fill: false,
-                        tension: 0.4
+                title: 'Product Value & Adoption',
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'ROI (%)',
+                            data: roiData,
+                            backgroundColor: 'rgba(41, 128, 185, 0.6)',
+                            borderColor: '#2980b9',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Adoption (%)',
+                            data: adoptionData,
+                            type: 'line',
+                            yAxisID: 'adoption',
+                            borderColor: '#27ae60',
+                            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                            fill: false,
+                            tension: 0.35
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 120,
+                            title: {
+                                display: true,
+                                text: 'ROI %'
+                            }
+                        },
+                        adoption: {
+                            position: 'right',
+                            beginAtZero: true,
+                            suggestedMax: 100,
+                            title: {
+                                display: true,
+                                text: 'Adoption %'
+                            }
+                        }
                     }
-                ]
+                }
             };
         }
 
         // Create quality chart for QA
         function createQualityChart() {
             const epics = dashboardData.epics || [];
-            // Create completely fresh arrays to avoid Chart.js contamination
-            const labels = [...epics.map(epic => epic.epic_id)];
-            const coverageData = [...epics.map(epic => epic.metrics.testing?.test_coverage || 0)];
-            const defectData = [...epics.map(epic => epic.metrics.defects?.defect_density || 0)];
+            const labels = epics.map(epic => epic.epic_id);
+            const coverageData = epics.map(epic => safeNumber(epic.metrics?.testing?.test_coverage));
+            const defectData = epics.map(epic => safeNumber(epic.metrics?.defects?.defect_density));
+            const debtData = epics.map(epic => safeNumber(epic.metrics?.technical_debt?.debt_hours));
 
             return {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Test Coverage (%)',
-                        data: coverageData,
-                        borderColor: '#27ae60',
-                        backgroundColor: 'rgba(39, 174, 96, 0.1)',
-                        fill: false,
-                        tension: 0.4
-                    },
-                    {
-                        label: 'Defect Density',
-                        data: defectData,
-                        borderColor: '#e74c3c',
-                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                        fill: false,
-                        tension: 0.4
+                title: 'Quality Coverage & Debt',
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Coverage (%)',
+                            data: coverageData,
+                            backgroundColor: 'rgba(39, 174, 96, 0.6)',
+                            borderColor: '#27ae60',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Defect Density',
+                            data: defectData,
+                            type: 'line',
+                            yAxisID: 'defects',
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.15)',
+                            fill: false,
+                            tension: 0.35
+                        },
+                        {
+                            label: 'Technical Debt (h)',
+                            data: debtData,
+                            type: 'line',
+                            yAxisID: 'debt',
+                            borderColor: '#8e44ad',
+                            backgroundColor: 'rgba(142, 68, 173, 0.15)',
+                            fill: false,
+                            tension: 0.35
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 100,
+                            title: {
+                                display: true,
+                                text: 'Coverage %'
+                            }
+                        },
+                        defects: {
+                            position: 'right',
+                            beginAtZero: true,
+                            suggestedMax: 1,
+                            title: {
+                                display: true,
+                                text: 'Defects per story point'
+                            }
+                        },
+                        debt: {
+                            position: 'right',
+                            beginAtZero: true,
+                            suggestedMax: 120,
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Technical debt (hours)'
+                            }
+                        }
                     }
-                ]
+                }
             };
         }
 

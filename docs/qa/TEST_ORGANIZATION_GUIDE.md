@@ -238,6 +238,7 @@ python -m uvicorn src.be.main:app --reload
 ### Sync Tests to Database
 
 ```bash
+python tools/analyze_test_associations.py
 python tools/sync_tests_to_rtm.py
 ```
 

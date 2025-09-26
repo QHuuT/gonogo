@@ -14,13 +14,14 @@ from typing import Dict, List, Optional, Set
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 
 from be.database import Base
 from be.models.traceability.epic import Epic
 from be.models.traceability.test import Test
 from be.models.traceability.user_story import UserStory
+from be.models.traceability.defect import Defect
 
 
 class RTMTestSynchronizer:
@@ -35,6 +36,7 @@ class RTMTestSynchronizer:
             'skipped': 0,
             'errors': 0,
             'us_links': 0,
+            'defect_links': 0,
             'component_inherited': 0
         }
 
@@ -107,7 +109,8 @@ class RTMTestSynchronizer:
 
             self.session.flush()
 
-            if assoc['user_stories']:
+            test_record.github_user_story_number = None
+            if assoc.get('user_stories'):
                 for us_marker in assoc['user_stories']:
                     us_number = self._extract_us_number(us_marker)
                     if us_number:
@@ -115,10 +118,24 @@ class RTMTestSynchronizer:
                         self.stats['us_links'] += 1
                         break
 
+            test_record.github_defect_number = None
+            defect_linked = False
+            if assoc.get('defects'):
+                for defect_marker in assoc['defects']:
+                    issue_number, defect_obj = self._resolve_and_link_defect(defect_marker, test_record)
+                    if issue_number is not None:
+                        test_record.github_defect_number = issue_number
+                        if defect_obj:
+                            defect_linked = True
+                        break
+
             if not test_record.component and test_record.github_user_story_number:
                 test_record.inherit_component_from_user_story(self.session)
                 if test_record.component:
                     self.stats['component_inherited'] += 1
+
+            if defect_linked:
+                self.stats['defect_links'] += 1
 
             self.session.commit()
 
@@ -156,6 +173,57 @@ class RTMTestSynchronizer:
             return int(match.group(1))
         return None
 
+    def _resolve_and_link_defect(self, defect_marker: str, test_record: Test):
+        """Resolve or create a Defect record from a marker string."""
+        if not defect_marker:
+            return None, None
+
+        marker = str(defect_marker).strip().upper()
+        match = re.search(r"DEF[-_\s]*0*(\d+)", marker)
+        if not match:
+            return None, None
+
+        issue_number = int(match.group(1))
+        defect_id = f"DEF-{issue_number:05d}"
+
+        defect = (
+            self.session.query(Defect)
+            .filter(
+                or_(
+                    Defect.github_issue_number == issue_number,
+                    Defect.defect_id == defect_id,
+                )
+            )
+            .first()
+        )
+
+        if defect is None:
+            defect = Defect(defect_id=defect_id, github_issue_number=issue_number)
+            defect.title = defect.title or f"Placeholder defect {defect_id}"
+            defect.description = (
+                "Auto-generated via test sync; will be enriched on the next GitHub import."
+            )
+            defect.github_issue_state = defect.github_issue_state or "open"
+            self.session.add(defect)
+            self.session.flush()
+
+        if test_record.id is None:
+            self.session.flush()
+
+        if test_record.github_user_story_number and not defect.github_user_story_number:
+            defect.github_user_story_number = test_record.github_user_story_number
+
+        if test_record.epic_id and not defect.epic_id:
+            defect.epic_id = test_record.epic_id
+
+        if not defect.test_id:
+            defect.test_id = test_record.id
+
+        if test_record.component and not defect.component:
+            defect.component = test_record.component
+
+        return issue_number, defect
+
     def _extract_epic_number(self, epic_marker: str) -> Optional[int]:
         """Extract GitHub issue number from Epic marker (e.g., EP-00005 -> 5)."""
         match = re.match(r'EP-0*(\d+)', epic_marker)
@@ -178,6 +246,7 @@ class RTMTestSynchronizer:
 
         print(f"Associations:")
         print(f"  User Story links: {self.stats['us_links']}")
+        print(f"  Defect links: {self.stats['defect_links']}")
         print(f"  Components inherited: {self.stats['component_inherited']}")
         print()
 

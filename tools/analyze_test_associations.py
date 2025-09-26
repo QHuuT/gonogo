@@ -20,6 +20,7 @@ class TestAssociationAnalyzer:
             'user_stories': set(),
             'epics': set(),
             'components': set(),
+            'defects': set(),
             'test_type': None,
             'file_path': None
         })
@@ -62,9 +63,11 @@ class TestAssociationAnalyzer:
             # Extract from docstring patterns
             us_from_docstring = self._extract_us_from_docstring(content)
             epic_from_docstring = self._extract_epic_from_docstring(content)
+            defects_from_docstring = self._extract_defects_from_docstring(content)
 
             self.associations[key]['user_stories'].update(us_from_docstring)
             self.associations[key]['epics'].update(epic_from_docstring)
+            self.associations[key]['defects'].update(defects_from_docstring)
 
             # Infer component from path
             component = self._infer_component_from_path(file_path)
@@ -92,6 +95,9 @@ class TestAssociationAnalyzer:
             epic_from_bdd = self._extract_epic_from_bdd_header(content)
             if epic_from_bdd:
                 self.associations[key]['epics'].add(epic_from_bdd)
+
+            defects_from_bdd = self._extract_defects_from_docstring(content)
+            self.associations[key]['defects'].update(defects_from_bdd)
 
             # Infer component from tags
             components = self._extract_components_from_bdd_tags(content)
@@ -143,6 +149,11 @@ class TestAssociationAnalyzer:
         epic_refs.update(pattern2)
 
         return epic_refs
+
+    def _extract_defects_from_docstring(self, content: str) -> Set[str]:
+        """Extract defect references from docstrings."""
+        defect_refs = set(re.findall(r'(DEF-\d{3,5})', content, re.IGNORECASE))
+        return {f"DEF-{match.upper().split('-')[-1].zfill(5)}" for match in defect_refs}
 
     def _extract_us_from_bdd_header(self, content: str) -> Set[str]:
         """Extract US references from BDD feature file headers."""
@@ -239,12 +250,14 @@ class TestAssociationAnalyzer:
         tests_with_us = sum(1 for a in associations.values() if a['user_stories'])
         tests_with_epic = sum(1 for a in associations.values() if a['epics'])
         tests_with_component = sum(1 for a in associations.values() if a['components'])
+        tests_with_defects = sum(1 for a in associations.values() if a['defects'])
 
         print(f"STATISTICS:")
         print(f"   Total test files analyzed: {total_tests}")
         print(f"   Tests with User Story associations: {tests_with_us}")
         print(f"   Tests with Epic associations: {tests_with_epic}")
         print(f"   Tests with Component assignments: {tests_with_component}")
+        print(f"   Tests with Defect references: {tests_with_defects}")
         print(f"   Orphaned tests: {total_tests - max(tests_with_us, tests_with_epic)}")
         print()
 
@@ -282,6 +295,8 @@ class TestAssociationAnalyzer:
                     print(f"   Epics: {', '.join(sorted(assoc['epics']))}")
                 if assoc['components']:
                     print(f"   Components: {', '.join(sorted(assoc['components']))}")
+                if assoc['defects']:
+                    print(f"   Defects: {', '.join(sorted(assoc['defects']))}")
         print()
 
     def save_mapping(self, associations: Dict, output_file="test_associations.json"):
@@ -293,6 +308,7 @@ class TestAssociationAnalyzer:
                 'user_stories': list(value['user_stories']),
                 'epics': list(value['epics']),
                 'components': list(value['components']),
+                'defects': list(value['defects']),
                 'test_type': value['test_type'],
                 'file_path': value['file_path']
             }

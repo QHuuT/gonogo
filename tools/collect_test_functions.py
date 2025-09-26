@@ -5,6 +5,7 @@ Collect individual test functions from pytest and create detailed test records.
 
 import ast
 import json
+import re
 from pathlib import Path
 from typing import Dict, List, Set
 
@@ -60,6 +61,7 @@ class TestFunctionCollector(ast.NodeVisitor):
         func_epics = set()
         func_user_stories = set()
         func_components = set()
+        func_defects = set()
 
         for decorator in node.decorator_list:
             if isinstance(decorator, ast.Call):
@@ -84,6 +86,9 @@ class TestFunctionCollector(ast.NodeVisitor):
 
         # Extract docstring
         docstring = ast.get_docstring(node) or ''
+        if docstring:
+            for match in re.findall(r'(DEF-\d{3,5})', docstring, re.IGNORECASE):
+                func_defects.add(f"DEF-{match.upper().split('-')[-1].zfill(5)}")
 
         self.functions.append({
             'name': node.name,
@@ -91,6 +96,7 @@ class TestFunctionCollector(ast.NodeVisitor):
             'epics': list(func_epics),
             'user_stories': list(func_user_stories),
             'components': list(func_components),
+            'defects': list(func_defects),
             'docstring': docstring.split('\n')[0] if docstring else ''
         })
 

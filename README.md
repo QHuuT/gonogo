@@ -18,20 +18,20 @@ A GDPR-compliant blog platform with comments, built with FastAPI and designed fo
 ### Core Technical Stack
 ```
 Backend (FastAPI):
-├── src/be/                  # Backend application
-│   ├── api/                 # REST API endpoints
-│   │   ├── capabilities.py  # Capability management
-│   │   ├── epic_dependencies.py # Epic dependency tracking
-│   │   └── rtm.py          # Requirements traceability API
-│   ├── models/             # Database models & schemas
-│   │   └── traceability/   # RTM data models
-│   ├── services/           # Business logic layer
-│   │   ├── rtm_report_generator.py # RTM report generation
-│   │   └── svg_graph_generator.py  # Dependency visualization
-│   └── templates/          # Jinja2 HTML templates
-│       ├── dependency_visualizer.html # Epic dependency dashboard
-│       ├── multipersona_dashboard.html # Multi-persona RTM view
-│       └── capability_portfolio.html   # Capability overview
+├── src/be/                                 # Backend application
+│   ├── api/                                # REST API endpoints
+│   │   ├── capabilities.py                 # Capability management
+│   │   ├── epic_dependencies.py            # Epic dependency tracking
+│   │   └── rtm.py                          # Requirements traceability API
+│   ├── models/                             # Database models & schemas
+│   │   └── traceability/                   # RTM data models
+│   ├── services/                           # Business logic layer
+│   │   ├── rtm_report_generator.py         # RTM report generation
+│   │   └── svg_graph_generator.py          # Dependency visualization
+│   └── templates/                          # Jinja2 HTML templates
+│       ├── dependency_visualizer.html      # Epic dependency dashboard
+│       ├── multipersona_dashboard.html     # Multi-persona RTM view
+│       └── capability_portfolio.html       # Capability overview
 
 Frontend & Visualization:
 ├── JavaScript Libraries: D3.js, axios for interactive dashboards
@@ -39,19 +39,19 @@ Frontend & Visualization:
 └── Templates: Server-side rendering with minimal client-side JS
 
 Testing & Quality:
-├── tests/                  # Comprehensive test suite
-│   ├── bdd/               # Behavior-driven development tests
-│   │   ├── features/      # Gherkin feature files
-│   │   └── step_definitions/ # pytest-bdd step implementations
-│   ├── unit/              # Unit tests with pytest
-│   ├── integration/       # Integration tests
-│   ├── security/          # GDPR & security compliance tests
-│   └── e2e/              # End-to-end testing
-├── quality/               # Quality assurance system
-│   ├── logs/             # Structured test execution logs
-│   ├── reports/          # Interactive HTML reports & analysis
-│   └── archives/         # Test data retention & cleanup
-└── tools/                 # 70+ automation & management tools
+├── tests/                                  # Comprehensive test suite
+│   ├── bdd/                                # Behavior-driven development tests
+│   │   ├── features/                       # Gherkin feature files
+│   │   └── step_definitions/               # pytest-bdd step implementations
+│   ├── unit/                               # Unit tests with pytest
+│   ├── integration/                        # Integration tests
+│   ├── security/                           # GDPR & security compliance tests
+│   └── e2e/                                # End-to-end testing
+├── quality/                                # Quality assurance system
+│   ├── logs/                               # Structured test execution logs
+│   ├── reports/                            # Interactive HTML reports & analysis
+│   └── archives/                           # Test data retention & cleanup
+└── tools/                                  # 70+ automation & management tools
 ```
 
 ### Project Management (GitHub-First)
@@ -64,27 +64,27 @@ Testing & Quality:
 ### Documentation Architecture
 ```
 📁 Complete Project Structure:
-├── .github/                 # GitHub integration & templates
-│   ├── ISSUE_TEMPLATE/      # Epic, Story, Defect templates
-│   └── workflows/           # GitHub Actions automation
-├── docs/                    # Comprehensive documentation
-│   ├── technical/           # Development workflows & guides
-│   │   ├── development-workflow.md # Master development process
-│   │   ├── github-integration-analysis.md # GitHub automation
-│   │   └── technical-epics/ # Epic-specific technical docs
-│   ├── context/            # Business context & decisions
-│   │   ├── decisions/      # Architecture Decision Records (ADRs)
-│   │   └── compliance/     # GDPR & legal requirements
-│   ├── traceability/       # Requirements traceability
-│   │   ├── requirements-matrix.md # Master RTM document
-│   │   └── gdpr-compliance-map.md # Privacy compliance mapping
-│   └── qa/                 # Quality assurance documentation
-├── src/                    # Source code (FastAPI backend)
-├── tests/                  # BDD + unit/integration/e2e tests
-├── tools/                  # 70+ automation scripts & utilities
-├── quality/                # Test logging, reports, archives
-├── migrations/             # Database schema migrations
-└── static/                 # Static web assets
+├── .github/                                # GitHub integration & templates
+│   ├── ISSUE_TEMPLATE/                     # Epic, Story, Defect templates
+│   └── workflows/                          # GitHub Actions automation
+├── docs/                                   # Comprehensive documentation
+│   ├── technical/                          # Development workflows & guides
+│   │   ├── development-workflow.md         # Master development process
+│   │   ├── github-integration-analysis.md  # GitHub automation
+│   │   └── technical-epics/                # Epic-specific technical docs
+│   ├── context/                            # Business context & decisions
+│   │   ├── decisions/                      # Architecture Decision Records (ADRs)
+│   │   └── compliance/                     # GDPR & legal requirements
+│   ├── traceability/                       # Requirements traceability
+│   │   ├── requirements-matrix.md          # Master RTM document
+│   │   └── gdpr-compliance-map.md          # Privacy compliance mapping
+│   └── qa/                                 # Quality assurance documentation
+├── src/                                    # Source code (FastAPI backend)
+├── tests/                                  # BDD + unit/integration/e2e tests
+├── tools/                                  # 70+ automation scripts & utilities
+├── quality/                                # Test logging, reports, archives
+├── migrations/                             # Database schema migrations
+└── static/                                 # Static web assets
 ```
 
 ### Development Philosophy
@@ -219,6 +219,9 @@ python tools/rtm-links.py validate
 ```bash
 # Sync GitHub data to RTM database
 python tools/github_sync_manager.py --epic EP-XXXXX
+
+# Suggest capability labels for epics
+python tools/generate_capability_labels.py --print-gh
 
 # Verify RTM status via web dashboard
 open http://localhost:8000/api/rtm/reports/matrix?format=html
