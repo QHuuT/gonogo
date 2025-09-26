@@ -4,7 +4,7 @@ GDPR-compliant blog with comment system and RTM database.
 """
 
 import asyncio
-from contextlib import suppress
+from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -20,10 +20,36 @@ from .services.epic_metrics_refresher import (
     should_enable_background_refresh,
 )
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    FastAPI lifespan event handler for startup and shutdown tasks.
+
+    Replaces the deprecated @app.on_event() decorators with the new
+    lifespan context manager approach recommended by FastAPI.
+    """
+    # Startup
+    if should_enable_background_refresh():
+        interval = get_refresh_interval()
+        app.state.metric_refresh_task = asyncio.create_task(metrics_refresh_loop(interval))
+
+    yield
+
+    # Shutdown
+    if should_enable_background_refresh():
+        task = getattr(app.state, "metric_refresh_task", None)
+        if task:
+            task.cancel()
+            with suppress(asyncio.CancelledError):
+                await task
+
+
 app = FastAPI(
     title="GoNoGo Blog & RTM System",
     description="GDPR-compliant blog with Requirements Traceability Matrix database",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 # Include API routes
@@ -36,24 +62,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Templates
 templates = Jinja2Templates(directory="src/be/templates")
-
-
-if should_enable_background_refresh():
-
-    @app.on_event("startup")
-    async def start_metric_refresh_loop():
-        """Kick off the periodic metric refresh background task."""
-        interval = get_refresh_interval()
-        app.state.metric_refresh_task = asyncio.create_task(metrics_refresh_loop(interval))
-
-    @app.on_event("shutdown")
-    async def stop_metric_refresh_loop():
-        """Ensure the background task is cleaned up on shutdown."""
-        task = getattr(app.state, "metric_refresh_task", None)
-        if task:
-            task.cancel()
-            with suppress(asyncio.CancelledError):
-                await task
 
 
 @app.get("/")

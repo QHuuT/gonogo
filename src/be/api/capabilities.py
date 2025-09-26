@@ -11,7 +11,7 @@ Parent Epic: EP-00010 - Dashboard de Traçabilité Multi-Persona
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from ..database import get_db
 from ..models.traceability.capability import Capability, CapabilityDependency
@@ -22,8 +22,8 @@ router = APIRouter(prefix="/api/capabilities", tags=["capabilities"])
 
 # Pydantic models for API requests/responses
 class CapabilityCreate(BaseModel):
-    capability_id: str = Field(..., description="Capability ID (CAP-00001)", example="CAP-00001")
-    name: str = Field(..., description="Capability name", example="GitHub Integration")
+    capability_id: str = Field(..., description="Capability ID (CAP-00001)", json_schema_extra={"example": "CAP-00001"})
+    name: str = Field(..., description="Capability name", json_schema_extra={"example": "GitHub Integration"})
     description: Optional[str] = Field(None, description="Detailed description")
     strategic_priority: str = Field("medium", description="Strategic priority")
     business_value_theme: Optional[str] = Field(None, description="Business value theme")
@@ -61,8 +61,7 @@ class CapabilityResponse(BaseModel):
     roi_target_percentage: float
     strategic_alignment_score: float
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Capability CRUD endpoints

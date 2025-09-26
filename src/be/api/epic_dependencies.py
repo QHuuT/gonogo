@@ -11,7 +11,7 @@ Parent Epic: EP-00010 - Dashboard de Traçabilité Multi-Persona
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from ..database import get_db_session
 from ..models.traceability.epic import Epic
@@ -28,8 +28,8 @@ class DependencyCreate(BaseModel):
     reason: Optional[str] = Field(None, description="Raison/explication de la dépendance")
     estimated_impact_days: Optional[int] = Field(None, description="Impact estimé en jours", ge=0, le=365)
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "parent_epic_id": 1,
                 "dependent_epic_id": 2,
@@ -39,6 +39,7 @@ class DependencyCreate(BaseModel):
                 "estimated_impact_days": 5
             }
         }
+    )
 
 
 class DependencyUpdate(BaseModel):
@@ -73,8 +74,7 @@ class DependencyResponse(BaseModel):
     criticality_score: int
     is_blocking: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CriticalPathResponse(BaseModel):

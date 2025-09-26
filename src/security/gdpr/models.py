@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Dict, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String, Text
 from sqlalchemy.orm import declarative_base
 
@@ -165,8 +165,7 @@ class DataSubjectRequestCreate(BaseModel):
     contact_email: str
     description: Optional[str] = None
 
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(use_enum_values=True)
 
 
 class DataSubjectRequestResponse(BaseModel):
@@ -178,9 +177,7 @@ class DataSubjectRequestResponse(BaseModel):
     created_at: datetime
     due_date: datetime
 
-    class Config:
-        use_enum_values = True
-        from_attributes = True
+    model_config = ConfigDict(use_enum_values=True, from_attributes=True)
 
 
 class GDPRCompliance(BaseModel):
