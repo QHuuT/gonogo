@@ -21,7 +21,7 @@ class TestMainApplication:
 
         data = response.json()
         assert data["status"] == "healthy"
-        assert data["service"] == "gonogo-blog"
+        assert data["service"] == "gonogo-blog-rtm"
 
     def test_home_endpoint_returns_coming_soon(self, client: TestClient):
         """Test that home endpoint returns coming soon message."""
@@ -32,14 +32,14 @@ class TestMainApplication:
 
         data = response.json()
         assert "GoNoGo Blog" in data["message"]
-        assert "Coming Soon" in data["message"]
+        assert "Ready" in data["message"]
 
     def test_app_title_and_metadata(self):
         """Test that FastAPI app has correct metadata."""
 
         from src.be.main import app
 
-        assert app.title == "GoNoGo Blog"
+        assert app.title == "GoNoGo Blog & RTM System"
         assert "GDPR-compliant" in app.description
         assert app.version == "0.1.0"
 
@@ -95,3 +95,37 @@ class TestMainApplication:
         # Should have standard FastAPI headers
         assert "content-type" in response.headers
         assert response.headers["content-type"] == "application/json"
+
+    def test_rtm_integration_metadata_regression(self, client: TestClient):
+        """Regression test for RTM integration metadata updates.
+
+        This test documents the change from simple blog to blog + RTM system,
+        ensuring that tests are updated when application metadata changes.
+        """
+        # Test that health endpoint reflects RTM integration
+        health_response = client.get("/health")
+        assert health_response.status_code == 200
+        health_data = health_response.json()
+
+        # Service name should include RTM suffix to distinguish from simple blog
+        assert health_data["service"] == "gonogo-blog-rtm", "Service should be 'gonogo-blog-rtm' not 'gonogo-blog'"
+        assert "database" in health_data, "Health check should include database status for RTM functionality"
+
+        # Test that home endpoint reflects RTM integration
+        home_response = client.get("/")
+        assert home_response.status_code == 200
+        home_data = home_response.json()
+
+        # Message should indicate RTM system is included and ready
+        assert "RTM System" in home_data["message"], "Home message should mention RTM System"
+        assert "Ready" in home_data["message"], "Home message should indicate system is ready, not 'Coming Soon'"
+
+        # Test that app metadata reflects RTM integration
+        from src.be.main import app
+
+        # App title should include RTM to distinguish from simple blog
+        assert "RTM System" in app.title, "App title should mention RTM System"
+        assert app.title == "GoNoGo Blog & RTM System", "App title should be 'GoNoGo Blog & RTM System'"
+
+        # Description should mention traceability matrix
+        assert "Requirements Traceability Matrix" in app.description, "Description should mention RTM database"
