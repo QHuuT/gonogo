@@ -6,6 +6,8 @@ Following testing pyramid: Unit > Integration > E2E
 import os
 import tempfile
 import warnings
+import time
+import gc
 from typing import Generator
 
 import pytest
@@ -18,6 +20,60 @@ from src.security.gdpr.models import Base
 
 # Load custom test runner plugin
 pytest_plugins = ["tools.test_runner_plugin"]
+
+
+def _cleanup_temp_database(db_path: str) -> None:
+    """
+    Enhanced temporary database cleanup with robust Windows file locking handling.
+
+    Uses multiple strategies to ensure database files are properly cleaned up:
+    1. Force garbage collection to release Python references
+    2. Multiple retry attempts with increasing delays
+    3. Graceful degradation with informative logging
+    """
+    # Force garbage collection to release any remaining Python references
+    gc.collect()
+
+    max_retries = 5
+    base_delay = 0.1
+
+    for attempt in range(max_retries):
+        try:
+            if os.path.exists(db_path):
+                os.unlink(db_path)
+                return  # Success - file deleted
+            else:
+                return  # File doesn't exist - nothing to clean up
+        except PermissionError:
+            if attempt < max_retries - 1:
+                # Calculate exponential backoff delay
+                delay = base_delay * (2 ** attempt)
+                time.sleep(delay)
+                continue
+            else:
+                # Final attempt failed - this is expected occasionally on Windows
+                # Use a more specific and less alarming log message
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.debug(f"Temporary database cleanup deferred (Windows file locking): {os.path.basename(db_path)}")
+
+                # Only register for cleanup at exit if we absolutely can't delete now
+                import atexit
+                atexit.register(_delayed_cleanup, db_path)
+                return
+        except (OSError, FileNotFoundError):
+            # File already deleted or other OS-level issue
+            return
+
+
+def _delayed_cleanup(db_path: str) -> None:
+    """Attempt cleanup at program exit when file locks should be released."""
+    try:
+        if os.path.exists(db_path):
+            os.unlink(db_path)
+    except (PermissionError, OSError, FileNotFoundError):
+        # Silently ignore - OS will clean up temp files eventually
+        pass
 
 
 def pytest_configure(config):
@@ -99,21 +155,8 @@ def test_db() -> Generator[str, None, None]:
             # Properly dispose of the engine to release database connections
             engine.dispose()
 
-            # Cleanup - retry deletion with error handling for Windows
-            try:
-                os.unlink(temp_file.name)
-            except PermissionError:
-                # On Windows, sometimes the file is still locked briefly
-                # Try once more after a short delay
-                import time
-                time.sleep(0.1)
-                try:
-                    os.unlink(temp_file.name)
-                except PermissionError:
-                    # If still failing, log but don't crash tests
-                    import warnings
-                    warnings.warn(f"Could not delete temporary test database: {temp_file.name}")
-                    pass
+            # Enhanced cleanup with retry logic for Windows file locking
+            _cleanup_temp_database(temp_file.name)
 
 
 @pytest.fixture

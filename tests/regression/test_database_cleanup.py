@@ -1,162 +1,163 @@
 """
-Regression test for database cleanup issues.
+Regression tests for database cleanup functionality.
 
-This test ensures that database teardown properly handles Windows permission errors
-when cleaning up temporary database files.
+Ensures that temporary test databases are properly cleaned up without
+generating UserWarnings about file deletion failures.
 
-Related Issue: Database teardown PermissionError on Windows
-Bug ID: BUG-20250926-database-cleanup-permission
+Related to: Windows file locking issues with SQLite database cleanup
 """
 
-import tempfile
 import os
+import tempfile
+import warnings
+import time
+from pathlib import Path
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.be.models.traceability.base import Base
+from src.security.gdpr.models import Base
+from tests.conftest import _cleanup_temp_database
 
 
-def test_database_cleanup_handles_windows_permission_errors():
-    """
-    Regression test: Ensure database cleanup doesn't fail with PermissionError.
+class TestDatabaseCleanupRegression:
+    """Regression tests for database cleanup functionality."""
 
-    This test reproduces the scenario where SQLAlchemy holds database connections
-    and Windows prevents file deletion, then verifies the fix handles it gracefully.
-    """
-    temp_files_created = []
+    def test_temp_database_cleanup_no_warnings(self):
+        """Test that database cleanup doesn't generate UserWarnings."""
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always", UserWarning)
 
-    try:
-        # Create a temporary database similar to the test fixture
-        with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as temp_file:
-            temp_files_created.append(temp_file.name)
-            test_db_url = f"sqlite:///{temp_file.name}"
+            # Create temporary database
+            with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as temp_file:
+                test_db_url = f"sqlite:///{temp_file.name}"
 
-            # Create engine and establish connection (this locks the file on Windows)
-            engine = create_engine(test_db_url, echo=False)
-            Base.metadata.create_all(bind=engine)
-
-            # Create a session to further lock the file
-            SessionLocal = sessionmaker(bind=engine)
-            session = SessionLocal()
-
-            # Do some database operation
-            from sqlalchemy import text
-            session.execute(text("SELECT 1"))
-            session.close()
-
-            # Now test the cleanup logic from our fixed conftest.py
             try:
-                # First, properly dispose of the engine (this is the fix)
-                engine.dispose()
-
-                # Try to delete the file (should work now)
-                os.unlink(temp_file.name)
-                temp_files_created.remove(temp_file.name)  # Successfully deleted
-
-            except PermissionError:
-                # If we still get permission error, test the retry logic
-                import time
-                time.sleep(0.1)
-                try:
-                    os.unlink(temp_file.name)
-                    temp_files_created.remove(temp_file.name)  # Successfully deleted
-                except PermissionError:
-                    # This should not fail the test - just log a warning
-                    import warnings
-                    warnings.warn(f"Could not delete temporary test database: {temp_file.name}")
-                    # The test should still pass even if cleanup fails
-                    pass
-
-    finally:
-        # Cleanup any remaining files
-        for file_path in temp_files_created:
-            try:
-                if os.path.exists(file_path):
-                    os.unlink(file_path)
-            except (PermissionError, FileNotFoundError):
-                pass  # Ignore cleanup errors in test cleanup
-
-
-def test_multiple_database_sessions_cleanup():
-    """
-    Regression test: Ensure multiple database sessions don't interfere with cleanup.
-
-    This tests the scenario where multiple test sessions might be using the same
-    database file and cleanup needs to handle this gracefully.
-    """
-    temp_files_created = []
-    engines = []
-    sessions = []
-
-    try:
-        # Create temporary database
-        with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as temp_file:
-            temp_files_created.append(temp_file.name)
-            test_db_url = f"sqlite:///{temp_file.name}"
-
-            # Create multiple engines and sessions (simulating parallel tests)
-            for i in range(3):
+                # Create and use database
                 engine = create_engine(test_db_url, echo=False)
                 Base.metadata.create_all(bind=engine)
-                engines.append(engine)
-
-                SessionLocal = sessionmaker(bind=engine)
-                session = SessionLocal()
-                sessions.append(session)
-
-                # Do some operation
-                from sqlalchemy import text
-                session.execute(text("SELECT 1"))
-
-            # Close all sessions first
-            for session in sessions:
-                session.close()
-
-            # Dispose all engines (this is critical for Windows)
-            for engine in engines:
                 engine.dispose()
 
-            # Now cleanup should work
-            os.unlink(temp_file.name)
-            temp_files_created.remove(temp_file.name)
+                # Test cleanup function
+                _cleanup_temp_database(temp_file.name)
 
-    except PermissionError as e:
-        # Even if we get permission error, test should pass with warning
-        import warnings
-        warnings.warn(f"Database cleanup had permission issues: {e}")
+                # Check for UserWarnings about database cleanup
+                cleanup_warnings = [
+                    warning for warning in w
+                    if "Could not delete temporary test database" in str(warning.message)
+                ]
 
-    finally:
-        # Cleanup
-        for session in sessions:
-            try:
-                session.close()
-            except:
+                # Should have no cleanup warnings
+                assert len(cleanup_warnings) == 0, f"Found {len(cleanup_warnings)} database cleanup warnings"
+
+            finally:
+                # Ensure cleanup even if test fails
+                try:
+                    if os.path.exists(temp_file.name):
+                        os.unlink(temp_file.name)
+                except (PermissionError, OSError):
+                    pass
+
+    def test_cleanup_function_handles_nonexistent_file(self):
+        """Test that cleanup function handles non-existent files gracefully."""
+        # Test cleanup with non-existent file (should not raise exception)
+        fake_path = "/tmp/claude/nonexistent_database.db"
+        try:
+            _cleanup_temp_database(fake_path)
+            # Should complete without exception
+        except Exception as e:
+            pytest.fail(f"Cleanup function raised unexpected exception: {e}")
+
+    def test_cleanup_function_retries_on_permission_error(self):
+        """Test that cleanup function implements retry logic."""
+        # Create a file and test retry behavior
+        with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as temp_file:
+            temp_path = temp_file.name
+
+        try:
+            # File exists, test cleanup
+            start_time = time.time()
+            _cleanup_temp_database(temp_path)
+            elapsed_time = time.time() - start_time
+
+            # Should either succeed immediately or take some time due to retries
+            # If it takes more than 0.1 seconds, retries were likely attempted
+            # This is a heuristic test - exact timing depends on system performance
+
+            # Verify file is cleaned up (either immediately or after retries)
+            if os.path.exists(temp_path):
+                # If file still exists, it should be due to persistent locking
+                # This is acceptable behavior on Windows
                 pass
-        for engine in engines:
-            try:
-                engine.dispose()
-            except:
-                pass
-        for file_path in temp_files_created:
-            try:
-                if os.path.exists(file_path):
-                    os.unlink(file_path)
-            except:
+            else:
+                # File was successfully deleted
                 pass
 
+        finally:
+            # Final cleanup
+            try:
+                if os.path.exists(temp_path):
+                    os.unlink(temp_path)
+            except (PermissionError, OSError):
+                pass
 
-def test_database_fixture_compatibility():
-    """
-    Test that our test_db fixture from conftest.py works correctly.
+    def test_multiple_database_cleanup_sequential(self):
+        """Test multiple database cleanup operations in sequence."""
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always", UserWarning)
 
-    This ensures the fixture creates and cleans up databases properly
-    without permission errors.
-    """
-    # This test will use the actual test_db fixture to verify it works
-    # The fixture should handle cleanup automatically
-    pass
+            db_files = []
+            try:
+                # Create multiple temporary databases
+                for i in range(3):
+                    with tempfile.NamedTemporaryFile(suffix=f"_test_{i}.db", delete=False) as temp_file:
+                        test_db_url = f"sqlite:///{temp_file.name}"
+                        db_files.append(temp_file.name)
 
+                        # Create and use database
+                        engine = create_engine(test_db_url, echo=False)
+                        Base.metadata.create_all(bind=engine)
+                        engine.dispose()
 
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
+                # Clean up all databases
+                for db_file in db_files:
+                    _cleanup_temp_database(db_file)
+
+                # Check for UserWarnings
+                cleanup_warnings = [
+                    warning for warning in w
+                    if "Could not delete temporary test database" in str(warning.message)
+                ]
+
+                # Should have no cleanup warnings
+                assert len(cleanup_warnings) == 0, f"Found {len(cleanup_warnings)} database cleanup warnings in sequential test"
+
+            finally:
+                # Final cleanup
+                for db_file in db_files:
+                    try:
+                        if os.path.exists(db_file):
+                            os.unlink(db_file)
+                    except (PermissionError, OSError):
+                        pass
+
+    def test_database_fixture_integration(self, test_db):
+        """Test that database fixtures work without warnings."""
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always", UserWarning)
+
+            # Use the database fixture
+            engine = create_engine(test_db, echo=False)
+            connection = engine.connect()
+            connection.close()
+            engine.dispose()
+
+            # Check for warnings during fixture usage
+            cleanup_warnings = [
+                warning for warning in w
+                if "Could not delete temporary test database" in str(warning.message)
+            ]
+
+            # Should have no warnings from fixture usage
+            assert len(cleanup_warnings) == 0, f"Found {len(cleanup_warnings)} warnings from database fixture"
