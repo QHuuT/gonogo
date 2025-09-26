@@ -216,3 +216,30 @@ class TestDatetimeUTCDeprecationRegression:
 
             # Should have no warnings from our test code
             assert len(utcnow_warnings) == 0, f"Found {len(utcnow_warnings)} utcnow deprecation warnings in GDPR compliance tests"
+
+    def test_timezone_aware_datetime_comparisons(self):
+        """Test that datetime comparisons handle timezone-aware and naive datetimes properly."""
+        from src.security.gdpr.service import GDPRService
+        from src.security.gdpr.models import ConsentType
+        from unittest.mock import MagicMock
+
+        # Create service instance
+        mock_db = MagicMock()
+        service = GDPRService(mock_db)
+
+        # Test the timezone helper function
+        from datetime import datetime, UTC
+
+        # Test timezone-naive datetime
+        naive_dt = datetime(2023, 1, 1, 12, 0, 0)
+        aware_dt = service._ensure_timezone_aware(naive_dt)
+        assert aware_dt.tzinfo == UTC
+
+        # Test timezone-aware datetime
+        original_aware_dt = datetime(2023, 1, 1, 12, 0, 0, tzinfo=UTC)
+        unchanged_dt = service._ensure_timezone_aware(original_aware_dt)
+        assert unchanged_dt == original_aware_dt
+
+        # Test None handling
+        none_result = service._ensure_timezone_aware(None)
+        assert none_result is None

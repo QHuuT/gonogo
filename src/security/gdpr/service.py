@@ -27,6 +27,15 @@ class GDPRService:
     def __init__(self, db_session: Session):
         self.db = db_session
 
+    def _ensure_timezone_aware(self, dt: datetime) -> datetime:
+        """Ensure datetime is timezone-aware (assume UTC if naive)."""
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            # Assume naive datetime is UTC
+            return dt.replace(tzinfo=UTC)
+        return dt
+
     def _hash_data(self, data: str, salt: Optional[str] = None) -> str:
         """Hash sensitive data for privacy protection."""
         if salt is None:
@@ -168,7 +177,8 @@ class GDPRService:
         active_consents = {}
 
         for consent in consents:
-            if consent.expires_at is None or consent.expires_at > now:
+            expires_at_aware = self._ensure_timezone_aware(consent.expires_at)
+            if expires_at_aware is None or expires_at_aware > now:
                 try:
                     consent_type = ConsentType(consent.consent_type)
                     active_consents[consent_type] = True

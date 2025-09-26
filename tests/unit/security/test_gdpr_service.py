@@ -186,7 +186,12 @@ class TestGDPRService:
         expected_due_date_min = before_creation + timedelta(days=30)
         expected_due_date_max = after_creation + timedelta(days=30)
 
-        assert expected_due_date_min <= request.due_date <= expected_due_date_max
+        # Handle timezone comparison - ensure request.due_date is timezone-aware
+        due_date = request.due_date
+        if due_date.tzinfo is None:
+            due_date = due_date.replace(tzinfo=UTC)
+
+        assert expected_due_date_min <= due_date <= expected_due_date_max
 
     @pytest.mark.component("security")
     def test_process_data_subject_request_completes(self, db_session):

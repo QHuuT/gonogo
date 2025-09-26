@@ -2,7 +2,7 @@
 GDPR compliance models for data tracking and consent management.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from enum import Enum
 from typing import Dict, Optional
 
@@ -60,8 +60,8 @@ class ConsentRecord(Base):
     consent_version = Column(String(10), nullable=False, default="1.0")
 
     # Timestamps for GDPR compliance
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
     expires_at = Column(DateTime, nullable=True)
 
     # Withdrawal tracking
@@ -100,8 +100,8 @@ class DataProcessingRecord(Base):
     security_measures = Column(JSON, nullable=False)
 
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
 
 
 class DataSubjectRequest(Base):
@@ -127,7 +127,7 @@ class DataSubjectRequest(Base):
     completion_notes = Column(Text, nullable=True)
 
     # Timestamps (GDPR requires 30-day response time)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
     completed_at = Column(DateTime, nullable=True)
     due_date = Column(DateTime, nullable=False)
 
