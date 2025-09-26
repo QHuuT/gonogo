@@ -38,6 +38,19 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 # Automatically save test output to quality/logs via conftest.py
+filterwarnings = [
+    # Treat our code warnings as errors (strict mode for our code)
+    "error::DeprecationWarning",
+
+    # Ignore external dependency warnings
+    "ignore::DeprecationWarning:sqlalchemy.*",
+    "ignore::DeprecationWarning:pytest_asyncio.*",
+    "ignore::pytest.PytestDeprecationWarning:pytest_asyncio.*",
+
+    # Allow specific patterns for known external issues
+    "ignore:datetime.datetime.utcnow.*:DeprecationWarning:sqlalchemy.*",
+    "ignore:The configuration option.*asyncio_default_fixture_loop_scope.*:pytest.PytestDeprecationWarning:pytest_asyncio.*",
+]
 
 [tool.black]
 line-length = 88

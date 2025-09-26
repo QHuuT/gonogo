@@ -5,6 +5,7 @@ Following testing pyramid: Unit > Integration > E2E
 
 import os
 import tempfile
+import warnings
 from typing import Generator
 
 import pytest
@@ -17,6 +18,16 @@ from src.security.gdpr.models import Base
 
 # Load custom test runner plugin
 pytest_plugins = ["tools.test_runner_plugin"]
+
+
+def pytest_configure(config):
+    """Configure pytest to filter external dependency warnings."""
+    # Only apply filters if FILTER_EXTERNAL_WARNINGS environment variable is set
+    if os.getenv("FILTER_EXTERNAL_WARNINGS", "false").lower() == "true":
+        # Filter out external dependency warnings while keeping our code warnings
+        warnings.filterwarnings("ignore", ".*datetime.utcnow.*", DeprecationWarning, "sqlalchemy.*")
+        warnings.filterwarnings("ignore", ".*asyncio_default_fixture_loop_scope.*", module="pytest_asyncio.*")
+        warnings.filterwarnings("ignore", ".*", DeprecationWarning, "site-packages.*")
 
 
 def pytest_configure(config):

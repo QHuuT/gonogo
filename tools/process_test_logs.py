@@ -458,6 +458,31 @@ def extract_warning_message(line):
     return line.strip()[:100] + "..."
 
 
+def is_external_warning(line):
+    """Check if a warning comes from external dependencies."""
+    external_indicators = [
+        'site-packages',
+        'sqlalchemy',
+        'pytest_asyncio',
+        'starlette',
+        'httpx',
+        'pydantic',
+        'fastapi'
+    ]
+
+    return any(indicator in line.lower() for indicator in external_indicators)
+
+
+def classify_warning_source(line):
+    """Classify warning as internal, external, or unknown."""
+    if is_external_warning(line):
+        return "external"
+    elif any(indicator in line.lower() for indicator in ['src/', 'tests/', 'tools/']):
+        return "internal"
+    else:
+        return "unknown"
+
+
 def extract_location_from_line(line, lines, index):
     """Extract file location from warning line or context."""
     # Look for file paths in the line or nearby lines
@@ -555,29 +580,73 @@ def format_errors_section(error_groups):
 
 
 def format_warnings_section(warning_groups):
-    """Format the warnings section with grouped warnings and numbered tags."""
+    """Format the warnings section with grouped warnings, separating internal and external warnings."""
     if not warning_groups:
         return ""
 
+    # Separate internal and external warnings
+    internal_groups = []
+    external_groups = []
+
+    for group in warning_groups:
+        # Classify based on locations
+        is_external = any(is_external_warning(loc) for loc in group.get('locations', []))
+        if is_external:
+            external_groups.append(group)
+        else:
+            internal_groups.append(group)
+
     total_warnings = sum(group['count'] for group in warning_groups)
+    internal_count = sum(group['count'] for group in internal_groups)
+    external_count = sum(group['count'] for group in external_groups)
+
     section = f"\n{'='*80}\n"
     section += f"WARNING DETAILS ({len(warning_groups)} warning group(s), {total_warnings} total warning(s) found):\n"
+    section += f"Internal Code: {len(internal_groups)} group(s), {internal_count} warning(s)\n"
+    section += f"External Dependencies: {len(external_groups)} group(s), {external_count} warning(s)\n"
     section += f"{'='*80}\n\n"
 
-    for i, group in enumerate(warning_groups, 1):
-        count_text = f" ({group['count']} occurrence{'s' if group['count'] > 1 else ''})" if group['count'] > 1 else ""
-        section += f"[WARNING GROUP NO-{i}] {group['type']}{count_text}\n"
-        section += f"{'='*60}\n"
-        section += f"Message: {group['message']}\n"
-
-        if group['locations']:
-            section += f"Locations:\n"
-            for location in group['locations'][:5]:  # Show up to 5 locations
-                section += f"  - {location}\n"
-            if len(group['locations']) > 5:
-                section += f"  ... and {len(group['locations']) - 5} more locations\n"
-
+    # Show internal warnings first (higher priority)
+    if internal_groups:
+        section += f"🔍 INTERNAL CODE WARNINGS (Action Required)\n"
         section += f"{'='*60}\n\n"
+
+        for i, group in enumerate(internal_groups, 1):
+            count_text = f" ({group['count']} occurrence{'s' if group['count'] > 1 else ''})" if group['count'] > 1 else ""
+            section += f"[INTERNAL WARNING NO-{i}] {group['type']}{count_text}\n"
+            section += f"{'='*50}\n"
+            section += f"Message: {group['message']}\n"
+
+            if group['locations']:
+                section += f"Locations:\n"
+                for location in group['locations'][:5]:
+                    section += f"  - {location}\n"
+                if len(group['locations']) > 5:
+                    section += f"  ... and {len(group['locations']) - 5} more locations\n"
+
+            section += f"{'='*50}\n\n"
+
+    # Show external warnings separately (lower priority)
+    if external_groups:
+        section += f"📦 EXTERNAL DEPENDENCY WARNINGS (Monitor Only)\n"
+        section += f"{'='*60}\n"
+        section += f"Note: These warnings come from external libraries and require no action from our team.\n"
+        section += f"Monitor dependency updates for potential fixes.\n\n"
+
+        for i, group in enumerate(external_groups, 1):
+            count_text = f" ({group['count']} occurrence{'s' if group['count'] > 1 else ''})" if group['count'] > 1 else ""
+            section += f"[EXTERNAL WARNING NO-{i}] {group['type']}{count_text}\n"
+            section += f"{'='*50}\n"
+            section += f"Message: {group['message']}\n"
+
+            if group['locations']:
+                section += f"Source Library:\n"
+                for location in group['locations'][:3]:  # Show fewer external locations
+                    section += f"  - {location}\n"
+                if len(group['locations']) > 3:
+                    section += f"  ... and {len(group['locations']) - 3} more locations\n"
+
+            section += f"{'='*50}\n\n"
 
     return section
 
