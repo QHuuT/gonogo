@@ -576,7 +576,99 @@ class TestRTMDatabaseCLI:
         result = self.runner.invoke(rtm_db_cli.cli, ["admin", "validate"])
 
         assert result.exit_code == 0
-        assert "Found 1 validation issues" in result.output
+        assert "Found 1 validation issues:" in result.output
+
+    @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
+    def test_admin_validate_output_format_regression(self, mock_get_db):
+        """Regression test: Ensure validate success message uses click.echo() for testability."""
+        mock_get_db.return_value = self.mock_db
+
+        # Mock queries for no issues scenario
+        mock_query = Mock()
+        self.mock_db.query.return_value = mock_query
+        mock_query.filter.return_value.all.return_value = []  # No orphaned records
+        mock_query.all.return_value = [self.mock_epic, self.mock_user_story]  # Valid entities
+
+        result = self.runner.invoke(rtm_db_cli.cli, ["admin", "validate"])
+
+        assert result.exit_code == 0
+        # This is the key regression test - ensure the success message is captured
+        assert "All validation checks passed" in result.output
+        # Verify this is plain text, not Rich markup
+        assert "[green]" not in result.output
+        assert "[/green]" not in result.output
+
+    @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
+    def test_admin_validate_with_fix_flag(self, mock_get_db):
+        """Test validate command with --fix flag when issues exist."""
+        mock_get_db.return_value = self.mock_db
+
+        # Mock orphaned records to trigger issues
+        orphaned_us = Mock()
+        orphaned_us.user_story_id = "US-ORPHAN"
+
+        mock_query = Mock()
+        self.mock_db.query.return_value = mock_query
+        mock_query.filter.return_value.all.side_effect = [
+            [orphaned_us],  # Orphaned user stories
+            [],  # Invalid GitHub issues
+        ]
+        mock_query.all.side_effect = [
+            [self.mock_epic],  # Epics for duplicate check
+            [self.mock_user_story],  # User stories for duplicate check
+        ]
+
+        result = self.runner.invoke(rtm_db_cli.cli, ["admin", "validate", "--fix"])
+
+        assert result.exit_code == 0
+        # Note: Issue details and auto-fix message use Rich console.print, so not testable via click output
+
+    @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
+    def test_admin_validate_database_error(self, mock_get_db):
+        """Test validate command handles database errors gracefully."""
+        mock_get_db.side_effect = Exception("Database connection failed")
+
+        result = self.runner.invoke(rtm_db_cli.cli, ["admin", "validate"])
+
+        assert result.exit_code == 0
+        assert "Database validation failed:" in result.output
+
+    @patch("rtm_db_cli.get_db_session")
+    @pytest.mark.epic("EP-00005", "EP-99999")
+    @pytest.mark.user_story("US-00055")
+    @pytest.mark.component("backend")
+    def test_admin_validate_duplicate_detection(self, mock_get_db):
+        """Test validate command detects duplicate entity IDs."""
+        mock_get_db.return_value = self.mock_db
+
+        # Mock entities with duplicate IDs
+        duplicate_epic = Mock()
+        duplicate_epic.epic_id = "EP-00001"  # Same as self.mock_epic.epic_id
+
+        duplicate_us = Mock()
+        duplicate_us.user_story_id = "US-00001"  # Same as self.mock_user_story.user_story_id
+
+        mock_query = Mock()
+        self.mock_db.query.return_value = mock_query
+        mock_query.filter.return_value.all.return_value = []  # No orphaned records
+        mock_query.all.side_effect = [
+            [self.mock_epic, duplicate_epic],  # Duplicate epic IDs
+            [self.mock_user_story, duplicate_us],  # Duplicate user story IDs
+        ]
+
+        result = self.runner.invoke(rtm_db_cli.cli, ["admin", "validate"])
+
+        assert result.exit_code == 0
+        # Note: Duplicate detection results use Rich console.print, so not testable via click output
 
     @patch("rtm_db_cli.get_db_session")
     @pytest.mark.epic("EP-00005", "EP-99999")

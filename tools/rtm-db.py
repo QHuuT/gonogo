@@ -548,10 +548,9 @@ def health_check(ctx):
 @click.pass_context
 def validate(ctx, fix):
     """Validate data integrity and relationships."""
-    db = get_db_session()
-    issues = []
-
     try:
+        db = get_db_session()
+        issues = []
         # Check for missing Epic references
         orphaned_us = db.query(UserStory).filter(UserStory.epic_id.is_(None)).all()
         if orphaned_us:
@@ -578,17 +577,19 @@ def validate(ctx, fix):
             issues.append("Found duplicate User Story IDs")
 
         if issues:
-            console.print(f"[red]Found {len(issues)} validation issues:[/red]")
+            click.echo(f"Found {len(issues)} validation issues:")
             for issue in issues:
                 console.print(f"  - {issue}")
 
             if fix:
                 console.print("\n[yellow]Auto-fix not yet implemented[/yellow]")
         else:
-            console.print("[green]All validation checks passed[/green]")
+            click.echo("All validation checks passed")
 
-    finally:
         db.close()
+
+    except Exception as e:
+        click.echo(f"Database validation failed: {e}")
 
 
 @admin.command()

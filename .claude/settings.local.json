@@ -6,7 +6,8 @@
       "Bash(git push:*)",
       "Bash(curl:*)",
       "Bash(git checkout:*)",
-      "Bash(pytest:*)"
+      "Bash(pytest:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
