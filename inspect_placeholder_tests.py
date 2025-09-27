@@ -21,10 +21,22 @@ def inspect_test(file_path, test_name):
 
 # Placeholder tests identified
 placeholders = [
-    ('tests/unit/security/test_gdpr_compliance.py', 'test_data_subject_request_injection_prevention'),
-    ('tests/unit/shared/test_runner_plugin_demo.py', 'test_plugin_mode_detection'),
-    ('tests/unit/shared/shared/testing/test_database_integration.py', 'test_epic_pattern_matching'),
-    ('tests/unit/shared/shared/testing/test_database_integration.py', 'test_analyze_test_file_with_references'),
+    (
+        'tests/unit/security/test_gdpr_compliance.py',
+        'test_data_subject_request_injection_prevention'
+    ),
+    (
+        'tests/unit/shared/test_runner_plugin_demo.py',
+        'test_plugin_mode_detection'
+    ),
+    (
+        'tests/unit/shared/shared/testing/test_database_integration.py',
+        'test_epic_pattern_matching'
+    ),
+    (
+        'tests/unit/shared/shared/testing/test_database_integration.py',
+        'test_analyze_test_file_with_references'
+    ),
 ]
 
 print("="*80)
@@ -60,7 +72,9 @@ for test_file in test_root.rglob('test_*.py'):
 
     # Look for assert True pattern
     import re
-    matches = re.finditer(r'def (test_\w+).*?:\s*.*?assert True', content, re.DOTALL)
+    matches = re.finditer(
+        r'def (test_\w+).*?:\s*.*?assert True', content, re.DOTALL
+    )
     for match in matches:
         test_name = match.group(1)
         # Get just the function
@@ -68,6 +82,10 @@ for test_file in test_root.rglob('test_*.py'):
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef) and node.name == test_name:
                 func_code = ast.get_source_segment(content, node)
-                if func_code and len(func_code.split('\n')) <= 5:  # Short functions
-                    print(f"\n{test_file.relative_to(test_root)} :: {test_name}")
+                if (
+                    func_code and len(func_code.split('\n')) <= 5
+                ):  # Short functions
+                    print(
+                        f"\n{test_file.relative_to(test_root)} :: {test_name}"
+                    )
                     print(f"{func_code[:200]}...")  # First 200 chars
