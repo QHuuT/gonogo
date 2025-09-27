@@ -49,7 +49,8 @@ class DataQualityAnalyzer:
 
         # Defects without test or epic
         result = self.conn.execute(text("""
-            SELECT COUNT(*) FROM defects WHERE test_id IS NULL AND epic_id IS NULL
+            SELECT COUNT(*) FROM defects
+            WHERE test_id IS NULL AND epic_id IS NULL
         """))
         orphaned_defects = result.scalar()
 
@@ -74,9 +75,13 @@ class DataQualityAnalyzer:
                     )
 
         if orphaned_us > 0:
-            self.issues['orphaned_records'].append(f"{orphaned_us} user stories without epic")
+            self.issues['orphaned_records'].append(
+                f"{orphaned_us} user stories without epic"
+            )
         if orphaned_defects > 0:
-            self.issues['orphaned_records'].append(f"{orphaned_defects} defects without test/epic")
+            self.issues['orphaned_records'].append(
+                f"{orphaned_defects} defects without test/epic"
+            )
 
     def check_referential_integrity(self):
         """Check for broken foreign key references."""
@@ -107,14 +112,24 @@ class DataQualityAnalyzer:
         """))
         invalid_defect_test = result.scalar()
 
-        print(f"  Tests with invalid epic_id: {invalid_test_epic}")
-        print(f"  User Stories with invalid epic_id: {invalid_us_epic}")
-        print(f"  Defects with invalid test_id: {invalid_defect_test}")
+        print(
+            f"  Tests with invalid epic_id: {invalid_test_epic}"
+        )
+        print(
+            f"  User Stories with invalid epic_id: {invalid_us_epic}"
+        )
+        print(
+            f"  Defects with invalid test_id: {invalid_defect_test}"
+        )
 
         if invalid_test_epic > 0:
-            self.issues['referential_integrity'].append(f"{invalid_test_epic} tests reference non-existent epics")
+            self.issues['referential_integrity'].append(
+                f"{invalid_test_epic} tests reference non-existent epics"
+            )
         if invalid_us_epic > 0:
-            self.issues['referential_integrity'].append(f"{invalid_us_epic} user stories reference non-existent epics")
+            self.issues['referential_integrity'].append(
+                f"{invalid_us_epic} user stories reference non-existent epics"
+            )
         if invalid_defect_test > 0:
             self.issues['referential_integrity'].append(f"{invalid_defect_test} defects reference non-existent tests")
 
