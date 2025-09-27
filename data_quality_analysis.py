@@ -131,7 +131,9 @@ class DataQualityAnalyzer:
                 f"{invalid_us_epic} user stories reference non-existent epics"
             )
         if invalid_defect_test > 0:
-            self.issues['referential_integrity'].append(f"{invalid_defect_test} defects reference non-existent tests")
+            self.issues['referential_integrity'].append(
+                f"{invalid_defect_test} defects reference non-existent tests"
+            )
 
     def check_duplicate_records(self):
         """Check for duplicate records."""
@@ -171,19 +173,25 @@ class DataQualityAnalyzer:
         if dup_epics:
             for epic_id, count in dup_epics:
                 print(f"    {epic_id}: {count} records")
-                self.issues['duplicates'].append(f"Epic {epic_id} has {count} duplicate records")
+                self.issues['duplicates'].append(
+                    f"Epic {epic_id} has {count} duplicate records"
+                )
 
         print(f"  Duplicate user stories: {len(dup_us)}")
         if dup_us:
             for issue_num, count in dup_us:
                 print(f"    GitHub #{issue_num}: {count} records")
-                self.issues['duplicates'].append(f"User story GitHub #{issue_num} has {count} duplicates")
+                self.issues['duplicates'].append(
+                    f"User story GitHub #{issue_num} has {count} duplicates"
+                )
 
         print(f"  Duplicate tests: {len(dup_tests)}")
         if dup_tests:
             for file_path, func_name, count in dup_tests[:5]:
                 print(f"    {file_path}::{func_name}: {count} records")
-                self.issues['duplicates'].append(f"Test {func_name} has {count} duplicates")
+                self.issues['duplicates'].append(
+                    f"Test {func_name} has {count} duplicates"
+                )
 
     def check_data_completeness(self):
         """Check for missing required data."""
@@ -205,7 +213,8 @@ class DataQualityAnalyzer:
 
         # Tests without file path
         result = self.conn.execute(text("""
-            SELECT COUNT(*) FROM tests WHERE test_file_path IS NULL OR test_file_path = ''
+            SELECT COUNT(*) FROM tests
+            WHERE test_file_path IS NULL OR test_file_path = ''
         """))
         tests_no_path = result.scalar()
 
@@ -221,13 +230,21 @@ class DataQualityAnalyzer:
         print(f"  User stories without title: {us_no_title}")
 
         if epics_no_title > 0:
-            self.issues['data_completeness'].append(f"{epics_no_title} epics missing title")
+            self.issues['data_completeness'].append(
+                f"{epics_no_title} epics missing title"
+            )
         if tests_no_func > 0:
-            self.issues['data_completeness'].append(f"{tests_no_func} non-BDD tests missing function name")
+            self.issues['data_completeness'].append(
+                f"{tests_no_func} non-BDD tests missing function name"
+            )
         if tests_no_path > 0:
-            self.issues['data_completeness'].append(f"{tests_no_path} tests missing file path")
+            self.issues['data_completeness'].append(
+                f"{tests_no_path} tests missing file path"
+            )
         if us_no_title > 0:
-            self.issues['data_completeness'].append(f"{us_no_title} user stories missing title")
+            self.issues['data_completeness'].append(
+                f"{us_no_title} user stories missing title"
+            )
 
     def check_data_consistency(self):
         """Check for inconsistent data values."""
@@ -245,7 +262,9 @@ class DataQualityAnalyzer:
             SELECT DISTINCT test_type FROM tests
         """))
         test_types = [row[0] for row in result.fetchall()]
-        valid_types = {'unit', 'integration', 'e2e', 'bdd', 'security', 'functional'}
+        valid_types = {
+            'unit', 'integration', 'e2e', 'bdd', 'security', 'functional'
+        }
         invalid_types = [t for t in test_types if t not in valid_types]
 
         # Check status values
@@ -253,22 +272,38 @@ class DataQualityAnalyzer:
             SELECT DISTINCT status FROM epics
         """))
         epic_statuses = [row[0] for row in result.fetchall()]
-        valid_statuses = {'planned', 'in_progress', 'completed', 'on_hold', 'cancelled'}
-        invalid_statuses = [s for s in epic_statuses if s and s not in valid_statuses]
+        valid_statuses = {
+            'planned', 'in_progress', 'completed', 'on_hold', 'cancelled'
+        }
+        invalid_statuses = [
+            s for s in epic_statuses if s and s not in valid_statuses
+        ]
 
         print(f"  Invalid epic_id formats: {len(invalid_epic_format)}")
         if invalid_epic_format:
             for row in invalid_epic_format:
                 print(f"    {row[0]}")
-                self.issues['data_consistency'].append(f"Invalid epic_id format: {row[0]}")
+                self.issues['data_consistency'].append(
+                    f"Invalid epic_id format: {row[0]}"
+                )
 
-        print(f"  Invalid test types: {invalid_types if invalid_types else 'None'}")
+        print(
+            f"  Invalid test types: "
+            f"{invalid_types if invalid_types else 'None'}"
+        )
         if invalid_types:
-            self.issues['data_consistency'].append(f"Invalid test types: {invalid_types}")
+            self.issues['data_consistency'].append(
+                f"Invalid test types: {invalid_types}"
+            )
 
-        print(f"  Invalid epic statuses: {invalid_statuses if invalid_statuses else 'None'}")
+        print(
+            f"  Invalid epic statuses: "
+            f"{invalid_statuses if invalid_statuses else 'None'}"
+        )
         if invalid_statuses:
-            self.issues['data_consistency'].append(f"Invalid epic statuses: {invalid_statuses}")
+            self.issues['data_consistency'].append(
+                f"Invalid epic statuses: {invalid_statuses}"
+            )
 
     def check_invalid_values(self):
         """Check for logically invalid values."""
@@ -308,14 +343,23 @@ class DataQualityAnalyzer:
         print(f"  Tests with negative duration: {negative_duration}")
 
         if negative_points > 0:
-            self.issues['invalid_values'].append(f"{negative_points} epics with negative story points")
+            self.issues['invalid_values'].append(
+                f"{negative_points} epics with negative story points"
+            )
         if invalid_completion > 0:
-            self.issues['invalid_values'].append(f"{invalid_completion} epics with >100% completion")
+            self.issues['invalid_values'].append(
+                f"{invalid_completion} epics with >100% completion"
+            )
         if invalid_points:
             for epic_id, total, completed in invalid_points:
-                self.issues['invalid_values'].append(f"Epic {epic_id}: completed ({completed}) > total ({total})")
+                self.issues['invalid_values'].append(
+                    f"Epic {epic_id}: completed ({completed}) > "
+                    f"total ({total})"
+                )
         if negative_duration > 0:
-            self.issues['invalid_values'].append(f"{negative_duration} tests with negative duration")
+            self.issues['invalid_values'].append(
+                f"{negative_duration} tests with negative duration"
+            )
 
     def check_data_format_issues(self):
         """Check for data format and encoding issues."""
@@ -359,15 +403,21 @@ class DataQualityAnalyzer:
         print(f"  Paths with forward slashes: {len(forward_paths)}")
 
         if backslash_paths and forward_paths:
-            self.issues['data_format'].append("Mixed path separators (backslash and forward slash)")
+            self.issues['data_format'].append(
+                "Mixed path separators (backslash and forward slash)"
+            )
 
         print(f"  Invalid GitHub issue numbers: {len(invalid_issue_nums)}")
         if invalid_issue_nums:
-            self.issues['data_format'].append(f"{len(invalid_issue_nums)} invalid GitHub issue numbers")
+            self.issues['data_format'].append(
+                f"{len(invalid_issue_nums)} invalid GitHub issue numbers"
+            )
 
         print(f"  Invalid JSON format fields: {invalid_json}")
         if invalid_json > 0:
-            self.issues['data_format'].append(f"{invalid_json} fields with invalid JSON format")
+            self.issues['data_format'].append(
+                f"{invalid_json} fields with invalid JSON format"
+            )
 
     def print_summary(self):
         """Print summary of all issues found."""
@@ -378,7 +428,9 @@ class DataQualityAnalyzer:
         total_issues = sum(len(issues) for issues in self.issues.values())
 
         if total_issues == 0:
-            print("\nSUCCESS: NO DATA QUALITY ISSUES FOUND - Database is clean!")
+            print(
+                "\nSUCCESS: NO DATA QUALITY ISSUES FOUND - Database is clean!"
+            )
         else:
             print(f"\nWARNING: FOUND {total_issues} DATA QUALITY ISSUES:\n")
 
