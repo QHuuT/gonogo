@@ -2,7 +2,8 @@
 Backup Monitoring and Alerting Service
 
 Real-time monitoring and alerting system for database backup operations.
-Provides immediate administrator alerts, corruption detection, and SLA tracking.
+Provides immediate administrator alerts, corruption detection, and SLA
+tracking.
 
 Related Issue: US-00036 - Comprehensive Database Backup Strategy
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
@@ -103,7 +104,7 @@ class BackupMonitor:
         self.max_backup_age_hours = (
             25  # Alert if no backup in 25 hours (daily + buffer)
         )
-        self.max_backup_duration_minutes = 30  # Alert if backup takes > 30 minutes
+        self.max_backup_duration_minutes = 30  # Alert if backup takes > 30min
         self.min_success_rate = 0.8  # Alert if success rate < 80%
 
         # Metrics storage (in production, use proper database)
