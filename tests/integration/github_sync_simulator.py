@@ -240,7 +240,7 @@ class GitHubDatabaseSyncSimulator:
                 sync_errors=(
                     None
                     if success
-                    else f'Failed to sync {entity_id or "unknown entity"}'
+                    else f"Failed to sync {entity_id or 'unknown entity'}"
                 ),
             )
             db.add(sync_record)

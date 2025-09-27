@@ -81,7 +81,9 @@ DEFAULT_THRESHOLDS: Dict[str, Dict[str, Dict[str, Any]]] = {
     },
 }
 
-CONFIG_PATH = Path(os.getenv("METRIC_THRESHOLDS_PATH", "config/metrics_thresholds.json"))
+CONFIG_PATH = Path(
+    os.getenv("METRIC_THRESHOLDS_PATH", "config/metrics_thresholds.json")
+)
 
 
 class MetricThresholdService:

@@ -6,10 +6,12 @@ Allows manual assignment of components to user stories.
 """
 
 import sys
-sys.path.append('src')
+
+sys.path.append("src")
 
 from be.database import SessionLocal
 from be.models.traceability.user_story import UserStory
+
 
 def list_missing_components():
     """List user stories that need component assignment."""
@@ -17,9 +19,7 @@ def list_missing_components():
 
     print("=== User Stories Missing Components ===\n")
 
-    us_missing = session.query(UserStory).filter(
-        UserStory.component.is_(None)
-    ).all()
+    us_missing = session.query(UserStory).filter(UserStory.component.is_(None)).all()
 
     for us in us_missing:
         epic_info = f"Epic: {us.epic.epic_id}" if us.epic else "No Epic"
@@ -31,14 +31,17 @@ def list_missing_components():
     session.close()
     return len(us_missing)
 
+
 def assign_component(user_story_id: str, component: str, dry_run: bool = True):
     """Assign a component to a user story."""
     session = SessionLocal()
 
     try:
-        us = session.query(UserStory).filter(
-            UserStory.user_story_id == user_story_id
-        ).first()
+        us = (
+            session.query(UserStory)
+            .filter(UserStory.user_story_id == user_story_id)
+            .first()
+        )
 
         if not us:
             print(f"❌ User story {user_story_id} not found")
@@ -49,7 +52,7 @@ def assign_component(user_story_id: str, component: str, dry_run: bool = True):
         if not dry_run:
             us.component = component
             session.commit()
-            print(f"✅ Component assigned successfully")
+            print("✅ Component assigned successfully")
         else:
             print(f"🔍 DRY RUN - Would assign component '{component}'")
 
@@ -62,14 +65,20 @@ def assign_component(user_story_id: str, component: str, dry_run: bool = True):
     finally:
         session.close()
 
+
 def interactive_assignment():
     """Interactive component assignment."""
     print("=== Interactive Component Assignment ===\n")
 
     # Available components
     components = [
-        "frontend", "backend", "database", "security",
-        "testing", "ci-cd", "documentation"
+        "frontend",
+        "backend",
+        "database",
+        "security",
+        "testing",
+        "ci-cd",
+        "documentation",
     ]
 
     while True:
@@ -85,9 +94,8 @@ def interactive_assignment():
         print("  0. Exit")
 
         # Get user story
-        us_id = \
-            input("\nEnter User Story ID (e.g., US-00003) or '0' to exit: ").strip()
-        if us_id == '0':
+        us_id = input("\nEnter User Story ID (e.g., US-00003) or '0' to exit: ").strip()
+        if us_id == "0":
             break
 
         # Get component choice
@@ -99,9 +107,10 @@ def interactive_assignment():
                 component = components[comp_choice - 1]
 
                 # Confirm
-                confirm = \
+                confirm = (
                     input(f"Assign '{component}' to {us_id}? (y/n): ").strip().lower()
-                if confirm == 'y':
+                )
+                if confirm == "y":
                     assign_component(us_id, component, dry_run=False)
                     print()
             else:
@@ -109,17 +118,24 @@ def interactive_assignment():
         except ValueError:
             print("Invalid input")
 
+
 def main():
     """Main entry point."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Assign components to user stories')
-    parser.add_argument('--list', action='store_true', help='List user stories missing components')
-    parser.add_argument('--interactive', action='store_true', help='Interactive assignment mode')
-    parser.add_argument('--user-story', help='User story ID to assign component to')
-    parser.add_argument('--component', help='Component to assign')
-    parser.add_argument('--dry-run', action='store_true', default=True, help='Dry run mode (default)')
-    parser.add_argument('--execute', action='store_true', help='Execute the assignment')
+    parser = argparse.ArgumentParser(description="Assign components to user stories")
+    parser.add_argument(
+        "--list", action="store_true", help="List user stories missing components"
+    )
+    parser.add_argument(
+        "--interactive", action="store_true", help="Interactive assignment mode"
+    )
+    parser.add_argument("--user-story", help="User story ID to assign component to")
+    parser.add_argument("--component", help="Component to assign")
+    parser.add_argument(
+        "--dry-run", action="store_true", default=True, help="Dry run mode (default)"
+    )
+    parser.add_argument("--execute", action="store_true", help="Execute the assignment")
 
     args = parser.parse_args()
 
@@ -134,7 +150,10 @@ def main():
         print("Usage examples:")
         print("  python assign_user_story_components.py --list")
         print("  python assign_user_story_components.py --interactive")
-        print("  python assign_user_story_components.py --user-story US-00003 --component backend --execute")
+        print(
+            "  python assign_user_story_components.py --user-story US-00003 --component backend --execute"
+        )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

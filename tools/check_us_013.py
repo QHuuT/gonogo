@@ -5,8 +5,9 @@ Check US-00013 status
 
 import sqlite3
 
+
 def check_us_013():
-    conn = sqlite3.connect('gonogo.db')
+    conn = sqlite3.connect("gonogo.db")
     cursor = conn.cursor()
 
     sql = """
@@ -29,6 +30,7 @@ def check_us_013():
         print("US-00013 not found")
 
     conn.close()
+
 
 if __name__ == "__main__":
     check_us_013()

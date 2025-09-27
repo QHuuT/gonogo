@@ -183,7 +183,11 @@ class PytestLoggingPlugin:
     def _generate_session_summary(self) -> Dict[str, Any]:
         """Generate a summary of the test session."""
         recent_logs = self.logger.get_recent_logs(1000)
-        test_logs = [log for log in recent_logs if log.test_status and log.test_status != "started"]
+        test_logs = [
+            log
+            for log in recent_logs
+            if log.test_status and log.test_status != "started"
+        ]
 
         if not test_logs:
             return {"total_tests": 0}
@@ -202,7 +206,9 @@ class PytestLoggingPlugin:
             "total_tests": len(test_logs),
             "status_counts": status_counts,
             "total_duration_ms": total_duration,
-            "average_duration_ms": (total_duration / len(test_logs) if test_logs else 0),
+            "average_duration_ms": (
+                total_duration / len(test_logs) if test_logs else 0
+            ),
         }
 
 

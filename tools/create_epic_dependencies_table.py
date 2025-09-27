@@ -13,11 +13,12 @@ from pathlib import Path
 src_path = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
-from be.database import engine, create_tables
+from be.database import engine
 from be.models.traceability.epic_dependency import EpicDependency
 from be.models.traceability.epic import Epic
 from be.models.traceability.base import Base
 from sqlalchemy import inspect
+
 
 def create_epic_dependencies_table():
     """Créer la table epic_dependencies si elle n'existe pas."""
@@ -29,7 +30,7 @@ def create_epic_dependencies_table():
     inspector = inspect(engine)
     existing_tables = inspector.get_table_names()
 
-    if 'epic_dependencies' in existing_tables:
+    if "epic_dependencies" in existing_tables:
         print("[OK] Table 'epic_dependencies' already exists")
         return True
 
@@ -42,17 +43,17 @@ def create_epic_dependencies_table():
         inspector = inspect(engine)
         existing_tables = inspector.get_table_names()
 
-        if 'epic_dependencies' in existing_tables:
+        if "epic_dependencies" in existing_tables:
             print("[OK] Table 'epic_dependencies' created successfully")
 
             # Afficher les colonnes créées
-            columns = inspector.get_columns('epic_dependencies')
+            columns = inspector.get_columns("epic_dependencies")
             print(f"\nColumns created ({len(columns)}):")
             for col in columns:
                 print(f"  - {col['name']}: {col['type']}")
 
             # Afficher les index créés
-            indexes = inspector.get_indexes('epic_dependencies')
+            indexes = inspector.get_indexes("epic_dependencies")
             print(f"\nIndexes created ({len(indexes)}):")
             for idx in indexes:
                 print(f"  - {idx['name']}: {idx['column_names']}")
@@ -65,6 +66,7 @@ def create_epic_dependencies_table():
         return False
 
     return True
+
 
 def create_sample_dependencies():
     """Créer quelques dépendances d'exemple."""
@@ -95,7 +97,7 @@ def create_sample_dependencies():
                 reason=f"Epic '{epics[1].title}' requires infrastructure from '{epics[0].title}'",
                 estimated_impact_days=3,
                 title=f"Prerequisite: {epics[0].epic_id} -> {epics[1].epic_id}",
-                description="Sample prerequisite dependency"
+                description="Sample prerequisite dependency",
             )
             sample_deps.append(dep1)
 
@@ -108,7 +110,7 @@ def create_sample_dependencies():
                 reason=f"Epic '{epics[2].title}' cannot start until '{epics[1].title}' is completed",
                 estimated_impact_days=5,
                 title=f"Blocking: {epics[1].epic_id} -> {epics[2].epic_id}",
-                description="Critical blocking dependency"
+                description="Critical blocking dependency",
             )
             sample_deps.append(dep2)
 
@@ -121,7 +123,7 @@ def create_sample_dependencies():
                 reason=f"Epic '{epics[3].title}' shares technical components with '{epics[0].title}'",
                 estimated_impact_days=2,
                 title=f"Technical: {epics[0].epic_id} -> {epics[3].epic_id}",
-                description="Technical infrastructure dependency"
+                description="Technical infrastructure dependency",
             )
             sample_deps.append(dep3)
 
@@ -143,19 +145,22 @@ def create_sample_dependencies():
     finally:
         session.close()
 
+
 if __name__ == "__main__":
     success = create_epic_dependencies_table()
 
     if success:
         create_sample_dependencies()
 
-        print(f"\n" + "=" * 50)
+        print("\n" + "=" * 50)
         print("Epic Dependencies Table Setup Complete!")
         print("=" * 50)
         print("\nNext steps:")
         print("1. Test the API endpoints at: http://localhost:8000/docs")
         print("2. View dependencies: GET /api/epic-dependencies/")
-        print("3. Check critical path: GET /api/epic-dependencies/analysis/critical-path")
+        print(
+            "3. Check critical path: GET /api/epic-dependencies/analysis/critical-path"
+        )
         print("4. Detect cycles: GET /api/epic-dependencies/analysis/cycles")
     else:
         print("\n[ERROR] Table creation failed")

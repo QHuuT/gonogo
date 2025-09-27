@@ -81,7 +81,11 @@ class PluginManager:
                 # Find plugin classes in the module
                 for attr_name in dir(module):
                     attr = getattr(module, attr_name)
-                    if isinstance(attr, type) and issubclass(attr, RTMPlugin) and attr != RTMPlugin:
+                    if (
+                        isinstance(attr, type)
+                        and issubclass(attr, RTMPlugin)
+                        and attr != RTMPlugin
+                    ):
                         plugin_instance = attr()
                         self.register_plugin(plugin_instance, plugin_type)
 

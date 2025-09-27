@@ -69,10 +69,10 @@ def main():
     try:
         if HYBRID_MODE_AVAILABLE:
             generator = RTMLinkGenerator(mode=args.mode)
-            print(f"Enhanced RTM Generator initialized (hybrid mode available)")
+            print("Enhanced RTM Generator initialized (hybrid mode available)")
         else:
             generator = RTMLinkGenerator()
-            print(f"RTM Generator initialized (file mode only)")
+            print("RTM Generator initialized (file mode only)")
 
         print(f"GitHub: {generator.github_owner}/{generator.github_repo}")
     except Exception as e:
@@ -83,21 +83,20 @@ def main():
     if args.info:
         if HYBRID_MODE_AVAILABLE:
             mode_info = generator.get_mode_info()
-            print(f"System Information:")
+            print("System Information:")
             print(f"  Requested mode: {mode_info['requested_mode']}")
             print(f"  Effective mode: {mode_info['effective_mode']}")
             print(f"  Database available: {mode_info['database_available']}")
             print(f"  Fallback enabled: {mode_info['fallback_enabled']}")
             print(f"  Prefer database: {mode_info['prefer_database']}")
         else:
-            print(f"System Information:")
-            print(f"  Mode: file-based only (hybrid mode not available)")
+            print("System Information:")
+            print("  Mode: file-based only (hybrid mode not available)")
         return 0
 
     # Export database to file if requested
     if args.export_db:
-        if HYBRID_MODE_AVAILABLE and \
-           hasattr(generator, "export_database_to_rtm_file"):
+        if HYBRID_MODE_AVAILABLE and hasattr(generator, "export_database_to_rtm_file"):
             print(f"Exporting database RTM to {args.rtm_file}...")
             success = generator.export_database_to_rtm_file(args.rtm_file)
             if success:
@@ -135,8 +134,8 @@ def main():
             result = generator.validate_rtm_links(args.rtm_file)
 
             # Enhanced output with mode context
-            print(f"\nRTM Link Validation Report")
-            print(f"=" * 30)
+            print("\nRTM Link Validation Report")
+            print("=" * 30)
             print(f"Total Links: {result.total_links}")
             print(f"Valid Links: {result.valid_links}")
             print(f"Invalid Links: {len(result.invalid_links)}")
@@ -147,19 +146,19 @@ def main():
 
             # Show warnings (mode information)
             if result.warnings:
-                print(f"\nInformation:")
+                print("\nInformation:")
                 for warning in result.warnings:
                     print(f"  - {warning}")
 
             # Show errors if any
             if result.errors:
-                print(f"\nErrors:")
+                print("\nErrors:")
                 for error in result.errors:
                     print(f"  - {error}")
 
             # Show invalid links
             if result.invalid_links:
-                print(f"\nInvalid Links:")
+                print("\nInvalid Links:")
                 for link in result.invalid_links[:10]:  # Show first 10
                     print(
                         f"  - {link.text}: {link.error_message or 'Link validation failed'}"

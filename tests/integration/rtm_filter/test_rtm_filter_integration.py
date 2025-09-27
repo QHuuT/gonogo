@@ -67,51 +67,51 @@ class TestRTMFilterIntegration:
         assert 'id="epic-EP-' in html_content, "Epic container IDs not found"
 
         # Test 2: Verify user stories table structure
-        assert (
-            'aria-label="User Stories for EP-' in html_content
-        ), "User Stories table aria-label not found"
+        assert 'aria-label="User Stories for EP-' in html_content, (
+            "User Stories table aria-label not found"
+        )
         assert 'class="us-row"' in html_content, "User story rows not found"
-        assert (
-            "data-us-status=" in html_content
-        ), "User story status data attributes not found"
+        assert "data-us-status=" in html_content, (
+            "User story status data attributes not found"
+        )
 
         # Test 3: Verify test table structure
-        assert (
-            'aria-label="Test Traceability for EP-' in html_content
-        ), "Test table aria-label not found"
+        assert 'aria-label="Test Traceability for EP-' in html_content, (
+            "Test table aria-label not found"
+        )
         assert 'class="test-row"' in html_content, "Test rows not found"
         assert "data-test-type=" in html_content, "Test type data attributes not found"
 
         # Test 4: Verify defect structure
-        assert (
-            'class="defect-filter-section"' in html_content
-        ), "Defect filter section not found"
+        assert 'class="defect-filter-section"' in html_content, (
+            "Defect filter section not found"
+        )
         assert 'class="defect-row"' in html_content, "Defect rows not found"
-        assert (
-            "data-defect-priority=" in html_content
-        ), "Defect priority data attributes not found"
-        assert (
-            "data-defect-status=" in html_content
-        ), "Defect status data attributes not found"
+        assert "data-defect-priority=" in html_content, (
+            "Defect priority data attributes not found"
+        )
+        assert "data-defect-status=" in html_content, (
+            "Defect status data attributes not found"
+        )
 
         # Test 5: Verify filter buttons have correct attributes
-        assert (
-            'data-filter-group="epic-' in html_content
-        ), "Filter group data attributes not found"
-        assert (
-            'onclick="filterTestsByType(' in html_content
-        ), "Test filter onclick handlers not found"
-        assert (
-            'onclick="filterUserStoriesByStatus(' in html_content
-        ), "User story filter onclick handlers not found"
-        assert (
-            'onclick="filterDefects(' in html_content
-        ), "Defect filter onclick handlers not found"
+        assert 'data-filter-group="epic-' in html_content, (
+            "Filter group data attributes not found"
+        )
+        assert 'onclick="filterTestsByType(' in html_content, (
+            "Test filter onclick handlers not found"
+        )
+        assert 'onclick="filterUserStoriesByStatus(' in html_content, (
+            "User story filter onclick handlers not found"
+        )
+        assert 'onclick="filterDefects(' in html_content, (
+            "Defect filter onclick handlers not found"
+        )
 
         # Test 6: Verify JavaScript file is referenced
-        assert (
-            "rtm-interactions.js" in html_content
-        ), "RTM interactions JavaScript not referenced"
+        assert "rtm-interactions.js" in html_content, (
+            "RTM interactions JavaScript not referenced"
+        )
 
     def test_javascript_functions_are_exposed(self):
         """Test that JavaScript functions are properly exposed to global scope."""
@@ -156,9 +156,9 @@ class TestRTMFilterIntegration:
         ]
 
         for pattern in us_filter_patterns:
-            assert (
-                pattern in html_content
-            ), f"User story filter pattern not found: {pattern}"
+            assert pattern in html_content, (
+                f"User story filter pattern not found: {pattern}"
+            )
 
         # Test test filter buttons
         test_filter_patterns = [
@@ -182,9 +182,9 @@ class TestRTMFilterIntegration:
         ]
 
         for pattern in defect_filter_patterns:
-            assert (
-                pattern in html_content
-            ), f"Defect filter pattern not found: {pattern}"
+            assert pattern in html_content, (
+                f"Defect filter pattern not found: {pattern}"
+            )
 
     def test_epic_specific_filter_groups(self):
         """Test that each epic has its own filter groups."""
@@ -241,33 +241,33 @@ class TestRTMFilterIntegration:
 
         # Test 1: Epic container selectors
         assert 'id="epic-EP-' in html_content, "Epic containers not found in HTML"
-        assert (
-            "#epic-${epicId}" in js_content
-        ), "Epic container selector not in JavaScript"
+        assert "#epic-${epicId}" in js_content, (
+            "Epic container selector not in JavaScript"
+        )
 
         # Test 2: Test table selectors
-        assert (
-            'aria-label="Test Traceability' in html_content
-        ), "Test table aria-label not in HTML"
-        assert (
-            'table[aria-label*="Test Traceability"]' in js_content
-        ), "Test table selector not in JavaScript"
+        assert 'aria-label="Test Traceability' in html_content, (
+            "Test table aria-label not in HTML"
+        )
+        assert 'table[aria-label*="Test Traceability"]' in js_content, (
+            "Test table selector not in JavaScript"
+        )
 
         # Test 3: User stories table selectors
-        assert (
-            'aria-label="User Stories' in html_content
-        ), "User stories table aria-label not in HTML"
-        assert (
-            'table[aria-label*="User Stories"]' in js_content
-        ), "User stories table selector not in JavaScript"
+        assert 'aria-label="User Stories' in html_content, (
+            "User stories table aria-label not in HTML"
+        )
+        assert 'table[aria-label*="User Stories"]' in js_content, (
+            "User stories table selector not in JavaScript"
+        )
 
         # Test 4: Defect filter section selectors
-        assert (
-            'class="defect-filter-section"' in html_content
-        ), "Defect filter section not in HTML"
-        assert (
-            ".defect-filter-section" in js_content
-        ), "Defect filter section selector not in JavaScript"
+        assert 'class="defect-filter-section"' in html_content, (
+            "Defect filter section not in HTML"
+        )
+        assert ".defect-filter-section" in js_content, (
+            "Defect filter section selector not in JavaScript"
+        )
 
     def test_filter_count_display_elements(self):
         """Test that filter count display elements exist."""
@@ -304,9 +304,9 @@ class TestRTMFilterIntegration:
             js_content = f.read()
 
         # Test animation function exists
-        assert (
-            "function animateVisibility(" in js_content
-        ), "animateVisibility function not found"
+        assert "function animateVisibility(" in js_content, (
+            "animateVisibility function not found"
+        )
         assert "hidden" in js_content, "Hidden class handling not found"
         assert "transition" in js_content, "Transition handling not found"
 
@@ -343,12 +343,12 @@ class TestRTMFilterIntegration:
         assert "aria-label=" in html_content, "ARIA label attributes not found"
 
         # Test ARIA handling in JavaScript
-        assert (
-            "setAttribute('aria-pressed'" in js_content
-        ), "ARIA pressed handling not in JavaScript"
-        assert (
-            "announceToScreenReader(" in js_content
-        ), "Screen reader announcements not found"
+        assert "setAttribute('aria-pressed'" in js_content, (
+            "ARIA pressed handling not in JavaScript"
+        )
+        assert "announceToScreenReader(" in js_content, (
+            "Screen reader announcements not found"
+        )
 
     def test_multiple_epic_independence(self):
         """Test that filtering one epic doesn't affect others."""
@@ -374,9 +374,9 @@ class TestRTMFilterIntegration:
         # Verify each epic has independent structure
         for epic_id in epic_containers:
             epic_specific_content = f"#epic-{epic_id}"
-            assert (
-                epic_specific_content in html_content
-            ), f"Epic-specific container not found for {epic_id}"
+            assert epic_specific_content in html_content, (
+                f"Epic-specific container not found for {epic_id}"
+            )
 
 
 @pytest.mark.epic("EP-00005")
@@ -394,12 +394,12 @@ class TestRTMFilterRegression:
             js_content = f.read()
 
         # Verify epic toggle functionality still exists
-        assert (
-            "function toggleEpicDetails(" in js_content
-        ), "toggleEpicDetails function not found"
-        assert (
-            "window.toggleEpicDetails = toggleEpicDetails;" in js_content
-        ), "toggleEpicDetails not exposed globally"
+        assert "function toggleEpicDetails(" in js_content, (
+            "toggleEpicDetails function not found"
+        )
+        assert "window.toggleEpicDetails = toggleEpicDetails;" in js_content, (
+            "toggleEpicDetails not exposed globally"
+        )
 
     def test_search_functionality_preserved(self):
         """Test that search functionality is not broken by filter fixes."""
@@ -408,9 +408,9 @@ class TestRTMFilterRegression:
             js_content = f.read()
 
         # Verify search functionality still exists
-        assert (
-            "function performSearch(" in js_content
-        ), "performSearch function not found"
+        assert "function performSearch(" in js_content, (
+            "performSearch function not found"
+        )
         assert "searchTerm" in js_content, "Search term handling not found"
 
     def test_export_functionality_preserved(self):

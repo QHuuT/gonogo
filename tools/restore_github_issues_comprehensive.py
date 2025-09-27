@@ -27,14 +27,12 @@ import json
 import logging
 import subprocess
 import sys
-from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
 # Add parent directory to path for imports
-sys.path.append('src')
+sys.path.append("src")
 
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 
 from be.database import get_db_session, create_tables
 from be.models.traceability.epic import Epic
@@ -43,13 +41,21 @@ from be.models.traceability.defect import Defect
 from be.models.traceability.capability import Capability
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 class GitHubIssueRestorer:
     """Main class for restoring GitHub issues to the database."""
 
-    def __init__(self, repo: str = "your-org/your-repo", dry_run: bool = False, verbose: bool = False):
+    def __init__(
+        self,
+        repo: str = "your-org/your-repo",
+        dry_run: bool = False,
+        verbose: bool = False,
+    ):
         self.repo = repo
         self.dry_run = dry_run
         self.verbose = verbose
@@ -63,7 +69,7 @@ class GitHubIssueRestorer:
             "epic/test-logging": "EP-00007",
             "epic/github-project": "EP-00006",
             "epic/rtm-automation": "EP-00005",
-            "epic/github-workflow": "EP-00004"
+            "epic/github-workflow": "EP-00004",
         }
 
         # Capability mapping from tools/capability_mapping.py
@@ -85,57 +91,57 @@ class GitHubIssueRestorer:
                 "github_issue_number": 88,
                 "priority": "high",
                 "component": "frontend+backend",
-                "gdpr_applicable": False
+                "gdpr_applicable": False,
             },
             "EP-00003": {
                 "title": "Privacy and Consent Management",
                 "github_issue_number": 64,
                 "priority": "critical",
                 "component": "security",
-                "gdpr_applicable": True
+                "gdpr_applicable": True,
             },
             "EP-00002": {
                 "title": "GDPR-Compliant Comment System",
                 "github_issue_number": 63,
                 "priority": "high",
                 "component": "backend",
-                "gdpr_applicable": True
+                "gdpr_applicable": True,
             },
             "EP-00001": {
                 "title": "Blog Content Management",
                 "github_issue_number": 62,
                 "priority": "high",
                 "component": "frontend",
-                "gdpr_applicable": False
+                "gdpr_applicable": False,
             },
             "EP-00007": {
                 "title": "Test logging and reporting",
                 "github_issue_number": 17,
                 "priority": "high",
                 "component": "testing",
-                "gdpr_applicable": True
+                "gdpr_applicable": True,
             },
             "EP-00006": {
                 "title": "GitHub Project Management Integration",
                 "github_issue_number": 13,
                 "priority": "high",
                 "component": "backend",
-                "gdpr_applicable": False
+                "gdpr_applicable": False,
             },
             "EP-00005": {
                 "title": "Requirements Traceability Matrix Automation",
                 "github_issue_number": 7,
                 "priority": "medium",
                 "component": "backend",
-                "gdpr_applicable": False
+                "gdpr_applicable": False,
             },
             "EP-00004": {
                 "title": "GitHub Workflow Integration",
                 "github_issue_number": 1,
                 "priority": "critical",
                 "component": "ci-cd",
-                "gdpr_applicable": True
-            }
+                "gdpr_applicable": True,
+            },
         }
 
         # Counters for statistics
@@ -143,7 +149,7 @@ class GitHubIssueRestorer:
             "epics_created": 0,
             "user_stories_created": 0,
             "defects_created": 0,
-            "errors": 0
+            "errors": 0,
         }
 
     def run_github_cli(self, command: List[str]) -> str:
@@ -158,8 +164,8 @@ class GitHubIssueRestorer:
                 capture_output=True,
                 text=True,
                 check=True,
-                encoding='utf-8',
-                errors='replace'
+                encoding="utf-8",
+                errors="replace",
             )
             return result.stdout.strip()
         except subprocess.CalledProcessError as e:
@@ -173,11 +179,16 @@ class GitHubIssueRestorer:
 
         # Fetch all issues including closed ones with comprehensive fields
         gh_command = [
-            "issue", "list",
-            "--repo", self.repo,
-            "--state", "all",
-            "--limit", "1000",
-            "--json", "number,title,body,labels,state,assignees,createdAt,updatedAt,url"
+            "issue",
+            "list",
+            "--repo",
+            self.repo,
+            "--state",
+            "all",
+            "--limit",
+            "1000",
+            "--json",
+            "number,title,body,labels,state,assignees,createdAt,updatedAt,url",
         ]
 
         output = self.run_github_cli(gh_command)
@@ -245,7 +256,7 @@ class GitHubIssueRestorer:
                     "security": "security",
                     "testing": "testing",
                     "ci-cd": "ci-cd",
-                    "documentation": "documentation"
+                    "documentation": "documentation",
                 }
                 return component_mapping.get(component, component)
 
@@ -268,11 +279,12 @@ class GitHubIssueRestorer:
 
         # Look for patterns like "Story Points: 5" or "SP: 3" or "[5 pts]"
         import re
+
         patterns = [
             r"story\s*points?\s*:?\s*(\d+)",
             r"sp\s*:?\s*(\d+)",
             r"\[(\d+)\s*pts?\]",
-            r"points?\s*:?\s*(\d+)"
+            r"points?\s*:?\s*(\d+)",
         ]
 
         for pattern in patterns:
@@ -282,15 +294,19 @@ class GitHubIssueRestorer:
 
         return 0  # Default story points
 
-    def get_capability_id_for_epic(self, epic_id: str, session: Session) -> Optional[int]:
+    def get_capability_id_for_epic(
+        self, epic_id: str, session: Session
+    ) -> Optional[int]:
         """Get database capability ID for an epic."""
         capability_id_str = self.epic_to_capability.get(epic_id)
         if not capability_id_str:
             return None
 
-        capability = session.query(Capability).filter(
-            Capability.capability_id == capability_id_str
-        ).first()
+        capability = (
+            session.query(Capability)
+            .filter(Capability.capability_id == capability_id_str)
+            .first()
+        )
 
         return capability.id if capability else None
 
@@ -314,11 +330,16 @@ class GitHubIssueRestorer:
                 status="completed" if issue["state"] == "closed" else "in_progress",
                 github_issue_number=issue["number"],
                 github_issue_url=issue["url"],
-                priority=epic_details.get("priority", self.extract_priority_from_labels(labels)),
-                component=epic_details.get("component", self.extract_component_from_labels(labels)),
+                priority=epic_details.get(
+                    "priority", self.extract_priority_from_labels(labels)
+                ),
+                component=epic_details.get(
+                    "component", self.extract_component_from_labels(labels)
+                ),
                 capability_id=self.get_capability_id_for_epic(epic_id, session),
-                gdpr_applicable=epic_details.get("gdpr_applicable", any("gdpr" in label.lower() for label in labels)),
-
+                gdpr_applicable=epic_details.get(
+                    "gdpr_applicable", any("gdpr" in label.lower() for label in labels)
+                ),
                 # Set all required NOT NULL fields with defaults
                 total_story_points=0,
                 completed_story_points=0,
@@ -336,7 +357,7 @@ class GitHubIssueRestorer:
                 business_impact_score=0.0,
                 roi_percentage=0.0,
                 user_adoption_rate=0.0,
-                metrics_calculation_frequency="daily"
+                metrics_calculation_frequency="daily",
             )
 
             if not self.dry_run:
@@ -344,7 +365,9 @@ class GitHubIssueRestorer:
                 session.commit()
                 logger.info(f"✓ Created epic: {epic_id} - {issue['title']}")
             else:
-                logger.info(f"[DRY RUN] Would create epic: {epic_id} - {issue['title']}")
+                logger.info(
+                    f"[DRY RUN] Would create epic: {epic_id} - {issue['title']}"
+                )
 
             self.stats["epics_created"] += 1
             return True
@@ -367,7 +390,9 @@ class GitHubIssueRestorer:
             # Get epic database ID
             epic_db_id = self.get_epic_database_id(epic_id, session)
             if not epic_db_id:
-                logger.warning(f"Epic {epic_id} not found in database for user story {user_story_id}")
+                logger.warning(
+                    f"Epic {epic_id} not found in database for user story {user_story_id}"
+                )
                 return False
 
             user_story = UserStory(
@@ -381,18 +406,24 @@ class GitHubIssueRestorer:
                 priority=self.extract_priority_from_labels(labels),
                 component=self.extract_component_from_labels(labels),
                 story_points=self.extract_story_points_from_body(issue.get("body", "")),
-                implementation_status="completed" if issue["state"] == "closed" else "todo",
+                implementation_status="completed"
+                if issue["state"] == "closed"
+                else "todo",
                 has_bdd_scenarios=any("bdd" in label.lower() for label in labels),
                 affects_gdpr=any("gdpr" in label.lower() for label in labels),
-                github_issue_state=issue["state"]
+                github_issue_state=issue["state"],
             )
 
             if not self.dry_run:
                 session.add(user_story)
                 session.commit()
-                logger.info(f"✓ Created user story: {user_story_id} -> {epic_id} - {issue['title']}")
+                logger.info(
+                    f"✓ Created user story: {user_story_id} -> {epic_id} - {issue['title']}"
+                )
             else:
-                logger.info(f"[DRY RUN] Would create user story: {user_story_id} -> {epic_id} - {issue['title']}")
+                logger.info(
+                    f"[DRY RUN] Would create user story: {user_story_id} -> {epic_id} - {issue['title']}"
+                )
 
             self.stats["user_stories_created"] += 1
             return True
@@ -404,7 +435,9 @@ class GitHubIssueRestorer:
                 session.rollback()
             return False
 
-    def create_defect(self, issue: Dict, epic_id: Optional[str], session: Session) -> bool:
+    def create_defect(
+        self, issue: Dict, epic_id: Optional[str], session: Session
+    ) -> bool:
         """Create a defect in the database."""
         try:
             labels = [label["name"] for label in issue.get("labels", [])]
@@ -436,9 +469,10 @@ class GitHubIssueRestorer:
                 severity=severity,
                 component=self.extract_component_from_labels(labels),
                 defect_type="bug",  # Default type
-
                 # Set defaults for NOT NULL fields
-                escaped_to_production=any("production" in label.lower() for label in labels),
+                escaped_to_production=any(
+                    "production" in label.lower() for label in labels
+                ),
                 is_security_issue=any("security" in label.lower() for label in labels),
                 affects_gdpr=any("gdpr" in label.lower() for label in labels),
                 is_regression=any("regression" in label.lower() for label in labels),
@@ -446,17 +480,21 @@ class GitHubIssueRestorer:
                 estimated_hours=0.0,
                 actual_hours=0.0,
                 found_in_phase="development",  # Default phase
-                github_issue_state=issue["state"]
+                github_issue_state=issue["state"],
             )
 
             if not self.dry_run:
                 session.add(defect)
                 session.commit()
                 epic_ref = f" -> {epic_id}" if epic_id else ""
-                logger.info(f"✓ Created defect: {defect_id}{epic_ref} - {issue['title']}")
+                logger.info(
+                    f"✓ Created defect: {defect_id}{epic_ref} - {issue['title']}"
+                )
             else:
                 epic_ref = f" -> {epic_id}" if epic_id else ""
-                logger.info(f"[DRY RUN] Would create defect: {defect_id}{epic_ref} - {issue['title']}")
+                logger.info(
+                    f"[DRY RUN] Would create defect: {defect_id}{epic_ref} - {issue['title']}"
+                )
 
             self.stats["defects_created"] += 1
             return True
@@ -471,14 +509,34 @@ class GitHubIssueRestorer:
     def ensure_capabilities_exist(self, session: Session) -> bool:
         """Ensure all required capabilities exist in the database."""
         capabilities_needed = [
-            ("CAP-00001", "GitHub Integration", "Automations and integrations with GitHub workflows"),
-            ("CAP-00002", "Requirements Traceability", "Traceability matrix, dashboards, and portfolio visibility"),
-            ("CAP-00003", "Blog Platform", "Blog content experience and supporting platform capabilities"),
-            ("CAP-00004", "GDPR Compliance", "Privacy, consent, and regulatory compliance capabilities")
+            (
+                "CAP-00001",
+                "GitHub Integration",
+                "Automations and integrations with GitHub workflows",
+            ),
+            (
+                "CAP-00002",
+                "Requirements Traceability",
+                "Traceability matrix, dashboards, and portfolio visibility",
+            ),
+            (
+                "CAP-00003",
+                "Blog Platform",
+                "Blog content experience and supporting platform capabilities",
+            ),
+            (
+                "CAP-00004",
+                "GDPR Compliance",
+                "Privacy, consent, and regulatory compliance capabilities",
+            ),
         ]
 
         for cap_id, name, description in capabilities_needed:
-            existing = session.query(Capability).filter(Capability.capability_id == cap_id).first()
+            existing = (
+                session.query(Capability)
+                .filter(Capability.capability_id == cap_id)
+                .first()
+            )
             if not existing:
                 if not self.dry_run:
                     capability = Capability(
@@ -486,7 +544,7 @@ class GitHubIssueRestorer:
                         name=name,
                         description=description,
                         strategic_priority="high",
-                        status="active"
+                        status="active",
                     )
                     session.add(capability)
                     logger.info(f"✓ Created capability: {cap_id} - {name}")
@@ -522,9 +580,13 @@ class GitHubIssueRestorer:
                 elif issue_type == "defect":
                     defects.append((issue, epic_id))
                 else:
-                    logger.warning(f"Unknown issue type for #{issue['number']}: {issue['title']}")
+                    logger.warning(
+                        f"Unknown issue type for #{issue['number']}: {issue['title']}"
+                    )
 
-            logger.info(f"Classified: {len(epics)} epics, {len(user_stories)} user stories, {len(defects)} defects")
+            logger.info(
+                f"Classified: {len(epics)} epics, {len(user_stories)} user stories, {len(defects)} defects"
+            )
 
             # Process epics first (required for foreign keys)
             logger.info("Creating epics...")
@@ -538,7 +600,9 @@ class GitHubIssueRestorer:
                 if epic_id:
                     self.create_user_story(issue, epic_id, session)
                 else:
-                    logger.warning(f"User story #{issue['number']} has no epic assignment: {issue['title']}")
+                    logger.warning(
+                        f"User story #{issue['number']} has no epic assignment: {issue['title']}"
+                    )
 
             # Process defects
             logger.info("Creating defects...")
@@ -557,23 +621,30 @@ class GitHubIssueRestorer:
 
     def print_statistics(self):
         """Print restoration statistics."""
-        logger.info("\n" + "="*60)
+        logger.info("\n" + "=" * 60)
         logger.info("RESTORATION STATISTICS")
-        logger.info("="*60)
+        logger.info("=" * 60)
         logger.info(f"Epics created:       {self.stats['epics_created']:3d}")
         logger.info(f"User Stories created: {self.stats['user_stories_created']:3d}")
         logger.info(f"Defects created:     {self.stats['defects_created']:3d}")
-        logger.info(f"Total items:         {sum(self.stats[k] for k in ['epics_created', 'user_stories_created', 'defects_created']):3d}")
+        logger.info(
+            f"Total items:         {sum(self.stats[k] for k in ['epics_created', 'user_stories_created', 'defects_created']):3d}"
+        )
         logger.info(f"Errors:              {self.stats['errors']:3d}")
-        logger.info("="*60)
+        logger.info("=" * 60)
 
         expected_total = 8 + 66 + 10  # 8 epics + 66 user stories + 10 defects
-        actual_total = sum(self.stats[k] for k in ['epics_created', 'user_stories_created', 'defects_created'])
+        actual_total = sum(
+            self.stats[k]
+            for k in ["epics_created", "user_stories_created", "defects_created"]
+        )
 
         if actual_total == expected_total:
             logger.info("✅ SUCCESS: All expected items were processed!")
         else:
-            logger.warning(f"⚠️  Expected {expected_total} items, but processed {actual_total}")
+            logger.warning(
+                f"⚠️  Expected {expected_total} items, but processed {actual_total}"
+            )
 
     def run(self) -> bool:
         """Main execution method."""
@@ -607,6 +678,7 @@ class GitHubIssueRestorer:
             logger.error(f"Restoration failed: {e}")
             if self.verbose:
                 import traceback
+
                 traceback.print_exc()
             return False
 
@@ -626,24 +698,20 @@ Examples:
 
     # Verbose output for debugging
     python tools/restore_github_issues_comprehensive.py --verbose
-        """
+        """,
     )
 
     parser.add_argument(
         "--repo",
         default="your-org/your-repo",
-        help="GitHub repository in format 'owner/repo' (default: your-org/your-repo)"
+        help="GitHub repository in format 'owner/repo' (default: your-org/your-repo)",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Show what would be done without making changes"
+        help="Show what would be done without making changes",
     )
-    parser.add_argument(
-        "--verbose",
-        action="store_true",
-        help="Enable verbose logging"
-    )
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
 
     args = parser.parse_args()
 
@@ -652,9 +720,7 @@ Examples:
 
     # Create and run restorer
     restorer = GitHubIssueRestorer(
-        repo=args.repo,
-        dry_run=args.dry_run,
-        verbose=args.verbose
+        repo=args.repo, dry_run=args.dry_run, verbose=args.verbose
     )
 
     success = restorer.run()

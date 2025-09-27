@@ -13,7 +13,7 @@ import sys
 from typing import Dict, List, Tuple
 
 # Add parent directory to path for imports
-sys.path.append('src')
+sys.path.append("src")
 
 from sqlalchemy.orm import Session
 from be.database import get_db_session
@@ -22,14 +22,16 @@ from be.models.traceability.user_story import UserStory
 from be.models.traceability.defect import Defect
 from be.models.traceability.capability import Capability
 
+
 def count_records(session: Session) -> Dict[str, int]:
     """Count records in each table."""
     return {
         "epics": session.query(Epic).count(),
         "user_stories": session.query(UserStory).count(),
         "defects": session.query(Defect).count(),
-        "capabilities": session.query(Capability).count()
+        "capabilities": session.query(Capability).count(),
     }
+
 
 def validate_epic_data(session: Session) -> List[str]:
     """Validate epic data integrity."""
@@ -52,9 +54,11 @@ def validate_epic_data(session: Session) -> List[str]:
 
         # Check capability relationship
         if epic.capability_id:
-            capability = session.query(Capability).filter(
-                Capability.id == epic.capability_id
-            ).first()
+            capability = (
+                session.query(Capability)
+                .filter(Capability.id == epic.capability_id)
+                .first()
+            )
             if not capability:
                 issues.append(
                     f"Epic {epic.epic_id} references non-existent capability "
@@ -62,6 +66,7 @@ def validate_epic_data(session: Session) -> List[str]:
                 )
 
     return issues
+
 
 def validate_user_story_data(session: Session) -> List[str]:
     """Validate user story data integrity."""
@@ -76,9 +81,7 @@ def validate_user_story_data(session: Session) -> List[str]:
         if not us.title:
             issues.append(f"User Story {us.user_story_id} missing title")
         if us.github_issue_number is None:
-            issues.append(
-                f"User Story {us.user_story_id} missing github_issue_number"
-            )
+            issues.append(f"User Story {us.user_story_id} missing github_issue_number")
         if us.epic_id is None:
             issues.append(f"User Story {us.user_story_id} missing epic_id")
 
@@ -94,6 +97,7 @@ def validate_user_story_data(session: Session) -> List[str]:
 
     return issues
 
+
 def validate_defect_data(session: Session) -> List[str]:
     """Validate defect data integrity."""
     issues = []
@@ -107,15 +111,11 @@ def validate_defect_data(session: Session) -> List[str]:
         if not defect.title:
             issues.append(f"Defect {defect.defect_id} missing title")
         if defect.github_issue_number is None:
-            issues.append(
-                f"Defect {defect.defect_id} missing github_issue_number"
-            )
+            issues.append(f"Defect {defect.defect_id} missing github_issue_number")
 
         # Check epic relationship (optional for defects)
         if defect.epic_id:
-            epic = session.query(Epic).filter(
-                Epic.id == defect.epic_id
-            ).first()
+            epic = session.query(Epic).filter(Epic.id == defect.epic_id).first()
             if not epic:
                 issues.append(
                     f"Defect {defect.defect_id} references non-existent epic "
@@ -124,13 +124,12 @@ def validate_defect_data(session: Session) -> List[str]:
 
     return issues
 
+
 def validate_capability_data(session: Session) -> List[str]:
     """Validate capability data integrity."""
     issues = []
 
-    expected_capabilities = [
-        "CAP-00001", "CAP-00002", "CAP-00003", "CAP-00004"
-    ]
+    expected_capabilities = ["CAP-00001", "CAP-00002", "CAP-00003", "CAP-00004"]
     existing_capabilities = session.query(Capability.capability_id).all()
     existing_cap_ids = [cap[0] for cap in existing_capabilities]
 
@@ -147,14 +146,17 @@ def validate_capability_data(session: Session) -> List[str]:
 
     return issues
 
+
 def check_foreign_key_integrity(session: Session) -> List[str]:
     """Check foreign key relationships."""
     issues = []
 
     # Check user stories have valid epic references
-    orphaned_us = session.query(UserStory).filter(
-        ~UserStory.epic_id.in_(session.query(Epic.id))
-    ).all()
+    orphaned_us = (
+        session.query(UserStory)
+        .filter(~UserStory.epic_id.in_(session.query(Epic.id)))
+        .all()
+    )
 
     for us in orphaned_us:
         issues.append(
@@ -163,10 +165,14 @@ def check_foreign_key_integrity(session: Session) -> List[str]:
         )
 
     # Check epics have valid capability references
-    orphaned_epics = session.query(Epic).filter(
-        Epic.capability_id.isnot(None),
-        ~Epic.capability_id.in_(session.query(Capability.id))
-    ).all()
+    orphaned_epics = (
+        session.query(Epic)
+        .filter(
+            Epic.capability_id.isnot(None),
+            ~Epic.capability_id.in_(session.query(Capability.id)),
+        )
+        .all()
+    )
 
     for epic in orphaned_epics:
         issues.append(
@@ -176,14 +182,10 @@ def check_foreign_key_integrity(session: Session) -> List[str]:
 
     return issues
 
+
 def validate_expected_counts() -> Tuple[bool, List[str]]:
     """Validate that we have the expected number of records."""
-    expected = {
-        "epics": 8,
-        "user_stories": 66,
-        "defects": 10,
-        "capabilities": 4
-    }
+    expected = {"epics": 8, "user_stories": 66, "defects": 10, "capabilities": 4}
 
     session = get_db_session()
     try:
@@ -193,13 +195,12 @@ def validate_expected_counts() -> Tuple[bool, List[str]]:
         for table, expected_count in expected.items():
             actual_count = actual[table]
             if actual_count != expected_count:
-                issues.append(
-                    f"{table}: expected {expected_count}, got {actual_count}"
-                )
+                issues.append(f"{table}: expected {expected_count}, got {actual_count}")
 
         return len(issues) == 0, issues
     finally:
         session.close()
+
 
 def run_validation() -> bool:
     """Run all validation checks."""
@@ -210,12 +211,12 @@ def run_validation() -> bool:
     try:
         # Count records
         counts = count_records(session)
-        print(f"\nRecord Counts:")
+        print("\nRecord Counts:")
         for table, count in counts.items():
             print(f"  {table:15}: {count:3d}")
 
         # Expected counts validation
-        print(f"\nExpected Counts Check:")
+        print("\nExpected Counts Check:")
         counts_ok, count_issues = validate_expected_counts()
         if counts_ok:
             print("  ✅ All counts match expectations")
@@ -227,7 +228,7 @@ def run_validation() -> bool:
         # Data integrity checks
         all_issues = []
 
-        print(f"\nData Integrity Checks:")
+        print("\nData Integrity Checks:")
 
         # Epic validation
         epic_issues = validate_epic_data(session)
@@ -256,9 +257,7 @@ def run_validation() -> bool:
         # Capability validation
         cap_issues = validate_capability_data(session)
         if cap_issues:
-            print(
-                f"  ❌ Capability issues found: {len(cap_issues)}"
-            )
+            print(f"  ❌ Capability issues found: {len(cap_issues)}")
             all_issues.extend(cap_issues)
         else:
             print("  ✅ Capabilities data integrity OK")
@@ -292,6 +291,7 @@ def run_validation() -> bool:
     finally:
         session.close()
 
+
 def main():
     """Main entry point."""
     try:
@@ -300,8 +300,10 @@ def main():
     except Exception as e:
         print(f"Validation failed with error: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

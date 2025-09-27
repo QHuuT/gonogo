@@ -84,9 +84,9 @@ class TestRTMActualBehavior:
         # Epic toggle handlers should still be present even when filters are active
         epic_toggle_pattern = r'onclick="toggleEpicDetails\(\'(EP-\d+)\'\)"'
         epic_matches = re.findall(epic_toggle_pattern, html_content)
-        assert (
-            len(epic_matches) > 0
-        ), "Epic toggle handlers missing when filters are active"
+        assert len(epic_matches) > 0, (
+            "Epic toggle handlers missing when filters are active"
+        )
         print(
             f"OK Epic toggle handlers present with filters: {len(epic_matches)} epics"
         )
@@ -96,12 +96,12 @@ class TestRTMActualBehavior:
         epic_headers = re.findall(epic_header_pattern, html_content, re.DOTALL)
 
         for header_content in epic_headers:
-            assert (
-                "filterDefects" not in header_content
-            ), "filterDefects found in epic header - will cause collapse!"
-            assert (
-                "filterByStatus" not in header_content
-            ), "filterByStatus found in epic header - will cause collapse!"
+            assert "filterDefects" not in header_content, (
+                "filterDefects found in epic header - will cause collapse!"
+            )
+            assert "filterByStatus" not in header_content, (
+                "filterByStatus found in epic header - will cause collapse!"
+            )
 
         print("OK Epic headers don't contain filter buttons")
 
@@ -215,12 +215,12 @@ class TestRTMActualBehavior:
         if epic_header_match:
             epic_header_content = epic_header_match.group(1)
             # The epic header should NOT contain any filter button onclick handlers
-            assert (
-                "filterDefects" not in epic_header_content
-            ), f"REGRESSION: filterDefects found in epic {epic_id} header!"
-            assert (
-                "filterByStatus" not in epic_header_content
-            ), f"REGRESSION: filterByStatus found in epic {epic_id} header!"
+            assert "filterDefects" not in epic_header_content, (
+                f"REGRESSION: filterDefects found in epic {epic_id} header!"
+            )
+            assert "filterByStatus" not in epic_header_content, (
+                f"REGRESSION: filterByStatus found in epic {epic_id} header!"
+            )
             print(f"OK Epic {epic_id} header is clean - no filter buttons inside it")
 
         print(

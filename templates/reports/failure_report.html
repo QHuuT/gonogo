@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Failure Analysis Report</title>
+    <link rel="stylesheet" href="{{ css_path }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Test Failure Analysis Report</h1>
+            <div class="timestamp">Generated: {{ timestamp }}</div>
+        </div>
+
+        <div class="content">
+            <!-- Metrics Overview -->
+            <div class="section">
+                <h2>📊 Failure Metrics (Last 30 Days)</h2>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">{{ stats.total_failures }}</div>
+                        <div class="metric-label">Total Failures</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">{{ stats.unique_failures }}</div>
+                        <div class="metric-label">Unique Failures</div>
+                    </div>
+                    <div class="metric-card {{ 'danger' if stats.failure_rate > 10 else 'warning' if stats.failure_rate > 5 else 'success' }}">
+                        <div class="metric-value">{{ "%.1f"|format(stats.failure_rate) }}%</div>
+                        <div class="metric-label">Failure Rate</div>
+                    </div>
+                    <div class="metric-card {{ 'danger' if stats.critical_failure_count > 0 else 'success' }}">
+                        <div class="metric-value">{{ stats.critical_failure_count }}</div>
+                        <div class="metric-label">Critical Failures</div>
+                    </div>
+                    <div class="metric-card {{ 'warning' if stats.flaky_test_count > 0 else 'success' }}">
+                        <div class="metric-value">{{ stats.flaky_test_count }}</div>
+                        <div class="metric-label">Flaky Tests</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">{{ stats.most_common_category.value.replace("_", " ").title() }}</div>
+                        <div class="metric-label">Most Common Category</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Failing Tests -->
+            <div class="section">
+                <h2>🔥 Top Failing Tests</h2>
+                <table class="failure-table">
+                    <thead>
+                        <tr>
+                            <th>Test Name</th>
+                            <th>Failures</th>
+                            <th>Category</th>
+                            <th>Severity</th>
+                            <th>Last Failure</th>
+                            <th>File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ failing_tests_rows | safe }}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Detected Patterns -->
+            <div class="section">
+                <h2>🔍 Detected Patterns</h2>
+                {{ pattern_cards | safe }}
+            </div>
+
+            <!-- Recommendations -->
+            <div class="section">
+                <h2>💡 Recommendations</h2>
+                <div class="recommendations">
+                    <h3>Action Items</h3>
+                    {{ recommendations_html | safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -73,7 +73,7 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
             self._database_available = True
             return True
 
-        except Exception as e:
+        except Exception:
             self._database_available = False
             return False
 
@@ -92,16 +92,23 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                     print("Warning: Database not available, falling back to file mode")
                     self._effective_mode = "file"
                 else:
-                    raise RuntimeError("Database mode requested but database not available")
+                    raise RuntimeError(
+                        "Database mode requested but database not available"
+                    )
         else:  # auto mode
-            if self.hybrid_config.prefer_database and self._check_database_availability():
+            if (
+                self.hybrid_config.prefer_database
+                and self._check_database_availability()
+            ):
                 self._effective_mode = "database"
             else:
                 self._effective_mode = "file"
 
         return self._effective_mode
 
-    def validate_rtm_links(self, rtm_file_path: Optional[str] = None) -> RTMValidationResult:
+    def validate_rtm_links(
+        self, rtm_file_path: Optional[str] = None
+    ) -> RTMValidationResult:
         """
         Validate RTM links using the appropriate mode.
 
@@ -121,7 +128,9 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                 rtm_file_path = self.hybrid_config.rtm_file_path
             return super().validate_rtm_links(rtm_file_path)
 
-    def _validate_database_rtm(self, rtm_file_path: Optional[str] = None) -> RTMValidationResult:
+    def _validate_database_rtm(
+        self, rtm_file_path: Optional[str] = None
+    ) -> RTMValidationResult:
         """Validate RTM using database as source of truth."""
         try:
             from be.database import get_db_session
@@ -168,7 +177,9 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                     if link.valid:
                         result.valid_links += 1
                     else:
-                        link.error_message = f"GitHub issue {us.user_story_id} not found"
+                        link.error_message = (
+                            f"GitHub issue {us.user_story_id} not found"
+                        )
                         result.invalid_links.append(link)
 
                 # Validate Test file links
@@ -185,11 +196,15 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                         if link.valid:
                             result.valid_links += 1
                         else:
-                            link.error_message = f"Test file {test.test_file_path} not found"
+                            link.error_message = (
+                                f"Test file {test.test_file_path} not found"
+                            )
                             result.invalid_links.append(link)
 
                 # Add success message
-                result.warnings.append(f"Database RTM validation complete - using database as source of truth")
+                result.warnings.append(
+                    "Database RTM validation complete - using database as source of truth"
+                )
 
                 return result
 
@@ -252,7 +267,12 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
             from be.models.traceability import Defect, Epic, Test, UserStory
 
             # Mark imports as used for flake8
-            _ = (Defect, Epic, Test, UserStory)  # Used in _generate_rtm_file_content method
+            _ = (
+                Defect,
+                Epic,
+                Test,
+                UserStory,
+            )  # Used in _generate_rtm_file_content method
 
             db = get_db_session()
 
@@ -298,7 +318,9 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
         # Add epics
         epics = db.query(Epic).all()
         for epic in epics:
-            user_stories = db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
+            user_stories = (
+                db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
+            )
             us_list = ", ".join([us.user_story_id for us in user_stories])
             status = (
                 "✅ Done"

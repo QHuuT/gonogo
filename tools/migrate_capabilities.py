@@ -7,7 +7,7 @@ Adds capabilities and capability_dependencies tables, and capability_id column t
 
 import sys
 import sqlite3
-from pathlib import Path
+
 
 def migrate_capabilities():
     """Migrate database to support Program Areas/Capabilities."""
@@ -86,12 +86,24 @@ def migrate_capabilities():
 
         # Create indexes for performance
         print("Creating indexes...")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_capabilities_capability_id ON capabilities (capability_id)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_capabilities_status ON capabilities (status)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_capabilities_priority ON capabilities (strategic_priority)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_epic_capability ON epics (capability_id)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_capability_dep_parent ON capability_dependencies (parent_capability_id)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_capability_dep_dependent ON capability_dependencies (dependent_capability_id)")
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_capabilities_capability_id ON capabilities (capability_id)"
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_capabilities_status ON capabilities (status)"
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_capabilities_priority ON capabilities (strategic_priority)"
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_epic_capability ON epics (capability_id)"
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_capability_dep_parent ON capability_dependencies (parent_capability_id)"
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_capability_dep_dependent ON capability_dependencies (dependent_capability_id)"
+        )
 
         # Commit the changes
         conn.commit()
@@ -109,7 +121,7 @@ def migrate_capabilities():
 
         cursor.execute("PRAGMA table_info(epics)")
         epic_columns = cursor.fetchall()
-        has_capability_id = any(col[1] == 'capability_id' for col in epic_columns)
+        has_capability_id = any(col[1] == "capability_id" for col in epic_columns)
         print(f"Epics table has capability_id column: {has_capability_id}")
 
     except Exception as e:
@@ -120,6 +132,7 @@ def migrate_capabilities():
         conn.close()
 
     return True
+
 
 if __name__ == "__main__":
     success = migrate_capabilities()

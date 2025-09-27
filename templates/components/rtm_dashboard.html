@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTM Dashboard - GoNoGo Project</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --secondary-color: #95a5a6;
+            --background-color: #f8f9fa;
+            --card-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--card-shadow);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .refresh-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-change {
+            font-size: 12px;
+            margin-top: 8px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .positive { background: #d5f5d8; color: var(--success-color); }
+        .negative { background: #ffebee; color: var(--danger-color); }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .chart-card h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .epics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .epic-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s ease;
+        }
+
+        .epic-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .epic-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            position: relative;
+        }
+
+        .epic-header h4 {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .epic-header .epic-id {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .epic-content {
+            padding: 20px;
+        }
+
+        .progress-section {
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-color), #2ecc71);
+            transition: width 0.6s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .epic-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 4px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-planned { background: #fff3cd; color: #856404; }
+        .status-in-progress { background: #d1ecf1; color: #0c5460; }
+        .status-completed { background: #d4edda; color: #155724; }
+        .status-blocked { background: #f8d7da; color: #721c24; }
+
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .filters h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-item label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .filter-item select, .filter-item input {
+            padding: 8px 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            background: white;
+            font-size: 14px;
+        }
+
+        .filter-item select:focus, .filter-item input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .export-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .export-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .export-btn.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .export-btn.secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 2px solid #dee2e6;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .export-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>🎯 RTM Dashboard</h1>
+            <button class="refresh-btn" onclick="refreshDashboard()">
+                🔄 Refresh
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Error Message -->
+        <div id="error-message" class="error" style="display: none;"></div>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <p>Loading dashboard data...</p>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboard-content" style="display: none;">
+            <!-- Key Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="total-epics">0</div>
+                    <div class="metric-label">Total Epics</div>
+                    <div class="metric-change positive" id="epics-change">+2 this week</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="total-user-stories">0</div>
+                    <div class="metric-label">User Stories</div>
+                    <div class="metric-change positive" id="stories-change">+5 this week</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="total-tests">0</div>
+                    <div class="metric-label">Total Tests</div>
+                    <div class="metric-change positive" id="tests-change">+12 this week</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="total-defects">0</div>
+                    <div class="metric-label">Open Defects</div>
+                    <div class="metric-change negative" id="defects-change">-3 this week</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>📊 Epic Status Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="epic-status-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>🧪 Test Execution Status</h3>
+                    <div class="chart-container">
+                        <canvas id="test-status-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+                <h3>🔍 Filters</h3>
+                <div class="filter-group">
+                    <div class="filter-item">
+                        <label>Epic Status</label>
+                        <select id="status-filter" onchange="applyFilters()">
+                            <option value="">All Statuses</option>
+                            <option value="planned">Planned</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="blocked">Blocked</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Priority</label>
+                        <select id="priority-filter" onchange="applyFilters()">
+                            <option value="">All Priorities</option>
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Search</label>
+                        <input type="text" id="search-filter" placeholder="Search epics..." onkeyup="applyFilters()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Epic Cards -->
+            <div id="epics-container" class="epics-grid">
+                <!-- Epic cards will be populated by JavaScript -->
+            </div>
+
+            <!-- Export Section -->
+            <div class="export-section">
+                <h3>📤 Export Reports</h3>
+                <p>Generate and download comprehensive RTM reports in various formats</p>
+                <div class="export-buttons">
+                    <a href="#" class="export-btn primary" onclick="exportReport('matrix', 'html')">
+                        🌐 HTML Matrix
+                    </a>
+                    <a href="#" class="export-btn secondary" onclick="exportReport('matrix', 'markdown')">
+                        📝 Markdown
+                    </a>
+                    <a href="#" class="export-btn secondary" onclick="exportReport('epic-progress', 'html')">
+                        📈 Progress Report
+                    </a>
+                    <a href="#" class="export-btn secondary" onclick="exportReport('full-matrix', 'csv')">
+                        📊 CSV Export
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dashboardData = null;
+        let filteredEpics = [];
+        let charts = {};
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboard();
+        });
+
+        async function loadDashboard() {
+            try {
+                showLoading(true);
+                hideError();
+
+                // Load dashboard data
+                const response = await axios.get('/api/rtm/reports/dashboard-data');
+                dashboardData = response.data;
+
+                // Update metrics
+                updateMetrics();
+
+                // Create charts
+                createCharts();
+
+                // Load epic progress data
+                const epicResponse = await axios.get('/api/rtm/reports/epic-progress?format=json');
+                filteredEpics = epicResponse.data.epic_progress;
+
+                // Render epic cards
+                renderEpicCards();
+
+                showLoading(false);
+                document.getElementById('dashboard-content').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showError('Failed to load dashboard data. Please refresh the page.');
+                showLoading(false);
+            }
+        }
+
+        function updateMetrics() {
+            document.getElementById('total-epics').textContent = dashboardData.summary.total_epics;
+            document.getElementById('total-user-stories').textContent = dashboardData.summary.total_user_stories;
+            document.getElementById('total-tests').textContent = dashboardData.summary.total_tests;
+            document.getElementById('total-defects').textContent = dashboardData.summary.total_defects;
+        }
+
+        function createCharts() {
+            // Epic Status Chart
+            const epicStatusCtx = document.getElementById('epic-status-chart').getContext('2d');
+            charts.epicStatus = new Chart(epicStatusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(dashboardData.epic_status),
+                    datasets: [{
+                        data: Object.values(dashboardData.epic_status),
+                        backgroundColor: ['#f39c12', '#3498db', '#27ae60', '#e74c3c'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Test Status Chart
+            const testStatusCtx = document.getElementById('test-status-chart').getContext('2d');
+            charts.testStatus = new Chart(testStatusCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(dashboardData.test_execution),
+                    datasets: [{
+                        label: 'Tests',
+                        data: Object.values(dashboardData.test_execution),
+                        backgroundColor: ['#27ae60', '#e74c3c', '#f39c12', '#95a5a6'],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderEpicCards() {
+            const container = document.getElementById('epics-container');
+            container.innerHTML = '';
+
+            filteredEpics.forEach(epicData => {
+                const epic = epicData.epic;
+                const metrics = epicData.metrics;
+
+                const card = document.createElement('div');
+                card.className = 'epic-card';
+                card.dataset.status = epic.status;
+                card.dataset.priority = epic.priority;
+                card.dataset.title = epic.title.toLowerCase();
+
+                card.innerHTML = `
+                    <div class="epic-header">
+                        <h4>${epic.title}</h4>
+                        <div class="epic-id">${epic.epic_id}</div>
+                        <span class="status-badge status-${epic.status.replace('_', '-')}">${epic.status.replace('_', ' ')}</span>
+                    </div>
+                    <div class="epic-content">
+                        <div class="progress-section">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${metrics.completion_percentage}%"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>Progress</span>
+                                <span>${metrics.completion_percentage.toFixed(1)}%</span>
+                            </div>
+                        </div>
+
+                        <div class="epic-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">${metrics.user_stories_count}</div>
+                                <div class="stat-label">User Stories</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${metrics.total_story_points}</div>
+                                <div class="stat-label">Story Points</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${metrics.tests_count}</div>
+                                <div class="stat-label">Tests</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${metrics.test_pass_rate.toFixed(1)}%</div>
+                                <div class="stat-label">Pass Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function applyFilters() {
+            const statusFilter = document.getElementById('status-filter').value;
+            const priorityFilter = document.getElementById('priority-filter').value;
+            const searchFilter = document.getElementById('search-filter').value.toLowerCase();
+
+            const cards = document.querySelectorAll('.epic-card');
+            cards.forEach(card => {
+                let show = true;
+
+                if (statusFilter && card.dataset.status !== statusFilter) {
+                    show = false;
+                }
+
+                if (priorityFilter && card.dataset.priority !== priorityFilter) {
+                    show = false;
+                }
+
+                if (searchFilter && !card.dataset.title.includes(searchFilter)) {
+                    show = false;
+                }
+
+                card.style.display = show ? 'block' : 'none';
+            });
+        }
+
+        async function exportReport(reportType, format) {
+            try {
+                let url = `/api/rtm/reports/${reportType}?format=${format}`;
+
+                if (reportType.includes('export')) {
+                    url = `/api/rtm/reports/export/${reportType}?format=${format}`;
+                }
+
+                window.open(url, '_blank');
+            } catch (error) {
+                console.error('Error exporting report:', error);
+                showError('Failed to export report. Please try again.');
+            }
+        }
+
+        function refreshDashboard() {
+            loadDashboard();
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        // Auto-refresh every 5 minutes
+        setInterval(loadDashboard, 5 * 60 * 1000);
+    </script>
+</body>
+</html>

@@ -132,7 +132,9 @@ class Test(TraceabilityBase):
         if self.last_execution_status is None:
             self.last_execution_status = "not_run"
 
-    def update_execution_result(self, status: str, duration_ms: float = None, error_message: str = None):
+    def update_execution_result(
+        self, status: str, duration_ms: float = None, error_message: str = None
+    ):
         """Update test execution results."""
         from datetime import datetime
 
@@ -156,7 +158,9 @@ class Test(TraceabilityBase):
         """Calculate test success rate."""
         if self.execution_count == 0:
             return 0.0
-        return ((self.execution_count - self.failure_count) / self.execution_count) * 100.0
+        return (
+            (self.execution_count - self.failure_count) / self.execution_count
+        ) * 100.0
 
     def inherit_component_from_user_story(self, session):
         """Inherit component from related User Story if not already set."""
@@ -167,7 +171,9 @@ class Test(TraceabilityBase):
             from .user_story import UserStory
 
             user_story = (
-                session.query(UserStory).filter(UserStory.github_issue_number == self.github_user_story_number).first()
+                session.query(UserStory)
+                .filter(UserStory.github_issue_number == self.github_user_story_number)
+                .first()
             )
 
             if user_story and user_story.component:
@@ -186,7 +192,11 @@ class Test(TraceabilityBase):
                 "epic_id": self.epic_id,
                 "github_user_story_number": self.github_user_story_number,
                 "github_defect_number": self.github_defect_number,
-                "last_execution_time": (self.last_execution_time.isoformat() if self.last_execution_time else None),
+                "last_execution_time": (
+                    self.last_execution_time.isoformat()
+                    if self.last_execution_time
+                    else None
+                ),
                 "last_execution_status": self.last_execution_status,
                 "execution_duration_ms": self.execution_duration_ms,
                 "execution_count": self.execution_count,

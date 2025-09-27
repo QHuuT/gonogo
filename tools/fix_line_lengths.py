@@ -6,7 +6,6 @@ Systematically fixes common E501 line length violations using pattern matching.
 Part of comprehensive technical debt resolution.
 """
 
-import os
 import re
 import subprocess
 import sys
@@ -22,7 +21,7 @@ def run_flake8(path):
             text=True,
             cwd=Path(__file__).parent.parent,
         )
-        return result.stdout.strip().split('\n') if result.stdout.strip() else []
+        return result.stdout.strip().split("\n") if result.stdout.strip() else []
     except Exception:
         return []
 
@@ -32,45 +31,41 @@ def fix_common_patterns(content):
 
     # Pattern 1: Long function calls with multiple arguments
     content = re.sub(
-        r'(\w+\()([^)]{80,})\)',
+        r"(\w+\()([^)]{80,})\)",
         lambda m: format_function_call(m.group(1), m.group(2)),
-        content
+        content,
     )
 
     # Pattern 2: Long dictionary definitions
     content = re.sub(
-        r'(\{)([^}]{80,})(\})',
+        r"(\{)([^}]{80,})(\})",
         lambda m: format_dict(m.group(1), m.group(2), m.group(3)),
-        content
+        content,
     )
 
     # Pattern 3: Long string concatenations
-    content = re.sub(
-        r'f"([^"]{80,})"',
-        lambda m: format_f_string(m.group(1)),
-        content
-    )
+    content = re.sub(r'f"([^"]{80,})"', lambda m: format_f_string(m.group(1)), content)
 
     return content
 
 
 def format_function_call(opener, args_str):
     """Format long function calls."""
-    if len(opener + args_str + ')') <= 79:
-        return opener + args_str + ')'
+    if len(opener + args_str + ")") <= 79:
+        return opener + args_str + ")"
 
     # Split arguments by comma
-    args = [arg.strip() for arg in args_str.split(',')]
+    args = [arg.strip() for arg in args_str.split(",")]
     if len(args) <= 1:
-        return opener + args_str + ')'
+        return opener + args_str + ")"
 
-    formatted = opener + '\n'
+    formatted = opener + "\n"
     for i, arg in enumerate(args):
         if i < len(args) - 1:
-            formatted += f'    {arg},\n'
+            formatted += f"    {arg},\n"
         else:
-            formatted += f'    {arg}\n'
-    formatted += ')'
+            formatted += f"    {arg}\n"
+    formatted += ")"
     return formatted
 
 
@@ -80,7 +75,7 @@ def format_dict(opener, content_str, closer):
         return opener + content_str + closer
 
     # Simple formatting for now
-    return opener + '\n    ' + content_str.replace(', ', ',\n    ') + '\n' + closer
+    return opener + "\n    " + content_str.replace(", ", ",\n    ") + "\n" + closer
 
 
 def format_f_string(content_str):
@@ -89,11 +84,11 @@ def format_f_string(content_str):
         return f'f"{content_str}"'
 
     # Break at natural points
-    parts = content_str.split(' ')
+    parts = content_str.split(" ")
     if len(parts) > 1:
         mid = len(parts) // 2
-        part1 = ' '.join(parts[:mid])
-        part2 = ' '.join(parts[mid:])
+        part1 = " ".join(parts[:mid])
+        part2 = " ".join(parts[mid:])
         return f'(\n    f"{part1} "\n    f"{part2}"\n)'
 
     return f'f"{content_str}"'
@@ -102,7 +97,7 @@ def format_f_string(content_str):
 def fix_file(file_path):
     """Fix line length violations in a single file."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         original_violations = len(run_flake8(file_path))
@@ -114,7 +109,7 @@ def fix_file(file_path):
 
         # Write back if changed
         if fixed_content != content:
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 f.write(fixed_content)
 
             new_violations = len(run_flake8(file_path))
@@ -143,10 +138,7 @@ def main():
                 fixed = fix_file(str(file_path))
                 if fixed > 0:
                     total_fixed += fixed
-                    print(
-                        f"FIXED {file_path.relative_to(src_dir)}:"
-                        f"{fixed} violations"
-                    )
+                    print(f"FIXED {file_path.relative_to(src_dir)}:{fixed} violations")
         except Exception as e:
             print(f"ERROR processing {file_path}: {e}")
 
@@ -160,8 +152,9 @@ def main():
             text=True,
             cwd=Path(__file__).parent.parent,
         )
-        remaining = \
-            result.stdout.strip().split('\n')[-1] if result.stdout.strip() else "0"
+        remaining = (
+            result.stdout.strip().split("\n")[-1] if result.stdout.strip() else "0"
+        )
         print(f"Remaining E501 violations in src/: {remaining}")
     except Exception:
         print("Could not determine remaining violation count")

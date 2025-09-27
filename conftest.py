@@ -3,7 +3,6 @@ Global pytest configuration and fixtures.
 Automatically saves test output to quality/logs when running pytest.
 """
 
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -34,7 +33,7 @@ class TestOutputCapture:
 
         # Open log file with proper encoding for Windows
         self.log_file = open(
-            self.log_path, 'w', encoding='utf-8', errors='replace', newline=''
+            self.log_path, "w", encoding="utf-8", errors="replace", newline=""
         )
 
         # Save original streams
@@ -54,35 +53,32 @@ class TestOutputCapture:
             return "all"
 
         # Get the test paths from config
-        test_args = config.getoption('file_or_dir', default=[])
+        test_args = config.getoption("file_or_dir", default=[])
 
         # Check for specific test directories
         for arg in test_args:
             arg_str = str(arg).lower()
-            if 'tests/unit' in arg_str or 'tests\\unit' in arg_str:
+            if "tests/unit" in arg_str or "tests\\unit" in arg_str:
                 return "unit"
-            elif (
-                'tests/integration' in arg_str or
-                'tests\\integration' in arg_str
-            ):
+            elif "tests/integration" in arg_str or "tests\\integration" in arg_str:
                 return "integration"
-            elif 'tests/security' in arg_str or 'tests\\security' in arg_str:
+            elif "tests/security" in arg_str or "tests\\security" in arg_str:
                 return "security"
-            elif 'tests/e2e' in arg_str or 'tests\\e2e' in arg_str:
+            elif "tests/e2e" in arg_str or "tests\\e2e" in arg_str:
                 return "e2e"
-            elif 'tests/bdd' in arg_str or 'tests\\bdd' in arg_str:
+            elif "tests/bdd" in arg_str or "tests\\bdd" in arg_str:
                 return "bdd"
 
         # Check for specific test markers or keywords
-        if config.getoption('keyword', default=''):
-            keyword = config.getoption('keyword', default='').lower()
-            if 'unit' in keyword:
+        if config.getoption("keyword", default=""):
+            keyword = config.getoption("keyword", default="").lower()
+            if "unit" in keyword:
                 return "unit"
-            elif 'integration' in keyword:
+            elif "integration" in keyword:
                 return "integration"
-            elif 'security' in keyword:
+            elif "security" in keyword:
                 return "security"
-            elif 'e2e' in keyword:
+            elif "e2e" in keyword:
                 return "e2e"
 
         # Default fallback
@@ -109,35 +105,30 @@ class TestOutputCapture:
             import sys
 
             # Run the post-processor
-            result = subprocess.run([
-                sys.executable,
-                "tools/process_test_logs.py",
-                str(self.log_path)
-            ], capture_output=True, text=True, encoding='utf-8',
-               errors='replace')
+            result = subprocess.run(
+                [sys.executable, "tools/process_test_logs.py", str(self.log_path)],
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+            )
 
             if result.returncode == 0:
                 # Check the output for failure count
                 if "[FAILURES]" in result.stdout:
                     failures_line = [
-                        line for line in result.stdout.split('\n')
-                        if '[FAILURES]' in line
+                        line
+                        for line in result.stdout.split("\n")
+                        if "[FAILURES]" in line
                     ]
                     if failures_line:
-                        print(
-                            f"[PYTEST] {failures_line[0]} - "
-                            "Processed log created"
-                        )
+                        print(f"[PYTEST] {failures_line[0]} - Processed log created")
                     else:
-                        print(
-                            "[PYTEST] Failures found - Processed log created"
-                        )
+                        print("[PYTEST] Failures found - Processed log created")
                 else:
-                    print(
-                        "[PYTEST] No failures found - Processed log created"
-                    )
+                    print("[PYTEST] No failures found - Processed log created")
             else:
-                print(f"[PYTEST] Note: Post-processing failed")
+                print("[PYTEST] Note: Post-processing failed")
                 if result.stderr:
                     print(f"[PYTEST] Error: {result.stderr}")
 
@@ -160,20 +151,19 @@ class TeeWriter:
         try:
             # Remove ANSI escape sequences and problematic Unicode characters
             import re
-            clean_text = re.sub(
-                r'\x1b\[[0-9;]*m', '', text
-            )  # Remove ANSI color codes
-            clean_text = clean_text.encode(
-                'ascii', errors='ignore'
-            ).decode('ascii')  # Keep only ASCII
+
+            clean_text = re.sub(r"\x1b\[[0-9;]*m", "", text)  # Remove ANSI color codes
+            clean_text = clean_text.encode("ascii", errors="ignore").decode(
+                "ascii"
+            )  # Keep only ASCII
             self.file.write(clean_text)
         except Exception:
             # Final fallback - write basic text only
             try:
-                simple_text = ''.join(c for c in text if ord(c) < 128)
+                simple_text = "".join(c for c in text if ord(c) < 128)
                 self.file.write(simple_text)
             except Exception:
-                self.file.write('[encoding error]\n')
+                self.file.write("[encoding error]\n")
 
         self.file.flush()  # Ensure immediate write
 

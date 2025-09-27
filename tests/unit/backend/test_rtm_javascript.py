@@ -43,9 +43,9 @@ def test_javascript_functions_without_browser():
 
     for epic_id, filter_type, filter_value, expected in test_cases:
         result = simulate_filter_defects(epic_id, filter_type, filter_value)
-        assert (
-            result == expected
-        ), f"Failed for {epic_id}, {filter_type}, {filter_value}"
+        assert result == expected, (
+            f"Failed for {epic_id}, {filter_type}, {filter_value}"
+        )
         print(
             f"✅ simulate_filter_defects({epic_id}, {filter_type}, {filter_value}) = {result}"
         )

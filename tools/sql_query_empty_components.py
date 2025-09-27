@@ -5,8 +5,9 @@ SQL Query for User Stories with Empty Components
 
 import sqlite3
 
+
 def query_empty_components():
-    conn = sqlite3.connect('gonogo.db')
+    conn = sqlite3.connect("gonogo.db")
     cursor = conn.cursor()
 
     sql = """
@@ -28,14 +29,14 @@ def query_empty_components():
         print("-" * 70)
         for row in results:
             print(
-                f"{row[0]:<12} | {row[1]:<12} | {row[2]:<20} | "
-                f"{row[3]:<7} | {row[4]}"
+                f"{row[0]:<12} | {row[1]:<12} | {row[2]:<20} | {row[3]:<7} | {row[4]}"
             )
         print(f"\nTotal: {len(results)} user stories with empty components")
     else:
         print("No user stories with empty components found.")
 
     conn.close()
+
 
 if __name__ == "__main__":
     query_empty_components()

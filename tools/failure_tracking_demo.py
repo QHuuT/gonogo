@@ -22,7 +22,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 from shared.testing.failure_reporter import FailureReporter
 from shared.testing.failure_tracker import (
     FailureCategory,
-    FailureSeverity,
     FailureTracker,
     TestFailure,
 )
@@ -89,8 +88,7 @@ def create_sample_failures(tracker: FailureTracker, num_failures: int = 20):
     for i in range(num_failures):
         # Pick random test and error
         test_file = random.choice(test_files)
-        test_name = \
-            f"test_{random.choice(['function', 'method', 'scenario'])}_{i % 10}"
+        test_name = f"test_{random.choice(['function', 'method', 'scenario'])}_{i % 10}"
         error_msg, stack_trace, category = random.choice(sample_errors)
 
         # Create some variation in timing
@@ -133,8 +131,7 @@ def create_sample_failures(tracker: FailureTracker, num_failures: int = 20):
         # Create some duplicate failures (flaky tests)
         if i % 7 == 0:  # Every 7th test becomes flaky
             for _ in range(random.randint(2, 5)):
-                duplicate_time = \
-                    failure_time + timedelta(hours=random.randint(1, 48))
+                duplicate_time = failure_time + timedelta(hours=random.randint(1, 48))
                 duplicate_failure = TestFailure(
                     test_id=failure.test_id,
                     test_name=failure.test_name,
@@ -159,7 +156,7 @@ def demonstrate_analysis(tracker: FailureTracker):
 
     # Get statistics
     stats = tracker.get_failure_statistics(days=30)
-    print(f"\n*** Failure Statistics (Last 30 Days):")
+    print("\n*** Failure Statistics (Last 30 Days):")
     print(f"   Total failures: {stats.total_failures}")
     print(f"   Unique failures: {stats.unique_failures}")
     print(f"   Failure rate: {stats.failure_rate:.1f}%")
@@ -168,7 +165,7 @@ def demonstrate_analysis(tracker: FailureTracker):
     print(f"   Flaky tests: {stats.flaky_test_count}")
 
     # Get top failing tests
-    print(f"\n*** Top Failing Tests:")
+    print("\n*** Top Failing Tests:")
     top_failing = tracker.get_top_failing_tests(limit=5)
     for i, test in enumerate(top_failing, 1):
         print(f"   {i}. {test['test_name']} ({test['total_failures']} failures)")
@@ -176,7 +173,7 @@ def demonstrate_analysis(tracker: FailureTracker):
         print(f"      Category: {test['category']} | Severity: {test['severity']}")
 
     # Detect patterns
-    print(f"\n*** Detected Patterns:")
+    print("\n*** Detected Patterns:")
     patterns = tracker.detect_patterns()
     for pattern in patterns:
         print(f"   • {pattern.description}")
@@ -200,7 +197,7 @@ def generate_reports(tracker: FailureTracker):
 
     summary_report = reporter.generate_daily_summary()
     print(
-        f"DONE: Daily summary report generated: quality/reports/failure_summary_daily.json"
+        "DONE: Daily summary report generated: quality/reports/failure_summary_daily.json"
     )
 
     # Generate HTML report
@@ -237,14 +234,14 @@ def main():
         summary_report, html_report_path = generate_reports(tracker)
 
         # Display recommendations
-        print(f"\nRecommendations:")
+        print("\nRecommendations:")
         for rec in summary_report.get("recommendations", []):
             print(f"   - {rec}")
 
-        print(f"\nDemo completed successfully!")
+        print("\nDemo completed successfully!")
         print(f"Database: {db_path}")
         print(f"HTML Report: {html_report_path}")
-        print(f"JSON Summary: quality/reports/failure_summary_daily.json")
+        print("JSON Summary: quality/reports/failure_summary_daily.json")
 
     except Exception as e:
         print(f"Demo failed: {e}")

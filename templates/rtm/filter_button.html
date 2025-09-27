@@ -1,0 +1,6 @@
+<button class="filter-button filter-button--{{ button_type }}{% if active %} filter-button--active{% endif %}"
+        data-{{ data_attr }}="{{ data_value }}"
+        data-filter-group="{{ filter_group }}"
+        data-filter-value="{{ filter_value }}"
+        onclick="{{ onclick_handler }}"
+        aria-pressed="{{ 'true' if active else 'false' }}">{{ label }}</button>

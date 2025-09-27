@@ -1,0 +1,7 @@
+        <article class="epic-card" data-status="{{ epic.status }}"
+data-epic-id="{{ epic.epic_id }}" data-components="{{ component_string or "" }}"
+aria-labelledby="epic-{{ epic.epic_id }}-title">
+            <header class="epic-header" role="button" tabindex="0"
+onclick="toggleEpicDetails('{{ epic.epic_id }}')"
+onkeydown="handleKeyToggle(event, '{{ epic.epic_id }}')"
+aria-expanded="false" aria-controls="epic-{{ epic.epic_id }}-content">

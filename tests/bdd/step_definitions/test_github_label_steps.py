@@ -269,9 +269,9 @@ def then_receive_priority_label(bdd_context):
     priority = bdd_context.get("priority")
     if priority:
         expected_label = f"priority/{priority.lower()}"
-        assert (
-            expected_label in bdd_context["generated_labels"]
-        ), f"Expected priority label {expected_label} not found in {bdd_context['generated_labels']}"
+        assert expected_label in bdd_context["generated_labels"], (
+            f"Expected priority label {expected_label} not found in {bdd_context['generated_labels']}"
+        )
 
 
 @then(
@@ -283,9 +283,9 @@ def then_receive_epic_label_from_matrix(bdd_context):
     if epic_id and epic_id in bdd_context["matrix_mappings"]:
         epic_label = bdd_context["matrix_mappings"][epic_id]["epic_label"]
         expected_label = f"epic/{epic_label}"
-        assert (
-            expected_label in bdd_context["generated_labels"]
-        ), f"Expected epic label {expected_label} not found"
+        assert expected_label in bdd_context["generated_labels"], (
+            f"Expected epic label {expected_label} not found"
+        )
 
 
 @then(
@@ -297,17 +297,17 @@ def then_receive_component_label_from_matrix(bdd_context):
     if epic_id and epic_id in bdd_context["matrix_mappings"]:
         component = bdd_context["matrix_mappings"][epic_id]["component"]
         expected_label = f"component/{component}"
-        assert (
-            expected_label in bdd_context["generated_labels"]
-        ), f"Expected component label {expected_label} not found"
+        assert expected_label in bdd_context["generated_labels"], (
+            f"Expected component label {expected_label} not found"
+        )
 
 
 @then('the "needs-triage" label should be removed')
 def then_needs_triage_removed(bdd_context):
     """Verify needs-triage label was removed."""
-    assert (
-        "needs-triage" not in bdd_context["generated_labels"]
-    ), "needs-triage label should be removed when meaningful labels are added"
+    assert "needs-triage" not in bdd_context["generated_labels"], (
+        "needs-triage label should be removed when meaningful labels are added"
+    )
 
 
 @then("the issue should receive labels corresponding to the parent epic's mapping")
@@ -342,9 +342,9 @@ def then_release_label_by_rules(bdd_context):
     else:
         expected_label = "release/v1.2"
 
-    assert (
-        expected_label in bdd_context["generated_labels"]
-    ), f"Expected release label {expected_label} not found"
+    assert expected_label in bdd_context["generated_labels"], (
+        f"Expected release label {expected_label} not found"
+    )
 
 
 @then("the issue should automatically receive corresponding GDPR labels")
@@ -372,9 +372,9 @@ def then_labels_match_gdpr_selections(bdd_context):
 )
 def then_receive_specific_priority_label(bdd_context, expected_label):
     """Verify specific priority label was assigned."""
-    assert (
-        expected_label in bdd_context["generated_labels"]
-    ), f"Expected priority label {expected_label} not found"
+    assert expected_label in bdd_context["generated_labels"], (
+        f"Expected priority label {expected_label} not found"
+    )
 
 
 @then("the release label should be determined by the business rules")
@@ -481,9 +481,9 @@ def then_only_existing_labels_assigned(bdd_context):
     if bdd_context.get("repository_labels"):
         for label in bdd_context["generated_labels"]:
             if label != "needs-triage":  # May be removed
-                assert (
-                    label in bdd_context["repository_labels"]
-                ), f"Label {label} should exist in repository"
+                assert label in bdd_context["repository_labels"], (
+                    f"Label {label} should exist in repository"
+                )
 
 
 @then("attempts to assign non-existent labels should be handled gracefully")

@@ -15,15 +15,14 @@ Usage:
 """
 
 import argparse
-import json
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from shared.testing.archive_manager import StorageMetrics, TestArchiveManager
+from shared.testing.archive_manager import TestArchiveManager
 
 
 def apply_retention_policies(manager: TestArchiveManager, dry_run: bool = True):
@@ -33,7 +32,7 @@ def apply_retention_policies(manager: TestArchiveManager, dry_run: bool = True):
 
     results = manager.apply_retention_policies(dry_run=dry_run)
 
-    print(f"Summary:")
+    print("Summary:")
     print(f"  Files processed: {results['processed_files']}")
     print(f"  Files compressed: {results['compressed_files']}")
     print(f"  Files archived: {results['archived_files']}")
@@ -41,7 +40,7 @@ def apply_retention_policies(manager: TestArchiveManager, dry_run: bool = True):
     print(f"  Space saved: {results['space_saved_mb']:.1f} MB")
 
     if results["errors"]:
-        print(f"\nErrors encountered:")
+        print("\nErrors encountered:")
         for error in results["errors"]:
             print(f"  - {error}")
 
@@ -68,22 +67,22 @@ def show_storage_metrics(manager: TestArchiveManager):
 
     metrics = manager.generate_storage_metrics()
 
-    print(f"Current Storage:")
+    print("Current Storage:")
     print(f"  Total files: {metrics.total_files}")
     print(f"  Total size: {metrics.total_size_mb:.1f} MB")
     print(f"  Compressed files: {metrics.compressed_files}")
     print(f"  Compression savings: {metrics.compression_savings_mb:.1f} MB")
 
-    print(f"\nFiles Older Than 30 Days:")
+    print("\nFiles Older Than 30 Days:")
     print(f"  Count: {metrics.old_files_count}")
     print(f"  Size: {metrics.old_files_size_mb:.1f} MB")
 
     if metrics.recommendations:
-        print(f"\nRecommendations:")
+        print("\nRecommendations:")
         for rec in metrics.recommendations:
             print(f"  - {rec}")
     else:
-        print(f"\nNo optimization recommendations at this time.")
+        print("\nNo optimization recommendations at this time.")
 
     return metrics
 
@@ -127,7 +126,7 @@ def create_bundle(manager: TestArchiveManager, patterns: list, bundle_name: str)
         bundle_path = manager.create_archive_bundle(patterns, bundle_name)
         bundle_size = bundle_path.stat().st_size / (1024 * 1024)
 
-        print(f"Bundle created successfully:")
+        print("Bundle created successfully:")
         print(f"  Path: {bundle_path}")
         print(f"  Size: {bundle_size:.1f} MB")
 
@@ -197,9 +196,9 @@ python tools/archive_cleanup.py --apply --quiet
 
     print(f"Cleanup script generated: {script_path}")
     print(f"Cron job configuration: {cron_job}")
-    print(f"\nTo enable automated cleanup:")
+    print("\nTo enable automated cleanup:")
     print(f"1. Make script executable: chmod +x {script_path}")
-    print(f"2. Add to crontab: crontab -e")
+    print("2. Add to crontab: crontab -e")
     print(f"3. Add line: {cron_job}")
 
     return script_path
@@ -220,7 +219,7 @@ def restore_file(
 
         restored_size = restored_path.stat().st_size / 1024
 
-        print(f"File restored successfully:")
+        print("File restored successfully:")
         print(f"  Restored to: {restored_path}")
         print(f"  Size: {restored_size:.1f} KB")
 
@@ -326,11 +325,11 @@ def main():
             results = apply_retention_policies(manager, dry_run=args.dry_run)
 
             if args.apply and not args.quiet:
-                print(f"\nGenerated automated cleanup script...")
+                print("\nGenerated automated cleanup script...")
                 script_path = generate_cleanup_script(manager, args.schedule)
 
         if not args.quiet:
-            print(f"\nArchive management completed successfully!")
+            print("\nArchive management completed successfully!")
 
     except Exception as e:
         print(f"Error: {e}")

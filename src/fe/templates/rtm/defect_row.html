@@ -1,0 +1,11 @@
+<tr class="defect-row"
+    data-defect-priority="{{ priority }}"
+    data-defect-status="{{ status }}"
+    data-defect-severity="{{ severity }}">
+    <td>{{ defect_id_link|safe }}</td>
+    <td>{{ title }}</td>
+    <td>{{ component_badges|safe }}</td>
+    <td><span class="badge badge--priority badge--priority-{{ priority }}">{{ priority.title() }}</span></td>
+    <td><span class="badge badge--status badge--status-{{ status.replace('_', '-') }}">{{ status.replace('_', ' ').title() }}</span></td>
+    <td><span class="badge badge--severity badge--severity-{{ severity }}">{{ severity.title() }}</span></td>
+</tr>

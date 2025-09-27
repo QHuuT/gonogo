@@ -17,26 +17,29 @@ A GDPR-compliant blog platform with comments, built with FastAPI and designed fo
 
 ### Core Technical Stack
 ```
-Backend (FastAPI):
-├── src/be/                                 # Backend application
-│   ├── api/                                # REST API endpoints
-│   │   ├── capabilities.py                 # Capability management
-│   │   ├── epic_dependencies.py            # Epic dependency tracking
-│   │   └── rtm.py                          # Requirements traceability API
-│   ├── models/                             # Database models & schemas
-│   │   └── traceability/                   # RTM data models
-│   ├── services/                           # Business logic layer
-│   │   ├── rtm_report_generator.py         # RTM report generation
-│   │   └── svg_graph_generator.py          # Dependency visualization
-│   └── templates/                          # Jinja2 HTML templates
-│       ├── dependency_visualizer.html      # Epic dependency dashboard
-│       ├── multipersona_dashboard.html     # Multi-persona RTM view
-│       └── capability_portfolio.html       # Capability overview
+Backend (src/be/):
+├── api/                                    # REST API endpoints
+│   ├── capabilities.py                     # Capability management
+│   ├── epic_dependencies.py                # Epic dependency tracking
+│   └── rtm.py                              # Requirements traceability API
+├── models/                                 # Database models & schemas
+│   └── traceability/                       # RTM data models
+└── services/                               # Business logic layer
+    ├── rtm_report_generator.py             # RTM report generation
+    └── svg_graph_generator.py              # Dependency visualization
 
-Frontend & Visualization:
-├── JavaScript Libraries: D3.js, axios for interactive dashboards
-├── CSS Framework: Custom CSS with component-based styling
-└── Templates: Server-side rendering with minimal client-side JS
+Frontend (src/fe/):
+├── templates/                              # Jinja2 HTML templates
+│   ├── reports/                            # Report templates
+│   └── components/                         # Reusable template components
+├── static/                                 # CSS, JS, and static assets
+├── services/                               # Frontend-specific services
+│   ├── template_service.py                 # Template rendering
+│   ├── component_service.py                # Component generation
+│   └── asset_service.py                    # Asset management
+└── build/                                  # Asset bundling system
+    ├── asset_bundler.py                    # CSS/JS bundling
+    └── optimizer.py                        # Minification & optimization
 
 Testing & Quality:
 ├── tests/                                  # Comprehensive test suite
@@ -70,8 +73,9 @@ Testing & Quality:
 - **Rationale**: Database schemas and utility scripts need descriptive names
 
 #### Templates & HTML
-- **Approach**: Extract to external Jinja2 templates instead of inline strings
-- **Rationale**: Architectural improvement over artificial line breaks
+- **Approach**: Frontend-backend separation with dedicated template architecture
+- **Implementation**: See [ADR-005: Frontend-Backend Separation](docs/context/decisions/adr-005-frontend-backend-separation.md)
+- **Rationale**: Architectural improvement enabling component reusability and asset optimization
 
 ### Implementation
 ```toml

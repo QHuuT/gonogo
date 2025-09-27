@@ -46,4 +46,6 @@ __all__ = [
 # Version and metadata
 __version__ = "1.0.0"
 __author__ = "GoNoGo Team"
-__description__ = "Structured logging system for test execution and development workflow"
+__description__ = (
+    "Structured logging system for test execution and development workflow"
+)

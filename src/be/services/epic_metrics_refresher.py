@@ -15,7 +15,9 @@ from ..database import get_db_session
 from ..models.traceability.epic import Epic
 
 
-def refresh_all_epic_metrics(session=None, force: bool = False, record_history: bool = True) -> int:
+def refresh_all_epic_metrics(
+    session=None, force: bool = False, record_history: bool = True
+) -> int:
     """Recalculate metrics for every Epic and return the number refreshed."""
     created_session = False
     if session is None:

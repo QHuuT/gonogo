@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "description": "Frontend asset configuration for GoNoGo application",
+  "assets": {
+    "css": {
+      "core": [
+        "css/design-system.css",
+        "css/components.css"
+      ],
+      "features": {
+        "rtm": ["css/rtm-components.css"],
+        "reports": ["css/failure-reports.css"]
+      },
+      "bundles": {
+        "app": [
+          "css/design-system.css",
+          "css/components.css",
+          "css/rtm-components.css"
+        ],
+        "reports": [
+          "css/design-system.css",
+          "css/components.css",
+          "css/failure-reports.css"
+        ]
+      }
+    },
+    "js": {
+      "core": [],
+      "features": {
+        "rtm": ["js/rtm-interactions.js"]
+      },
+      "bundles": {
+        "app": ["js/rtm-interactions.js"]
+      }
+    }
+  },
+  "paths": {
+    "static": "/static",
+    "source": "src/fe/static",
+    "build": "static/build"
+  },
+  "optimization": {
+    "minify": true,
+    "compress": true,
+    "sourcemaps": true
+  }
+}

@@ -22,8 +22,17 @@ def get_github_issue_data(issue_number):
     """Get GitHub issue data using gh CLI."""
     try:
         result = subprocess.run(
-            ['gh', 'issue', 'view', str(issue_number), '--json', 'labels,title,body,state'],
-            capture_output=True, text=True, encoding='utf-8'
+            [
+                "gh",
+                "issue",
+                "view",
+                str(issue_number),
+                "--json",
+                "labels,title,body,state",
+            ],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
         )
         if result.returncode == 0:
             return json.loads(result.stdout)
@@ -62,8 +71,7 @@ def main():
             github_data = get_github_issue_data(us.github_issue_number)
             if github_data:
                 old_component = us.component
-                component = \
-                    extract_component_from_labels(github_data.get('labels', []))
+                component = extract_component_from_labels(github_data.get("labels", []))
 
                 if component:
                     us.component = component
@@ -73,15 +81,15 @@ def main():
                     else:
                         print(f"  Already has component: {component}")
                 else:
-                    print(f"  No component label found")
+                    print("  No component label found")
             else:
-                print(f"  Failed to get GitHub data")
+                print("  Failed to get GitHub data")
                 failed_count += 1
 
-        print(f"\nCommitting changes...")
+        print("\nCommitting changes...")
         session.commit()
 
-        print(f"\n=== RESULTS ===")
+        print("\n=== RESULTS ===")
         print(f"Updated: {updated_count} user stories")
         print(f"Failed: {failed_count} user stories")
         print(f"Total processed: {len(user_stories)} user stories")

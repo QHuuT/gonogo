@@ -10,34 +10,42 @@ import json
 import re
 import sys
 import time
-sys.path.append('src')
+
+sys.path.append("src")
 
 from be.database import SessionLocal
-from be.models.traceability.user_story import UserStory
-from be.models.traceability.defect import Defect
+
 
 def get_all_issues():
     """Get all GitHub issues."""
-    result = subprocess.run(['gh', 'issue', 'list', '--limit', '200', '--json', 'number,title'],
-                          capture_output=True, text=True)
+    result = subprocess.run(
+        ["gh", "issue", "list", "--limit", "200", "--json", "number,title"],
+        capture_output=True,
+        text=True,
+    )
     if result.returncode == 0:
         return json.loads(result.stdout)
     return []
 
+
 def get_issue_content(issue_number):
     """Get issue content."""
-    result = \
-        subprocess.run(['gh', 'issue', 'view', str(issue_number), '--json', 'title,body'],
-                          capture_output=True, text=True)
+    result = subprocess.run(
+        ["gh", "issue", "view", str(issue_number), "--json", "title,body"],
+        capture_output=True,
+        text=True,
+    )
     if result.returncode == 0:
         return json.loads(result.stdout)
     return None
 
+
 def generate_user_story_template(title, body, db_data=None):
     """Generate user story template."""
     # Extract user story format from existing body
-    us_match = \
-        re.search(r'\*\*As a\*\* (.+?)\n\*\*I want\*\* (.+?)\n\*\*So that\*\* (.+?)(?:\n|$)', body)
+    us_match = re.search(
+        r"\*\*As a\*\* (.+?)\n\*\*I want\*\* (.+?)\n\*\*So that\*\* (.+?)(?:\n|$)", body
+    )
 
     if us_match:
         as_a = us_match.group(1).strip()
@@ -49,31 +57,44 @@ def generate_user_story_template(title, body, db_data=None):
         so_that = "[benefit to be defined]"
 
     # Extract business value
-    bv_match = \
-        re.search(r'## Business Value\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
-    business_value = \
+    bv_match = re.search(
+        r"## Business Value\s*\n(.*?)(?=\n##|\n---|$)", body, re.DOTALL | re.IGNORECASE
+    )
+    business_value = (
         bv_match.group(1).strip() if bv_match else "[Business value to be defined]"
+    )
 
     # Extract story points
-    sp_match = \
-        re.search(r'(?:Story Points?|Points?|Estimate)[:\s]*(\d+)', body, re.IGNORECASE)
+    sp_match = re.search(
+        r"(?:Story Points?|Points?|Estimate)[:\s]*(\d+)", body, re.IGNORECASE
+    )
     story_points = sp_match.group(1) if sp_match else "0"
 
     # Extract priority
-    priority_match = \
-        re.search(r'Priority.*?([Hh]igh|[Mm]edium|[Ll]ow|[Cc]ritical)', body, re.IGNORECASE)
+    priority_match = re.search(
+        r"Priority.*?([Hh]igh|[Mm]edium|[Ll]ow|[Cc]ritical)", body, re.IGNORECASE
+    )
     priority = priority_match.group(1).lower() if priority_match else "medium"
 
     # Extract component
-    component_match = \
-        re.search(r'Component.*?([Ff]rontend|[Bb]ackend|[Dd]atabase|[Ss]ecurity|[Tt]esting|[Cc]i.?[Cc][Dd]|[Dd]ocumentation)', body, re.IGNORECASE)
+    component_match = re.search(
+        r"Component.*?([Ff]rontend|[Bb]ackend|[Dd]atabase|[Ss]ecurity|[Tt]esting|[Cc]i.?[Cc][Dd]|[Dd]ocumentation)",
+        body,
+        re.IGNORECASE,
+    )
     component = component_match.group(1) if component_match else "backend"
 
     # Extract acceptance criteria
-    ac_match = \
-        re.search(r'## Acceptance Criteria[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
-    acceptance_criteria = \
-        ac_match.group(1).strip() if ac_match else "- [ ] **Given** [context], **When** [action], **Then** [expected result]"
+    ac_match = re.search(
+        r"## Acceptance Criteria[^#]*?\n(.*?)(?=\n##|\n---|$)",
+        body,
+        re.DOTALL | re.IGNORECASE,
+    )
+    acceptance_criteria = (
+        ac_match.group(1).strip()
+        if ac_match
+        else "- [ ] **Given** [context], **When** [action], **Then** [expected result]"
+    )
 
     template = f"""## User Story
 **As a** {as_a}
@@ -115,31 +136,48 @@ None
 
     return template
 
+
 def generate_defect_template(title, body, db_data=None):
     """Generate defect template."""
     # Extract steps to reproduce
-    steps_match = \
-        re.search(r'## Steps to Reproduce\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
-    steps = \
-        steps_match.group(1).strip() if steps_match else "1. [Step to reproduce the issue]"
+    steps_match = re.search(
+        r"## Steps to Reproduce\s*\n(.*?)(?=\n##|\n---|$)",
+        body,
+        re.DOTALL | re.IGNORECASE,
+    )
+    steps = (
+        steps_match.group(1).strip()
+        if steps_match
+        else "1. [Step to reproduce the issue]"
+    )
 
     # Extract expected behavior
-    expected_match = \
-        re.search(r'## Expected Behavior\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
-    expected = \
+    expected_match = re.search(
+        r"## Expected Behavior\s*\n(.*?)(?=\n##|\n---|$)",
+        body,
+        re.DOTALL | re.IGNORECASE,
+    )
+    expected = (
         expected_match.group(1).strip() if expected_match else "[What should happen]"
+    )
 
     # Extract actual behavior
-    actual_match = \
-        re.search(r'## Actual Behavior\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
-    actual = \
+    actual_match = re.search(
+        r"## Actual Behavior\s*\n(.*?)(?=\n##|\n---|$)", body, re.DOTALL | re.IGNORECASE
+    )
+    actual = (
         actual_match.group(1).strip() if actual_match else "[What actually happens]"
+    )
 
     # Extract business impact
-    impact_match = \
-        re.search(r'## Business Impact\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
-    impact = \
-        impact_match.group(1).strip() if impact_match else "[Impact on users and business]"
+    impact_match = re.search(
+        r"## Business Impact\s*\n(.*?)(?=\n##|\n---|$)", body, re.DOTALL | re.IGNORECASE
+    )
+    impact = (
+        impact_match.group(1).strip()
+        if impact_match
+        else "[Impact on users and business]"
+    )
 
     template = f"""## Steps to Reproduce
 {steps}
@@ -177,23 +215,35 @@ Backend/API
 
     return template
 
+
 def update_issue(issue_number, new_body):
     """Update GitHub issue with new body."""
-    with open(f'temp_issue_{issue_number}.md', 'w', encoding='utf-8') as f:
+    with open(f"temp_issue_{issue_number}.md", "w", encoding="utf-8") as f:
         f.write(new_body)
 
-    result = \
-        subprocess.run(['gh', 'issue', 'edit', str(issue_number), '--body-file', f'temp_issue_{issue_number}.md'],
-                          capture_output=True, text=True)
+    result = subprocess.run(
+        [
+            "gh",
+            "issue",
+            "edit",
+            str(issue_number),
+            "--body-file",
+            f"temp_issue_{issue_number}.md",
+        ],
+        capture_output=True,
+        text=True,
+    )
 
     # Clean up temp file
     import os
+
     try:
-        os.remove(f'temp_issue_{issue_number}.md')
+        os.remove(f"temp_issue_{issue_number}.md")
     except:
         pass
 
     return result.returncode == 0
+
 
 def batch_update_issues():
     """Batch update all issues."""
@@ -207,11 +257,11 @@ def batch_update_issues():
         skipped_count = 0
 
         for issue in issues:
-            issue_number = issue['number']
-            title = issue['title']
+            issue_number = issue["number"]
+            title = issue["title"]
 
             # Skip if already processed or not US/DEF
-            if not (re.search(r'US-\d{5}', title) or re.search(r'DEF-\d{5}', title)):
+            if not (re.search(r"US-\d{5}", title) or re.search(r"DEF-\d{5}", title)):
                 skipped_count += 1
                 continue
 
@@ -223,12 +273,12 @@ def batch_update_issues():
                 print(f"  Failed to get content for #{issue_number}")
                 continue
 
-            body = content.get('body', '')
+            body = content.get("body", "")
 
             # Generate new template
-            if 'US-' in title:
+            if "US-" in title:
                 new_body = generate_user_story_template(title, body)
-            elif 'DEF-' in title:
+            elif "DEF-" in title:
                 new_body = generate_defect_template(title, body)
             else:
                 skipped_count += 1
@@ -244,12 +294,13 @@ def batch_update_issues():
             # Rate limiting
             time.sleep(1)
 
-        print(f"\n=== BATCH UPDATE COMPLETE ===")
+        print("\n=== BATCH UPDATE COMPLETE ===")
         print(f"Updated: {updated_count}")
         print(f"Skipped: {skipped_count}")
 
     finally:
         session.close()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     batch_update_issues()

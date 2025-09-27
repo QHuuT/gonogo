@@ -186,8 +186,8 @@ class RTMTestRunner:
 
 | Test Suite | Status | Exit Code |
 |------------|--------|-----------|
-| Unit Tests | {'✅ PASS' if unit_result == 0 else '❌ FAIL'} | {unit_result} |
-| Integration Tests | {'✅ PASS' if integration_result == 0 else '❌ FAIL'} | {integration_result} |
+| Unit Tests | {"✅ PASS" if unit_result == 0 else "❌ FAIL"} | {unit_result} |
+| Integration Tests | {"✅ PASS" if integration_result == 0 else "❌ FAIL"} | {integration_result} |
 
 ## Test Coverage
 

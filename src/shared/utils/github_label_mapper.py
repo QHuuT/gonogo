@@ -88,7 +88,11 @@ class DatabaseEpicMapper:
                     component = component.split(",")[0].strip()
 
                 # Get epic label name
-                epic_label = epic.epic_label_name if epic.epic_label_name else epic.get_epic_label_name()
+                epic_label = (
+                    epic.epic_label_name
+                    if epic.epic_label_name
+                    else epic.get_epic_label_name()
+                )
 
                 mappings[epic.epic_id] = {
                     "component": component,
@@ -153,7 +157,9 @@ class TraceabilityMatrixParser:
 
             for epic_num, description in matches:
                 epic_id = f"EP-{epic_num.zfill(5)}"
-                mappings[epic_id] = self._determine_component_from_description(description)
+                mappings[epic_id] = self._determine_component_from_description(
+                    description
+                )
 
             # Fallback to default mappings if parsing fails
             if not mappings:
@@ -203,7 +209,9 @@ class GitHubIssueLabelMapper:
     - Status management
     """
 
-    def __init__(self, matrix_path: Optional[Path] = None, use_database: bool = True) -> None:
+    def __init__(
+        self, matrix_path: Optional[Path] = None, use_database: bool = True
+    ) -> None:
         """Initialize the label mapper."""
         if use_database and DATABASE_AVAILABLE:
             self.epic_mapper = DatabaseEpicMapper()
@@ -347,9 +355,9 @@ class GitHubIssueLabelMapper:
         labels = set()
 
         priority = self.extract_form_value(issue_data.body, "Priority")
-        epic_id = self.extract_form_value(issue_data.body, "Epic ID") or self.extract_form_value(
-            issue_data.body, "Parent Epic"
-        )
+        epic_id = self.extract_form_value(
+            issue_data.body, "Epic ID"
+        ) or self.extract_form_value(issue_data.body, "Parent Epic")
 
         # Critical items go to MVP
         if priority == "Critical":
@@ -377,7 +385,9 @@ class GitHubIssueLabelMapper:
         labels: Set[str] = set()
 
         # Don't override existing status labels
-        existing_status = {label for label in issue_data.existing_labels if label.startswith("status/")}
+        existing_status = {
+            label for label in issue_data.existing_labels if label.startswith("status/")
+        }
         if existing_status:
             return labels
 
@@ -433,10 +443,14 @@ class GitHubIssueLabelMapper:
             if len(all_labels) > len(issue_data.existing_labels):
                 all_labels.discard("needs-triage")
 
-            logger.info(f"Generated labels for issue #{issue_data.issue_number}: {all_labels}")
+            logger.info(
+                f"Generated labels for issue #{issue_data.issue_number}: {all_labels}"
+            )
 
         except Exception as e:
-            logger.error(f"Error generating labels for issue #{issue_data.issue_number}: {e}")
+            logger.error(
+                f"Error generating labels for issue #{issue_data.issue_number}: {e}"
+            )
             # Return original labels on error
             return issue_data.existing_labels
 

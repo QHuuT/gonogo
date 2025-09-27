@@ -9,7 +9,7 @@ the Test model in the database.
 import ast
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Set
+from typing import Dict, List
 
 # Add src to Python path
 src_path = Path(__file__).parent.parent / "src"
@@ -28,17 +28,17 @@ class ComponentMarkerCollector(ast.NodeVisitor):
 
     def visit_ClassDef(self, node):
         """Visit class definitions to collect class-level markers."""
-        self.class_markers = \
-            self._extract_markers_from_decorators(node.decorator_list)
+        self.class_markers = self._extract_markers_from_decorators(node.decorator_list)
         self.generic_visit(node)
         # Clear class markers after processing class
         self.class_markers = {}
 
     def visit_FunctionDef(self, node):
         """Visit function definitions to collect test markers."""
-        if node.name.startswith('test_'):
-            function_markers = \
-                self._extract_markers_from_decorators(node.decorator_list)
+        if node.name.startswith("test_"):
+            function_markers = self._extract_markers_from_decorators(
+                node.decorator_list
+            )
             # Combine class markers with function markers (function takes precedence)
             all_markers = {**self.class_markers, **function_markers}
             if all_markers:
@@ -52,15 +52,15 @@ class ComponentMarkerCollector(ast.NodeVisitor):
         for decorator in decorator_list:
             # Handle pytest.mark.name(value) form
             if isinstance(decorator, ast.Call):
-                if (hasattr(decorator.func, 'attr') and
-                    hasattr(decorator.func.value, 'attr') and
-                    decorator.func.value.attr == 'mark'):
-
+                if (
+                    hasattr(decorator.func, "attr")
+                    and hasattr(decorator.func.value, "attr")
+                    and decorator.func.value.attr == "mark"
+                ):
                     marker_name = decorator.func.attr
 
                     # Extract marker value if present
-                    if decorator.args and \
-                       isinstance(decorator.args[0], ast.Constant):
+                    if decorator.args and isinstance(decorator.args[0], ast.Constant):
                         marker_value = decorator.args[0].value
                         markers[marker_name] = marker_value
                     else:
@@ -69,8 +69,7 @@ class ComponentMarkerCollector(ast.NodeVisitor):
 
             # Handle pytest.mark.name form (without parentheses)
             elif isinstance(decorator, ast.Attribute):
-                if (hasattr(decorator.value, 'attr') and
-                    decorator.value.attr == 'mark'):
+                if hasattr(decorator.value, "attr") and decorator.value.attr == "mark":
                     marker_name = decorator.attr
                     markers[marker_name] = True
 
@@ -80,7 +79,7 @@ class ComponentMarkerCollector(ast.NodeVisitor):
 def collect_markers_from_file(file_path: Path) -> Dict[str, Dict[str, str]]:
     """Collect pytest markers from a single test file."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         tree = ast.parse(content)
@@ -96,7 +95,7 @@ def collect_markers_from_file(file_path: Path) -> Dict[str, Dict[str, str]]:
 def find_test_files(test_dir: Path) -> List[Path]:
     """Find all Python test files."""
     test_files = []
-    for pattern in ['test_*.py', '*_test.py']:
+    for pattern in ["test_*.py", "*_test.py"]:
         test_files.extend(test_dir.rglob(pattern))
     return test_files
 
@@ -140,9 +139,9 @@ def update_test_components():
                     markers = file_markers[function_name]
 
                     # Update component (force if exists)
-                    if 'component' in markers:
+                    if "component" in markers:
                         old_component = test.component
-                        test.component = markers['component']
+                        test.component = markers["component"]
                         if old_component != test.component:
                             print(f"  {test.test_file_path}::{test.test_function_name}")
                             print(
@@ -156,30 +155,30 @@ def update_test_components():
                         category = None
 
                         # Check explicit category markers
-                        if 'test_category' in markers:
-                            category = markers['test_category']
-                        elif 'category' in markers:
-                            category = markers['category']
+                        if "test_category" in markers:
+                            category = markers["test_category"]
+                        elif "category" in markers:
+                            category = markers["category"]
                         # Check boolean marker flags
-                        elif markers.get('smoke'):
-                            category = 'smoke'
-                        elif markers.get('edge'):
-                            category = 'edge'
-                        elif markers.get('regression'):
-                            category = 'regression'
-                        elif markers.get('detailed'):
-                            category = 'detailed'
-                        elif markers.get('performance'):
-                            category = 'performance'
-                        elif markers.get('critical'):
-                            category = 'smoke'  # critical tests are usually smoke tests
+                        elif markers.get("smoke"):
+                            category = "smoke"
+                        elif markers.get("edge"):
+                            category = "edge"
+                        elif markers.get("regression"):
+                            category = "regression"
+                        elif markers.get("detailed"):
+                            category = "detailed"
+                        elif markers.get("performance"):
+                            category = "performance"
+                        elif markers.get("critical"):
+                            category = "smoke"  # critical tests are usually smoke tests
                         # Infer from file path if no explicit marker
-                        elif 'security' in test.test_file_path.lower():
-                            category = 'compliance-gdpr'
-                        elif 'integration' in test.test_file_path.lower():
-                            category = 'regression'
-                        elif 'unit' in test.test_file_path.lower():
-                            category = 'smoke'
+                        elif "security" in test.test_file_path.lower():
+                            category = "compliance-gdpr"
+                        elif "integration" in test.test_file_path.lower():
+                            category = "regression"
+                        elif "unit" in test.test_file_path.lower():
+                            category = "smoke"
 
                         if category and category != test.test_category:
                             old_category = test.test_category
@@ -191,13 +190,12 @@ def update_test_components():
                             updated_count += 1
 
                     # Update test priority
-                    if 'priority' in markers and test.test_priority == 'medium':
+                    if "priority" in markers and test.test_priority == "medium":
                         old_priority = test.test_priority
-                        test.test_priority = markers['priority']
+                        test.test_priority = markers["priority"]
                         if old_priority != test.test_priority:
                             print(
-                                f"    Priority:"
-                                f"{old_priority} -> {test.test_priority}"
+                                f"    Priority:{old_priority} -> {test.test_priority}"
                             )
                             updated_count += 1
 

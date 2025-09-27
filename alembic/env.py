@@ -14,14 +14,10 @@ import os
 import sys
 
 # Add the source directory to Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 
 # Import all models to ensure they're registered with Base.metadata
 from src.be.models.traceability.base import Base
-from src.be.models.traceability import (
-    Epic, EpicMetricHistory, EpicDependency, UserStory, Defect, Test,
-    GitHubSync, Capability, CapabilityDependency
-)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -59,7 +55,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        render_as_batch=True  # Required for SQLite ALTER TABLE support
+        render_as_batch=True,  # Required for SQLite ALTER TABLE support
     )
 
     with context.begin_transaction():
@@ -83,7 +79,7 @@ def run_migrations_online() -> None:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            render_as_batch=True  # Required for SQLite ALTER TABLE support
+            render_as_batch=True,  # Required for SQLite ALTER TABLE support
         )
 
         with context.begin_transaction():

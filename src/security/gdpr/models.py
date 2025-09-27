@@ -74,7 +74,9 @@ class ConsentRecord(Base):
 
     # Audit trail
     ip_address_hash = Column(String(64), nullable=True)  # Hashed IP for security
-    user_agent_hash = Column(String(64), nullable=True)  # Hashed for fingerprinting prevention
+    user_agent_hash = Column(
+        String(64), nullable=True
+    )  # Hashed for fingerprinting prevention
 
 
 class DataProcessingRecord(Base):
@@ -197,7 +199,9 @@ class GDPRCompliance(BaseModel):
     last_audit_date: Optional[datetime] = None
 
     @classmethod
-    def calculate_compliance_score(cls, consent_records: int, pending_requests: int, overdue_requests: int) -> float:
+    def calculate_compliance_score(
+        cls, consent_records: int, pending_requests: int, overdue_requests: int
+    ) -> float:
         """Calculate a GDPR compliance score (0-100)."""
 
         score = 100.0

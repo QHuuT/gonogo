@@ -9,7 +9,6 @@ Related Issue: US-00059 - Dynamic RTM generation and reporting
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
-import os
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -636,8 +635,7 @@ def show_sample_data_summary():
             if tests:
                 passed = sum(1 for t in tests if t.last_execution_status == "passed")
                 failed = sum(1 for t in tests if t.last_execution_status == "failed")
-                skipped = \
-                    sum(1 for t in tests if t.last_execution_status == "skipped")
+                skipped = sum(1 for t in tests if t.last_execution_status == "skipped")
                 print(
                     f"  Test Results: {passed} passed, {failed} failed, {skipped} skipped"
                 )

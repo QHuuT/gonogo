@@ -20,7 +20,7 @@ from pathlib import Path
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from shared.logging.logger import LogEntry, StructuredLogger
+from shared.logging.logger import LogEntry
 from shared.testing.failure_tracker import FailureCategory, FailureTracker, TestFailure
 from shared.testing.log_failure_correlator import LogFailureCorrelator
 
@@ -300,11 +300,11 @@ def demonstrate_correlation_analysis(
             print(f"   Execution logs: {len(context.execution_logs)}")
             print(f"   Teardown logs: {len(context.teardown_logs)}")
 
-            print(f"\n   Environment Context:")
+            print("\n   Environment Context:")
             for key, value in context.environment_info.items():
                 print(f"     {key}: {value}")
 
-            print(f"\n   Debugging Hints:")
+            print("\n   Debugging Hints:")
             for hint in context.debugging_hints[:3]:  # Show first 3 hints
                 print(f"     - {hint}")
 
@@ -356,11 +356,11 @@ def demonstrate_correlation_summary(correlator: LogFailureCorrelator):
     print(f"   Failures with correlated logs: {summary.failures_with_logs}")
     print(f"   Correlation success rate: {summary.correlation_success_rate:.1f}%")
 
-    print(f"\n   Common Failure Patterns:")
+    print("\n   Common Failure Patterns:")
     for pattern in summary.common_failure_patterns[:5]:  # Top 5 patterns
         print(f"     - {pattern['category']}: {pattern['count']} occurrences")
 
-    print(f"\n   Key Debugging Insights:")
+    print("\n   Key Debugging Insights:")
     for insight in summary.debugging_insights[:5]:  # Top 5 insights
         print(f"     - {insight}")
 
@@ -420,22 +420,19 @@ def main():
         # Generate reports
         report_path = generate_reports(correlator)
 
-        print(f"\nDemo completed successfully!")
+        print("\nDemo completed successfully!")
         print(f"Database: {db_path}")
         print(f"Correlation Report: {report_path}")
-        print(f"Reproduction Scripts: quality/reports/reproduction_script_*.py")
+        print("Reproduction Scripts: quality/reports/reproduction_script_*.py")
 
         # Display key achievements
-        print(f"\n*** Key Achievements:")
+        print("\n*** Key Achievements:")
         print(f"[DONE] Log-failure correlation with {len(failure_ids)} scenarios")
-        print(
-            f"[DONE] Context"
-            f"preservation (environment, test data, execution state)"
-        )
-        print(f"[DONE] Debugging assistance with categorized hints")
-        print(f"[DONE] Reproduction guide generation")
-        print(f"[DONE] Pattern analysis and insights")
-        print(f"[DONE] GDPR-compliant data handling")
+        print("[DONE] Contextpreservation (environment, test data, execution state)")
+        print("[DONE] Debugging assistance with categorized hints")
+        print("[DONE] Reproduction guide generation")
+        print("[DONE] Pattern analysis and insights")
+        print("[DONE] GDPR-compliant data handling")
 
     except Exception as e:
         print(f"Demo failed: {e}")

@@ -1,0 +1,6 @@
+                <section class="metrics-dashboard" aria-label="{{ section_label or dashboard_title }}">
+                    <h{{ heading_level or '3' }} class="metrics-dashboard__title">{{ dashboard_title }}</h{{ heading_level or '3' }}>
+                    <div class="metrics-grid">
+                        {{ metric_cards | safe }}
+                    </div>
+                </section>

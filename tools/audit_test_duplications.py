@@ -13,8 +13,9 @@ sys.path.insert(0, str(src_path))
 
 from be.database import get_db_session
 from be.models.traceability.test import Test
-from sqlalchemy import func, and_
+from sqlalchemy import func
 from collections import defaultdict
+
 
 def analyze_test_duplications():
     """Analyse les duplications de tests dans la DB RTM."""
@@ -32,7 +33,7 @@ def analyze_test_duplications():
             session.query(
                 Test.test_function_name,
                 Test.test_file_path,
-                func.count(Test.id).label('count')
+                func.count(Test.id).label("count"),
             )
             .group_by(Test.test_function_name, Test.test_file_path)
             .having(func.count(Test.id) > 1)
@@ -40,15 +41,16 @@ def analyze_test_duplications():
         )
 
         duplicates = duplicates_query.all()
-        total_duplicate_entries = \
-            sum(dup.count - 1 for dup in duplicates)  # -1 car on garde 1 copie
+        total_duplicate_entries = sum(
+            dup.count - 1 for dup in duplicates
+        )  # -1 car on garde 1 copie
 
         print(f"Unique test+file combinations with duplicates: {len(duplicates)}")
         print(f"Excess entries to remove: {total_duplicate_entries}")
         print(f"Expected final count: {total_tests - total_duplicate_entries}")
 
         # 3. Top 10 most duplicated
-        print(f"\nTop 10 most duplicated tests:")
+        print("\nTop 10 most duplicated tests:")
         for dup in duplicates[:10]:
             print(
                 f"   * {dup.test_function_name}"
@@ -60,23 +62,22 @@ def analyze_test_duplications():
         for dup in duplicates:
             file_duplications[dup.test_file_path] += dup.count - 1
 
-        print(f"\nFiles with most duplicate entries:")
-        sorted_files = \
-            sorted(file_duplications.items(), key=lambda x: x[1], reverse=True)
+        print("\nFiles with most duplicate entries:")
+        sorted_files = sorted(
+            file_duplications.items(), key=lambda x: x[1], reverse=True
+        )
         for file_path, excess_count in sorted_files[:10]:
             print(f"   * {file_path}: {excess_count} excess entries")
 
         # 5. Analysis by Epic assignment
-        print(f"\nEpic assignment analysis:")
-        tests_with_epic = \
-            session.query(Test).filter(Test.epic_id.isnot(None)).count()
-        tests_without_epic = \
-            session.query(Test).filter(Test.epic_id.is_(None)).count()
+        print("\nEpic assignment analysis:")
+        tests_with_epic = session.query(Test).filter(Test.epic_id.isnot(None)).count()
+        tests_without_epic = session.query(Test).filter(Test.epic_id.is_(None)).count()
         print(f"   * Tests with Epic: {tests_with_epic}")
         print(f"   * Tests without Epic: {tests_without_epic}")
 
         # 6. Potential causes analysis
-        print(f"\nPotential duplication causes:")
+        print("\nPotential duplication causes:")
 
         # Check for tests with different epic assignments but same name+file
         mixed_epic_query = (
@@ -97,24 +98,25 @@ def analyze_test_duplications():
         print(f"   * Tests with different test_type markers: {mixed_markers_count}")
 
         return {
-            'total_tests': total_tests,
-            'duplicates': len(duplicates),
-            'excess_entries': total_duplicate_entries,
-            'expected_final': total_tests - total_duplicate_entries,
-            'top_duplicates': duplicates[:10]
+            "total_tests": total_tests,
+            "duplicates": len(duplicates),
+            "excess_entries": total_duplicate_entries,
+            "expected_final": total_tests - total_duplicate_entries,
+            "top_duplicates": duplicates[:10],
         }
     finally:
         session.close()
 
+
 def count_actual_test_functions():
     """Compte les vraies fonctions de test dans les fichiers."""
-    print(f"\nCounting actual test functions in codebase...")
+    print("\nCounting actual test functions in codebase...")
 
     test_dirs = [
         Path("tests/unit"),
         Path("tests/integration"),
         Path("tests/security"),
-        Path("tests/e2e")
+        Path("tests/e2e"),
     ]
 
     total_functions = 0
@@ -125,35 +127,36 @@ def count_actual_test_functions():
 
             for py_file in py_files:
                 try:
-                    content = py_file.read_text(encoding='utf-8', errors='ignore')
-                    functions = \
-                        [line for line in content.split('\n') if line.strip().startswith('def test_')]
+                    content = py_file.read_text(encoding="utf-8", errors="ignore")
+                    functions = [
+                        line
+                        for line in content.split("\n")
+                        if line.strip().startswith("def test_")
+                    ]
                     total_functions += len(functions)
                     if len(functions) > 0:
-                        print(
-                            f"      *"
-                            f"{py_file.name}: {len(functions)} test functions"
-                        )
+                        print(f"      *{py_file.name}: {len(functions)} test functions")
                 except Exception as e:
                     print(f"      ERROR reading {py_file}: {e}")
 
     print(f"Total actual test functions found: {total_functions}")
     return total_functions
 
+
 if __name__ == "__main__":
     analysis = analyze_test_duplications()
     actual_count = count_actual_test_functions()
 
-    print(f"\n" + "=" * 50)
-    print(f"SUMMARY")
-    print(f"=" * 50)
+    print("\n" + "=" * 50)
+    print("SUMMARY")
+    print("=" * 50)
     print(f"Database entries: {analysis['total_tests']}")
     print(f"Actual functions: {actual_count}")
     print(f"Excess entries: {analysis['excess_entries']}")
     print(f"Expected after cleanup: {analysis['expected_final']}")
     print(f"Gap from reality: {analysis['expected_final'] - actual_count}")
 
-    if analysis['expected_final'] == actual_count:
+    if analysis["expected_final"] == actual_count:
         print("Perfect match expected after deduplication!")
     else:
         print("Additional investigation needed after basic deduplication")

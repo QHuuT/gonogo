@@ -180,7 +180,9 @@ class TestArchiveManager:
 
                             if action["type"] == "compress":
                                 results["compressed_files"] += 1
-                                results["space_saved_mb"] += action.get("space_saved_mb", 0)
+                                results["space_saved_mb"] += action.get(
+                                    "space_saved_mb", 0
+                                )
                             elif action["type"] == "archive":
                                 results["archived_files"] += 1
                             elif action["type"] == "delete":
@@ -192,7 +194,9 @@ class TestArchiveManager:
 
         return results
 
-    def _process_file(self, file_path: Path, dry_run: bool = True) -> Optional[Dict[str, Any]]:
+    def _process_file(
+        self, file_path: Path, dry_run: bool = True
+    ) -> Optional[Dict[str, Any]]:
         """Process a single file according to retention policies."""
         # Find matching policy
         policy = self._find_matching_policy(file_path)
@@ -201,7 +205,9 @@ class TestArchiveManager:
 
         # Get file info
         file_stat = file_path.stat()
-        file_age_days = (datetime.now() - datetime.fromtimestamp(file_stat.st_mtime)).days
+        file_age_days = (
+            datetime.now() - datetime.fromtimestamp(file_stat.st_mtime)
+        ).days
         file_size_mb = file_stat.st_size / (1024 * 1024)
 
         # Check if file should be deleted
@@ -217,11 +223,15 @@ class TestArchiveManager:
 
         # Check if file should be compressed
         if (
-            file_age_days > policy.compress_after_days and not self._is_compressed(file_path) and file_size_mb > 1
+            file_age_days > policy.compress_after_days
+            and not self._is_compressed(file_path)
+            and file_size_mb > 1
         ):  # Only compress files > 1MB
             if not dry_run:
                 compressed_path = self._compress_file(file_path)
-                space_saved = file_size_mb - (compressed_path.stat().st_size / (1024 * 1024))
+                space_saved = file_size_mb - (
+                    compressed_path.stat().st_size / (1024 * 1024)
+                )
             else:
                 space_saved = file_size_mb * 0.7  # Estimated 70% compression
 
@@ -234,11 +244,15 @@ class TestArchiveManager:
             }
 
         # Check if file should be archived (moved to archive directory)
-        if file_age_days > policy.compress_after_days * 2 and not str(file_path).startswith(str(self.archive_base)):
+        if file_age_days > policy.compress_after_days * 2 and not str(
+            file_path
+        ).startswith(str(self.archive_base)):
             if not dry_run:
                 archive_path = self._archive_file(file_path, policy)
             else:
-                archive_path = self.archive_base / policy.archive_location / file_path.name
+                archive_path = (
+                    self.archive_base / policy.archive_location / file_path.name
+                )
 
             return {
                 "type": "archive",
@@ -294,7 +308,9 @@ class TestArchiveManager:
 
         return archive_path
 
-    def _store_archive_metadata(self, original_path: Path, archive_path: Path, policy: RetentionPolicy):
+    def _store_archive_metadata(
+        self, original_path: Path, archive_path: Path, policy: RetentionPolicy
+    ):
         """Store metadata about an archived file."""
         original_size = 0
         try:
@@ -321,7 +337,9 @@ class TestArchiveManager:
             compressed_size=compressed_size,
             created_date=created_date,
             archived_date=datetime.now(),
-            compression_ratio=(compressed_size / original_size if original_size > 0 else 1.0),
+            compression_ratio=(
+                compressed_size / original_size if original_size > 0 else 1.0
+            ),
             metadata=metadata,
         )
 
@@ -417,7 +435,9 @@ class TestArchiveManager:
 
         return results
 
-    def retrieve_from_archive(self, archive_path: str, destination: Optional[Path] = None) -> Path:
+    def retrieve_from_archive(
+        self, archive_path: str, destination: Optional[Path] = None
+    ) -> Path:
         """
         Retrieve a file from the archive.
 
@@ -490,17 +510,25 @@ class TestArchiveManager:
 
         if old_files_count > 10:
             recommendations.append(
-                (f"Consider archiving {old_files_count} old files to save {old_files_size / (1024 * 1024):.1f} MB")
+                (
+                    f"Consider archiving {old_files_count} old files to save {old_files_size / (1024 * 1024):.1f} MB"
+                )
             )
 
         if compression_savings < total_size * 0.1:
-            recommendations.append("Enable compression for older files to save storage space")
+            recommendations.append(
+                "Enable compression for older files to save storage space"
+            )
 
         if total_size > 1024 * 1024 * 1024:  # > 1GB
-            recommendations.append("Large storage usage detected - consider more aggressive retention policies")
+            recommendations.append(
+                "Large storage usage detected - consider more aggressive retention policies"
+            )
 
         if compressed_files / total_files < 0.2 and total_files > 50:
-            recommendations.append("Low compression rate - review file types and compression policies")
+            recommendations.append(
+                "Low compression rate - review file types and compression policies"
+            )
 
         return StorageMetrics(
             total_files=total_files,
@@ -523,7 +551,10 @@ class TestArchiveManager:
         Returns:
             Path to the created bundle
         """
-        bundle_path = self.archive_base / f"{bundle_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
+        bundle_path = (
+            self.archive_base
+            / f"{bundle_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
+        )
 
         with zipfile.ZipFile(bundle_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             files_added = 0
@@ -552,7 +583,9 @@ class TestArchiveManager:
         Returns:
             Cron job configuration string
         """
-        script_path = Path(__file__).parent.parent.parent.parent / "tools" / "archive_cleanup.py"
+        script_path = (
+            Path(__file__).parent.parent.parent.parent / "tools" / "archive_cleanup.py"
+        )
 
         cron_command = (
             f"{cron_schedule} cd {self.base_path.parent} && python {script_path} "
@@ -583,4 +616,6 @@ class TestArchiveManager:
         with open(config_path, "r", encoding="utf-8") as f:
             config = json.load(f)
 
-        self.policies = [RetentionPolicy(**policy_data) for policy_data in config.get("policies", [])]
+        self.policies = [
+            RetentionPolicy(**policy_data) for policy_data in config.get("policies", [])
+        ]

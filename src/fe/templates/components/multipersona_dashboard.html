@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Persona Dashboard - GoNoGo Project</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* Color palette */
+            --primary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --secondary-color: #95a5a6;
+            --background-color: #f8f9fa;
+            --card-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+
+            /* Persona colors */
+            --pm-color: #8e44ad;
+            --po-color: #2980b9;
+            --qa-color: #27ae60;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        /* Dashboard Navigation */
+        .dashboard-nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            gap: 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            border-bottom-color: #fff;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+            padding: 15px 0;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .persona-selector {
+            display: flex;
+            gap: 15px;
+        }
+
+        .persona-btn {
+            padding: 8px 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .persona-btn:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.6);
+        }
+
+        .persona-btn.active {
+            background: white;
+            color: var(--primary-color);
+            border-color: white;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .persona-header {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .persona-header.pm { border-left-color: var(--pm-color); }
+        .persona-header.po { border-left-color: var(--po-color); }
+        .persona-header.qa { border-left-color: var(--qa-color); }
+
+        .persona-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .persona-icon {
+            font-size: 24px;
+        }
+
+        .persona-icon.pm { color: var(--pm-color); }
+        .persona-icon.po { color: var(--po-color); }
+        .persona-icon.qa { color: var(--qa-color); }
+
+        .filters {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-weight: 500;
+            color: #555;
+        }
+
+        .filter-group select, .filter-group input {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .metrics-grid.summary {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .metrics-grid.detailed {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            border-left: 4px solid var(--secondary-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        .metric-card.success { border-left-color: var(--success-color); }
+        .metric-card.warning { border-left-color: var(--warning-color); }
+        .metric-card.danger { border-left-color: var(--danger-color); }
+        .metric-card.primary { border-left-color: var(--primary-color); }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .metric-title {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        .metric-icon {
+            font-size: 20px;
+            color: var(--secondary-color);
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .metric-label {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .metric-trend {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .trend-up { color: var(--success-color); }
+        .trend-down { color: var(--danger-color); }
+        .trend-stable { color: var(--secondary-color); }
+
+        .chart-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .epics-list {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .epics-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .epic-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f8f9fa;
+            transition: background-color 0.2s ease;
+        }
+
+        .epic-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .epic-item:last-child {
+            border-bottom: none;
+        }
+
+        .epic-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .epic-meta {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            font-size: 14px;
+            color: #6c757d;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        .status-badge.success { background-color: #e8f5e9; color: #2e7d32; }
+        .status-badge.warning { background-color: #fff3e0; color: #ef6c00; }
+        .status-badge.danger { background-color: #ffebee; color: #c62828; }
+        .status-badge.info { background-color: #e3f2fd; color: #1565c0; }
+        .status-badge.neutral { background-color: #eceff1; color: #546e7a; }
+
+        .status-planned { background-color: #e3f2fd; color: #1976d2; }
+        .status-in-progress { background-color: #fff3e0; color: #f57c00; }
+        .status-completed { background-color: #e8f5e8; color: #388e3c; }
+        .status-on-hold { background-color: #fce4ec; color: #c2185b; }
+
+        .priority-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .priority-critical { background-color: #ffebee; color: #d32f2f; }
+        .priority-high { background-color: #fff3e0; color: #f57c00; }
+        .priority-medium { background-color: #e8f5e8; color: #388e3c; }
+        .priority-low { background-color: #f3e5f5; color: #7b1fa2; }
+
+        .progress-bar {
+            width: 100px;
+            height: 6px;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--success-color);
+            transition: width 0.3s ease;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .persona-selector {
+                justify-content: center;
+            }
+
+            .main-container {
+                padding: 15px;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .metrics-grid.summary {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid.detailed {
+                grid-template-columns: 1fr;
+            }
+
+            .epic-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="dashboard-nav">
+        <a href="/api/rtm/dashboard/multipersona" class="nav-link" id="nav-live">
+            <i class="fas fa-users"></i> Multi-Persona (Live)
+        </a>
+        <a href="/api/rtm/dashboard/multipersona/demo" class="nav-link" id="nav-demo">
+            <i class="fas fa-vial"></i> Multi-Persona (Demo)
+        </a>
+        <a href="/api/rtm/dashboard/dependencies" class="nav-link">
+            <i class="fas fa-project-diagram"></i> Dependencies
+        </a>
+        <a href="/api/rtm/dashboard/capabilities" class="nav-link">
+            <i class="fas fa-layer-group"></i> Capabilities
+        </a>
+    </nav>
+
+    <div class="header">
+        <div class="header-content">
+            <h1><i class="fas fa-tachometer-alt"></i> Multi-Persona Dashboard</h1>
+            <div class="persona-selector">
+                <button class="persona-btn active" onclick="switchPersona('PM')" id="pm-btn">
+                    <i class="fas fa-project-diagram"></i> Project Manager
+                </button>
+                <button class="persona-btn" onclick="switchPersona('PO')" id="po-btn">
+                    <i class="fas fa-bullseye"></i> Product Owner
+                </button>
+                <button class="persona-btn" onclick="switchPersona('QA')" id="qa-btn">
+                    <i class="fas fa-bug"></i> Quality Assurance
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Persona Header -->
+        <div class="persona-header pm" id="persona-header">
+            <div class="persona-title">
+                <i class="persona-icon pm fas fa-project-diagram" id="persona-icon"></i>
+                <div>
+                    <h2 id="persona-title">Project Manager Dashboard</h2>
+                    <p id="persona-description">Timeline, velocity, risk management, and team productivity metrics</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <label for="epic-filter">Epic:</label>
+                <select id="epic-filter">
+                    <option value="">All Epics</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="status-filter">Status:</label>
+                <select id="status-filter">
+                    <option value="">All Statuses</option>
+                    <option value="planned">Planned</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="on_hold">On Hold</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="component-filter">Component:</label>
+                <select id="component-filter">
+                    <option value="">All Components</option>
+                </select>
+            </div>
+            <button onclick="refreshDashboard()" class="persona-btn" style="margin-left: auto;">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+
+        <!-- Summary Metrics -->
+        <div class="metrics-grid summary" id="summary-metrics">
+            <!-- Metrics will be populated by JavaScript -->
+        </div>
+
+        <!-- Charts Section -->
+        <div class="chart-container" id="charts-container">
+            <h3 class="chart-title" id="chart-title">Velocity Trends</h3>
+            <canvas id="main-chart" width="800" height="300"></canvas>
+        </div>
+
+        <!-- Epics List -->
+        <div class="epics-list">
+            <div class="epics-header">
+                <span id="epics-header-title">Epic Performance Overview</span>
+            </div>
+            <div id="epics-container">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading dashboard data...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        const isDemo = window.location.pathname.includes('/demo');
+        let currentPersona = 'PM';
+        let dashboardData = null;
+        let mainChart = null;
+
+        // Persona configurations
+        const personaConfig = {
+            PM: {
+                title: 'Project Manager Dashboard',
+                description: 'Timeline, velocity, risk management, and team productivity metrics',
+                icon: 'fas fa-project-diagram',
+                class: 'pm',
+                color: '#8e44ad'
+            },
+            PO: {
+                title: 'Product Owner Dashboard',
+                description: 'Business value, stakeholder satisfaction, and scope management metrics',
+                icon: 'fas fa-bullseye',
+                class: 'po',
+                color: '#2980b9'
+            },
+            QA: {
+                title: 'Quality Assurance Dashboard',
+                description: 'Quality metrics, defect tracking, and testing coverage analysis',
+                icon: 'fas fa-bug',
+                class: 'qa',
+                color: '#27ae60'
+            }
+        };
+
+        // Initialize dashboard on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Multi-Persona Dashboard initialized');
+            // Set active nav based on mode
+            const navLive = document.getElementById('nav-live');
+            const navDemo = document.getElementById('nav-demo');
+            if (isDemo) {
+                navDemo.classList.add('active');
+            } else {
+                navLive.classList.add('active');
+            }
+            loadEpicFilters();
+            loadComponentFilters();
+            switchPersona('PM');
+        });
+
+        // Switch between personas
+        function switchPersona(persona) {
+            currentPersona = persona;
+
+            // Update active button
+            document.querySelectorAll('.persona-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(persona.toLowerCase() + '-btn').classList.add('active');
+
+            // Update persona header
+            const config = personaConfig[persona];
+            const header = document.getElementById('persona-header');
+            const icon = document.getElementById('persona-icon');
+            const title = document.getElementById('persona-title');
+            const description = document.getElementById('persona-description');
+
+            header.className = `persona-header ${config.class}`;
+            icon.className = `persona-icon ${config.class} ${config.icon}`;
+            title.textContent = config.title;
+            description.textContent = config.description;
+
+            // Load persona-specific data
+            loadDashboardData();
+        }
+
+        // Load epic options for filters
+        async function loadEpicFilters() {
+            try {
+                const response = await axios.get('/api/rtm/epics/');
+                const epics = response.data;
+
+                const select = document.getElementById('epic-filter');
+                select.innerHTML = '<option value="">All Epics</option>';
+
+                epics.forEach(epic => {
+                    const option = document.createElement('option');
+                    option.value = epic.epic_id;
+                    option.textContent = `${epic.epic_id} - ${epic.title}`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Failed to load epic filters:', error);
+            }
+        }
+
+        async function loadComponentFilters() {
+            try {
+                const response = await axios.get('/api/rtm/components/');
+                const components = Array.isArray(response.data) ? response.data : [];
+
+                const select = document.getElementById('component-filter');
+                select.innerHTML = '<option value="">All Components</option>';
+
+                components
+                    .filter(Boolean)
+                    .sort((a, b) => a.localeCompare(b))
+                    .forEach(component => {
+                        const option = document.createElement('option');
+                        option.value = component;
+                        option.textContent = component.charAt(0).toUpperCase() + component.slice(1);
+                        select.appendChild(option);
+                    });
+            } catch (error) {
+                console.error('Failed to load component filters:', error);
+            }
+        }
+
+        // Load dashboard data based on current persona and filters
+        async function loadDashboardData() {
+            try {
+                showLoading();
+
+                // Build query parameters
+                const params = new URLSearchParams({
+                    persona: currentPersona
+                });
+
+                const epicFilter = document.getElementById('epic-filter').value;
+                const statusFilter = document.getElementById('status-filter').value;
+                const componentFilter = document.getElementById('component-filter').value;
+
+                if (epicFilter) params.append('epic_filter', epicFilter);
+                if (statusFilter) params.append('status_filter', statusFilter);
+                if (componentFilter) params.append('component_filter', componentFilter);
+
+                // Fetch dashboard data (switch endpoint based on demo mode)
+                const endpoint = isDemo ? '/api/rtm/dashboard/metrics/demo' : '/api/rtm/dashboard/metrics';
+                const response = await axios.get(`${endpoint}?${params.toString()}`);
+                dashboardData = response.data;
+
+                // Update UI
+                updateSummaryMetrics();
+                updateEpicsList();
+                updateChart();
+
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+                showError('Failed to load dashboard data. Please try again.');
+            }
+        }
+
+        // Formatting helpers
+        function safeNumber(value, fallback = 0) {
+            if (value === null || value === undefined || value === '') {
+                return fallback;
+            }
+            const num = Number(value);
+            return Number.isFinite(num) ? num : fallback;
+        }
+
+        function formatFixed(value, decimals = 1) {
+            return safeNumber(value).toFixed(decimals);
+        }
+
+        function formatPercentage(value, decimals = 1) {
+            return `${formatFixed(value, decimals)}%`;
+        }
+
+        function formatScheduleVariance(days) {
+            const num = safeNumber(days, null);
+            if (num === null) {
+                return 'On schedule';
+            }
+            if (num > 0) {
+                return `+${num.toFixed(1)} days`;
+            }
+            if (num < 0) {
+                return `${Math.abs(num).toFixed(1)} days ahead`;
+            }
+            return 'On schedule';
+        }
+
+        function scheduleVarianceClass(days) {
+            const num = safeNumber(days, null);
+            if (num === null) {
+                return 'neutral';
+            }
+            if (num <= 0) {
+                return 'success';
+            }
+            if (num <= 3) {
+                return 'warning';
+            }
+            return 'danger';
+        }
+
+        function riskLevelClass(percent) {
+            const value = safeNumber(percent);
+            if (value < 20) {
+                return 'success';
+            }
+            if (value < 40) {
+                return 'warning';
+            }
+            return 'danger';
+        }
+
+        function satisfactionClass(score) {
+            const value = safeNumber(score);
+            if (value >= 8) {
+                return 'success';
+            }
+            if (value >= 6) {
+                return 'warning';
+            }
+            return 'danger';
+        }
+
+        function percentageHealthClass(value, goodThreshold = 80, warningThreshold = 60) {
+            const pct = safeNumber(value);
+            if (pct >= goodThreshold) {
+                return 'success';
+            }
+            if (pct >= warningThreshold) {
+                return 'warning';
+            }
+            return 'danger';
+        }
+
+        function getBaseChartOptions() {
+            return {
+                responsive: false,
+                maintainAspectRatio: true,
+                animation: false,
+                animations: false,
+                transitions: {
+                    active: {
+                        animation: {
+                            duration: 0
+                        }
+                    }
+                },
+                hover: {
+                    animationDuration: 0
+                },
+                responsiveAnimationDuration: 0,
+                onResize: () => false,
+                onHover: () => false,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { enabled: false }
+                },
+                scales: {},
+                datasets: {
+                    bar: {
+                        categoryPercentage: 0.7,
+                        barPercentage: 0.9
+                    }
+                }
+            };
+        }
+
+        function mergeOptions(base, overrides) {
+            const source = base && typeof base === 'object' ? (Array.isArray(base) ? base.slice() : { ...base }) : {};
+            if (!overrides || typeof overrides !== 'object') {
+                return source;
+            }
+
+            Object.entries(overrides).forEach(([key, value]) => {
+                if (value && typeof value === 'object' && !Array.isArray(value)) {
+                    source[key] = mergeOptions(source[key], value);
+                } else {
+                    source[key] = value;
+                }
+            });
+
+            return source;
+        }
+
+        // Update summary metrics cards
+        function updateSummaryMetrics() {
+            const container = document.getElementById('summary-metrics');
+            const summary = dashboardData.summary || {};
+
+            if (!summary || Object.keys(summary).length === 0) {
+                container.innerHTML = '<div class="loading">No summary metrics available for the current filters.</div>';
+                return;
+            }
+
+            const totalEpics = safeNumber(summary.total_epics);
+            let metricsHtml = '';
+
+            if (currentPersona === 'PM') {
+                const varianceLabel = formatScheduleVariance(summary.average_schedule_variance);
+                const riskPercentage = safeNumber(summary.risk_percentage);
+                const riskClass = riskLevelClass(riskPercentage);
+                const velocity = safeNumber(summary.average_velocity);
+                const velocityPerMember = safeNumber(summary.average_velocity_per_member);
+                const successProbability = safeNumber(summary.average_success_probability);
+                const atRisk = safeNumber(summary.at_risk_epics);
+
+                metricsHtml = `
+                    <div class="metric-card ${summary.schedule_health === 'Good' ? 'success' : 'warning'}">
+                        <div class="metric-header">
+                            <span class="metric-title">Schedule Health</span>
+                            <i class="metric-icon fas fa-calendar-check"></i>
+                        </div>
+                        <div class="metric-value">${summary.schedule_health || 'Unknown'}</div>
+                        <div class="metric-label">Avg variance ${varianceLabel}</div>
+                        <div class="metric-trend">
+                            <span>${atRisk} of ${totalEpics} epics at risk</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card primary">
+                        <div class="metric-header">
+                            <span class="metric-title">Average Velocity</span>
+                            <i class="metric-icon fas fa-tachometer-alt"></i>
+                        </div>
+                        <div class="metric-value">${formatFixed(velocity, 1)}</div>
+                        <div class="metric-label">Points per sprint</div>
+                        <div class="metric-trend">
+                            <span>${formatFixed(velocityPerMember, 1)} per team member</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card ${riskClass}">
+                        <div class="metric-header">
+                            <span class="metric-title">Portfolio Risk</span>
+                            <i class="metric-icon fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="metric-value">${formatPercentage(riskPercentage)}</div>
+                        <div class="metric-label">High-risk share</div>
+                        <div class="metric-trend">
+                            <span>${formatPercentage(successProbability, 1)} avg success outlook</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card secondary">
+                        <div class="metric-header">
+                            <span class="metric-title">Active Epics</span>
+                            <i class="metric-icon fas fa-list"></i>
+                        </div>
+                        <div class="metric-value">${totalEpics}</div>
+                        <div class="metric-label">Tracked in view</div>
+                    </div>
+                `;
+            } else if (currentPersona === 'PO') {
+                const satisfaction = safeNumber(summary.average_satisfaction);
+                const roi = safeNumber(summary.average_roi);
+                const adoption = safeNumber(summary.average_adoption);
+                const scopeCreep = safeNumber(summary.average_scope_creep_percentage);
+                const satisfactionClassName = satisfactionClass(satisfaction);
+                const roiClass = roi >= 80 ? 'success' : roi >= 50 ? 'warning' : 'danger';
+                const adoptionClass = adoption >= 70 ? 'success' : adoption >= 50 ? 'warning' : 'danger';
+                const scopeClass = scopeCreep <= 10 ? 'success' : scopeCreep <= 20 ? 'warning' : 'danger';
+                const scopeIssues = safeNumber(summary.scope_creep_issues);
+
+                metricsHtml = `
+                    <div class="metric-card ${satisfactionClassName}">
+                        <div class="metric-header">
+                            <span class="metric-title">Stakeholder Satisfaction</span>
+                            <i class="metric-icon fas fa-heart"></i>
+                        </div>
+                        <div class="metric-value">${formatFixed(satisfaction, 1)}/10</div>
+                        <div class="metric-label">${summary.satisfaction_grade || 'Unknown'} feedback</div>
+                        <div class="metric-trend">
+                            <span>${scopeIssues} epics reporting churn</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card ${roiClass}">
+                        <div class="metric-header">
+                            <span class="metric-title">Average ROI</span>
+                            <i class="metric-icon fas fa-chart-line"></i>
+                        </div>
+                        <div class="metric-value">${formatPercentage(roi)}</div>
+                        <div class="metric-label">Projected return</div>
+                        <div class="metric-trend">
+                            <span>Across ${totalEpics} epics</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card ${adoptionClass}">
+                        <div class="metric-header">
+                            <span class="metric-title">User Adoption</span>
+                            <i class="metric-icon fas fa-users"></i>
+                        </div>
+                        <div class="metric-value">${formatPercentage(adoption)}</div>
+                        <div class="metric-label">Adoption rate</div>
+                        <div class="metric-trend">
+                            <span>Scope creep avg ${formatPercentage(scopeCreep)}</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card ${scopeClass}">
+                        <div class="metric-header">
+                            <span class="metric-title">Scope Control</span>
+                            <i class="metric-icon fas fa-bullseye"></i>
+                        </div>
+                        <div class="metric-value">${formatPercentage(scopeCreep)}</div>
+                        <div class="metric-label">Average scope creep</div>
+                        <div class="metric-trend">
+                            <span>${totalEpics} epics monitored</span>
+                        </div>
+                    </div>
+                `;
+            } else if (currentPersona === 'QA') {
+                const coverage = safeNumber(summary.average_test_coverage);
+                const defectDensity = safeNumber(summary.average_defect_density);
+                const technicalDebt = safeNumber(summary.average_technical_debt);
+                const coverageClass = percentageHealthClass(coverage);
+                const defectClass = defectDensity <= 0.3 ? 'success' : defectDensity <= 0.6 ? 'warning' : 'danger';
+                const debtClass = technicalDebt <= 40 ? 'success' : technicalDebt <= 80 ? 'warning' : 'danger';
+                const highDefectEpics = safeNumber(summary.high_defect_epics);
+
+                metricsHtml = `
+                    <div class="metric-card ${coverageClass}">
+                        <div class="metric-header">
+                            <span class="metric-title">Test Coverage</span>
+                            <i class="metric-icon fas fa-shield-alt"></i>
+                        </div>
+                        <div class="metric-value">${formatPercentage(coverage)}</div>
+                        <div class="metric-label">${summary.coverage_grade || 'Unknown'}</div>
+                    </div>
+
+                    <div class="metric-card ${defectClass}">
+                        <div class="metric-header">
+                            <span class="metric-title">Defect Density</span>
+                            <i class="metric-icon fas fa-bug"></i>
+                        </div>
+                        <div class="metric-value">${formatFixed(defectDensity, 2)}</div>
+                        <div class="metric-label">Defects per story point</div>
+                        <div class="metric-trend">
+                            <span>${highDefectEpics} high-defect epics</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card ${debtClass}">
+                        <div class="metric-header">
+                            <span class="metric-title">Technical Debt</span>
+                            <i class="metric-icon fas fa-tools"></i>
+                        </div>
+                        <div class="metric-value">${formatFixed(technicalDebt, 1)}h</div>
+                        <div class="metric-label">Remediation effort</div>
+                    </div>
+
+                    <div class="metric-card secondary">
+                        <div class="metric-header">
+                            <span class="metric-title">Epics Under Test</span>
+                            <i class="metric-icon fas fa-list"></i>
+                        </div>
+                        <div class="metric-value">${totalEpics}</div>
+                        <div class="metric-label">Portfolio size</div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = metricsHtml;
+        }
+
+        // Update epics list
+        function updateEpicsList() {
+            const container = document.getElementById('epics-container');
+            const epics = dashboardData.epics;
+
+            if (!epics || epics.length === 0) {
+                container.innerHTML = '<div class="loading">No epics found matching the criteria.</div>';
+                return;
+            }
+
+            let epicsHtml = '';
+
+            epics.forEach(epic => {
+                const completion = epic.completion_percentage || 0;
+                epicsHtml += `
+                    <div class="epic-item">
+                        <div class="epic-title">${epic.epic_id} - ${epic.title}</div>
+                        <div class="epic-meta">
+                            <span class="status-badge status-${epic.status}">${epic.status.replace('_', ' ')}</span>
+                            <span class="priority-badge priority-${epic.priority}">${epic.priority}</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${completion}%"></div>
+                            </div>
+                            <span>${completion.toFixed(1)}% Complete</span>
+                            ${getPersonaSpecificMetric(epic)}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = epicsHtml;
+        }
+
+        // Get persona-specific metric for epic item
+        function getPersonaSpecificMetric(epic) {
+            const metrics = epic.metrics || {};
+            const badges = [];
+
+            if (currentPersona === 'PM') {
+                const riskScore = safeNumber(metrics.risk?.overall_risk_score);
+                const riskClass = riskScore > 50 ? 'danger' : riskScore > 25 ? 'warning' : 'success';
+                const scheduleVariance = metrics.timeline?.schedule_variance_days;
+                const scheduleClass = scheduleVarianceClass(scheduleVariance);
+                const successProbability = safeNumber(metrics.risk?.success_probability);
+
+                badges.push(`<span class="status-badge ${riskClass}">Risk: ${formatFixed(riskScore, 0)}</span>`);
+                badges.push(`<span class="status-badge ${scheduleClass}">Schedule: ${formatScheduleVariance(scheduleVariance)}</span>`);
+                badges.push(`<span class="status-badge neutral">Success: ${formatPercentage(successProbability, 0)}</span>`);
+
+                return badges.join('');
+            } else if (currentPersona === 'PO') {
+                const satisfaction = safeNumber(metrics.stakeholder?.satisfaction_score);
+                const roi = safeNumber(metrics.business_value?.roi_percentage);
+                const adoption = safeNumber(metrics.adoption?.user_adoption_rate);
+                const roiClass = roi >= 80 ? 'success' : roi >= 50 ? 'warning' : 'danger';
+                const adoptionClass = adoption >= 70 ? 'success' : adoption >= 50 ? 'warning' : 'danger';
+
+                badges.push(`<span class="status-badge ${satisfactionClass(satisfaction)}">Satisfaction: ${formatFixed(satisfaction, 1)}/10</span>`);
+                badges.push(`<span class="status-badge ${roiClass}">ROI: ${formatPercentage(roi, 0)}</span>`);
+                badges.push(`<span class="status-badge ${adoptionClass}">Adoption: ${formatPercentage(adoption, 0)}</span>`);
+
+                return badges.join('');
+            } else if (currentPersona === 'QA') {
+                const coverage = safeNumber(metrics.testing?.test_coverage);
+                const defectDensity = safeNumber(metrics.defects?.defect_density);
+                const debt = safeNumber(metrics.technical_debt?.debt_hours);
+                const defectClass = defectDensity <= 0.3 ? 'success' : defectDensity <= 0.6 ? 'warning' : 'danger';
+                const debtClass = debt <= 40 ? 'success' : debt <= 80 ? 'warning' : 'danger';
+
+                badges.push(`<span class="status-badge ${percentageHealthClass(coverage)}">Coverage: ${formatPercentage(coverage, 0)}</span>`);
+                badges.push(`<span class="status-badge ${defectClass}">Defects: ${formatFixed(defectDensity, 2)}</span>`);
+                badges.push(`<span class="status-badge ${debtClass}">Debt: ${formatFixed(debt, 1)}h</span>`);
+
+                return badges.join('');
+            }
+
+            return '';
+        }
+
+        // Update chart based on persona
+        function updateChart() {
+            if (mainChart) {
+                mainChart.destroy();
+                mainChart = null;
+            }
+
+            const oldCanvas = document.getElementById('main-chart');
+            const newCanvas = document.createElement('canvas');
+            newCanvas.id = 'main-chart';
+            newCanvas.style.height = '400px';
+            oldCanvas.parentNode.replaceChild(newCanvas, oldCanvas);
+
+            const ctx = newCanvas.getContext('2d');
+            const hasData = Array.isArray(dashboardData.epics) && dashboardData.epics.length > 0;
+
+            if (!hasData) {
+                document.getElementById('chart-title').textContent = 'No metrics available';
+                ctx.font = '16px sans-serif';
+                ctx.fillStyle = '#6c757d';
+                ctx.fillText('No data available for the selected filters.', 40, 120);
+                return;
+            }
+
+            let chartConfig = null;
+
+            if (currentPersona === 'PM') {
+                chartConfig = createVelocityChart();
+            } else if (currentPersona === 'PO') {
+                chartConfig = createBusinessValueChart();
+            } else if (currentPersona === 'QA') {
+                chartConfig = createQualityChart();
+            }
+
+            if (!chartConfig) {
+                return;
+            }
+
+            document.getElementById('chart-title').textContent = chartConfig.title || '';
+
+            const options = mergeOptions(getBaseChartOptions(), chartConfig.options || {});
+
+            mainChart = new Chart(ctx, {
+                type: chartConfig.type || 'bar',
+                data: chartConfig.data,
+                options: options
+            });
+        }
+
+        // Create velocity trend chart for PM - shows evolution over time
+        function createVelocityChart() {
+            const epics = dashboardData.epics || [];
+            const labels = epics.map(epic => epic.epic_id);
+            const velocityData = epics.map(epic => safeNumber(epic.metrics?.velocity?.velocity_points_per_sprint));
+            const scheduleVarianceData = epics.map(epic => safeNumber(epic.metrics?.timeline?.schedule_variance_days));
+
+            return {
+                title: 'Velocity vs Schedule Variance',
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Velocity (pts/sprint)',
+                            data: velocityData,
+                            backgroundColor: 'rgba(142, 68, 173, 0.6)',
+                            borderColor: '#8e44ad',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Schedule Variance (days)',
+                            data: scheduleVarianceData,
+                            type: 'line',
+                            yAxisID: 'schedule',
+                            borderColor: '#f39c12',
+                            backgroundColor: 'rgba(243, 156, 18, 0.15)',
+                            fill: false,
+                            tension: 0.35
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Velocity (story points)'
+                            }
+                        },
+                        schedule: {
+                            position: 'right',
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Schedule variance (days)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return `${value} d`;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+        }
+
+        // Create business value chart for PO
+        function createBusinessValueChart() {
+            const epics = dashboardData.epics || [];
+            const labels = epics.map(epic => epic.epic_id);
+            const roiData = epics.map(epic => safeNumber(epic.metrics?.business_value?.roi_percentage));
+            const adoptionData = epics.map(epic => safeNumber(epic.metrics?.adoption?.user_adoption_rate));
+
+            return {
+                title: 'Product Value & Adoption',
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'ROI (%)',
+                            data: roiData,
+                            backgroundColor: 'rgba(41, 128, 185, 0.6)',
+                            borderColor: '#2980b9',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Adoption (%)',
+                            data: adoptionData,
+                            type: 'line',
+                            yAxisID: 'adoption',
+                            borderColor: '#27ae60',
+                            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                            fill: false,
+                            tension: 0.35
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 120,
+                            title: {
+                                display: true,
+                                text: 'ROI %'
+                            }
+                        },
+                        adoption: {
+                            position: 'right',
+                            beginAtZero: true,
+                            suggestedMax: 100,
+                            title: {
+                                display: true,
+                                text: 'Adoption %'
+                            }
+                        }
+                    }
+                }
+            };
+        }
+
+        // Create quality chart for QA
+        function createQualityChart() {
+            const epics = dashboardData.epics || [];
+            const labels = epics.map(epic => epic.epic_id);
+            const coverageData = epics.map(epic => safeNumber(epic.metrics?.testing?.test_coverage));
+            const defectData = epics.map(epic => safeNumber(epic.metrics?.defects?.defect_density));
+            const debtData = epics.map(epic => safeNumber(epic.metrics?.technical_debt?.debt_hours));
+
+            return {
+                title: 'Quality Coverage & Debt',
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Coverage (%)',
+                            data: coverageData,
+                            backgroundColor: 'rgba(39, 174, 96, 0.6)',
+                            borderColor: '#27ae60',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Defect Density',
+                            data: defectData,
+                            type: 'line',
+                            yAxisID: 'defects',
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.15)',
+                            fill: false,
+                            tension: 0.35
+                        },
+                        {
+                            label: 'Technical Debt (h)',
+                            data: debtData,
+                            type: 'line',
+                            yAxisID: 'debt',
+                            borderColor: '#8e44ad',
+                            backgroundColor: 'rgba(142, 68, 173, 0.15)',
+                            fill: false,
+                            tension: 0.35
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 100,
+                            title: {
+                                display: true,
+                                text: 'Coverage %'
+                            }
+                        },
+                        defects: {
+                            position: 'right',
+                            beginAtZero: true,
+                            suggestedMax: 1,
+                            title: {
+                                display: true,
+                                text: 'Defects per story point'
+                            }
+                        },
+                        debt: {
+                            position: 'right',
+                            beginAtZero: true,
+                            suggestedMax: 120,
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Technical debt (hours)'
+                            }
+                        }
+                    }
+                }
+            };
+        }
+
+        // Utility functions
+        function showLoading() {
+            document.getElementById('epics-container').innerHTML =
+                '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading dashboard data...</div>';
+        }
+
+        function showError(message) {
+            document.getElementById('epics-container').innerHTML =
+                `<div class="error"><i class="fas fa-exclamation-triangle"></i> ${message}</div>`;
+        }
+
+        // Prevent rapid refresh clicks
+        let isRefreshing = false;
+
+        function refreshDashboard() {
+            if (isRefreshing) {
+                console.log('Refresh already in progress, ignoring...');
+                return;
+            }
+
+            isRefreshing = true;
+            loadDashboardData().finally(() => {
+                isRefreshing = false;
+            });
+        }
+
+        // Add event listeners for filters
+        document.getElementById('epic-filter').addEventListener('change', loadDashboardData);
+        document.getElementById('status-filter').addEventListener('change', loadDashboardData);
+        document.getElementById('component-filter').addEventListener('change', loadDashboardData);
+    </script>
+</body>
+</html>

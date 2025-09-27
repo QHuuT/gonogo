@@ -362,8 +362,8 @@ class TestRTMPerformance:
 
         # Add 1000 rows
         for i in range(1000):
-            epic_id = f"EP-{i+1:05d}"
-            us_id = f"US-{i+1:05d}"
+            epic_id = f"EP-{i + 1:05d}"
+            us_id = f"US-{i + 1:05d}"
             large_content += f"| [**{epic_id}**](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+{epic_id}) | [{us_id}](https://github.com/QHuuT/gonogo/issues?q=is%3Aissue+{us_id}) | ✅ |\n"
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:

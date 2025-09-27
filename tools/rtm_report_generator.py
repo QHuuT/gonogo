@@ -10,9 +10,7 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
 import argparse
-import asyncio
 import json
-import os
 import sys
 from pathlib import Path
 from typing import Any, Dict
@@ -70,7 +68,7 @@ class DynamicRTMDemo:
             test_count = self.db_session.query(Test).count()
             defect_count = self.db_session.query(Defect).count()
 
-            print(f"Database: [OK] Connected")
+            print("Database: [OK] Connected")
             print(f"Total Epics: {epic_count}")
             print(f"Total User Stories: {us_count}")
             print(f"Total Tests: {test_count}")
@@ -82,8 +80,7 @@ class DynamicRTMDemo:
                 epics = self.db_session.query(Epic).all()
                 status_counts = {}
                 for epic in epics:
-                    status_counts[epic.status] = \
-                        status_counts.get(epic.status, 0) + 1
+                    status_counts[epic.status] = status_counts.get(epic.status, 0) + 1
 
                 for status, count in status_counts.items():
                     print(f"  {status}: {count}")
@@ -200,12 +197,9 @@ class DynamicRTMDemo:
                 )
                 print(f"User Stories: {first_epic['metrics']['user_stories_count']}")
                 print(f"Tests: {first_epic['metrics']['tests_count']}")
-                print(
-                    f"Test Pass Rate:"
-                    f"{first_epic['metrics']['test_pass_rate']:.1f}%"
-                )
+                print(f"Test Pass Rate:{first_epic['metrics']['test_pass_rate']:.1f}%")
 
-            print(f"\nOverall Summary:")
+            print("\nOverall Summary:")
             print(
                 f"Overall completion: {progress_report['summary']['overall_completion']:.1f}%"
             )

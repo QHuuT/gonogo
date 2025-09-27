@@ -12,9 +12,7 @@ Usage:
 """
 
 import argparse
-import json
 import sqlite3
-import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -37,8 +35,7 @@ def get_tables(db_path: Path) -> List[str]:
     """Get list of tables in the database."""
     try:
         with sqlite3.connect(db_path) as conn:
-            cursor = \
-                conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
             return [row[0] for row in cursor.fetchall()]
     except sqlite3.Error as e:
         print(f"Error accessing database {db_path}: {e}")

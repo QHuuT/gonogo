@@ -121,7 +121,9 @@ class StructuredLogger:
 
         # Create logger
         self._file_logger = logging.getLogger(f"gonogo_structured_{self._session_id}")
-        self._file_logger.setLevel(getattr(logging, self.config.log_level.value.upper()))
+        self._file_logger.setLevel(
+            getattr(logging, self.config.log_level.value.upper())
+        )
         self._file_logger.addHandler(self._file_handler)
         self._file_logger.propagate = False
 
@@ -173,7 +175,11 @@ class StructuredLogger:
             duration_ms=entry.duration_ms,
             environment=entry.environment,
             session_id=entry.session_id,
-            metadata=(self.sanitizer.sanitize_log_entry(entry.metadata or {}) if entry.metadata else None),
+            metadata=(
+                self.sanitizer.sanitize_log_entry(entry.metadata or {})
+                if entry.metadata
+                else None
+            ),
             stack_trace=entry.stack_trace,
             tags=entry.tags,
         )
@@ -222,7 +228,9 @@ class StructuredLogger:
             **kwargs,
         )
 
-    def test_passed(self, test_id: str, test_name: str, duration_ms: float, **kwargs) -> LogEntry:
+    def test_passed(
+        self, test_id: str, test_name: str, duration_ms: float, **kwargs
+    ) -> LogEntry:
         """Log test pass."""
         return self.info(
             f"Test passed: {test_name}",
@@ -255,7 +263,9 @@ class StructuredLogger:
             **kwargs,
         )
 
-    def test_skipped(self, test_id: str, test_name: str, reason: str, **kwargs) -> LogEntry:
+    def test_skipped(
+        self, test_id: str, test_name: str, reason: str, **kwargs
+    ) -> LogEntry:
         """Log test skip."""
         return self.warning(
             f"Test skipped: {test_name} - {reason}",
@@ -271,7 +281,11 @@ class StructuredLogger:
     def get_recent_logs(self, count: int = 100) -> List[LogEntry]:
         """Get recent log entries from buffer."""
         with self._lock:
-            return self._log_buffer[-count:] if count < len(self._log_buffer) else self._log_buffer.copy()
+            return (
+                self._log_buffer[-count:]
+                if count < len(self._log_buffer)
+                else self._log_buffer.copy()
+            )
 
     def get_logs_for_test(self, test_id: str) -> List[LogEntry]:
         """Get all log entries for a specific test."""
@@ -281,7 +295,9 @@ class StructuredLogger:
     def get_failed_test_logs(self) -> List[LogEntry]:
         """Get log entries for failed tests."""
         with self._lock:
-            return [entry for entry in self._log_buffer if entry.test_status == "failed"]
+            return [
+                entry for entry in self._log_buffer if entry.test_status == "failed"
+            ]
 
     def clear_buffer(self) -> None:
         """Clear the in-memory log buffer."""

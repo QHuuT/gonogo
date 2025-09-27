@@ -106,7 +106,10 @@ class StandardMarkdownParser(BaseRTMParser):
 
     def can_parse(self, content: str) -> bool:
         """Check for standard RTM markers."""
-        return "Requirements Traceability Matrix" in content and "| Epic | User Story |" in content
+        return (
+            "Requirements Traceability Matrix" in content
+            and "| Epic | User Story |" in content
+        )
 
     def parse_requirements(self, content: str) -> List[Dict]:
         """Parse requirements from markdown table."""

@@ -11,7 +11,6 @@ import ast
 import glob
 import re
 from pathlib import Path
-from typing import List, Tuple
 
 import pytest
 
@@ -26,7 +25,7 @@ class TestSyntaxValidation:
 
         for file_path in python_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
                 ast.parse(content, filename=file_path)
             except SyntaxError as e:
@@ -36,8 +35,8 @@ class TestSyntaxValidation:
 
         if syntax_errors:
             pytest.fail(
-                f"Syntax errors found in {len(syntax_errors)} files:\n" +
-                "\n".join(syntax_errors)
+                f"Syntax errors found in {len(syntax_errors)} files:\n"
+                + "\n".join(syntax_errors)
             )
 
     def test_sqlalchemy_table_args_patterns(self):
@@ -46,7 +45,7 @@ class TestSyntaxValidation:
         issues = []
 
         for file_path in model_files:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 lines = content.splitlines()
 
@@ -57,12 +56,12 @@ class TestSyntaxValidation:
                 for i, line in enumerate(lines, 1):
                     if "__table_args__" in line and "=" in line:
                         in_table_args = True
-                        paren_count = line.count('(') - line.count(')')
+                        paren_count = line.count("(") - line.count(")")
                     elif in_table_args:
-                        paren_count += line.count('(') - line.count(')')
+                        paren_count += line.count("(") - line.count(")")
 
                         # Check for suspicious patterns that caused our bug
-                        if re.search(r'^\s*\),\s*\),\s*$', line):
+                        if re.search(r"^\s*\),\s*\),\s*$", line):
                             issues.append(
                                 f"{file_path}:{i}: Potential extra closing parenthesis in __table_args__"
                             )
@@ -71,7 +70,7 @@ class TestSyntaxValidation:
                             in_table_args = False
 
         if issues:
-            pytest.fail(f"SQLAlchemy table args issues:\n" + "\n".join(issues))
+            pytest.fail("SQLAlchemy table args issues:\n" + "\n".join(issues))
 
     def test_f_string_literal_newlines(self):
         """Detect literal newlines in f-strings that cause syntax errors."""
@@ -79,27 +78,31 @@ class TestSyntaxValidation:
         issues = []
 
         for file_path in python_files:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 lines = content.splitlines()
 
                 for i, line in enumerate(lines, 1):
                     # Look for f-strings with literal \n
-                    if re.search(r'f"[^"]*\\n\s*"', line) or re.search(r"f'[^']*\\n\s*'", line):
+                    if re.search(r'f"[^"]*\\n\s*"', line) or re.search(
+                        r"f'[^']*\\n\s*'", line
+                    ):
                         issues.append(
                             f"{file_path}:{i}: Potential literal newline in f-string"
                         )
 
         if issues:
-            pytest.fail(f"F-string literal newline issues:\n" + "\n".join(issues))
+            pytest.fail("F-string literal newline issues:\n" + "\n".join(issues))
 
     def test_regex_patterns_use_raw_strings(self):
         """Ensure regex patterns with escape sequences use raw strings."""
-        python_files = glob.glob("src/**/*.py", recursive=True) + glob.glob("tests/**/*.py", recursive=True)
+        python_files = glob.glob("src/**/*.py", recursive=True) + glob.glob(
+            "tests/**/*.py", recursive=True
+        )
         issues = []
 
         for file_path in python_files:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 lines = content.splitlines()
 
@@ -112,7 +115,7 @@ class TestSyntaxValidation:
                             )
 
         if issues:
-            pytest.fail(f"Regex pattern raw string issues:\n" + "\n".join(issues))
+            pytest.fail("Regex pattern raw string issues:\n" + "\n".join(issues))
 
     def test_common_syntax_error_patterns(self):
         """Test for common patterns that cause syntax errors during refactoring."""
@@ -120,14 +123,14 @@ class TestSyntaxValidation:
         issues = []
 
         for file_path in python_files:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 lines = content.splitlines()
 
                 for i, line in enumerate(lines, 1):
                     # Check for common problematic patterns
                     checks = [
-                        (r'^\s*\),\s*\),\s*$', "Double closing parentheses"),
+                        (r"^\s*\),\s*\),\s*$", "Double closing parentheses"),
                         (r'f"[^"]*"\s*\\\s*$', "F-string with trailing backslash"),
                         (r'"""[^"]*\\n[^"]*"""', "Triple quote with literal newline"),
                     ]
@@ -137,7 +140,7 @@ class TestSyntaxValidation:
                             issues.append(f"{file_path}:{i}: {description}")
 
         if issues:
-            pytest.fail(f"Common syntax error patterns found:\n" + "\n".join(issues))
+            pytest.fail("Common syntax error patterns found:\n" + "\n".join(issues))
 
 
 class TestSpecificVulnerableFiles:
@@ -154,7 +157,7 @@ class TestSpecificVulnerableFiles:
 
         for file_path in model_files:
             if Path(file_path).exists():
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
                 try:
                     ast.parse(content, filename=file_path)
@@ -166,7 +169,7 @@ class TestSpecificVulnerableFiles:
         plugin_files = glob.glob("src/shared/utils/rtm_plugins/**/*.py", recursive=True)
 
         for file_path in plugin_files:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
             try:
                 ast.parse(content, filename=file_path)
@@ -178,7 +181,7 @@ class TestSpecificVulnerableFiles:
         test_files = glob.glob("tests/integration/**/*.py", recursive=True)
 
         for file_path in test_files:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
             try:
                 ast.parse(content, filename=file_path)

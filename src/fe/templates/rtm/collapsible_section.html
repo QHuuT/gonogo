@@ -1,0 +1,13 @@
+<!-- {{ section_type | title }} Collapsible Section -->
+<section class="collapsible" aria-label="{{ aria_label }}">
+    <input type="checkbox" class="collapsible__toggle" id="toggle-{{ section_id }}-{{ epic_id }}">
+    <label for="toggle-{{ section_id }}-{{ epic_id }}" class="collapsible__header">
+        <h3 class="collapsible__title">{{ title }} ({{ count }})</h3>
+        <span class="collapsible__icon">▼</span>
+    </label>
+    <div class="collapsible__content" id="{{ section_id }}-{{ epic_id }}">
+        <div class="collapsible__body">
+            {{ content | safe }}
+        </div>
+    </div>
+</section>

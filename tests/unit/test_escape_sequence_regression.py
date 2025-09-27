@@ -6,7 +6,6 @@ we don't introduce escaped quotes that cause syntax errors.
 """
 
 import ast
-import tempfile
 import pytest
 
 
@@ -37,12 +36,12 @@ def test_method(self):
 
     # Incorrect fix that causes syntax error (what we had)
     # This reproduces the exact pattern that caused the issue
-    incorrect_fix = '''
+    incorrect_fix = """
 def test_method(self):
     \\\"\\\"\\\"This is a very long docstring that exceeds 79 characters and needs
     to be fixed for E501 compliance.\\\"\\\"\\\"
     pass
-'''
+"""
 
     # Test that original code parses
     ast.parse(original_code)
@@ -51,7 +50,9 @@ def test_method(self):
     ast.parse(correct_fix)
 
     # Test that incorrect fix fails to parse
-    with pytest.raises(SyntaxError, match="unexpected character after line continuation"):
+    with pytest.raises(
+        SyntaxError, match="unexpected character after line continuation"
+    ):
         ast.parse(incorrect_fix)
 
 

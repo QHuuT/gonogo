@@ -213,7 +213,7 @@ class TestRTMBrowserClicks:
         js_warnings = [log for log in browser_logs if log["level"] == "WARNING"]
 
         if js_errors:
-            print(f"CRITICAL JavaScript errors found:")
+            print("CRITICAL JavaScript errors found:")
             for error in js_errors:
                 print(f"  - {error['message']}")
             pytest.fail(
@@ -221,7 +221,7 @@ class TestRTMBrowserClicks:
             )
 
         if js_warnings:
-            print(f"JavaScript warnings found:")
+            print("JavaScript warnings found:")
             for warning in js_warnings:
                 print(f"  - {warning['message']}")
 

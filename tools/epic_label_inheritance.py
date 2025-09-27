@@ -16,11 +16,10 @@ import logging
 import re
 import subprocess
 import sys
-from datetime import datetime
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Tuple
 
 # Add src to path for imports
-sys.path.append('src')
+sys.path.append("src")
 
 from be.database import SessionLocal
 from be.models.traceability.defect import Defect
@@ -30,8 +29,7 @@ from be.models.traceability.user_story import UserStory
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -48,14 +46,14 @@ def get_github_issue_labels(issue_number: int) -> List[str]:
     """
     try:
         result = subprocess.run(
-            ['gh', 'issue', 'view', str(issue_number), '--json', 'labels'],
+            ["gh", "issue", "view", str(issue_number), "--json", "labels"],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
 
         issue_data = json.loads(result.stdout)
-        labels = [label['name'] for label in issue_data.get('labels', [])]
+        labels = [label["name"] for label in issue_data.get("labels", [])]
         return labels
 
     except subprocess.CalledProcessError as e:
@@ -84,13 +82,13 @@ def add_github_issue_labels(issue_number: int, labels_to_add: List[str]) -> bool
         # Convert labels to --add-label arguments
         label_args = []
         for label in labels_to_add:
-            label_args.extend(['--add-label', label])
+            label_args.extend(["--add-label", label])
 
         result = subprocess.run(
-            ['gh', 'issue', 'edit', str(issue_number)] + label_args,
+            ["gh", "issue", "edit", str(issue_number)] + label_args,
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
 
         logger.info(f"✅ Added labels to issue #{issue_number}: {labels_to_add}")
@@ -104,7 +102,9 @@ def add_github_issue_labels(issue_number: int, labels_to_add: List[str]) -> bool
         return False
 
 
-def inherit_epic_labels_for_user_stories(session, dry_run: bool = True) -> Dict[str, int]:
+def inherit_epic_labels_for_user_stories(
+    session, dry_run: bool = True
+) -> Dict[str, int]:
     """
     Apply epic label inheritance for user stories.
 
@@ -118,15 +118,15 @@ def inherit_epic_labels_for_user_stories(session, dry_run: bool = True) -> Dict[
     logger.info("Processing epic label inheritance for user stories")
 
     stats = {
-        'total_user_stories': 0,
-        'user_stories_processed': 0,
-        'labels_added': 0,
-        'github_updates': 0,
-        'errors': 0
+        "total_user_stories": 0,
+        "user_stories_processed": 0,
+        "labels_added": 0,
+        "github_updates": 0,
+        "errors": 0,
     }
 
     user_stories = session.query(UserStory).join(Epic).all()
-    stats['total_user_stories'] = len(user_stories)
+    stats["total_user_stories"] = len(user_stories)
 
     for user_story in user_stories:
         try:
@@ -144,8 +144,9 @@ def inherit_epic_labels_for_user_stories(session, dry_run: bool = True) -> Dict[
                 component_label = f"component/{user_story.component}"
             else:
                 # Use first component from epic's comma-separated components
-                epic_components = \
-                    [c.strip() for c in epic.component.split(',') if c.strip()]
+                epic_components = [
+                    c.strip() for c in epic.component.split(",") if c.strip()
+                ]
                 if epic_components:
                     component_label = f"component/{epic_components[0]}"
                 else:
@@ -155,28 +156,33 @@ def inherit_epic_labels_for_user_stories(session, dry_run: bool = True) -> Dict[
 
             # Get current GitHub labels
             if user_story.github_issue_number:
-                current_labels = \
-                    get_github_issue_labels(user_story.github_issue_number)
+                current_labels = get_github_issue_labels(user_story.github_issue_number)
 
                 # Find missing labels
-                missing_labels = [label for label in expected_labels if label not in current_labels]
+                missing_labels = [
+                    label for label in expected_labels if label not in current_labels
+                ]
 
                 if missing_labels:
-                    stats['user_stories_processed'] += 1
-                    stats['labels_added'] += len(missing_labels)
+                    stats["user_stories_processed"] += 1
+                    stats["labels_added"] += len(missing_labels)
 
-                    logger.info(f"US {user_story.user_story_id} (#{user_story.github_issue_number}): "
-                               f"Adding labels {missing_labels}")
+                    logger.info(
+                        f"US {user_story.user_story_id} (#{user_story.github_issue_number}): "
+                        f"Adding labels {missing_labels}"
+                    )
 
                     if not dry_run:
-                        if add_github_issue_labels(user_story.github_issue_number, missing_labels):
-                            stats['github_updates'] += 1
+                        if add_github_issue_labels(
+                            user_story.github_issue_number, missing_labels
+                        ):
+                            stats["github_updates"] += 1
                         else:
-                            stats['errors'] += 1
+                            stats["errors"] += 1
 
         except Exception as e:
             logger.error(f"Error processing user story {user_story.user_story_id}: {e}")
-            stats['errors'] += 1
+            stats["errors"] += 1
 
     return stats
 
@@ -195,15 +201,15 @@ def inherit_epic_labels_for_defects(session, dry_run: bool = True) -> Dict[str, 
     logger.info("Processing epic label inheritance for defects")
 
     stats = {
-        'total_defects': 0,
-        'defects_processed': 0,
-        'labels_added': 0,
-        'github_updates': 0,
-        'errors': 0
+        "total_defects": 0,
+        "defects_processed": 0,
+        "labels_added": 0,
+        "github_updates": 0,
+        "errors": 0,
     }
 
     defects = session.query(Defect).all()
-    stats['total_defects'] = len(defects)
+    stats["total_defects"] = len(defects)
 
     for defect in defects:
         try:
@@ -212,9 +218,13 @@ def inherit_epic_labels_for_defects(session, dry_run: bool = True) -> Dict[str, 
 
             # Try to find epic through user story relationship
             if defect.github_user_story_number:
-                parent_us = session.query(UserStory).filter(
-                    UserStory.github_issue_number == defect.github_user_story_number
-                ).first()
+                parent_us = (
+                    session.query(UserStory)
+                    .filter(
+                        UserStory.github_issue_number == defect.github_user_story_number
+                    )
+                    .first()
+                )
                 if parent_us and parent_us.epic:
                     epic = parent_us.epic
                     inheritance_source = f"via US-{parent_us.user_story_id}"
@@ -236,8 +246,9 @@ def inherit_epic_labels_for_defects(session, dry_run: bool = True) -> Dict[str, 
                 component_label = f"component/{defect.component}"
             else:
                 # Use first component from epic's comma-separated components
-                epic_components = \
-                    [c.strip() for c in epic.component.split(',') if c.strip()]
+                epic_components = [
+                    c.strip() for c in epic.component.split(",") if c.strip()
+                ]
                 if epic_components:
                     component_label = f"component/{epic_components[0]}"
                 else:
@@ -250,29 +261,37 @@ def inherit_epic_labels_for_defects(session, dry_run: bool = True) -> Dict[str, 
                 current_labels = get_github_issue_labels(defect.github_issue_number)
 
                 # Find missing labels
-                missing_labels = [label for label in expected_labels if label not in current_labels]
+                missing_labels = [
+                    label for label in expected_labels if label not in current_labels
+                ]
 
                 if missing_labels:
-                    stats['defects_processed'] += 1
-                    stats['labels_added'] += len(missing_labels)
+                    stats["defects_processed"] += 1
+                    stats["labels_added"] += len(missing_labels)
 
-                    logger.info(f"DEF {defect.defect_id} (#{defect.github_issue_number}): "
-                               f"Adding labels {missing_labels} ({inheritance_source})")
+                    logger.info(
+                        f"DEF {defect.defect_id} (#{defect.github_issue_number}): "
+                        f"Adding labels {missing_labels} ({inheritance_source})"
+                    )
 
                     if not dry_run:
-                        if add_github_issue_labels(defect.github_issue_number, missing_labels):
-                            stats['github_updates'] += 1
+                        if add_github_issue_labels(
+                            defect.github_issue_number, missing_labels
+                        ):
+                            stats["github_updates"] += 1
                         else:
-                            stats['errors'] += 1
+                            stats["errors"] += 1
 
         except Exception as e:
             logger.error(f"Error processing defect {defect.defect_id}: {e}")
-            stats['errors'] += 1
+            stats["errors"] += 1
 
     return stats
 
 
-def find_test_epic_relationship(test: Test, session) -> Tuple[Optional[Epic], Optional[str]]:
+def find_test_epic_relationship(
+    test: Test, session
+) -> Tuple[Optional[Epic], Optional[str]]:
     """
     Find epic relationship for a test through various inheritance paths.
 
@@ -289,25 +308,37 @@ def find_test_epic_relationship(test: Test, session) -> Tuple[Optional[Epic], Op
 
     # Through user story relationship
     if test.github_user_story_number:
-        parent_us = session.query(UserStory).filter(
-            UserStory.github_issue_number == test.github_user_story_number
-        ).first()
+        parent_us = (
+            session.query(UserStory)
+            .filter(UserStory.github_issue_number == test.github_user_story_number)
+            .first()
+        )
         if parent_us and parent_us.epic:
             return parent_us.epic, f"via US-{parent_us.user_story_id}"
 
     # Through defect relationship (if test is for a defect)
-    if hasattr(test, 'github_defect_number') and test.github_defect_number:
-        parent_defect = session.query(Defect).filter(
-            Defect.github_issue_number == test.github_defect_number
-        ).first()
+    if hasattr(test, "github_defect_number") and test.github_defect_number:
+        parent_defect = (
+            session.query(Defect)
+            .filter(Defect.github_issue_number == test.github_defect_number)
+            .first()
+        )
         if parent_defect:
             # Try defect -> user story -> epic
             if parent_defect.github_user_story_number:
-                grandparent_us = session.query(UserStory).filter(
-                    UserStory.github_issue_number == parent_defect.github_user_story_number
-                ).first()
+                grandparent_us = (
+                    session.query(UserStory)
+                    .filter(
+                        UserStory.github_issue_number
+                        == parent_defect.github_user_story_number
+                    )
+                    .first()
+                )
                 if grandparent_us and grandparent_us.epic:
-                    return grandparent_us.epic, f"via DEF-{parent_defect.defect_id} -> US-{grandparent_us.user_story_id}"
+                    return (
+                        grandparent_us.epic,
+                        f"via DEF-{parent_defect.defect_id} -> US-{grandparent_us.user_story_id}",
+                    )
 
             # Direct defect -> epic
             if parent_defect.epic:
@@ -316,20 +347,20 @@ def find_test_epic_relationship(test: Test, session) -> Tuple[Optional[Epic], Op
     # File-based epic inference (parse test file path/name for epic markers)
     if test.test_file:
         epic_patterns = [
-            (r'ep[-_]?00*1\b', 'EP-00001'),
-            (r'ep[-_]?00*2\b', 'EP-00002'),
-            (r'ep[-_]?00*3\b', 'EP-00003'),
-            (r'ep[-_]?00*4\b', 'EP-00004'),
-            (r'ep[-_]?00*5\b', 'EP-00005'),
-            (r'ep[-_]?00*6\b', 'EP-00006'),
-            (r'ep[-_]?00*7\b', 'EP-00007'),
-            (r'blog|content', 'EP-00001'),
-            (r'comment|gdpr', 'EP-00002'),
-            (r'privacy|consent', 'EP-00003'),
-            (r'github.*workflow', 'EP-00004'),
-            (r'rtm|traceability', 'EP-00005'),
-            (r'github.*project', 'EP-00006'),
-            (r'test.*report|logging', 'EP-00007'),
+            (r"ep[-_]?00*1\b", "EP-00001"),
+            (r"ep[-_]?00*2\b", "EP-00002"),
+            (r"ep[-_]?00*3\b", "EP-00003"),
+            (r"ep[-_]?00*4\b", "EP-00004"),
+            (r"ep[-_]?00*5\b", "EP-00005"),
+            (r"ep[-_]?00*6\b", "EP-00006"),
+            (r"ep[-_]?00*7\b", "EP-00007"),
+            (r"blog|content", "EP-00001"),
+            (r"comment|gdpr", "EP-00002"),
+            (r"privacy|consent", "EP-00003"),
+            (r"github.*workflow", "EP-00004"),
+            (r"rtm|traceability", "EP-00005"),
+            (r"github.*project", "EP-00006"),
+            (r"test.*report|logging", "EP-00007"),
         ]
 
         test_path_lower = test.test_file.lower()
@@ -356,49 +387,51 @@ def inherit_epic_labels_for_tests(session, dry_run: bool = True) -> Dict[str, in
     logger.info("Processing epic label inheritance for all test types")
 
     stats = {
-        'total_tests': 0,
-        'tests_processed': 0,
-        'tests_with_epics': 0,
-        'tests_without_epics': 0,
-        'inheritance_sources': {},
-        'epic_distribution': {},
-        'errors': 0
+        "total_tests": 0,
+        "tests_processed": 0,
+        "tests_with_epics": 0,
+        "tests_without_epics": 0,
+        "inheritance_sources": {},
+        "epic_distribution": {},
+        "errors": 0,
     }
 
     tests = session.query(Test).all()
-    stats['total_tests'] = len(tests)
+    stats["total_tests"] = len(tests)
 
     for test in tests:
         try:
             epic, inheritance_source = find_test_epic_relationship(test, session)
 
             if epic:
-                stats['tests_with_epics'] += 1
+                stats["tests_with_epics"] += 1
 
                 # Track inheritance sources
-                if inheritance_source not in stats['inheritance_sources']:
-                    stats['inheritance_sources'][inheritance_source] = 0
-                stats['inheritance_sources'][inheritance_source] += 1
+                if inheritance_source not in stats["inheritance_sources"]:
+                    stats["inheritance_sources"][inheritance_source] = 0
+                stats["inheritance_sources"][inheritance_source] += 1
 
                 # Track epic distribution
-                if epic.epic_id not in stats['epic_distribution']:
-                    stats['epic_distribution'][epic.epic_id] = 0
-                stats['epic_distribution'][epic.epic_id] += 1
+                if epic.epic_id not in stats["epic_distribution"]:
+                    stats["epic_distribution"][epic.epic_id] = 0
+                stats["epic_distribution"][epic.epic_id] += 1
 
                 # Update test epic relationship in database
                 if test.epic_id != epic.id:
-                    logger.info(f"Test {test.test_file}: Linking to {epic.epic_id} ({inheritance_source})")
+                    logger.info(
+                        f"Test {test.test_file}: Linking to {epic.epic_id} ({inheritance_source})"
+                    )
                     if not dry_run:
                         test.epic_id = epic.id
-                        stats['tests_processed'] += 1
+                        stats["tests_processed"] += 1
 
             else:
-                stats['tests_without_epics'] += 1
+                stats["tests_without_epics"] += 1
                 logger.debug(f"Test {test.test_file}: No epic relationship found")
 
         except Exception as e:
             logger.error(f"Error processing test {test.test_file}: {e}")
-            stats['errors'] += 1
+            stats["errors"] += 1
 
     return stats
 
@@ -416,46 +449,47 @@ def run_comprehensive_epic_inheritance(dry_run: bool = True) -> Dict[str, any]:
     logger.info(f"Starting comprehensive epic label inheritance (dry_run={dry_run})")
 
     results = {
-        'dry_run': dry_run,
-        'user_story_stats': {},
-        'defect_stats': {},
-        'test_stats': {},
-        'summary': {},
-        'success': False
+        "dry_run": dry_run,
+        "user_story_stats": {},
+        "defect_stats": {},
+        "test_stats": {},
+        "summary": {},
+        "success": False,
     }
 
     session = SessionLocal()
     try:
         # Process user stories
-        results['user_story_stats'] = \
-            inherit_epic_labels_for_user_stories(session, dry_run)
+        results["user_story_stats"] = inherit_epic_labels_for_user_stories(
+            session, dry_run
+        )
 
         # Process defects
-        results['defect_stats'] = inherit_epic_labels_for_defects(session, dry_run)
+        results["defect_stats"] = inherit_epic_labels_for_defects(session, dry_run)
 
         # Process all test types
-        results['test_stats'] = inherit_epic_labels_for_tests(session, dry_run)
+        results["test_stats"] = inherit_epic_labels_for_tests(session, dry_run)
 
         # Generate summary
-        results['summary'] = {
-            'total_entities_processed': (
-                results['user_story_stats']['user_stories_processed'] +
-                results['defect_stats']['defects_processed'] +
-                results['test_stats']['tests_processed']
+        results["summary"] = {
+            "total_entities_processed": (
+                results["user_story_stats"]["user_stories_processed"]
+                + results["defect_stats"]["defects_processed"]
+                + results["test_stats"]["tests_processed"]
             ),
-            'total_labels_added': (
-                results['user_story_stats']['labels_added'] +
-                results['defect_stats']['labels_added']
+            "total_labels_added": (
+                results["user_story_stats"]["labels_added"]
+                + results["defect_stats"]["labels_added"]
             ),
-            'total_github_updates': (
-                results['user_story_stats']['github_updates'] +
-                results['defect_stats']['github_updates']
+            "total_github_updates": (
+                results["user_story_stats"]["github_updates"]
+                + results["defect_stats"]["github_updates"]
             ),
-            'total_errors': (
-                results['user_story_stats']['errors'] +
-                results['defect_stats']['errors'] +
-                results['test_stats']['errors']
-            )
+            "total_errors": (
+                results["user_story_stats"]["errors"]
+                + results["defect_stats"]["errors"]
+                + results["test_stats"]["errors"]
+            ),
         }
 
         if not dry_run:
@@ -465,12 +499,12 @@ def run_comprehensive_epic_inheritance(dry_run: bool = True) -> Dict[str, any]:
             session.rollback()
             logger.info("🔍 DRY RUN - No changes committed")
 
-        results['success'] = True
+        results["success"] = True
 
     except Exception as e:
         logger.error(f"❌ Error during epic label inheritance: {e}")
         session.rollback()
-        results['error'] = str(e)
+        results["error"] = str(e)
     finally:
         session.close()
 
@@ -481,14 +515,27 @@ def main():
     """Main entry point for the epic label inheritance script."""
     import argparse
 
-    parser = \
-        argparse.ArgumentParser(description='Apply epic label inheritance to all entity types')
-    parser.add_argument('--dry-run', action='store_true', default=True,
-                       help='Only analyze and log what would be changed (default: True)')
-    parser.add_argument('--execute', action='store_true', default=False,
-                       help='Actually apply the inheritance (overrides --dry-run)')
-    parser.add_argument('--entity-type', choices=['user-stories', 'defects', 'tests', 'all'], default='all',
-                       help='Which entity types to process (default: all)')
+    parser = argparse.ArgumentParser(
+        description="Apply epic label inheritance to all entity types"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=True,
+        help="Only analyze and log what would be changed (default: True)",
+    )
+    parser.add_argument(
+        "--execute",
+        action="store_true",
+        default=False,
+        help="Actually apply the inheritance (overrides --dry-run)",
+    )
+    parser.add_argument(
+        "--entity-type",
+        choices=["user-stories", "defects", "tests", "all"],
+        default="all",
+        help="Which entity types to process (default: all)",
+    )
 
     args = parser.parse_args()
 
@@ -500,22 +547,27 @@ def main():
     logger.info(f"Entity Types: {args.entity_type}")
 
     try:
-        if args.entity_type == 'all':
+        if args.entity_type == "all":
             results = run_comprehensive_epic_inheritance(dry_run=dry_run)
         else:
             # Run specific entity type
             session = SessionLocal()
             try:
-                if args.entity_type == 'user-stories':
-                    results = \
-                        {'user_story_stats': inherit_epic_labels_for_user_stories(session, dry_run)}
-                elif args.entity_type == 'defects':
+                if args.entity_type == "user-stories":
                     results = {
-                        'defect_stats': inherit_epic_labels_for_defects(session, dry_run)
+                        "user_story_stats": inherit_epic_labels_for_user_stories(
+                            session, dry_run
+                        )
                     }
-                elif args.entity_type == 'tests':
+                elif args.entity_type == "defects":
                     results = {
-                        'test_stats': inherit_epic_labels_for_tests(session, dry_run)
+                        "defect_stats": inherit_epic_labels_for_defects(
+                            session, dry_run
+                        )
+                    }
+                elif args.entity_type == "tests":
+                    results = {
+                        "test_stats": inherit_epic_labels_for_tests(session, dry_run)
                     }
 
                 if not dry_run:
@@ -523,63 +575,57 @@ def main():
                 else:
                     session.rollback()
 
-                results['success'] = True
+                results["success"] = True
             except Exception as e:
                 session.rollback()
-                results = {'error': str(e), 'success': False}
+                results = {"error": str(e), "success": False}
             finally:
                 session.close()
 
         print("\n=== Epic Label Inheritance Results ===")
 
         # User Story Results
-        if 'user_story_stats' in results:
-            us_stats = results['user_story_stats']
-            print(f"\nUser Stories:")
+        if "user_story_stats" in results:
+            us_stats = results["user_story_stats"]
+            print("\nUser Stories:")
             print(f"  Total: {us_stats.get('total_user_stories', 0)}")
             print(f"  Processed: {us_stats.get('user_stories_processed', 0)}")
             print(f"  Labels Added: {us_stats.get('labels_added', 0)}")
             print(f"  GitHub Updates: {us_stats.get('github_updates', 0)}")
 
         # Defect Results
-        if 'defect_stats' in results:
-            defect_stats = results['defect_stats']
-            print(f"\nDefects:")
+        if "defect_stats" in results:
+            defect_stats = results["defect_stats"]
+            print("\nDefects:")
             print(f"  Total: {defect_stats.get('total_defects', 0)}")
             print(f"  Processed: {defect_stats.get('defects_processed', 0)}")
             print(f"  Labels Added: {defect_stats.get('labels_added', 0)}")
             print(f"  GitHub Updates: {defect_stats.get('github_updates', 0)}")
 
         # Test Results
-        if 'test_stats' in results:
-            test_stats = results['test_stats']
-            print(f"\nTests:")
+        if "test_stats" in results:
+            test_stats = results["test_stats"]
+            print("\nTests:")
             print(f"  Total: {test_stats.get('total_tests', 0)}")
             print(f"  With Epic Links: {test_stats.get('tests_with_epics', 0)}")
-            print(
-                f"  Without Epic"
-                f"Links: {test_stats.get('tests_without_epics', 0)}"
-            )
+            print(f"  Without EpicLinks: {test_stats.get('tests_without_epics', 0)}")
             print(f"  Database Updates: {test_stats.get('tests_processed', 0)}")
 
-            if test_stats.get('inheritance_sources'):
-                print(f"  Inheritance Sources:")
-                for source, count in test_stats['inheritance_sources'].items():
+            if test_stats.get("inheritance_sources"):
+                print("  Inheritance Sources:")
+                for source, count in test_stats["inheritance_sources"].items():
                     print(f"    {source}: {count}")
 
         # Summary
-        if 'summary' in results:
-            summary = results['summary']
-            print(f"\nSummary:")
+        if "summary" in results:
+            summary = results["summary"]
+            print("\nSummary:")
             print(
                 f"  Total Entities"
                 f"Processed: {summary.get('total_entities_processed', 0)}"
             )
             print(f"  Total Labels Added: {summary.get('total_labels_added', 0)}")
-            print(
-                f"  Total GitHub"
-                f"Updates: {summary.get('total_github_updates', 0)}"
-            )
+            print(f"  Total GitHubUpdates: {summary.get('total_github_updates', 0)}")
             print(f"  Total Errors: {summary.get('total_errors', 0)}")
 
         print(f"\nOverall Success: {'✅ YES' if results.get('success') else '❌ NO'}")
@@ -595,5 +641,5 @@ def main():
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

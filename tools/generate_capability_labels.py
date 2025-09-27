@@ -53,7 +53,9 @@ def ensure_capability_record(session, capability_id: str) -> Capability:
     return capability
 
 
-def format_summary(epic: Epic, capability: Capability, label: str, add_command: bool, status: str) -> List[str]:
+def format_summary(
+    epic: Epic, capability: Capability, label: str, add_command: bool, status: str
+) -> List[str]:
     """Build display lines for a single epic."""
 
     header = f"{epic.epic_id} -> {capability.capability_id} ({capability.name})"
@@ -63,7 +65,7 @@ def format_summary(epic: Epic, capability: Capability, label: str, add_command: 
         lines.append(f"  GitHub issue: #{epic.github_issue_number}")
         if add_command:
             lines.append(
-                f"  Command: gh issue edit {epic.github_issue_number} --add-label \"{label}\""
+                f'  Command: gh issue edit {epic.github_issue_number} --add-label "{label}"'
             )
     else:
         lines.append("  GitHub issue: <missing number>")
@@ -86,11 +88,7 @@ def main() -> int:
     session = get_db_session()
 
     try:
-        epics = (
-            session.query(Epic)
-            .order_by(Epic.epic_id)
-            .all()
-        )
+        epics = session.query(Epic).order_by(Epic.epic_id).all()
 
         if not epics:
             print("No epics found in the database.")
@@ -110,7 +108,9 @@ def main() -> int:
                 session.flush()
                 db_state = "UPDATED"
 
-            for line in format_summary(epic, capability, label, args.print_gh, db_state):
+            for line in format_summary(
+                epic, capability, label, args.print_gh, db_state
+            ):
                 print(line)
             print()
 
@@ -118,7 +118,9 @@ def main() -> int:
     finally:
         session.close()
 
-    print("Next step: add any missing labels above, then run the sync manager to persist them.")
+    print(
+        "Next step: add any missing labels above, then run the sync manager to persist them."
+    )
     return 0
 
 

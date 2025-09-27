@@ -14,7 +14,6 @@ Usage:
 import json
 import subprocess
 import sys
-import warnings
 from datetime import datetime, UTC
 from pathlib import Path
 from typing import Dict, List, Any
@@ -31,21 +30,32 @@ EXTERNAL_DEPENDENCIES = {
         "package": "sqlalchemy",
         "warning_patterns": [
             "datetime.datetime.utcnow() is deprecated",
-            "datetime.utcnow() is deprecated"
+            "datetime.utcnow() is deprecated",
         ],
-        "test_command": ["python", "-c", "import sqlalchemy; from sqlalchemy import create_engine; engine = \
-            create_engine('sqlite:///:memory:'); print('Test complete')"]
+        "test_command": [
+            "python",
+            "-c",
+            "import sqlalchemy; from sqlalchemy import create_engine; engine = \
+            create_engine('sqlite:///:memory:'); print('Test complete')",
+        ],
     },
     "pytest_asyncio": {
         "package": "pytest-asyncio",
         "warning_patterns": [
             "asyncio_default_fixture_loop_scope",
             "The configuration option",
-            "PytestDeprecationWarning"
+            "PytestDeprecationWarning",
         ],
-        "test_command": ["python", "-m", "pytest", "tests/unit/security/test_gdpr_compliance.py::TestGDPRSecurity::test_ip_address_anonymization_security", "-v"]
-    }
+        "test_command": [
+            "python",
+            "-m",
+            "pytest",
+            "tests/unit/security/test_gdpr_compliance.py::TestGDPRSecurity::test_ip_address_anonymization_security",
+            "-v",
+        ],
+    },
 }
+
 
 class ExternalWarningMonitor:
     """Monitor external dependency warnings and track changes over time."""
@@ -63,25 +73,36 @@ class ExternalWarningMonitor:
     def get_package_version(self, package_name: str) -> str:
         """Get installed version of a package."""
         try:
-            result = subprocess.run([
-                sys.executable, "-c",
-                f"import {package_name}; print({package_name}.__version__)"
-            ], capture_output=True, text=True, timeout=10)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    f"import {package_name}; print({package_name}.__version__)",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
             if result.returncode == 0:
                 return result.stdout.strip()
             else:
                 # Try pip show as fallback
-                result = subprocess.run([
-                    "pip", "show", package_name
-                ], capture_output=True, text=True, timeout=10)
-                for line in result.stdout.split('\n'):
-                    if line.startswith('Version:'):
-                        return line.split(':', 1)[1].strip()
+                result = subprocess.run(
+                    ["pip", "show", package_name],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                for line in result.stdout.split("\n"):
+                    if line.startswith("Version:"):
+                        return line.split(":", 1)[1].strip()
         except Exception as e:
             print(f"Warning: Could not get version for {package_name}: {e}")
         return "unknown"
 
-    def capture_external_warnings(self, dependency: str, config: Dict[str, Any]) -> List[str]:
+    def capture_external_warnings(
+        self, dependency: str, config: Dict[str, Any]
+    ) -> List[str]:
         """Capture warnings from a specific external dependency."""
         warnings_found = []
 
@@ -93,7 +114,7 @@ class ExternalWarningMonitor:
                 capture_output=True,
                 text=True,
                 timeout=30,
-                env={**subprocess.os.environ, **env}
+                env={**subprocess.os.environ, **env},
             )
 
             # Check both stdout and stderr for warnings
@@ -103,7 +124,7 @@ class ExternalWarningMonitor:
             for pattern in config["warning_patterns"]:
                 if pattern.lower() in output.lower():
                     # Extract the warning line
-                    for line in output.split('\n'):
+                    for line in output.split("\n"):
                         if pattern.lower() in line.lower():
                             warnings_found.append(line.strip())
 
@@ -118,10 +139,7 @@ class ExternalWarningMonitor:
         """Create baseline of current external warnings."""
         print("Creating external warning baseline...")
 
-        baseline = {
-            "created_at": datetime.now(UTC).isoformat(),
-            "dependencies": {}
-        }
+        baseline = {"created_at": datetime.now(UTC).isoformat(), "dependencies": {}}
 
         for dep_name, dep_config in EXTERNAL_DEPENDENCIES.items():
             print(f"  Checking {dep_name}...")
@@ -134,14 +152,14 @@ class ExternalWarningMonitor:
                 "version": version,
                 "warning_count": len(warnings_found),
                 "warnings": warnings_found,
-                "patterns_monitored": dep_config["warning_patterns"]
+                "patterns_monitored": dep_config["warning_patterns"],
             }
 
             print(f"    Version: {version}")
             print(f"    Warnings found: {len(warnings_found)}")
 
         # Save baseline
-        with open(self.baseline_file, 'w') as f:
+        with open(self.baseline_file, "w") as f:
             json.dump(baseline, f, indent=2)
 
         print(f"Baseline saved to: {self.baseline_file}")
@@ -156,14 +174,11 @@ class ExternalWarningMonitor:
         print("Checking for external warning changes...")
 
         # Load baseline
-        with open(self.baseline_file, 'r') as f:
+        with open(self.baseline_file, "r") as f:
             baseline = json.load(f)
 
         # Get current state
-        current = {
-            "checked_at": datetime.now(UTC).isoformat(),
-            "dependencies": {}
-        }
+        current = {"checked_at": datetime.now(UTC).isoformat(), "dependencies": {}}
 
         changes_detected = []
 
@@ -178,7 +193,7 @@ class ExternalWarningMonitor:
                 "version": version,
                 "warning_count": len(warnings_found),
                 "warnings": warnings_found,
-                "patterns_monitored": dep_config["warning_patterns"]
+                "patterns_monitored": dep_config["warning_patterns"],
             }
 
             # Compare with baseline
@@ -193,24 +208,28 @@ class ExternalWarningMonitor:
 
                 # Detect changes
                 if version != baseline_version:
-                    changes_detected.append({
-                        "dependency": dep_name,
-                        "type": "version_change",
-                        "old_version": baseline_version,
-                        "new_version": version,
-                        "old_warnings": baseline_count,
-                        "new_warnings": current_count
-                    })
+                    changes_detected.append(
+                        {
+                            "dependency": dep_name,
+                            "type": "version_change",
+                            "old_version": baseline_version,
+                            "new_version": version,
+                            "old_warnings": baseline_count,
+                            "new_warnings": current_count,
+                        }
+                    )
 
                 if current_count != baseline_count:
-                    changes_detected.append({
-                        "dependency": dep_name,
-                        "type": "warning_count_change",
-                        "version": version,
-                        "old_warnings": baseline_count,
-                        "new_warnings": current_count,
-                        "improvement": current_count < baseline_count
-                    })
+                    changes_detected.append(
+                        {
+                            "dependency": dep_name,
+                            "type": "warning_count_change",
+                            "version": version,
+                            "old_warnings": baseline_count,
+                            "new_warnings": current_count,
+                            "improvement": current_count < baseline_count,
+                        }
+                    )
 
         # Create change report
         change_report = {
@@ -218,7 +237,7 @@ class ExternalWarningMonitor:
             "check_date": current["checked_at"],
             "changes_detected": changes_detected,
             "current_state": current,
-            "baseline_state": baseline
+            "baseline_state": baseline,
         }
 
         return change_report
@@ -234,64 +253,72 @@ class ExternalWarningMonitor:
             f"**Baseline Date:** {change_data['baseline_date']}",
             "",
             "## Executive Summary",
-            ""
+            "",
         ]
 
         changes = change_data["changes_detected"]
         if not changes:
-            report.extend([
-                "✅ **No changes detected** - All external dependencies stable",
-                "",
-                "**Current filtering status:** MAINTAIN existing warning filters",
-                "**Action required:** None",
-                ""
-            ])
+            report.extend(
+                [
+                    "✅ **No changes detected** - All external dependencies stable",
+                    "",
+                    "**Current filtering status:** MAINTAIN existing warning filters",
+                    "**Action required:** None",
+                    "",
+                ]
+            )
         else:
             improvements = [c for c in changes if c.get("improvement", False)]
-            regressions = \
-                [c for c in changes if c.get("improvement", False) == False and c["type"] == "warning_count_change"]
+            regressions = [
+                c
+                for c in changes
+                if c.get("improvement", False) == False
+                and c["type"] == "warning_count_change"
+            ]
             version_changes = [c for c in changes if c["type"] == "version_change"]
 
             if improvements:
-                report.extend([
-                    f"🎉 **Warning improvements detected:** {len(improvements)} dependencies have fewer warnings",
-                    "**Action required:** Review and potentially remove warning filters",
-                    ""
-                ])
+                report.extend(
+                    [
+                        f"🎉 **Warning improvements detected:** {len(improvements)} dependencies have fewer warnings",
+                        "**Action required:** Review and potentially remove warning filters",
+                        "",
+                    ]
+                )
 
             if regressions:
-                report.extend([
-                    f"⚠️ **Warning regressions detected:** {len(regressions)} dependencies have more warnings",
-                    "**Action required:** Review new warnings and update filters if needed",
-                    ""
-                ])
+                report.extend(
+                    [
+                        f"⚠️ **Warning regressions detected:** {len(regressions)} dependencies have more warnings",
+                        "**Action required:** Review new warnings and update filters if needed",
+                        "",
+                    ]
+                )
 
             if version_changes:
-                report.extend([
-                    f"📦 **Version changes detected:** {len(version_changes)} dependencies updated",
-                    "**Action required:** Monitor warning changes with new versions",
-                    ""
-                ])
+                report.extend(
+                    [
+                        f"📦 **Version changes detected:** {len(version_changes)} dependencies updated",
+                        "**Action required:** Monitor warning changes with new versions",
+                        "",
+                    ]
+                )
 
         # Detailed changes
         if changes:
-            report.extend([
-                "## Detailed Changes",
-                ""
-            ])
+            report.extend(["## Detailed Changes", ""])
 
             for change in changes:
-                report.extend([
-                    f"### {change['dependency']}",
-                    ""
-                ])
+                report.extend([f"### {change['dependency']}", ""])
 
                 if change["type"] == "version_change":
-                    report.extend([
-                        f"**Version Change:** {change['old_version']} → {change['new_version']}",
-                        f"**Warning Count:** {change['old_warnings']} → {change['new_warnings']}",
-                        ""
-                    ])
+                    report.extend(
+                        [
+                            f"**Version Change:** {change['old_version']} → {change['new_version']}",
+                            f"**Warning Count:** {change['old_warnings']} → {change['new_warnings']}",
+                            "",
+                        ]
+                    )
                 elif change["type"] == "warning_count_change":
                     if change["improvement"]:
                         status = "🎉 IMPROVEMENT"
@@ -300,58 +327,61 @@ class ExternalWarningMonitor:
                         status = "⚠️ REGRESSION"
                         action = "Review new warnings and update filters"
 
-                    report.extend([
-                        f"**Status:** {status}",
-                        f"**Version:** {change['version']}",
-                        f"**Warning Count:** {change['old_warnings']} → {change['new_warnings']}",
-                        f"**Recommended Action:** {action}",
-                        ""
-                    ])
+                    report.extend(
+                        [
+                            f"**Status:** {status}",
+                            f"**Version:** {change['version']}",
+                            f"**Warning Count:** {change['old_warnings']} → {change['new_warnings']}",
+                            f"**Recommended Action:** {action}",
+                            "",
+                        ]
+                    )
 
         # Current dependency status
-        report.extend([
-            "## Current Dependency Status",
-            ""
-        ])
+        report.extend(["## Current Dependency Status", ""])
 
         current_deps = change_data["current_state"]["dependencies"]
         for dep_name, dep_data in current_deps.items():
-            report.extend([
-                f"### {dep_name}",
-                f"- **Package:** {dep_data['package']}",
-                f"- **Version:** {dep_data['version']}",
-                f"- **Warnings:** {dep_data['warning_count']}",
-                f"- **Patterns Monitored:** {', '.join(dep_data['patterns_monitored'])}",
-                ""
-            ])
+            report.extend(
+                [
+                    f"### {dep_name}",
+                    f"- **Package:** {dep_data['package']}",
+                    f"- **Version:** {dep_data['version']}",
+                    f"- **Warnings:** {dep_data['warning_count']}",
+                    f"- **Patterns Monitored:** {', '.join(dep_data['patterns_monitored'])}",
+                    "",
+                ]
+            )
 
         # Recommendations
-        report.extend([
-            "## Monitoring Recommendations",
-            "",
-            "### When to Remove Warning Filters",
-            "",
-            "1. **Zero Warnings Detected**: When a dependency shows 0 warnings for 2+ consecutive checks",
-            "2. **Version Documentation**: When dependency release notes mention deprecation warning fixes",
-            "3. **Stable Reduction**: When warning count reduces and stays stable across multiple versions",
-            "",
-            "### When to Update Filters",
-            "",
-            "1. **New Warning Patterns**: When dependencies introduce new deprecation warnings",
-            "2. **Warning Count Increase**: When existing dependencies generate more warnings",
-            "3. **New Dependencies**: When adding dependencies that generate external warnings",
-            "",
-            "### Next Steps",
-            "",
-            "1. **Regular Monitoring**: Run this check weekly or before dependency updates",
-            "2. **Baseline Updates**: Update baseline after confirming stable changes",
-            "3. **Filter Maintenance**: Update pyproject.toml filters based on findings",
-            ""
-        ])
+        report.extend(
+            [
+                "## Monitoring Recommendations",
+                "",
+                "### When to Remove Warning Filters",
+                "",
+                "1. **Zero Warnings Detected**: When a dependency shows 0 warnings for 2+ consecutive checks",
+                "2. **Version Documentation**: When dependency release notes mention deprecation warning fixes",
+                "3. **Stable Reduction**: When warning count reduces and stays stable across multiple versions",
+                "",
+                "### When to Update Filters",
+                "",
+                "1. **New Warning Patterns**: When dependencies introduce new deprecation warnings",
+                "2. **Warning Count Increase**: When existing dependencies generate more warnings",
+                "3. **New Dependencies**: When adding dependencies that generate external warnings",
+                "",
+                "### Next Steps",
+                "",
+                "1. **Regular Monitoring**: Run this check weekly or before dependency updates",
+                "2. **Baseline Updates**: Update baseline after confirming stable changes",
+                "3. **Filter Maintenance**: Update pyproject.toml filters based on findings",
+                "",
+            ]
+        )
 
         # Write report
-        with open(report_file, 'w') as f:
-            f.write('\n'.join(report))
+        with open(report_file, "w") as f:
+            f.write("\n".join(report))
 
         print(f"Monitoring report generated: {report_file}")
         return str(report_file)
@@ -361,13 +391,21 @@ class ExternalWarningMonitor:
         print("Updating baseline...")
         self.create_baseline()
 
+
 def main():
-    parser = \
-        argparse.ArgumentParser(description="Monitor external dependency warnings")
-    parser.add_argument("--baseline", action="store_true", help="Create/update baseline")
+    parser = argparse.ArgumentParser(description="Monitor external dependency warnings")
+    parser.add_argument(
+        "--baseline", action="store_true", help="Create/update baseline"
+    )
     parser.add_argument("--check", action="store_true", help="Check for changes")
-    parser.add_argument("--report", action="store_true", help="Generate monitoring report")
-    parser.add_argument("--update-baseline", action="store_true", help="Update baseline after confirming changes")
+    parser.add_argument(
+        "--report", action="store_true", help="Generate monitoring report"
+    )
+    parser.add_argument(
+        "--update-baseline",
+        action="store_true",
+        help="Update baseline after confirming changes",
+    )
 
     args = parser.parse_args()
 
@@ -393,10 +431,11 @@ def main():
         # Default: check and report if changes found
         changes = monitor.check_for_changes()
         if changes["changes_detected"]:
-            print(f"\nChanges detected! Generating report...")
+            print("\nChanges detected! Generating report...")
             monitor.generate_monitoring_report(changes)
         else:
             print("\nNo changes detected.")
+
 
 if __name__ == "__main__":
     main()

@@ -12,7 +12,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+
 from .failure_tracker import FailureTracker
+
+# Import frontend services for proper separation of concerns
+import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
+from fe.services import TemplateService, AssetService
 
 
 class FailureReporter:
@@ -22,7 +30,16 @@ class FailureReporter:
         """Initialize reporter with failure tracker instance."""
         self.tracker = failure_tracker
 
-    def generate_daily_summary(self, output_path: Optional[Path] = None) -> Dict[str, Any]:
+        # Use frontend services for template rendering
+        self.template_service = TemplateService()
+        self.asset_service = AssetService()
+
+        # Legacy compatibility - maintain old interface
+        self.template_env = self.template_service.jinja_env
+
+    def generate_daily_summary(
+        self, output_path: Optional[Path] = None
+    ) -> Dict[str, Any]:
         """Generate daily failure summary report."""
         if output_path is None:
             output_path = Path("quality/reports/failure_summary_daily.json")
@@ -38,6 +55,7 @@ class FailureReporter:
         # Detect current patterns
         patterns = self.tracker.detect_patterns()
 
+        # Create comprehensive report
         report_data = {
             "generated_at": datetime.utcnow().isoformat(),
             "summary": {
@@ -45,13 +63,13 @@ class FailureReporter:
                     "total_failures": today_stats.total_failures,
                     "unique_failures": today_stats.unique_failures,
                     "failure_rate": today_stats.failure_rate,
-                    "critical_count": today_stats.critical_failure_count,
+                    "most_common_category": today_stats.most_common_category.value,
                 },
                 "week": {
                     "total_failures": week_stats.total_failures,
                     "unique_failures": week_stats.unique_failures,
                     "failure_rate": week_stats.failure_rate,
-                    "trend": week_stats.trend_analysis.get("trend_direction", "unknown"),
+                    "most_common_category": week_stats.most_common_category.value,
                 },
                 "month": {
                     "total_failures": month_stats.total_failures,
@@ -60,23 +78,30 @@ class FailureReporter:
                     "most_common_category": month_stats.most_common_category.value,
                 },
             },
-            "top_failing_tests": top_failing,
-            "detected_patterns": [
+            "top_failing_tests": [
                 {
-                    "pattern_id": p.pattern_id,
-                    "description": p.description,
-                    "occurrences": p.occurrences,
-                    "category": p.category.value,
-                    "severity": p.severity.value,
-                    "impact_score": p.impact_score,
-                    "affected_test_count": len(p.affected_tests),
+                    "test_name": test["test_name"],
+                    "failure_count": test["failure_count"],
+                    "category": test["category"],
+                    "severity": test["severity"],
+                    "last_failure": test["last_failure"],
+                    "file_path": test["file_path"],
                 }
-                for p in patterns
+                for test in top_failing
             ],
-            "recommendations": self._generate_recommendations(today_stats, week_stats, patterns),
+            "patterns": [
+                {
+                    "description": pattern.description,
+                    "category": pattern.category.value,
+                    "occurrences": pattern.occurrences,
+                    "confidence": pattern.confidence,
+                    "recommendation": pattern.recommendation,
+                }
+                for pattern in patterns
+            ],
         }
 
-        # Save report
+        # Save JSON report
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(report_data, f, indent=2, ensure_ascii=False)
@@ -93,237 +118,19 @@ class FailureReporter:
         top_failing = self.tracker.get_top_failing_tests(limit=15)
         patterns = self.tracker.detect_patterns()
 
-        html_content = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Failure Analysis Report</title>
-    <style>
-        body {
-            font - family: -apple-system,
-                BlinkMacSystemFont,
-                'Segoe UI',
-                sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        .container {
-            max - width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        .header {
-            background: linear-gradient(135deg,
-    #667eea 0%,
-    #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 2.5em;
-            font-weight: 300;
-        }
-        .timestamp {
-            opacity: 0.9;
-            font-size: 0.9em;
-            margin-top: 10px;
-        }
-        .content {
-            padding: 30px;
-        }
-        .metrics-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit,
-    minmax(250px,
-    1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }}
-        .metric-card {{
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            border-left: 4px solid #007bff;
-        }}
-        .metric-card.warning {{
-            border-left-color: #ffc107;
-            background: #fff9c4;
-        }}
-        .metric-card.danger {{
-            border-left-color: #dc3545;
-            background: #f8d7da;
-        }}
-        .metric-card.success {{
-            border-left-color: #28a745;
-            background: #d4edda;
-        }}
-        .metric-value {{
-            font-size: 2em;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }}
-        .metric-label {{
-            color: #666;
-            font-size: 0.9em;
-        }}
-        .section {{
-            margin-bottom: 40px;
-        }}
-        .section h2 {{
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }}
-        .failure-table {{
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }}
-        .failure-table th,
-        .failure-table td {{
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }}
-        .failure-table th {{
-            background-color: #f8f9fa;
-            font-weight: 600;
-        }}
-        .category-badge {{
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8em;
-            font-weight: 500;
-            color: white;
-        }}
-        .category-assertion {{ background-color: #dc3545; }}
-        .category-import {{ background-color: #fd7e14; }}
-        .category-timeout {{ background-color: #6f42c1; }}
-        .category-unicode {{ background-color: #e83e8c; }}
-        .category-unknown {{ background-color: #6c757d; }}
-        .severity-critical {{ color: #dc3545; font-weight: bold; }}
-        .severity-high {{ color: #fd7e14; font-weight: bold; }}
-        .severity-medium {{ color: #ffc107; }}
-        .severity-low {{ color: #28a745; }}
-        .severity-flaky {{ color: #6f42c1; font-style: italic; }}
-        .pattern-card {{
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }}
-        .pattern-header {{
-            font-weight: 600;
-            margin-bottom: 8px;
-        }}
-        .pattern-meta {{
-            font-size: 0.9em;
-            color: #666;
-        }}
-        .recommendations {{
-            background: #e7f3ff;
-            border: 1px solid #b3d4fc;
-            border-radius: 8px;
-            padding: 20px;
-        }}
-        .recommendations h3 {{
-            margin-top: 0;
-            color: #0066cc;
-        }}
-        .recommendations ul {{
-            margin-bottom: 0;
-        }}
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🔍 Test Failure Analysis Report</h1>
-            <div class="timestamp">Generated: {datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")}</div>
-        </div>
+        # Get CSS files for reports page from asset service
+        css_files = self.asset_service.get_all_css_for_page("reports")
 
-        <div class="content">
-            <!-- Metrics Overview -->
-            <div class="section">
-                <h2>📊 Failure Metrics (Last 30 Days)</h2>
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-value">{stats.total_failures}</div>
-                        <div class="metric-label">Total Failures</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">{stats.unique_failures}</div>
-                        <div class="metric-label">Unique Failures</div>
-                    </div>
-                    <div class="metric-card {
-            "danger" if stats.failure_rate > 10 else "warning" if stats.failure_rate > 5 else "success"
-        }">
-                        <div class="metric-value">{stats.failure_rate:.1f}%</div>
-                        <div class="metric-label">Failure Rate</div>
-                    </div>
-                    <div class="metric-card {"danger" if stats.critical_failure_count > 0 else "success"}">
-                        <div class="metric-value">{stats.critical_failure_count}</div>
-                        <div class="metric-label">Critical Failures</div>
-                    </div>
-                    <div class="metric-card {"warning" if stats.flaky_test_count > 0 else "success"}">
-                        <div class="metric-value">{stats.flaky_test_count}</div>
-                        <div class="metric-label">Flaky Tests</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">{stats.most_common_category.value.replace("_", " ").title()}</div>
-                        <div class="metric-label">Most Common Category</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Top Failing Tests -->
-            <div class="section">
-                <h2>🔥 Top Failing Tests</h2>
-                <table class="failure-table">
-                    <thead>
-                        <tr>
-                            <th>Test Name</th>
-                            <th>File</th>
-                            <th>Failures</th>
-                            <th>Category</th>
-                            <th>Severity</th>
-                            <th>Last Failure</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {self._generate_failing_tests_rows(top_failing)}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Failure Patterns -->
-            <div class="section">
-                <h2>🔍 Detected Patterns</h2>
-                {self._generate_pattern_cards(patterns)}
-            </div>
-
-            <!-- Recommendations -->
-            <div class="section">
-                <h2>💡 Recommendations</h2>
-                <div class="recommendations">
-                    <h3>Action Items</h3>
-                    {self._generate_recommendations_html(stats, patterns)}
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-</html>"""
+        # Render HTML using frontend template service
+        html_content = self.template_service.render_template(
+            "reports/failure_report.html",
+            css_files=css_files,
+            timestamp=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
+            stats=stats,
+            failing_tests_rows=self._generate_failing_tests_rows(top_failing),
+            pattern_cards=self._generate_pattern_cards(patterns),
+            recommendations_html=self._generate_recommendations_html(stats, patterns),
+        )
 
         # Save HTML report
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -339,96 +146,112 @@ class FailureReporter:
 
         rows = []
         for test in top_failing:
-            category_class = f"category-{test['category'].replace('_', '-')}"
-            severity_class = f"severity-{test['severity']}"
+            test_name = test["test_name"]
+            failure_count = test["failure_count"]
+            category = test["category"]
+            severity = test["severity"]
+            last_failure = test["last_failure"]
+            file_path = test["file_path"]
 
-            rows.append(
-                f"""
+            # Determine styling classes
+            category_class = f"category-{category.lower()}"
+            severity_class = f"severity-{severity.lower()}"
+
+            # Truncate long test names for display
+            display_name = test_name if len(test_name) <= 50 else f"{test_name[:47]}..."
+
+            # Format last failure date
+            formatted_date = last_failure[:10] if last_failure else "Unknown"
+
+            # Truncate file path
+            display_path = (
+                file_path if len(file_path) <= 40 else f"...{file_path[-37:]}"
+            )
+
+            row = f"""
                 <tr>
-                    <td>{test["test_name"]}</td>
-                    <td><code>{test["test_file"]}</code></td>
-                    <td><strong>{test["total_failures"]}</strong></td>
+                    <td title="{test_name}">{display_name}</td>
+                    <td><strong>{failure_count}</strong></td>
                     <td><span class="category-badge {category_class}">{
-                    test["category"].replace("_", " ").title()
-                }</span></td>
-                    <td><span class="{severity_class}">{test["severity"].title()}</span></td>
-                    <td>{test["last_failure"][:10] if test["last_failure"] else "Unknown"}</td>
+                category.replace("_", " ").title()
+            }</span></td>
+                    <td><span class="{severity_class}">{severity.title()}</span></td>
+                    <td>{formatted_date}</td>
+                    <td title="{file_path}">{display_path}</td>
                 </tr>
             """
-            )
+            rows.append(row)
 
         return "".join(rows)
 
     def _generate_pattern_cards(self, patterns: List) -> str:
         """Generate HTML cards for detected patterns."""
         if not patterns:
-            return "<p style='color: #666;'>No significant patterns detected in recent failures.</p>"
+            return "<p style='color: #666; text-align: center;'>No significant patterns detected</p>"
 
         cards = []
         for pattern in patterns:
-            cards.append(
-                f"""
+            confidence_class = (
+                "high"
+                if pattern.confidence > 0.8
+                else "medium"
+                if pattern.confidence > 0.5
+                else "low"
+            )
+
+            card = f"""
                 <div class="pattern-card">
                     <div class="pattern-header">{pattern.description}</div>
                     <div class="pattern-meta">
                         <strong>Occurrences:</strong> {pattern.occurrences} |
                         <strong>Category:</strong> {pattern.category.value.replace("_", " ").title()} |
-                        <strong>Impact Score:</strong> {pattern.impact_score:.1f} |
-                        <strong>Affected Tests:</strong> {len(pattern.affected_tests)}
+                        <strong>Confidence:</strong> <span class="confidence-{confidence_class}">{pattern.confidence:.0%}</span>
                     </div>
+                    {f'<div class="pattern-recommendation"><strong>Recommendation:</strong> {pattern.recommendation}</div>' if pattern.recommendation else ""}
                 </div>
             """
-            )
+            cards.append(card)
 
         return "".join(cards)
 
-    def _generate_recommendations(self, today_stats, week_stats, patterns) -> List[str]:
-        """Generate actionable recommendations based on failure analysis."""
+    def _generate_recommendations_html(self, stats, patterns) -> str:
+        """Generate HTML for actionable recommendations."""
         recommendations = []
 
-        # Critical failure recommendations
-        if today_stats.critical_failure_count > 0:
-            recommendations.append("🚨 Address critical failures immediately - these may block releases")
-
-        # High failure rate recommendations
-        if week_stats.failure_rate > 15:
-            recommendations.append("📈 Failure rate is high (>15%) - review test stability and infrastructure")
-
-        # Flaky test recommendations
-        if week_stats.flaky_test_count > 0:
+        # Critical failures recommendation
+        if stats.critical_failure_count > 0:
             recommendations.append(
-                (f"🔄 {week_stats.flaky_test_count} flaky tests detected - investigate intermittent issues")
+                f"🚨 Address {stats.critical_failure_count} critical failures immediately"
+            )
+
+        # High failure rate recommendation
+        if stats.failure_rate > 10:
+            recommendations.append(
+                f"⚠️ Failure rate is {stats.failure_rate:.1f}% - investigate test stability"
+            )
+
+        # Flaky tests recommendation
+        if stats.flaky_test_count > 0:
+            recommendations.append(
+                f"🔄 {stats.flaky_test_count} flaky tests detected - improve test reliability"
             )
 
         # Pattern-based recommendations
         for pattern in patterns:
-            if pattern.category.value == "unicode_error" and pattern.occurrences > 2:
-                recommendations.append("🌐 Multiple Unicode errors detected - review file encoding practices")
-            elif pattern.category.value == "import_error" and pattern.occurrences > 1:
-                recommendations.append("📦 Import errors detected - verify dependencies and Python path configuration")
-            elif pattern.category.value == "timeout_error" and pattern.occurrences > 1:
-                recommendations.append("⏱️ Timeout errors detected - review test performance and infrastructure")
+            if pattern.recommendation and pattern.confidence > 0.7:
+                recommendations.append(f"💡 {pattern.recommendation}")
 
-        # Trend-based recommendations
-        trend = week_stats.trend_analysis.get("trend_direction", "stable")
-        if trend == "increasing":
-            recommendations.append("📊 Failure trend is increasing - investigate recent changes and infrastructure")
-
-        # Default recommendations if no specific issues
-        if not recommendations:
-            recommendations.extend(
-                [
-                    "✅ Test failure rates are within acceptable ranges",
-                    "🔄 Continue monitoring for patterns and trends",
-                    "📋 Review this report weekly to identify emerging issues",
-                ]
+        # General recommendations
+        if stats.total_failures > 50:
+            recommendations.append(
+                "📊 High failure volume detected - consider test suite optimization"
             )
 
-        return recommendations
+        if not recommendations:
+            recommendations.append(
+                "✅ No critical issues detected - continue monitoring"
+            )
 
-    def _generate_recommendations_html(self, stats, patterns) -> str:
-        """Generate HTML for recommendations section."""
-        recommendations = self._generate_recommendations(stats, stats, patterns)
-
-        items = [f"<li>{rec}</li>" for rec in recommendations]
-        return f"<ul>{''.join(items)}</ul>"
+        # Convert to HTML list
+        items = "".join([f"<li>{rec}</li>" for rec in recommendations])
+        return f"<ul>{items}</ul>"

@@ -98,10 +98,10 @@ def sample_epics_with_metrics(client, test_db):
         # Add user stories
         for j in range(2):
             us_data = {
-                "user_story_id": f"US-TEST-{i+1:03d}-{j+1:02d}",
+                "user_story_id": f"US-TEST-{i + 1:03d}-{j + 1:02d}",
                 "epic_id": epic_id,
                 "github_issue_number": 100 + (i * 10) + j,
-                "title": f"User Story {j+1} for Epic {i+1}",
+                "title": f"User Story {j + 1} for Epic {i + 1}",
                 "story_points": 3 + j,
                 "priority": "high" if j == 0 else "medium",
             }
@@ -112,10 +112,10 @@ def sample_epics_with_metrics(client, test_db):
         for k in range(3):
             test_data = {
                 "test_type": "unit" if k < 2 else "integration",
-                "test_file_path": f"tests/unit/test_epic_{i+1}_{k+1}.py",
-                "title": f"Test {k+1} for Epic {i+1}",
+                "test_file_path": f"tests/unit/test_epic_{i + 1}_{k + 1}.py",
+                "title": f"Test {k + 1} for Epic {i + 1}",
                 "epic_id": epic_id,
-                "test_function_name": f"test_function_{k+1}",
+                "test_function_name": f"test_function_{k + 1}",
             }
             response = client.post("/api/rtm/tests/", params=test_data)
             assert response.status_code == 200
@@ -132,9 +132,9 @@ def sample_epics_with_metrics(client, test_db):
         if i == 0:
             for d in range(2):
                 defect_data = {
-                    "defect_id": f"DEF-TEST-{i+1:03d}-{d+1:02d}",
+                    "defect_id": f"DEF-TEST-{i + 1:03d}-{d + 1:02d}",
                     "github_issue_number": 200 + (i * 10) + d,
-                    "title": f"Defect {d+1} for Epic {i+1}",
+                    "title": f"Defect {d + 1} for Epic {i + 1}",
                     "severity": "critical" if d == 0 else "medium",
                     "priority": "high",
                     "epic_id": epic_id,
@@ -156,9 +156,9 @@ class TestDashboardMetricsRegression:
         """Test PM persona metrics API returns 200 and valid data structure."""
         response = client.get("/api/rtm/dashboard/metrics?persona=PM")
 
-        assert (
-            response.status_code == 200
-        ), f"Expected 200 but got {response.status_code}: {response.text}"
+        assert response.status_code == 200, (
+            f"Expected 200 but got {response.status_code}: {response.text}"
+        )
 
         data = response.json()
 
@@ -187,17 +187,17 @@ class TestDashboardMetricsRegression:
 
         for field in required_pm_fields:
             assert field in summary, f"Missing required PM summary field: {field}"
-            assert isinstance(
-                summary[field], (int, float, str)
-            ), f"Field {field} has invalid type: {type(summary[field])}"
+            assert isinstance(summary[field], (int, float, str)), (
+                f"Field {field} has invalid type: {type(summary[field])}"
+            )
 
     def test_po_persona_metrics_success(self, client, sample_epics_with_metrics):
         """Test PO persona metrics API returns 200 and valid data structure."""
         response = client.get("/api/rtm/dashboard/metrics?persona=PO")
 
-        assert (
-            response.status_code == 200
-        ), f"Expected 200 but got {response.status_code}: {response.text}"
+        assert response.status_code == 200, (
+            f"Expected 200 but got {response.status_code}: {response.text}"
+        )
 
         data = response.json()
 
@@ -225,9 +225,9 @@ class TestDashboardMetricsRegression:
         """Test QA persona metrics API returns 200 and valid data structure."""
         response = client.get("/api/rtm/dashboard/metrics?persona=QA")
 
-        assert (
-            response.status_code == 200
-        ), f"Expected 200 but got {response.status_code}: {response.text}"
+        assert response.status_code == 200, (
+            f"Expected 200 but got {response.status_code}: {response.text}"
+        )
 
         data = response.json()
 
@@ -269,9 +269,9 @@ class TestDashboardMetricsRegression:
         if "overall_risk_score" in risk_metrics:
             risk_score = risk_metrics["overall_risk_score"]
             # Should be a dict with 'value' and 'status' keys
-            assert isinstance(
-                risk_score, dict
-            ), f"Risk score should be dict but got {type(risk_score)}"
+            assert isinstance(risk_score, dict), (
+                f"Risk score should be dict but got {type(risk_score)}"
+            )
             assert "value" in risk_score, "Risk score should have 'value' key"
             assert "status" in risk_score, "Risk score should have 'status' key"
 
@@ -319,9 +319,9 @@ class TestDashboardMetricsRegression:
         duration = end_time - start_time
 
         assert response.status_code == 200
-        assert (
-            duration < 10.0
-        ), f"Metrics calculation took too long: {duration:.2f} seconds"
+        assert duration < 10.0, (
+            f"Metrics calculation took too long: {duration:.2f} seconds"
+        )
 
     def test_invalid_persona_parameter(self, client, sample_epics_with_metrics):
         """Test behavior with invalid persona parameter."""

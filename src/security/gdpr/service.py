@@ -112,7 +112,11 @@ class GDPRService:
             True if withdrawal was successful, False if consent not found
         """
 
-        consent = self.db.query(ConsentRecord).filter(ConsentRecord.consent_id == consent_id).first()
+        consent = (
+            self.db.query(ConsentRecord)
+            .filter(ConsentRecord.consent_id == consent_id)
+            .first()
+        )
 
         # Timing attack resistance: Always perform similar operations
         # regardless of whether consent exists
@@ -241,7 +245,11 @@ class GDPRService:
             True if successful, False if request not found
         """
 
-        request = self.db.query(DataSubjectRequest).filter(DataSubjectRequest.id == request_id).first()
+        request = (
+            self.db.query(DataSubjectRequest)
+            .filter(DataSubjectRequest.id == request_id)
+            .first()
+        )
 
         if not request:
             return False
@@ -390,7 +398,11 @@ class GDPRService:
             .count()
         )
 
-        pending_requests = self.db.query(DataSubjectRequest).filter(DataSubjectRequest.status == "pending").count()
+        pending_requests = (
+            self.db.query(DataSubjectRequest)
+            .filter(DataSubjectRequest.status == "pending")
+            .count()
+        )
 
         overdue_requests = len(self.get_overdue_requests())
 
@@ -399,11 +411,15 @@ class GDPRService:
             "active_consents": active_consents,
             "pending_data_subject_requests": pending_requests,
             "overdue_requests": overdue_requests,
-            "compliance_score": self._calculate_compliance_score(total_consents, pending_requests, overdue_requests),
+            "compliance_score": self._calculate_compliance_score(
+                total_consents, pending_requests, overdue_requests
+            ),
             "last_anonymization_run": datetime.now(UTC).isoformat(),
         }
 
-    def _calculate_compliance_score(self, total_consents: int, pending_requests: int, overdue_requests: int) -> float:
+    def _calculate_compliance_score(
+        self, total_consents: int, pending_requests: int, overdue_requests: int
+    ) -> float:
         """Calculate compliance score (0-100)."""
 
         score = 100.0

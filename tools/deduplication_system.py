@@ -14,8 +14,9 @@ sys.path.insert(0, str(src_path))
 
 from be.database import get_db_session
 from be.models.traceability.test import Test
-from sqlalchemy import func, and_, or_
+from sqlalchemy import func, and_
 from collections import defaultdict
+
 
 class RTMDeduplicator:
     """Système de déduplication intelligent pour RTM."""
@@ -23,10 +24,10 @@ class RTMDeduplicator:
     def __init__(self):
         self.session = get_db_session()
         self.stats = {
-            'analyzed': 0,
-            'duplicates_removed': 0,
-            'orphans_removed': 0,
-            'preserved': 0
+            "analyzed": 0,
+            "duplicates_removed": 0,
+            "orphans_removed": 0,
+            "preserved": 0,
         }
 
     def __enter__(self):
@@ -44,12 +45,13 @@ class RTMDeduplicator:
             self.session.query(
                 Test.test_function_name,
                 Test.test_file_path,
-                func.count(Test.id).label('count')
+                func.count(Test.id).label("count"),
             )
-            .filter(and_(
-                Test.test_function_name.isnot(None),
-                Test.test_file_path.isnot(None)
-            ))
+            .filter(
+                and_(
+                    Test.test_function_name.isnot(None), Test.test_file_path.isnot(None)
+                )
+            )
             .group_by(Test.test_function_name, Test.test_file_path)
             .having(func.count(Test.id) > 1)
             .all()
@@ -57,7 +59,9 @@ class RTMDeduplicator:
 
         print(f"Exact duplicates found: {len(exact_duplicates)}")
         for dup in exact_duplicates[:5]:  # Show top 5
-            print(f"  * {dup.test_function_name} in {dup.test_file_path}: {dup.count} copies")
+            print(
+                f"  * {dup.test_function_name} in {dup.test_file_path}: {dup.count} copies"
+            )
 
         # 2. Orphan tests (no corresponding file exists)
         all_tests = self.session.query(Test).all()
@@ -74,7 +78,7 @@ class RTMDeduplicator:
                         possible_paths = [
                             Path(".") / test.test_file_path,
                             Path("..") / test.test_file_path,
-                            Path(test.test_file_path)
+                            Path(test.test_file_path),
                         ]
 
                         exists = any(p.exists() for p in possible_paths)
@@ -141,10 +145,12 @@ class RTMDeduplicator:
             # Query tests manually
             tests = (
                 self.session.query(Test)
-                .filter(and_(
-                    Test.test_function_name == dup.test_function_name,
-                    Test.test_file_path == dup.test_file_path
-                ))
+                .filter(
+                    and_(
+                        Test.test_function_name == dup.test_function_name,
+                        Test.test_file_path == dup.test_file_path,
+                    )
+                )
                 .all()
             )
             test_ids = [t.id for t in tests]
@@ -154,18 +160,22 @@ class RTMDeduplicator:
                 best_test = self.choose_best_duplicate(test_ids)
                 to_remove = [tid for tid in test_ids if tid != best_test.id]
 
-                print(f"  * {dup.test_function_name}: keeping ID {best_test.id}, removing {len(to_remove)} duplicates")
+                print(
+                    f"  * {dup.test_function_name}: keeping ID {best_test.id}, removing {len(to_remove)} duplicates"
+                )
 
                 if not dry_run:
                     # Remove duplicates
-                    self.session.query(Test).filter(Test.id.in_(to_remove)).delete(synchronize_session=False)
+                    self.session.query(Test).filter(Test.id.in_(to_remove)).delete(
+                        synchronize_session=False
+                    )
 
                 removed_count += len(to_remove)
 
         if not dry_run:
             self.session.commit()
 
-        self.stats['duplicates_removed'] = removed_count
+        self.stats["duplicates_removed"] = removed_count
         print(f"  Removed {removed_count} exact duplicates")
 
         return removed_count
@@ -190,13 +200,15 @@ class RTMDeduplicator:
 
             if not dry_run:
                 test_ids = [t.id for t in tests]
-                self.session.query(Test).filter(Test.id.in_(test_ids)).delete(synchronize_session=False)
+                self.session.query(Test).filter(Test.id.in_(test_ids)).delete(
+                    synchronize_session=False
+                )
                 removed_count += len(tests)
 
         if not dry_run:
             self.session.commit()
 
-        self.stats['orphans_removed'] = removed_count
+        self.stats["orphans_removed"] = removed_count
         print(f"  Removed {removed_count} orphaned tests")
 
         return removed_count
@@ -207,10 +219,7 @@ class RTMDeduplicator:
 
         # Find tests with same name/file but different Epic assignments
         mixed_epics = (
-            self.session.query(
-                Test.test_function_name,
-                Test.test_file_path
-            )
+            self.session.query(Test.test_function_name, Test.test_file_path)
             .group_by(Test.test_function_name, Test.test_file_path)
             .having(func.count(func.distinct(Test.epic_id)) > 1)
             .all()
@@ -220,10 +229,12 @@ class RTMDeduplicator:
         for mixed in mixed_epics:
             tests = (
                 self.session.query(Test)
-                .filter(and_(
-                    Test.test_function_name == mixed.test_function_name,
-                    Test.test_file_path == mixed.test_file_path
-                ))
+                .filter(
+                    and_(
+                        Test.test_function_name == mixed.test_function_name,
+                        Test.test_file_path == mixed.test_file_path,
+                    )
+                )
                 .all()
             )
 
@@ -241,7 +252,9 @@ class RTMDeduplicator:
                     max_count = count
 
             if best_epic:
-                print(f"  * {mixed.test_function_name}: standardizing to Epic {best_epic}")
+                print(
+                    f"  * {mixed.test_function_name}: standardizing to Epic {best_epic}"
+                )
 
                 if not dry_run:
                     for test in tests:
@@ -257,9 +270,9 @@ class RTMDeduplicator:
 
     def run_full_deduplication(self, dry_run=True):
         """Execute la déduplication complète."""
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         print(f"RTM Database Deduplication - {'DRY RUN' if dry_run else 'LIVE RUN'}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         print(f"Timestamp: {datetime.now()}")
 
         # Initial count
@@ -285,9 +298,9 @@ class RTMDeduplicator:
 
         # Final count
         final_count = self.session.query(Test).count()
-        print(f"\n{'='*60}")
-        print(f"DEDUPLICATION SUMMARY")
-        print(f"{'='*60}")
+        print(f"\n{'=' * 60}")
+        print("DEDUPLICATION SUMMARY")
+        print(f"{'=' * 60}")
         print(f"Initial count: {initial_count}")
         print(f"Final count: {final_count}")
         print(f"Total removed: {initial_count - final_count}")
@@ -302,31 +315,45 @@ class RTMDeduplicator:
         elif gap_to_reality > 0:
             print(f"Still {gap_to_reality} excess entries - investigate further")
         else:
-            print(f"Missing {abs(gap_to_reality)} entries - some tests may not be imported")
+            print(
+                f"Missing {abs(gap_to_reality)} entries - some tests may not be imported"
+            )
 
         return {
-            'initial_count': initial_count,
-            'final_count': final_count,
-            'removed': initial_count - final_count,
-            'stats': self.stats
+            "initial_count": initial_count,
+            "final_count": final_count,
+            "removed": initial_count - final_count,
+            "stats": self.stats,
         }
+
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description='RTM Database Deduplication')
-    parser.add_argument('--live', action='store_true', help='Execute live run (default: dry run)')
-    parser.add_argument('--backup', action='store_true', help='Create backup before deduplication')
-    parser.add_argument('--confirm', action='store_true', help='Confirm live run without prompt')
+
+    parser = argparse.ArgumentParser(description="RTM Database Deduplication")
+    parser.add_argument(
+        "--live", action="store_true", help="Execute live run (default: dry run)"
+    )
+    parser.add_argument(
+        "--backup", action="store_true", help="Create backup before deduplication"
+    )
+    parser.add_argument(
+        "--confirm", action="store_true", help="Confirm live run without prompt"
+    )
     args = parser.parse_args()
 
     if args.live and not args.confirm:
         try:
-            confirm = input("This will permanently modify the database. Continue? (yes/no): ")
-            if confirm.lower() != 'yes':
+            confirm = input(
+                "This will permanently modify the database. Continue? (yes/no): "
+            )
+            if confirm.lower() != "yes":
                 print("Aborted.")
                 return
         except EOFError:
-            print("No input available. Use --confirm flag for non-interactive execution.")
+            print(
+                "No input available. Use --confirm flag for non-interactive execution."
+            )
             return
 
     if args.backup and args.live:
@@ -337,10 +364,11 @@ def main():
         result = dedup.run_full_deduplication(dry_run=not args.live)
 
         if args.live:
-            print(f"\nDeduplication completed successfully!")
+            print("\nDeduplication completed successfully!")
             print(f"Removed {result['removed']} entries")
         else:
-            print(f"\nDRY RUN completed. Use --live to execute changes.")
+            print("\nDRY RUN completed. Use --live to execute changes.")
+
 
 if __name__ == "__main__":
     main()

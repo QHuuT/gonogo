@@ -1,0 +1,9 @@
+<button class="copy-btn"
+        onclick="copyToClipboard('{{ file_path|replace('\\', '\\\\') }}', this)"
+        title="Copy full path"
+        aria-label="Copy full file path">
+    <span class="copy-btn__text">COPY</span>
+</button>
+<span class="copy-feedback"
+      id="feedback-{{ item_id }}"
+      style="display: none;">Copied!</span>

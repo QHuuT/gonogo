@@ -208,7 +208,9 @@ class TableFormatter:
                 value = value or ""
             elif col == "message":
                 # Truncate long messages
-                value = (value[:47] + "...") if value and len(value) > 50 else (value or "")
+                value = (
+                    (value[:47] + "...") if value and len(value) > 50 else (value or "")
+                )
             else:
                 value = str(value) if value is not None else ""
 
@@ -251,7 +253,9 @@ class SummaryFormatter:
 
         for entry in entries:
             if entry.test_status and entry.test_status != "started":
-                status_counts[entry.test_status] = status_counts.get(entry.test_status, 0) + 1
+                status_counts[entry.test_status] = (
+                    status_counts.get(entry.test_status, 0) + 1
+                )
                 test_count += 1
 
                 if entry.duration_ms:

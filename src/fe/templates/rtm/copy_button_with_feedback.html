@@ -1,0 +1,9 @@
+                                <div class="file-path-container">
+                                    <button class="copy-btn"
+                                            onclick="copyToClipboard('{{ file_path.replace(chr(92), chr(92) + chr(92)) }}', this)"
+                                            title="Copy full path"
+                                            aria-label="Copy full file path">
+                                        <span class="copy-btn__text">COPY</span>
+                                    </button>
+                                    <span class="copy-feedback" id="feedback-{{ test_id }}" style="display: none;">Copied!</span>
+                                </div>

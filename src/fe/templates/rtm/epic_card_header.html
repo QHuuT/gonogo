@@ -1,0 +1,36 @@
+        <!-- Epic Card with Enhanced Design -->
+        <article class="epic-card" data-status="{{ epic.status }}"
+data-epic-id="{{ epic.epic_id }}" data-components="{{ component_string or '' }}"
+aria-labelledby="epic-{{ epic.epic_id }}-title">
+            <header class="epic-header" role="button" tabindex="0"
+aria-expanded="false" aria-controls="epic-{{ epic.epic_id }}">
+                <div class="epic-header__top">
+                    <h2 id="epic-{{ epic.epic_id }}-title" class="epic-title-link">
+                        {{ epic_title_link }}
+                    </h2>
+                    <span class="badge badge--status badge--status-{{ epic.status.replace('_', '-') }}"
+aria-label="Epic status: {{ epic.status.replace('_', ' ').title() }}">
+                        {{ epic.status.replace('_', ' ').title() }}
+                    </span>
+                </div>
+                <div class="epic-description">
+                    <p>{{ epic.description or 'No description provided.' }}</p>
+                </div>
+                <!-- Epic Progress with Enhanced Visual Design (moved to header for visibility) -->
+                <div class="epic-progress" aria-label="Epic Progress">
+                    <div class="epic-progress__label">
+                        <span>Progress</span>
+                        <span><strong>{{ progress|round(1) }}% Complete</strong></span>
+                    </div>
+                    <div class="epic-progress__bar" role="progressbar"
+aria-valuenow="{{ progress|round(1) }}" aria-valuemin="0" aria-valuemax="100"
+aria-label="Epic completion progress">
+                        <div class="epic-progress__fill" style="width: {{ progress }}%"></div>
+                    </div>
+                </div>
+
+                <!-- Component badges positioned below progress bar -->
+                <div class="epic-components">
+                    {{ component_badges | safe }}
+                </div>
+            </header>

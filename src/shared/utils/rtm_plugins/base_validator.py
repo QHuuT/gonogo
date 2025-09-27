@@ -136,7 +136,9 @@ class StandardValidator(BaseValidator):
         # Check for undefined epics
         undefined = referenced_epics - defined_epics
         if undefined:
-            errors.append(f"Undefined epics (referenced but not defined): {sorted(undefined)}")
+            errors.append(
+                f"Undefined epics (referenced but not defined): {sorted(undefined)}"
+            )
 
         return errors
 

@@ -39,11 +39,16 @@ Each ADR follows a standard format:
   - Status: ✅ Accepted
   - Impact: Different formatting rules for production vs test vs utility code
 
+- [**ADR-005: Frontend-Backend Separation Architecture**](adr-005-frontend-backend-separation.md)
+  - Comprehensive separation of presentation and business logic
+  - Status: ✅ Accepted
+  - Impact: Dedicated frontend services, asset bundling, component architecture
+
 ### Future ADRs (As Needed)
-- **ADR-005**: Data Anonymization Techniques
-- **ADR-006**: International Data Transfer Policies
-- **ADR-007**: Performance Monitoring Strategy
-- **ADR-008**: Content Moderation Approach
+- **ADR-006**: Data Anonymization Techniques
+- **ADR-007**: International Data Transfer Policies
+- **ADR-008**: Performance Monitoring Strategy
+- **ADR-009**: Content Moderation Approach
 
 ## 🔗 Relationship to GitHub Issues
 

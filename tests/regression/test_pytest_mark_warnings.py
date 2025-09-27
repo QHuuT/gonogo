@@ -61,9 +61,9 @@ def test_test_type_mark_is_registered():
     )
 
     assert result.returncode == 0, f"pytest --markers failed: {result.stderr}"
-    assert (
-        "test_type(type): categorizes tests by type" in result.stdout
-    ), "test_type mark should be registered"
+    assert "test_type(type): categorizes tests by type" in result.stdout, (
+        "test_type mark should be registered"
+    )
 
 
 def test_detailed_mark_is_registered():
@@ -78,9 +78,9 @@ def test_detailed_mark_is_registered():
     )
 
     assert result.returncode == 0, f"pytest --markers failed: {result.stderr}"
-    assert (
-        "detailed: marks tests for detailed debugging mode" in result.stdout
-    ), "detailed mark should be registered"
+    assert "detailed: marks tests for detailed debugging mode" in result.stdout, (
+        "detailed mark should be registered"
+    )
 
 
 def test_all_custom_marks_are_registered():
@@ -156,9 +156,9 @@ def test_simple_mark():
 
         # Should pass without unknown mark warnings
         assert result.returncode == 0, f"Test failed: {result.stderr}"
-        assert (
-            "PytestUnknownMarkWarning" not in result.stderr
-        ), f"Should not have unknown mark warnings: {result.stderr}"
+        assert "PytestUnknownMarkWarning" not in result.stderr, (
+            f"Should not have unknown mark warnings: {result.stderr}"
+        )
 
     finally:
         # Clean up temporary file
@@ -197,12 +197,12 @@ def test_marks_in_actual_test_files():
         result = subprocess.run(cmd, capture_output=True, text=True, cwd=".")
 
         # Should pass without warnings
-        assert (
-            result.returncode == 0
-        ), f"Test command failed: {' '.join(cmd)}\nError: {result.stderr}"
-        assert (
-            "PytestUnknownMarkWarning" not in result.stderr
-        ), f"Should not have unknown mark warnings in: {' '.join(cmd)}\nOutput: {result.stderr}"
+        assert result.returncode == 0, (
+            f"Test command failed: {' '.join(cmd)}\nError: {result.stderr}"
+        )
+        assert "PytestUnknownMarkWarning" not in result.stderr, (
+            f"Should not have unknown mark warnings in: {' '.join(cmd)}\nOutput: {result.stderr}"
+        )
 
 
 def test_marker_configuration_consistency():
@@ -240,9 +240,9 @@ def test_marker_configuration_consistency():
 
     # Check that all expected markers are registered in pytest
     for marker_name in expected_marker_names:
-        assert (
-            marker_name in pytest_output
-        ), f"Marker '{marker_name}' should be registered in pytest"
+        assert marker_name in pytest_output, (
+            f"Marker '{marker_name}' should be registered in pytest"
+        )
 
 
 if __name__ == "__main__":

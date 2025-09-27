@@ -14,7 +14,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.shared.utils.github_label_mapper import (
+from shared.utils.github_label_mapper import (
     GitHubIssueLabelMapper,
     IssueData,
     LabelMapping,
@@ -125,7 +125,7 @@ class TestGitHubIssueLabelMapper:
     @pytest.fixture
     def mapper(self):
         """Create a label mapper instance for testing."""
-        with patch("src.shared.utils.github_label_mapper.TraceabilityMatrixParser"):
+        with patch("shared.utils.github_label_mapper.TraceabilityMatrixParser"):
             return GitHubIssueLabelMapper()
 
     @pytest.fixture
@@ -391,12 +391,12 @@ class TestGitHubIssueLabelMapper:
         It validates proper mocking patterns for the epic mapping functionality.
         """
         # Verify the mapper has the correct epic_mapper attribute
-        assert hasattr(
-            mapper, "epic_mapper"
-        ), "GitHubIssueLabelMapper should have epic_mapper attribute"
-        assert not hasattr(
-            mapper, "matrix_parser"
-        ), "GitHubIssueLabelMapper should NOT have matrix_parser attribute"
+        assert hasattr(mapper, "epic_mapper"), (
+            "GitHubIssueLabelMapper should have epic_mapper attribute"
+        )
+        assert not hasattr(mapper, "matrix_parser"), (
+            "GitHubIssueLabelMapper should NOT have matrix_parser attribute"
+        )
 
         # Test proper mocking pattern for epic_mapper.get_epic_mappings
         mock_mappings = {
@@ -650,15 +650,15 @@ class TestLabelMapperIntegration:
 
             # Document the difference that caused the original issue
             # Database has EP-00003 as security, file parser correctly identifies it as gdpr
-            assert (
-                db_mapping["component"] == "security"
-            ), "Database mapping should be security"
-            assert (
-                file_mapping["component"] == "gdpr"
-            ), "File mapping should be gdpr from Privacy and Consent Management"
-            assert (
-                file_mapping["epic_label"] == "privacy-consent"
-            ), "File mapping should have privacy-consent label"
+            assert db_mapping["component"] == "security", (
+                "Database mapping should be security"
+            )
+            assert file_mapping["component"] == "gdpr", (
+                "File mapping should be gdpr from Privacy and Consent Management"
+            )
+            assert file_mapping["epic_label"] == "privacy-consent", (
+                "File mapping should have privacy-consent label"
+            )
 
         # Verify integration test behavior: file-based mapper should be used for testing matrix parsing
         test_issue = IssueData(
@@ -670,16 +670,16 @@ class TestLabelMapperIntegration:
 
         # File-based mapper should return gdpr component
         file_labels = file_mapper.map_epic_labels(test_issue)
-        assert (
-            "component/gdpr" in file_labels
-        ), "File mapper should map EP-00003 to gdpr component"
-        assert (
-            "epic/privacy-consent" in file_labels
-        ), "File mapper should include privacy-consent epic label"
+        assert "component/gdpr" in file_labels, (
+            "File mapper should map EP-00003 to gdpr component"
+        )
+        assert "epic/privacy-consent" in file_labels, (
+            "File mapper should include privacy-consent epic label"
+        )
 
         # Database mapper returns security component (demonstrating the original problem)
         db_labels = database_mapper.map_epic_labels(test_issue)
         if db_labels:  # Only check if database mapping exists
-            assert (
-                "component/security" in db_labels
-            ), "Database mapper maps EP-00003 to security component"
+            assert "component/security" in db_labels, (
+                "Database mapper maps EP-00003 to security component"
+            )

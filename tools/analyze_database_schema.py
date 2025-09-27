@@ -5,11 +5,12 @@ Analyze database schema to see all available fields
 
 import sqlite3
 
+
 def analyze_schema():
-    conn = sqlite3.connect('gonogo.db')
+    conn = sqlite3.connect("gonogo.db")
     cursor = conn.cursor()
 
-    tables = ['user_stories', 'defects', 'epics', 'tests']
+    tables = ["user_stories", "defects", "epics", "tests"]
 
     for table in tables:
         print(f"\n=== {table.upper()} TABLE SCHEMA ===")
@@ -38,6 +39,7 @@ def analyze_schema():
             print("  No records found")
 
     conn.close()
+
 
 if __name__ == "__main__":
     analyze_schema()

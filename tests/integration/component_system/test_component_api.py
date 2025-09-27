@@ -440,9 +440,9 @@ class TestComponentAPIIntegration:
 
         for column in expected_columns:
             column_header = f'<th scope="col">{column}</th>'
-            assert (
-                column_header in html_content
-            ), f"Missing '{column}' column in RTM matrix HTML"
+            assert column_header in html_content, (
+                f"Missing '{column}' column in RTM matrix HTML"
+            )
 
         # Check that empty state messages have correct colspan
         assert 'colspan="5"' in html_content  # User stories (5 columns now)

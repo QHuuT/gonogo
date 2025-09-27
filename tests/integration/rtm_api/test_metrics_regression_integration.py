@@ -38,9 +38,9 @@ class TestMetricsAPIRegressionIntegration:
         response = client.get("/api/rtm/dashboard/metrics?persona=PM")
 
         # This was returning 500 before the fix
-        assert (
-            response.status_code == 200
-        ), f"Expected 200 but got {response.status_code}: {response.text}"
+        assert response.status_code == 200, (
+            f"Expected 200 but got {response.status_code}: {response.text}"
+        )
 
         data = response.json()
         assert data["persona"] == "PM"
@@ -51,9 +51,9 @@ class TestMetricsAPIRegressionIntegration:
         """Test that PO persona metrics API returns 200, not 500."""
         response = client.get("/api/rtm/dashboard/metrics?persona=PO")
 
-        assert (
-            response.status_code == 200
-        ), f"Expected 200 but got {response.status_code}: {response.text}"
+        assert response.status_code == 200, (
+            f"Expected 200 but got {response.status_code}: {response.text}"
+        )
 
         data = response.json()
         assert data["persona"] == "PO"
@@ -62,9 +62,9 @@ class TestMetricsAPIRegressionIntegration:
         """Test that QA persona metrics API returns 200, not 500."""
         response = client.get("/api/rtm/dashboard/metrics?persona=QA")
 
-        assert (
-            response.status_code == 200
-        ), f"Expected 200 but got {response.status_code}: {response.text}"
+        assert response.status_code == 200, (
+            f"Expected 200 but got {response.status_code}: {response.text}"
+        )
 
         data = response.json()
         assert data["persona"] == "QA"
@@ -147,8 +147,8 @@ class TestMetricsAPIRegressionIntegration:
             response = client.get("/api/rtm/dashboard/metrics?persona=PM")
             duration = time.time() - start
 
-            assert response.status_code == 200, f"Request {i+1} failed"
-            assert duration < 10.0, f"Request {i+1} took too long: {duration:.2f}s"
+            assert response.status_code == 200, f"Request {i + 1} failed"
+            assert duration < 10.0, f"Request {i + 1} took too long: {duration:.2f}s"
 
     def test_extract_metric_value_function_handles_real_data(self, client):
         """Test that _extract_metric_value function handles real API response data."""
@@ -265,6 +265,6 @@ class TestMultiPersonaDashboardIntegration:
             has_performance_data = any(
                 indicator in metrics for indicator in performance_indicators
             )
-            assert (
-                has_performance_data
-            ), f"Epic {epic['epic_id']} missing performance indicators"
+            assert has_performance_data, (
+                f"Epic {epic['epic_id']} missing performance indicators"
+            )

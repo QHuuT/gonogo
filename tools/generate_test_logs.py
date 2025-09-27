@@ -21,7 +21,6 @@ from src.shared.logging import (
     EnvironmentMode,
     LoggingConfig,
     LogLevel,
-    get_logger,
     setup_logging,
 )
 
@@ -202,7 +201,7 @@ def generate_sample_test_logs():
                 test_name=test_name,
                 duration_ms=duration_ms,
                 error_message=error_msg,
-                stack_trace=f"Traceback (most recent call last):\n  File \"{test_id.split('::')[0]}\", line {random.randint(20, 100)}, in {test_name}\n    assert response.status_code == 200\n{error_msg}",
+                stack_trace=f'Traceback (most recent call last):\n  File "{test_id.split("::")[0]}", line {random.randint(20, 100)}, in {test_name}\n    assert response.status_code == 200\n{error_msg}',
                 metadata={"test_type": test_type},
             )
         else:  # Skipped

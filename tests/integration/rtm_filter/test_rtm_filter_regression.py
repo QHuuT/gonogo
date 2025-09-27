@@ -115,7 +115,7 @@ class TestRTMFilterRegression:
 
         for func in required_functions:
             assert func in js_content, f"Missing function: {func}"
-        print(f"OK All required JavaScript functions present")
+        print("OK All required JavaScript functions present")
 
         # Check filterDefects has correct parameter signature
         defects_func_pattern = (
@@ -125,9 +125,9 @@ class TestRTMFilterRegression:
         assert defects_match, "filterDefects function not found or has wrong signature"
 
         params = defects_match.groups()
-        assert (
-            len(params) == 3
-        ), f"filterDefects should have 3 parameters, found {len(params)}"
+        assert len(params) == 3, (
+            f"filterDefects should have 3 parameters, found {len(params)}"
+        )
         print(f"OK filterDefects function has correct 3-parameter signature: {params}")
 
     def test_status_filter_backend_functionality(self):
@@ -175,18 +175,18 @@ class TestRTMFilterRegression:
         # Check that filter buttons are NOT inside epic headers
         for header_content in epic_headers:
             # Filter buttons should not be in epic headers
-            assert (
-                'onclick="filterByStatus' not in header_content
-            ), "Status filter button found inside epic header"
-            assert (
-                'onclick="filterDefects' not in header_content
-            ), "Defects filter button found inside epic header"
-            assert (
-                'onclick="filterUserStoriesByStatus' not in header_content
-            ), "User story filter button found inside epic header"
-            assert (
-                'onclick="filterTestsByType' not in header_content
-            ), "Test type filter button found inside epic header"
+            assert 'onclick="filterByStatus' not in header_content, (
+                "Status filter button found inside epic header"
+            )
+            assert 'onclick="filterDefects' not in header_content, (
+                "Defects filter button found inside epic header"
+            )
+            assert 'onclick="filterUserStoriesByStatus' not in header_content, (
+                "User story filter button found inside epic header"
+            )
+            assert 'onclick="filterTestsByType' not in header_content, (
+                "Test type filter button found inside epic header"
+            )
 
         print("OK Filter buttons are properly separated from epic headers")
 
@@ -200,14 +200,14 @@ class TestRTMFilterRegression:
 
         for onclick in onclick_patterns:
             # Check for unmatched quotes
-            assert (
-                onclick.count("'") % 2 == 0
-            ), f"Unmatched quotes in onclick: {onclick}"
+            assert onclick.count("'") % 2 == 0, (
+                f"Unmatched quotes in onclick: {onclick}"
+            )
 
             # Check for unmatched parentheses
-            assert onclick.count("(") == onclick.count(
-                ")"
-            ), f"Unmatched parentheses in onclick: {onclick}"
+            assert onclick.count("(") == onclick.count(")"), (
+                f"Unmatched parentheses in onclick: {onclick}"
+            )
 
             # Check for common syntax issues
             assert ";;" not in onclick, f"Double semicolon in onclick: {onclick}"
@@ -225,9 +225,9 @@ class TestRTMFilterRegression:
         for call in defects_calls:
             # Count commas to determine parameter count
             param_count = call.count(",") + 1
-            assert (
-                param_count == 3
-            ), f"filterDefects call has {param_count} parameters, expected 3: {call}"
+            assert param_count == 3, (
+                f"filterDefects call has {param_count} parameters, expected 3: {call}"
+            )
 
         print(
             f"OK All {len(defects_calls)} filterDefects calls have correct 3 parameters"
@@ -237,25 +237,25 @@ class TestRTMFilterRegression:
         status_calls = re.findall(r"filterByStatus\([^)]+\)", html_content)
         for call in status_calls:
             param_count = call.count(",") + 1
-            assert (
-                param_count == 1
-            ), f"filterByStatus call has {param_count} parameters, expected 1: {call}"
+            assert param_count == 1, (
+                f"filterByStatus call has {param_count} parameters, expected 1: {call}"
+            )
 
         user_story_calls = re.findall(
             r"filterUserStoriesByStatus\([^)]+\)", html_content
         )
         for call in user_story_calls:
             param_count = call.count(",") + 1
-            assert (
-                param_count == 2
-            ), f"filterUserStoriesByStatus call has {param_count} parameters, expected 2: {call}"
+            assert param_count == 2, (
+                f"filterUserStoriesByStatus call has {param_count} parameters, expected 2: {call}"
+            )
 
         test_type_calls = re.findall(r"filterTestsByType\([^)]+\)", html_content)
         for call in test_type_calls:
             param_count = call.count(",") + 1
-            assert (
-                param_count == 2
-            ), f"filterTestsByType call has {param_count} parameters, expected 2: {call}"
+            assert param_count == 2, (
+                f"filterTestsByType call has {param_count} parameters, expected 2: {call}"
+            )
 
         print("OK All filter function calls have correct parameter counts")
 

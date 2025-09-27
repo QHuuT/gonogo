@@ -32,9 +32,13 @@ router = APIRouter(prefix="/api/backup", tags=["backup"])
 class BackupRequest(BaseModel):
     """Request model for backup creation."""
 
-    destinations: Optional[List[str]] = Field(None, description="Specific backup destinations")
+    destinations: Optional[List[str]] = Field(
+        None, description="Specific backup destinations"
+    )
     encrypt_gdpr: Optional[bool] = Field(True, description="Force GDPR encryption")
-    validate_integrity: Optional[bool] = Field(True, description="Validate backup integrity")
+    validate_integrity: Optional[bool] = Field(
+        True, description="Validate backup integrity"
+    )
 
 
 class BackupResponse(BaseModel):
@@ -58,8 +62,12 @@ class RestoreRequest(BaseModel):
 
     backup_file: str = Field(..., description="Path to backup file")
     target_database: Optional[str] = Field(None, description="Target database path")
-    verify_only: Optional[bool] = Field(False, description="Only verify backup without restoring")
-    force: Optional[bool] = Field(False, description="Force restoration without confirmation")
+    verify_only: Optional[bool] = Field(
+        False, description="Only verify backup without restoring"
+    )
+    force: Optional[bool] = Field(
+        False, description="Force restoration without confirmation"
+    )
 
 
 class RestoreResponse(BaseModel):
@@ -169,7 +177,9 @@ async def create_backup(
 
     except Exception as e:
         logger.error("API backup unexpected error: %s", e)
-        raise HTTPException(status_code=500, detail=f"Unexpected error during backup: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Unexpected error during backup: {e}"
+        )
 
 
 @router.post("/restore", response_model=RestoreResponse)
@@ -210,7 +220,9 @@ async def restore_database(
                     message="Backup verification completed successfully",
                 )
             except BackupError as e:
-                raise HTTPException(status_code=400, detail=f"Backup verification failed: {e}")
+                raise HTTPException(
+                    status_code=400, detail=f"Backup verification failed: {e}"
+                )
 
         # Perform restoration
         result = backup_service.restore_from_backup(
@@ -226,7 +238,9 @@ async def restore_database(
             integrity_verified=result["integrity_verified"],
             recovery_time_target_met=result["recovery_time_target_met"],
             restored_entities=result["restoration_metadata"],
-            message=(f"Database restored successfully in {result['duration_seconds']:.2f} seconds"),
+            message=(
+                f"Database restored successfully in {result['duration_seconds']:.2f} seconds"
+            ),
         )
 
         logger.info("API restore completed successfully")
@@ -238,7 +252,9 @@ async def restore_database(
 
     except Exception as e:
         logger.error("API restore unexpected error: %s", e)
-        raise HTTPException(status_code=500, detail=f"Unexpected error during restore: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Unexpected error during restore: {e}"
+        )
 
 
 @router.get("/status", response_model=BackupStatusResponse)
@@ -312,7 +328,9 @@ async def get_monitoring_dashboard(
 
     except Exception as e:
         logger.error("API monitoring dashboard failed: %s", e)
-        raise HTTPException(status_code=500, detail=f"Failed to get monitoring dashboard: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get monitoring dashboard: {e}"
+        )
 
 
 @router.get("/monitor/health")
@@ -380,7 +398,9 @@ async def validate_backup(
 
                     # Deep validation if requested
                     if deep_check:
-                        metadata = backup_service._verify_restored_data(str(backup_file))
+                        metadata = backup_service._verify_restored_data(
+                            str(backup_file)
+                        )
                         result["entity_counts"] = metadata
 
                     validation_results.append(result)
@@ -406,7 +426,9 @@ async def validate_backup(
             "backup_id": backup_id,
             "validation_time": datetime.now(UTC).isoformat(),
             "destinations_checked": len(validation_results),
-            "valid_backups": sum(1 for r in validation_results if r.get("integrity_valid", False)),
+            "valid_backups": sum(
+                1 for r in validation_results if r.get("integrity_valid", False)
+            ),
             "validation_results": validation_results,
         }
 
@@ -420,7 +442,9 @@ async def validate_backup(
 @router.delete("/cleanup")
 async def cleanup_old_backups(
     days: int = Query(30, description="Retention period in days"),
-    dry_run: bool = Query(True, description="Show what would be cleaned without deleting"),
+    dry_run: bool = Query(
+        True, description="Show what would be cleaned without deleting"
+    ),
     backup_service: BackupService = Depends(get_backup_service),
 ):
     """
@@ -549,7 +573,9 @@ async def list_backup_destinations(
                 latest_file = max(backup_files, key=lambda x: x.stat().st_mtime)
                 latest_backup = {
                     "file": latest_file.name,
-                    "created": datetime.fromtimestamp(latest_file.stat().st_mtime, UTC).isoformat(),
+                    "created": datetime.fromtimestamp(
+                        latest_file.stat().st_mtime, UTC
+                    ).isoformat(),
                     "size_mb": round(latest_file.stat().st_size / (1024 * 1024), 2),
                 }
 
@@ -576,7 +602,9 @@ async def list_backup_destinations(
         return {
             "destinations": destinations_info,
             "total_destinations": len(destinations_info),
-            "accessible_destinations": sum(1 for d in destinations_info if d["accessible"]),
+            "accessible_destinations": sum(
+                1 for d in destinations_info if d["accessible"]
+            ),
             "total_backups": sum(d["backup_count"] for d in destinations_info),
         }
 

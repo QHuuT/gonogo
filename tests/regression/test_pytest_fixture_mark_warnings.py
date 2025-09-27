@@ -90,9 +90,9 @@ def test_fixture_definitions_have_no_marks():
 
                             if len(non_empty_between) == 0:
                                 pytest.fail(
-                                    f"Found @pytest.mark before @pytest.fixture in {test_file}:{i+1}\n"
-                                    f"Line {j+1}: {lines[j].strip()}\n"
-                                    f"Line {i+1}: {line.strip()}\n"
+                                    f"Found @pytest.mark before @pytest.fixture in {test_file}:{i + 1}\n"
+                                    f"Line {j + 1}: {lines[j].strip()}\n"
+                                    f"Line {i + 1}: {line.strip()}\n"
                                     f"Marks should not be applied to fixtures."
                                 )
 
@@ -132,9 +132,9 @@ def test_marks_are_only_on_test_functions():
 
                         if "@pytest.fixture" in next_line:
                             pytest.fail(
-                                f"Found @pytest.mark directly before @pytest.fixture in {test_file}:{next_line_idx+1}\n"
-                                f"Line {i+1}: {line.strip()}\n"
-                                f"Line {next_line_idx+1}: {next_line.strip()}\n"
+                                f"Found @pytest.mark directly before @pytest.fixture in {test_file}:{next_line_idx + 1}\n"
+                                f"Line {i + 1}: {line.strip()}\n"
+                                f"Line {next_line_idx + 1}: {next_line.strip()}\n"
                                 f"Marks should not be applied to fixtures."
                             )
 
@@ -187,12 +187,12 @@ def test_another_with_marks(another_fixture):
 
         # Should pass without fixture mark warnings
         assert result.returncode == 0, f"Test failed: {result.stderr}"
-        assert (
-            "RemovedIn9Warning" not in result.stderr
-        ), f"Should not have fixture mark warnings: {result.stderr}"
-        assert (
-            "Marks applied to fixtures" not in result.stderr
-        ), f"Should not have fixture mark warnings: {result.stderr}"
+        assert "RemovedIn9Warning" not in result.stderr, (
+            f"Should not have fixture mark warnings: {result.stderr}"
+        )
+        assert "Marks applied to fixtures" not in result.stderr, (
+            f"Should not have fixture mark warnings: {result.stderr}"
+        )
 
     finally:
         # Clean up temporary file

@@ -12,16 +12,17 @@ import sys
 import logging
 
 # Add src to path for imports
-sys.path.append('src')
+sys.path.append("src")
 
 from be.database import SessionLocal
 from be.models.traceability.defect import Defect
 from be.models.traceability.epic import Epic
-from be.models.traceability.test import Test
 from be.models.traceability.user_story import UserStory
 from be.services.component_inheritance_service import ComponentInheritanceService
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -32,18 +33,25 @@ def test_component_inheritance_logic():
     session = SessionLocal()
 
     # Check existing inheritance
-    defects_with_inheritance = session.query(Defect).filter(
-        Defect.component.isnot(None),
-        Defect.github_user_story_number.isnot(None)
-    ).all()
+    defects_with_inheritance = (
+        session.query(Defect)
+        .filter(
+            Defect.component.isnot(None), Defect.github_user_story_number.isnot(None)
+        )
+        .all()
+    )
 
     print(f"Defects with inherited components: {len(defects_with_inheritance)}")
     for defect in defects_with_inheritance:
-        us = session.query(UserStory).filter(
-            UserStory.github_issue_number == defect.github_user_story_number
-        ).first()
+        us = (
+            session.query(UserStory)
+            .filter(UserStory.github_issue_number == defect.github_user_story_number)
+            .first()
+        )
         if us:
-            print(f"  {defect.defect_id}: {defect.component} (from {us.user_story_id}: {us.component})")
+            print(
+                f"  {defect.defect_id}: {defect.component} (from {us.user_story_id}: {us.component})"
+            )
 
     # Check epic inheritance
     epics_with_components = session.query(Epic).filter(Epic.component.isnot(None)).all()
@@ -64,17 +72,19 @@ def test_defect_creation_workflow():
 
     # Create test defect linked to existing user story
     test_defect = Defect(
-        defect_id='DEF-TEST002',
+        defect_id="DEF-TEST002",
         github_issue_number=998,
-        title='Test Defect for Creation Workflow',
-        github_user_story_number=8  # This should inherit backend component
+        title="Test Defect for Creation Workflow",
+        github_user_story_number=8,  # This should inherit backend component
     )
 
     session.add(test_defect)
     session.commit()
 
     # Check if component was inherited automatically by trigger
-    updated_defect = session.query(Defect).filter(Defect.defect_id == 'DEF-TEST002').first()
+    updated_defect = (
+        session.query(Defect).filter(Defect.defect_id == "DEF-TEST002").first()
+    )
     inherited_component = updated_defect.component
 
     # Clean up
@@ -83,7 +93,7 @@ def test_defect_creation_workflow():
     session.close()
 
     print(f"Test defect inherited component: {inherited_component}")
-    return inherited_component == 'backend'
+    return inherited_component == "backend"
 
 
 def test_component_override():
@@ -92,9 +102,9 @@ def test_component_override():
 
     with ComponentInheritanceService() as service:
         # Get a defect with existing component
-        defect = service.session.query(Defect).filter(
-            Defect.component.isnot(None)
-        ).first()
+        defect = (
+            service.session.query(Defect).filter(Defect.component.isnot(None)).first()
+        )
 
         if not defect:
             print("No defects with components found for override test")
@@ -125,17 +135,19 @@ def test_database_triggers():
 
     # Test defect trigger
     test_defect = Defect(
-        defect_id='DEF-TEST003',
+        defect_id="DEF-TEST003",
         github_issue_number=997,
-        title='Test Defect for Trigger',
-        github_user_story_number=60  # Should inherit backend component (US-00060)
+        title="Test Defect for Trigger",
+        github_user_story_number=60,  # Should inherit backend component (US-00060)
     )
 
     session.add(test_defect)
     session.commit()
 
     # Check if trigger worked
-    updated_defect = session.query(Defect).filter(Defect.defect_id == 'DEF-TEST003').first()
+    updated_defect = (
+        session.query(Defect).filter(Defect.defect_id == "DEF-TEST003").first()
+    )
     trigger_worked = updated_defect.component is not None
 
     print(f"Defect trigger test - Component inherited: {updated_defect.component}")
@@ -144,11 +156,13 @@ def test_database_triggers():
     us = session.query(UserStory).filter(UserStory.github_issue_number == 60).first()
     if us:
         original_component = us.component
-        us.component = 'testing'  # Change component
+        us.component = "testing"  # Change component
         session.commit()
 
         # Check if defect was updated (only if defect component was None)
-        updated_defect = session.query(Defect).filter(Defect.defect_id == 'DEF-TEST003').first()
+        updated_defect = (
+            session.query(Defect).filter(Defect.defect_id == "DEF-TEST003").first()
+        )
 
         # Reset user story
         us.component = original_component
@@ -173,7 +187,7 @@ def test_validation_consistency():
         print(f"Defect inconsistencies: {len(results['defect_inconsistencies'])}")
         print(f"Test inconsistencies: {len(results['test_inconsistencies'])}")
 
-        return results['total_inconsistencies'] == 0
+        return results["total_inconsistencies"] == 0
 
 
 def run_acceptance_tests():
@@ -214,10 +228,12 @@ def run_acceptance_tests():
         print("\nAll acceptance criteria met! US-00009 is ready for completion.")
         return True
     else:
-        print(f"\n{total - passed} tests failed. Review and fix issues before completion.")
+        print(
+            f"\n{total - passed} tests failed. Review and fix issues before completion."
+        )
         return False
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     success = run_acceptance_tests()
     sys.exit(0 if success else 1)

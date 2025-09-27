@@ -32,7 +32,9 @@ async def lifespan(app: FastAPI):
     # Startup
     if should_enable_background_refresh():
         interval = get_refresh_interval()
-        app.state.metric_refresh_task = asyncio.create_task(metrics_refresh_loop(interval))
+        app.state.metric_refresh_task = asyncio.create_task(
+            metrics_refresh_loop(interval)
+        )
 
     yield
 

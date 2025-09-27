@@ -36,9 +36,15 @@ class TestDiscovery:
         self.defect_pattern = re.compile(r"DEF-(\d{5})")
 
         # Pytest marker patterns
-        self.component_pattern = re.compile(r'@pytest\.mark\.component\(["\']([^"\']+)["\']\)')
-        self.priority_pattern = re.compile(r'@pytest\.mark\.priority\(["\']([^"\']+)["\']\)')
-        self.test_category_pattern = re.compile(r'@pytest\.mark\.test_category\(["\']([^"\']+)["\']\)')
+        self.component_pattern = re.compile(
+            r'@pytest\.mark\.component\(["\']([^"\']+)["\']\)'
+        )
+        self.priority_pattern = re.compile(
+            r'@pytest\.mark\.priority\(["\']([^"\']+)["\']\)'
+        )
+        self.test_category_pattern = re.compile(
+            r'@pytest\.mark\.test_category\(["\']([^"\']+)["\']\)'
+        )
 
     def discover_tests(self, root_dir: Path = None) -> List[Dict]:
         """
@@ -89,9 +95,13 @@ class TestDiscovery:
                         "title": self._generate_test_title(node.name),
                         "line_number": node.lineno,
                         "epic_references": self._extract_epic_references(content),
-                        "user_story_references": (self._extract_user_story_references(content)),
+                        "user_story_references": (
+                            self._extract_user_story_references(content)
+                        ),
                         "defect_references": self._extract_defect_references(content),
-                        "bdd_scenario_name": self._extract_bdd_scenario_name(node, content),
+                        "bdd_scenario_name": self._extract_bdd_scenario_name(
+                            node, content
+                        ),
                         "component": self._extract_component(content),
                         "priority": self._extract_priority(content),
                         "test_category": self._extract_test_category(content),
@@ -122,7 +132,9 @@ class TestDiscovery:
         """Extract Defect references from test file content."""
         return [f"DEF-{match}" for match in self.defect_pattern.findall(content)]
 
-    def _extract_bdd_scenario_name(self, node: ast.FunctionDef, content: str) -> Optional[str]:
+    def _extract_bdd_scenario_name(
+        self, node: ast.FunctionDef, content: str
+    ) -> Optional[str]:
         """Extract BDD scenario name if this is a BDD test."""
         # Look for pytest-bdd scenario decorators
         for decorator in node.decorator_list:
@@ -233,7 +245,9 @@ class TestDatabaseSync:
                 component=test_data.get("component"),
                 test_priority=test_data.get("priority") or "medium",
                 test_category=test_data.get("test_category"),
-                description=(f"Auto-discovered test from {test_data['test_file_path']}:{test_data['line_number']}"),
+                description=(
+                    f"Auto-discovered test from {test_data['test_file_path']}:{test_data['line_number']}"
+                ),
             )
             db.add(test)
             return "created"
@@ -338,7 +352,9 @@ class TestExecutionTracker:
 
         return False
 
-    def create_defect_from_failure(self, test_id: str, failure_message: str, stack_trace: str) -> Optional[str]:
+    def create_defect_from_failure(
+        self, test_id: str, failure_message: str, stack_trace: str
+    ) -> Optional[str]:
         """
         Create a defect record from test failure.
 
@@ -380,7 +396,9 @@ class TestExecutionTracker:
 
             # Generate a placeholder GitHub issue number (will be updated when
             # actual issue is created)
-            github_issue_number = 900000 + defect_count + 1  # Start from 900001 for test failures
+            github_issue_number = (
+                900000 + defect_count + 1
+            )  # Start from 900001 for test failures
 
             # Create defect
             defect = Defect(
@@ -413,7 +431,9 @@ class TestExecutionTracker:
             return "medium"
         elif any(keyword in failure_lower for keyword in ["import", "module"]):
             return "high"
-        elif any(keyword in failure_lower for keyword in ["security", "auth", "permission"]):
+        elif any(
+            keyword in failure_lower for keyword in ["security", "auth", "permission"]
+        ):
             return "critical"
         else:
             return "low"
@@ -534,7 +554,9 @@ class BDDScenarioParser:
 
         # Use first User Story reference
         us_id = scenario["user_story_references"][0]
-        user_story = db.query(UserStory).filter(UserStory.user_story_id == us_id).first()
+        user_story = (
+            db.query(UserStory).filter(UserStory.user_story_id == us_id).first()
+        )
 
         if user_story:
             # Create or update test record for this scenario
@@ -554,7 +576,9 @@ class BDDScenarioParser:
                     title=f"BDD: {scenario['scenario_name']}",
                     bdd_scenario_name=scenario["scenario_name"],
                     epic_id=user_story.epic_id,
-                    description=(f"BDD scenario from {scenario['feature_file']}:{scenario['line_number']}"),
+                    description=(
+                        f"BDD scenario from {scenario['feature_file']}:{scenario['line_number']}"
+                    ),
                 )
                 db.add(test)
             else:

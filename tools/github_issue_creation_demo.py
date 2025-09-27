@@ -131,7 +131,7 @@ def demonstrate_issue_template_generation(
                     content = f.read()
                     lines = content.split("\n")
 
-                print(f"   Preview (first 15 lines):")
+                print("   Preview (first 15 lines):")
                 for line in lines[:15]:
                     print(f"     {line}")
 
@@ -190,25 +190,25 @@ def demonstrate_batch_processing(
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
 
-    print(f"   Batch processing completed")
+    print("   Batch processing completed")
     print(f"   Report generated: {report_path}")
 
     # Display summary
     successful = [r for r in results if r.success]
     failed = [r for r in results if not r.success]
 
-    print(f"   Summary:")
+    print("   Summary:")
     print(f"     - Total processed: {len(results)}")
     print(f"     - Successful: {len(successful)}")
     print(f"     - Failed: {len(failed)}")
     print(
-        f"     - Success rate: {len(successful)/len(results)*100:.1f}%"
+        f"     - Success rate: {len(successful) / len(results) * 100:.1f}%"
         if results
         else "0%"
     )
 
     if failed:
-        print(f"   Errors:")
+        print("   Errors:")
         for result in failed:
             print(f"     - {result.error_message}")
 
@@ -237,14 +237,11 @@ def demonstrate_label_intelligence(
 
             # Show label reasoning
             if "priority/high" in template.labels:
-                print(
-                    f"     [HIGH]"
-                    f"High priority detected (critical/security issue)"
-                )
+                print("     [HIGH]High priority detected (critical/security issue)")
             elif "flaky-test" in template.template_type:
-                print(f"     [FLAKY] Flaky test detected (multiple occurrences)")
+                print("     [FLAKY] Flaky test detected (multiple occurrences)")
             elif "infrastructure" in template.template_type:
-                print(f"     [INFRA] Infrastructure issue detected")
+                print("     [INFRA] Infrastructure issue detected")
 
         else:
             print(f"     No context available for failure {failure_id}")
@@ -318,22 +315,19 @@ def main():
         demonstrate_label_intelligence(creator, failure_ids)
         demonstrate_batch_processing(creator, failure_ids, dry_run=dry_run)
 
-        print(f"\nDemo completed successfully!")
+        print("\nDemo completed successfully!")
         print(f"Database: {db_path}")
-        print(f"Templates: quality/reports/issue_template_*.md")
-        print(f"Report: quality/reports/github_issue_creation_report_*.md")
+        print("Templates: quality/reports/issue_template_*.md")
+        print("Report: quality/reports/github_issue_creation_report_*.md")
 
         # Display key achievements
-        print(f"\n*** Key Achievements:")
-        print(f"[DONE] Automated issue template generation with failure context")
-        print(
-            f"[DONE] Intelligent"
-            f"label assignment based on failure characteristics"
-        )
-        print(f"[DONE] Pre-filled environment info and reproduction guides")
-        print(f"[DONE] Batch processing for multiple failures")
-        print(f"[DONE] Integration with failure correlation and log analysis")
-        print(f"[DONE] Dry-run mode for safe template validation")
+        print("\n*** Key Achievements:")
+        print("[DONE] Automated issue template generation with failure context")
+        print("[DONE] Intelligentlabel assignment based on failure characteristics")
+        print("[DONE] Pre-filled environment info and reproduction guides")
+        print("[DONE] Batch processing for multiple failures")
+        print("[DONE] Integration with failure correlation and log analysis")
+        print("[DONE] Dry-run mode for safe template validation")
 
     except Exception as e:
         print(f"Demo failed: {e}")

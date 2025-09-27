@@ -15,7 +15,9 @@ from typing import Any, Dict, Optional
 from github_label_mapper import GitHubIssueLabelMapper, IssueData
 
 # Configure logging for GitHub Actions
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -53,7 +55,9 @@ class GitHubActionRunner:
                 event_data: Dict[str, Any] = json.load(f)
             return event_data
         except FileNotFoundError:
-            raise GitHubActionError(f"GitHub event file not found: {self.github_event_path}")
+            raise GitHubActionError(
+                f"GitHub event file not found: {self.github_event_path}"
+            )
         except json.JSONDecodeError as e:
             raise GitHubActionError(f"Invalid JSON in GitHub event file: {e}")
 
@@ -75,7 +79,9 @@ class GitHubActionRunner:
                 issue_number=issue.get("number", 0),
             )
 
-            logger.info(f"Extracted issue data for #{issue_data.issue_number}: {issue_data.title}")
+            logger.info(
+                f"Extracted issue data for #{issue_data.issue_number}: {issue_data.title}"
+            )
             return issue_data
 
         except KeyError as e:
@@ -133,7 +139,9 @@ class GitHubActionRunner:
 
             if removed_labels:
                 logger.info(f"Labels to remove: {sorted(removed_labels)}")
-                self.set_github_output("removed_labels", json.dumps(sorted(removed_labels)))
+                self.set_github_output(
+                    "removed_labels", json.dumps(sorted(removed_labels))
+                )
 
             logger.info("GitHub Issue Label Assignment completed successfully")
 

@@ -19,7 +19,7 @@ from datetime import datetime
 from typing import List, Dict, Optional
 
 # Add src to path for imports
-sys.path.append('src')
+sys.path.append("src")
 
 from be.database import SessionLocal
 from be.models.traceability.defect import Defect
@@ -28,11 +28,13 @@ from be.models.traceability.user_story import UserStory
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler(f'quality/logs/defect_relationship_repair_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'),
-        logging.StreamHandler()
-    ]
+        logging.FileHandler(
+            f"quality/logs/defect_relationship_repair_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+        ),
+        logging.StreamHandler(),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -45,22 +47,26 @@ def parse_user_story_references(text: str) -> Dict[str, List[str]]:
         Dict with 'us_ids' and 'issue_numbers' lists
     """
     if not text:
-        return {'us_ids': [], 'issue_numbers': []}
+        return {"us_ids": [], "issue_numbers": []}
 
     # Find US-XXXXX format references
-    us_matches = re.findall(r'US-(\d{5})', text, re.IGNORECASE)
+    us_matches = re.findall(r"US-(\d{5})", text, re.IGNORECASE)
 
     # Find #issue-number format references (but exclude obvious non-issue references)
     # Look for # followed by 1-5 digits, but not in contexts like version numbers
-    issue_matches = re.findall(r'(?<!v)(?<!V)#(\d{1,5})(?!\.\d)', text)
+    issue_matches = re.findall(r"(?<!v)(?<!V)#(\d{1,5})(?!\.\d)", text)
 
     return {
-        'us_ids': [f'US-{match}' for match in us_matches],
-        'issue_numbers': [int(match) for match in issue_matches if 1 <= int(match) <= 99999]
+        "us_ids": [f"US-{match}" for match in us_matches],
+        "issue_numbers": [
+            int(match) for match in issue_matches if 1 <= int(match) <= 99999
+        ],
     }
 
 
-def find_matching_user_story(session, us_ids: List[str], issue_numbers: List[int]) -> Optional[UserStory]:
+def find_matching_user_story(
+    session, us_ids: List[str], issue_numbers: List[int]
+) -> Optional[UserStory]:
     """
     Find a matching user story for the given references.
 
@@ -68,20 +74,26 @@ def find_matching_user_story(session, us_ids: List[str], issue_numbers: List[int
     """
     # Try US-XXXXX format first (more reliable)
     for us_id in us_ids:
-        user_story = session.query(UserStory).filter(
-            UserStory.user_story_id == us_id
-        ).first()
+        user_story = (
+            session.query(UserStory).filter(UserStory.user_story_id == us_id).first()
+        )
         if user_story:
-            logger.debug(f"Found user story via US ID: {us_id} -> {user_story.user_story_id}")
+            logger.debug(
+                f"Found user story via US ID: {us_id} -> {user_story.user_story_id}"
+            )
             return user_story
 
     # Try issue numbers if no US-XXXXX match found
     for issue_num in issue_numbers:
-        user_story = session.query(UserStory).filter(
-            UserStory.github_issue_number == issue_num
-        ).first()
+        user_story = (
+            session.query(UserStory)
+            .filter(UserStory.github_issue_number == issue_num)
+            .first()
+        )
         if user_story:
-            logger.debug(f"Found user story via issue number: #{issue_num} -> {user_story.user_story_id}")
+            logger.debug(
+                f"Found user story via issue number: #{issue_num} -> {user_story.user_story_id}"
+            )
             return user_story
 
     return None
@@ -101,80 +113,98 @@ def repair_defect_relationships(dry_run: bool = True) -> Dict[str, int]:
 
     session = SessionLocal()
     stats = {
-        'total_defects': 0,
-        'orphaned_defects': 0,
-        'defects_with_references': 0,
-        'successful_repairs': 0,
-        'failed_repairs': 0,
-        'broken_links_fixed': 0
+        "total_defects": 0,
+        "orphaned_defects": 0,
+        "defects_with_references": 0,
+        "successful_repairs": 0,
+        "failed_repairs": 0,
+        "broken_links_fixed": 0,
     }
 
     try:
         # Get all defects without user story links
-        orphaned_defects = session.query(Defect).filter(
-            Defect.github_user_story_number.is_(None)
-        ).all()
+        orphaned_defects = (
+            session.query(Defect)
+            .filter(Defect.github_user_story_number.is_(None))
+            .all()
+        )
 
-        stats['total_defects'] = session.query(Defect).count()
-        stats['orphaned_defects'] = len(orphaned_defects)
+        stats["total_defects"] = session.query(Defect).count()
+        stats["orphaned_defects"] = len(orphaned_defects)
 
         logger.info(f"Found {len(orphaned_defects)} orphaned defects to analyze")
 
         for defect in orphaned_defects:
             # Combine title and description for analysis
-            title = defect.title or ''
-            description = defect.description or ''
-            combined_text = f'{title} {description}'
+            title = defect.title or ""
+            description = defect.description or ""
+            combined_text = f"{title} {description}"
 
             # Parse for user story references
             references = parse_user_story_references(combined_text)
 
-            if references['us_ids'] or references['issue_numbers']:
-                stats['defects_with_references'] += 1
-                logger.info(f"Analyzing {defect.defect_id}: \"{title[:50]}...\"")
+            if references["us_ids"] or references["issue_numbers"]:
+                stats["defects_with_references"] += 1
+                logger.info(f'Analyzing {defect.defect_id}: "{title[:50]}..."')
                 logger.info(f"  US references: {references['us_ids']}")
                 logger.info(f"  Issue references: {references['issue_numbers']}")
 
                 # Find matching user story
                 user_story = find_matching_user_story(
-                    session,
-                    references['us_ids'],
-                    references['issue_numbers']
+                    session, references["us_ids"], references["issue_numbers"]
                 )
 
                 if user_story:
-                    logger.info(f"  ✓ Found matching user story: {user_story.user_story_id} (GitHub #{user_story.github_issue_number})")
+                    logger.info(
+                        f"  ✓ Found matching user story: {user_story.user_story_id} (GitHub #{user_story.github_issue_number})"
+                    )
 
                     if not dry_run:
                         defect.github_user_story_number = user_story.github_issue_number
-                        logger.info(f"  ✓ Updated {defect.defect_id}.github_user_story_number = {user_story.github_issue_number}")
+                        logger.info(
+                            f"  ✓ Updated {defect.defect_id}.github_user_story_number = {user_story.github_issue_number}"
+                        )
                     else:
-                        logger.info(f"  ✓ DRY RUN: Would update {defect.defect_id}.github_user_story_number = {user_story.github_issue_number}")
+                        logger.info(
+                            f"  ✓ DRY RUN: Would update {defect.defect_id}.github_user_story_number = {user_story.github_issue_number}"
+                        )
 
-                    stats['successful_repairs'] += 1
+                    stats["successful_repairs"] += 1
                 else:
-                    logger.warning(f"  ✗ No matching user story found for references: {references}")
-                    stats['failed_repairs'] += 1
+                    logger.warning(
+                        f"  ✗ No matching user story found for references: {references}"
+                    )
+                    stats["failed_repairs"] += 1
 
         # Check for and fix broken links (defects pointing to non-existent user stories)
-        linked_defects = session.query(Defect).filter(
-            Defect.github_user_story_number.isnot(None)
-        ).all()
+        linked_defects = (
+            session.query(Defect)
+            .filter(Defect.github_user_story_number.isnot(None))
+            .all()
+        )
 
         for defect in linked_defects:
-            user_story = session.query(UserStory).filter(
-                UserStory.github_issue_number == defect.github_user_story_number
-            ).first()
+            user_story = (
+                session.query(UserStory)
+                .filter(
+                    UserStory.github_issue_number == defect.github_user_story_number
+                )
+                .first()
+            )
 
             if not user_story:
-                logger.warning(f"BROKEN LINK: {defect.defect_id} -> US #{defect.github_user_story_number} (NOT FOUND)")
+                logger.warning(
+                    f"BROKEN LINK: {defect.defect_id} -> US #{defect.github_user_story_number} (NOT FOUND)"
+                )
                 if not dry_run:
                     defect.github_user_story_number = None
                     logger.info(f"  ✓ Cleared broken link for {defect.defect_id}")
                 else:
-                    logger.info(f"  ✓ DRY RUN: Would clear broken link for {defect.defect_id}")
+                    logger.info(
+                        f"  ✓ DRY RUN: Would clear broken link for {defect.defect_id}"
+                    )
 
-                stats['broken_links_fixed'] += 1
+                stats["broken_links_fixed"] += 1
 
         if not dry_run:
             session.commit()
@@ -203,40 +233,52 @@ def validate_relationships() -> Dict[str, int]:
 
     session = SessionLocal()
     validation_stats = {
-        'total_defects': 0,
-        'linked_defects': 0,
-        'valid_links': 0,
-        'broken_links': 0,
-        'orphaned_defects': 0
+        "total_defects": 0,
+        "linked_defects": 0,
+        "valid_links": 0,
+        "broken_links": 0,
+        "orphaned_defects": 0,
     }
 
     try:
-        validation_stats['total_defects'] = session.query(Defect).count()
+        validation_stats["total_defects"] = session.query(Defect).count()
 
         # Check linked defects
-        linked_defects = session.query(Defect).filter(
-            Defect.github_user_story_number.isnot(None)
-        ).all()
-        validation_stats['linked_defects'] = len(linked_defects)
+        linked_defects = (
+            session.query(Defect)
+            .filter(Defect.github_user_story_number.isnot(None))
+            .all()
+        )
+        validation_stats["linked_defects"] = len(linked_defects)
 
         for defect in linked_defects:
-            user_story = session.query(UserStory).filter(
-                UserStory.github_issue_number == defect.github_user_story_number
-            ).first()
+            user_story = (
+                session.query(UserStory)
+                .filter(
+                    UserStory.github_issue_number == defect.github_user_story_number
+                )
+                .first()
+            )
 
             if user_story:
-                validation_stats['valid_links'] += 1
+                validation_stats["valid_links"] += 1
                 logger.debug(f"VALID: {defect.defect_id} -> {user_story.user_story_id}")
             else:
-                validation_stats['broken_links'] += 1
-                logger.error(f"BROKEN: {defect.defect_id} -> US #{defect.github_user_story_number} (NOT FOUND)")
+                validation_stats["broken_links"] += 1
+                logger.error(
+                    f"BROKEN: {defect.defect_id} -> US #{defect.github_user_story_number} (NOT FOUND)"
+                )
 
         # Check orphaned defects
-        validation_stats['orphaned_defects'] = session.query(Defect).filter(
-            Defect.github_user_story_number.is_(None)
-        ).count()
+        validation_stats["orphaned_defects"] = (
+            session.query(Defect)
+            .filter(Defect.github_user_story_number.is_(None))
+            .count()
+        )
 
-        logger.info(f"Validation complete: {validation_stats['valid_links']} valid, {validation_stats['broken_links']} broken, {validation_stats['orphaned_defects']} orphaned")
+        logger.info(
+            f"Validation complete: {validation_stats['valid_links']} valid, {validation_stats['broken_links']} broken, {validation_stats['orphaned_defects']} orphaned"
+        )
 
     except Exception as e:
         logger.error(f"Error during validation: {e}")
@@ -251,14 +293,27 @@ def main():
     """Main entry point for the repair script."""
     import argparse
 
-    parser = \
-        argparse.ArgumentParser(description='Repair defect-user story relationship links')
-    parser.add_argument('--dry-run', action='store_true', default=True,
-                       help='Only analyze and log what would be changed (default: True)')
-    parser.add_argument('--execute', action='store_true', default=False,
-                       help='Actually execute the repairs (overrides --dry-run)')
-    parser.add_argument('--validate-only', action='store_true', default=False,
-                       help='Only validate existing relationships without repair')
+    parser = argparse.ArgumentParser(
+        description="Repair defect-user story relationship links"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=True,
+        help="Only analyze and log what would be changed (default: True)",
+    )
+    parser.add_argument(
+        "--execute",
+        action="store_true",
+        default=False,
+        help="Actually execute the repairs (overrides --dry-run)",
+    )
+    parser.add_argument(
+        "--validate-only",
+        action="store_true",
+        default=False,
+        help="Only validate existing relationships without repair",
+    )
 
     args = parser.parse_args()
 
@@ -266,7 +321,9 @@ def main():
     dry_run = args.dry_run and not args.execute
 
     logger.info("=== Defect-User Story Relationship Repair Tool ===")
-    logger.info(f"Mode: {'VALIDATION ONLY' if args.validate_only else ('DRY RUN' if dry_run else 'EXECUTION')}")
+    logger.info(
+        f"Mode: {'VALIDATION ONLY' if args.validate_only else ('DRY RUN' if dry_run else 'EXECUTION')}"
+    )
 
     try:
         if args.validate_only:
@@ -299,5 +356,5 @@ def main():
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -10,19 +10,15 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 Architecture Decision: ADR-003 - Hybrid GitHub + Database RTM Architecture
 """
 
-import argparse
 import json
 import sys
 from datetime import datetime, UTC
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 import click
 from rich.console import Console
-from rich.progress import track
 from rich.table import Table
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -153,7 +149,9 @@ def create_user_story(
 
         click.echo(f"Created User Story {user_story_id}")
         if ctx.obj["verbose"]:
-            click.echo(f"Epic: {epic_id}, GitHub Issue: #{github_issue}, Points: {story_points}")
+            click.echo(
+                f"Epic: {epic_id}, GitHub Issue: #{github_issue}, Points: {story_points}"
+            )
 
     except IntegrityError as e:
         db.rollback()
@@ -353,8 +351,7 @@ def epic_progress(ctx, epic_id, format):
             )
             test_pass_rate = (passed_tests / len(tests)) * 100
 
-        critical_defects = \
-            sum(1 for defect in defects if defect.severity == "critical")
+        critical_defects = sum(1 for defect in defects if defect.severity == "critical")
         open_defects = sum(
             1 for defect in defects if defect.status in ["open", "in_progress"]
         )
@@ -444,7 +441,7 @@ def import_rtm(ctx, file_path, dry_run):
         with console.status("[bold green]Importing RTM data..."):
             results = migrator.migrate_from_file(file_path)
 
-        console.print(f"[green]Import completed successfully![/green]")
+        console.print("[green]Import completed successfully![/green]")
         console.print(f"Epics: {results['epics']}")
         console.print(f"User Stories: {results['user_stories']}")
         console.print(f"Tests: {results['tests']}")
@@ -487,7 +484,9 @@ def export(ctx, output, format, include_tests):
 
         click.echo(f"Exported RTM data to {output}")
         if ctx.obj["verbose"]:
-            click.echo(f"Exported {len(data['epics'])} epics, {len(data['user_stories'])} user stories")
+            click.echo(
+                f"Exported {len(data['epics'])} epics, {len(data['user_stories'])} user stories"
+            )
 
     finally:
         db.close()
@@ -534,7 +533,7 @@ def health_check(ctx):
         orphaned_tests = db.query(Test).filter(Test.epic_id.is_(None)).count()
 
         if orphaned_us > 0 or orphaned_tests > 0:
-            console.print(f"\n[yellow]Warning: Found orphaned records:[/yellow]")
+            console.print("\n[yellow]Warning: Found orphaned records:[/yellow]")
             console.print(f"User Stories without Epic: {orphaned_us}")
             console.print(f"Tests without Epic: {orphaned_tests}")
 

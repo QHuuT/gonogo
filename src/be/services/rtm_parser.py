@@ -92,7 +92,9 @@ class RTMMarkdownParser:
                         "epic_reference": epic_id,  # Will be resolved to DB ID later
                         "story_points": self._extract_story_points(lines, i),
                         "priority": self._extract_priority_from_context(lines, i),
-                        "implementation_status": self._extract_implementation_status(lines, i),
+                        "implementation_status": self._extract_implementation_status(
+                            lines, i
+                        ),
                     }
                     user_stories.append(us_data)
                     break
@@ -154,7 +156,9 @@ class RTMMarkdownParser:
                 "test_file_path": test_path,
                 "title": f"Test: {Path(full_path).stem}",
                 "description": f"Test file: {test_path}",
-                "test_function_name": self._extract_test_function_from_context(content, test_path),
+                "test_function_name": self._extract_test_function_from_context(
+                    content, test_path
+                ),
             }
             tests.append(test_data)
 
@@ -184,7 +188,9 @@ class RTMMarkdownParser:
 
         return " ".join(description_lines) if description_lines else None
 
-    def _extract_github_issue_from_context(self, lines: List[str], start_index: int) -> Optional[int]:
+    def _extract_github_issue_from_context(
+        self, lines: List[str], start_index: int
+    ) -> Optional[int]:
         """Extract GitHub issue number from surrounding context."""
         for i in range(max(0, start_index - 2), min(start_index + 3, len(lines))):
             github_match = re.search(self.github_issue_pattern, lines[i])
@@ -232,7 +238,9 @@ class RTMMarkdownParser:
             return int(points_match.group(1))
         return 0
 
-    def _extract_business_value(self, lines: List[str], start_index: int) -> Optional[str]:
+    def _extract_business_value(
+        self, lines: List[str], start_index: int
+    ) -> Optional[str]:
         """Extract business value from context."""
         for i in range(start_index, min(start_index + 10, len(lines))):
             line = lines[i].lower()
@@ -280,7 +288,9 @@ class RTMMarkdownParser:
         else:
             return "bug"
 
-    def _extract_test_function_from_context(self, content: str, test_path: str) -> Optional[str]:
+    def _extract_test_function_from_context(
+        self, content: str, test_path: str
+    ) -> Optional[str]:
         """Extract test function name from context."""
         # Find lines near the test path
         lines = content.split("\n")
@@ -366,7 +376,11 @@ class RTMDataMigrator:
                 continue
 
             # Check if user story already exists
-            existing = db.query(UserStory).filter(UserStory.user_story_id == data["user_story_id"]).first()
+            existing = (
+                db.query(UserStory)
+                .filter(UserStory.user_story_id == data["user_story_id"])
+                .first()
+            )
             if existing:
                 continue
 
@@ -396,7 +410,11 @@ class RTMDataMigrator:
         count = 0
         for data in test_data:
             # Check if test already exists
-            existing = db.query(Test).filter(Test.test_file_path == data["test_file_path"]).first()
+            existing = (
+                db.query(Test)
+                .filter(Test.test_file_path == data["test_file_path"])
+                .first()
+            )
             if existing:
                 continue
 
@@ -421,7 +439,9 @@ class RTMDataMigrator:
                 continue
 
             # Check if defect already exists
-            existing = db.query(Defect).filter(Defect.defect_id == data["defect_id"]).first()
+            existing = (
+                db.query(Defect).filter(Defect.defect_id == data["defect_id"]).first()
+            )
             if existing:
                 continue
 

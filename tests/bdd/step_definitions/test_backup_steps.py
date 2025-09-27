@@ -143,7 +143,7 @@ def database_with_rtm_data(backup_context):
                 user_story_id=f"US-{i:05d}",
                 epic_id=epic.id,
                 title=f"Test User Story {i} with émojis 🚀",
-                description=f"Test user story description with Unicode: café, naïve, résumé",
+                description="Test user story description with Unicode: café, naïve, résumé",
                 status="planned",
             )
             db.add(user_story)

@@ -16,13 +16,12 @@ Usage:
 
 import argparse
 import json
-import re
 import sys
 from collections import Counter, defaultdict
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 # Import Jinja2 for template rendering
 try:
@@ -33,7 +32,7 @@ except ImportError:
 
 # Import our structured logging system
 sys.path.append(str(Path(__file__).parent.parent))
-from src.shared.logging import LogEntry, LogLevel, StructuredLogger, get_logger
+from src.shared.logging import LogEntry
 
 
 @dataclass
@@ -133,9 +132,9 @@ class ReportGenerator:
             if duration_ms < 1000:
                 return f"{duration_ms:.1f}ms"
             elif duration_ms < 60000:
-                return f"{duration_ms/1000:.1f}s"
+                return f"{duration_ms / 1000:.1f}s"
             else:
-                return f"{duration_ms/60000:.1f}m"
+                return f"{duration_ms / 60000:.1f}m"
 
         def format_timestamp(timestamp: str) -> str:
             """Format ISO timestamp to human readable."""
@@ -797,8 +796,7 @@ def main():
     _analyze_and_report_log_quality(log_entries, report_data)
 
     print(f"Generating report with {len(report_data.test_results)} test results...")
-    output_path = \
-        generator.generate_report(report_data, args.template, args.filename)
+    output_path = generator.generate_report(report_data, args.template, args.filename)
 
     print(f"Report generation complete: {output_path}")
     print(

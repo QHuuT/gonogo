@@ -11,7 +11,6 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 
 import argparse
 import json
-import os
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -25,7 +24,14 @@ sys.path.insert(0, str(src_path))
 
 try:
     from be.database import get_db_session
-    from be.models.traceability import Defect, Epic, GitHubSync, Test, UserStory, Capability
+    from be.models.traceability import (
+        Defect,
+        Epic,
+        GitHubSync,
+        Test,
+        UserStory,
+        Capability,
+    )
 
     DATABASE_AVAILABLE = True
 except ImportError as e:
@@ -131,8 +137,7 @@ class GitHubSyncManager:
             # Filter by date if specified
             if since_date:
                 try:
-                    since_dt = \
-                        datetime.fromisoformat(since_date.replace("Z", "+00:00"))
+                    since_dt = datetime.fromisoformat(since_date.replace("Z", "+00:00"))
                     self.github_issues = [
                         issue
                         for issue in all_issues
@@ -173,7 +178,9 @@ class GitHubSyncManager:
             return None
         return None
 
-    def _close_github_issue_if_completed(self, issue_number: Optional[int], new_status: str) -> None:
+    def _close_github_issue_if_completed(
+        self, issue_number: Optional[int], new_status: str
+    ) -> None:
         """Close GitHub issue when implementation status is completed/done (opt-in)."""
         if not getattr(self, "close_completed", False) or self.dry_run:
             return
@@ -185,10 +192,17 @@ class GitHubSyncManager:
         if state and str(state).lower() == "closed":
             return
         try:
-            subprocess.run([
-                "gh", "issue", "close", str(issue_number),
-                "-c", "Auto-closed by sync: implementation status set to completed"
-            ], check=True)
+            subprocess.run(
+                [
+                    "gh",
+                    "issue",
+                    "close",
+                    str(issue_number),
+                    "-c",
+                    "Auto-closed by sync: implementation status set to completed",
+                ],
+                check=True,
+            )
             if self.verbose:
                 print(f"  [CLOSED] GitHub issue #{issue_number} (status completed)")
         except subprocess.CalledProcessError as e:
@@ -220,8 +234,11 @@ class GitHubSyncManager:
 
     def get_or_create_capability(self, capability_id: str) -> Optional[int]:
         """Get or create capability by ID, return the database ID."""
-        capability = \
-            self.db_session.query(Capability).filter_by(capability_id=capability_id).first()
+        capability = (
+            self.db_session.query(Capability)
+            .filter_by(capability_id=capability_id)
+            .first()
+        )
 
         if not capability:
             # Create new capability with basic info
@@ -229,7 +246,7 @@ class GitHubSyncManager:
             capability = Capability(
                 capability_id=capability_id,
                 name=capability_name,
-                description=f"Auto-created from GitHub label {capability_id}"
+                description=f"Auto-created from GitHub label {capability_id}",
             )
             self.db_session.add(capability)
             self.db_session.flush()  # Get the ID without committing
@@ -245,7 +262,7 @@ class GitHubSyncManager:
             "CAP-00001": "GitHub Integration",
             "CAP-00002": "Requirements Traceability",
             "CAP-00003": "Blog Platform",
-            "CAP-00004": "GDPR Compliance"
+            "CAP-00004": "GDPR Compliance",
         }
         return capability_names.get(capability_id, f"Capability {capability_id}")
 
@@ -348,12 +365,13 @@ class GitHubSyncManager:
 
             # Optionally close the GitHub issue when implementation status is completed/done
             try:
-                self._close_github_issue_if_completed(us.github_issue_number, new_status)
+                self._close_github_issue_if_completed(
+                    us.github_issue_number, new_status
+                )
             except Exception as e:
                 if self.verbose:
                     print(
-                        f"  [WARN] close-if-completed"
-                        f"failed for {us.user_story_id}: {e}"
+                        f"  [WARN] close-if-completedfailed for {us.user_story_id}: {e}"
                     )
 
         if not self.dry_run:
@@ -414,8 +432,9 @@ class GitHubSyncManager:
                     fallback_used = True
 
             if capability_label_id:
-                new_capability_db_id = \
-                    self.get_or_create_capability(capability_label_id)
+                new_capability_db_id = self.get_or_create_capability(
+                    capability_label_id
+                )
 
             # Check if status or capability needs update
             status_needs_update = old_status != new_status
@@ -444,11 +463,13 @@ class GitHubSyncManager:
                     if capability_needs_update:
                         if old_capability_id:
                             if hasattr(self.db_session, "get"):
-                                cap_old_obj = \
-                                    self.db_session.get(Capability, old_capability_id)
+                                cap_old_obj = self.db_session.get(
+                                    Capability, old_capability_id
+                                )
                             else:
-                                cap_old_obj = \
-                                    self.db_session.query(Capability).get(old_capability_id)
+                                cap_old_obj = self.db_session.query(Capability).get(
+                                    old_capability_id
+                                )
                         else:
                             cap_old_obj = None
                         cap_old = cap_old_obj.capability_id if cap_old_obj else "None"
@@ -456,17 +477,21 @@ class GitHubSyncManager:
                         update_msg += f" capability {cap_old} -> {cap_new}"
                     print(update_msg)
 
-            if fallback_used and \
-               not capability_label_present and capability_label_id:
+            if fallback_used and not capability_label_present and capability_label_id:
                 label_to_add = capability_label_name(capability_label_id)
                 if self.verbose:
                     print(
                         f"  [INFO] {epic.epic_id}:"
                         f"missing GitHub label '{label_to_add}' for capability mapping"
                     )
-                if epic.github_issue_number and not any(suggestion.get("epic_id") == epic.epic_id for suggestion in self.capability_label_suggestions):
+                if epic.github_issue_number and not any(
+                    suggestion.get("epic_id") == epic.epic_id
+                    for suggestion in self.capability_label_suggestions
+                ):
                     capability_info = CAPABILITY_CATALOG.get(capability_label_id)
-                    capability_name = capability_info.name if capability_info else capability_label_id
+                    capability_name = (
+                        capability_info.name if capability_info else capability_label_id
+                    )
                     self.capability_label_suggestions.append(
                         {
                             "epic_id": epic.epic_id,
@@ -594,13 +619,13 @@ class GitHubSyncManager:
         error_count = sum(1 for r in results if r.error)
 
         if self.verbose:
-            print(f"\nSync Results Summary:")
+            print("\nSync Results Summary:")
             print(f"  Total entities: {len(results)}")
             print(f"  Updated: {updated_count}")
             print(f"  Errors: {error_count}")
 
             if error_count > 0:
-                print(f"\nErrors encountered:")
+                print("\nErrors encountered:")
                 for result in results:
                     if result.error:
                         print(f"  {result.entity_id}: {result.error}")
@@ -701,8 +726,7 @@ class GitHubSyncManager:
             )
             completed_items = completed_user_stories + completed_defects
 
-            progress = \
-                (completed_items / total_items * 100) if total_items > 0 else 0
+            progress = (completed_items / total_items * 100) if total_items > 0 else 0
 
             # Calculate story points
             total_story_points = sum(us.story_points or 0 for us in user_stories)
@@ -803,4 +827,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

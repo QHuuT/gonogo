@@ -30,7 +30,7 @@ import click
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from shared.utils.rtm_link_generator import RTMLinkGenerator, RTMValidationResult
+from shared.utils.rtm_link_generator import RTMLinkGenerator
 
 
 @click.group()
@@ -155,7 +155,7 @@ def update(ctx, rtm_file_path: Optional[str], dry_run: bool, backup: bool):
     if dry_run:
         click.echo("DRY RUN - No changes made")
 
-    click.echo(f"RTM Link Update Results:")
+    click.echo("RTM Link Update Results:")
     click.echo(f"  Epic links updated: {updates['epic_links']}")
     click.echo(f"  User story links updated: {updates['user_story_links']}")
     click.echo(f"  Defect links updated: {updates['defect_links']}")
@@ -211,8 +211,7 @@ def generate_bdd_link(
     """Generate a BDD scenario link."""
     generator = ctx.obj["generator"]
 
-    link = \
-        generator.generate_bdd_scenario_link(feature_file, scenario_name, rtm_path)
+    link = generator.generate_bdd_scenario_link(feature_file, scenario_name, rtm_path)
 
     click.echo(link)
 

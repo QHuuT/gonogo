@@ -29,8 +29,7 @@ from shared.testing.database_integration import (
 # Import epic inheritance system
 from epic_label_inheritance import (
     inherit_epic_labels_for_tests,
-    find_test_epic_relationship,
-    run_comprehensive_epic_inheritance
+    run_comprehensive_epic_inheritance,
 )
 
 console = Console()
@@ -94,9 +93,8 @@ def tests(ctx, dry_run):
                 sync = TestDatabaseSync()
                 stats = sync.sync_tests_to_database()
 
-            console.print(f"[green]Sync completed![/green]")
-            console.print(
-                f"Created: {stats['created']}, Updated: {stats['updated']}")
+            console.print("[green]Sync completed![/green]")
+            console.print(f"Created: {stats['created']}, Updated: {stats['updated']}")
             console.print(f"Linked to Epics: {stats['linked_to_epics']}")
 
             if stats["errors"] > 0:
@@ -112,41 +110,64 @@ def tests(ctx, dry_run):
 
 @discover.command()
 @click.option(
-    "--dry-run", is_flag=True, help="Show epic inheritance analysis without database changes"
+    "--dry-run",
+    is_flag=True,
+    help="Show epic inheritance analysis without database changes",
 )
 @click.option(
     "--entity-type",
-    type=click.Choice(['tests', 'user-stories', 'defects', 'all']),
-    default='all',
-    help="Which entity types to process for epic inheritance"
+    type=click.Choice(["tests", "user-stories", "defects", "all"]),
+    default="all",
+    help="Which entity types to process for epic inheritance",
 )
 @click.pass_context
 def epics(ctx, dry_run, entity_type):
     """Discover and apply epic inheritance for all test types and entities."""
     try:
-        with console.status(f"[bold green]Processing epic inheritance for {entity_type}..."):
-            if entity_type == 'all':
+        with console.status(
+            f"[bold green]Processing epic inheritance for {entity_type}..."
+        ):
+            if entity_type == "all":
                 results = run_comprehensive_epic_inheritance(dry_run=dry_run)
             else:
                 # Import database session for specific entity types
                 from be.database import SessionLocal
+
                 session = SessionLocal()
                 try:
-                    if entity_type == 'tests':
-                        results = {'test_stats': inherit_epic_labels_for_tests(session, dry_run)}
-                    elif entity_type == 'user-stories':
-                        from epic_label_inheritance import inherit_epic_labels_for_user_stories
-                        results = {'user_story_stats': inherit_epic_labels_for_user_stories(session, dry_run)}
-                    elif entity_type == 'defects':
-                        from epic_label_inheritance import inherit_epic_labels_for_defects
-                        results = {'defect_stats': inherit_epic_labels_for_defects(session, dry_run)}
+                    if entity_type == "tests":
+                        results = {
+                            "test_stats": inherit_epic_labels_for_tests(
+                                session, dry_run
+                            )
+                        }
+                    elif entity_type == "user-stories":
+                        from epic_label_inheritance import (
+                            inherit_epic_labels_for_user_stories,
+                        )
+
+                        results = {
+                            "user_story_stats": inherit_epic_labels_for_user_stories(
+                                session, dry_run
+                            )
+                        }
+                    elif entity_type == "defects":
+                        from epic_label_inheritance import (
+                            inherit_epic_labels_for_defects,
+                        )
+
+                        results = {
+                            "defect_stats": inherit_epic_labels_for_defects(
+                                session, dry_run
+                            )
+                        }
 
                     if not dry_run:
                         session.commit()
                     else:
                         session.rollback()
 
-                    results['success'] = True
+                    results["success"] = True
                 except Exception as e:
                     session.rollback()
                     raise e
@@ -154,69 +175,80 @@ def epics(ctx, dry_run, entity_type):
                     session.close()
 
         # Display results in a formatted table
-        console.print(f"[green]Epic inheritance processing completed![/green]")
+        console.print("[green]Epic inheritance processing completed![/green]")
 
         # User Stories results
-        if 'user_story_stats' in results:
-            us_stats = results['user_story_stats']
+        if "user_story_stats" in results:
+            us_stats = results["user_story_stats"]
             table = Table(title="User Story Epic Inheritance")
             table.add_column("Metric", style="cyan")
             table.add_column("Value", style="white")
-            table.add_row("Total User Stories", str(us_stats.get('total_user_stories', 0)))
-            table.add_row("Processed", str(us_stats.get('user_stories_processed', 0)))
-            table.add_row("Labels Added", str(us_stats.get('labels_added', 0)))
-            table.add_row("GitHub Updates", str(us_stats.get('github_updates', 0)))
+            table.add_row(
+                "Total User Stories", str(us_stats.get("total_user_stories", 0))
+            )
+            table.add_row("Processed", str(us_stats.get("user_stories_processed", 0)))
+            table.add_row("Labels Added", str(us_stats.get("labels_added", 0)))
+            table.add_row("GitHub Updates", str(us_stats.get("github_updates", 0)))
             console.print(table)
 
         # Defects results
-        if 'defect_stats' in results:
-            defect_stats = results['defect_stats']
+        if "defect_stats" in results:
+            defect_stats = results["defect_stats"]
             table = Table(title="Defect Epic Inheritance")
             table.add_column("Metric", style="cyan")
             table.add_column("Value", style="white")
-            table.add_row("Total Defects", str(defect_stats.get('total_defects', 0)))
-            table.add_row("Processed", str(defect_stats.get('defects_processed', 0)))
-            table.add_row("Labels Added", str(defect_stats.get('labels_added', 0)))
-            table.add_row("GitHub Updates", str(defect_stats.get('github_updates', 0)))
+            table.add_row("Total Defects", str(defect_stats.get("total_defects", 0)))
+            table.add_row("Processed", str(defect_stats.get("defects_processed", 0)))
+            table.add_row("Labels Added", str(defect_stats.get("labels_added", 0)))
+            table.add_row("GitHub Updates", str(defect_stats.get("github_updates", 0)))
             console.print(table)
 
         # Tests results
-        if 'test_stats' in results:
-            test_stats = results['test_stats']
+        if "test_stats" in results:
+            test_stats = results["test_stats"]
             table = Table(title="Test Epic Inheritance")
             table.add_column("Metric", style="cyan")
             table.add_column("Value", style="white")
-            table.add_row("Total Tests", str(test_stats.get('total_tests', 0)))
-            table.add_row("With Epic Links", str(test_stats.get('tests_with_epics', 0)))
-            table.add_row("Without Epic Links", str(test_stats.get('tests_without_epics', 0)))
-            table.add_row("Database Updates", str(test_stats.get('tests_processed', 0)))
+            table.add_row("Total Tests", str(test_stats.get("total_tests", 0)))
+            table.add_row("With Epic Links", str(test_stats.get("tests_with_epics", 0)))
+            table.add_row(
+                "Without Epic Links", str(test_stats.get("tests_without_epics", 0))
+            )
+            table.add_row("Database Updates", str(test_stats.get("tests_processed", 0)))
 
             # Show inheritance sources
-            if test_stats.get('inheritance_sources'):
+            if test_stats.get("inheritance_sources"):
                 console.print("\n[bold]Inheritance Sources:[/bold]")
-                for source, count in test_stats['inheritance_sources'].items():
+                for source, count in test_stats["inheritance_sources"].items():
                     console.print(f"  • {source}: {count}")
 
             console.print(table)
 
         # Summary
-        if 'summary' in results:
-            summary = results['summary']
-            console.print(f"\n[bold green]Summary:[/bold green]")
-            console.print(f"  Total Entities Processed: {summary.get('total_entities_processed', 0)}")
-            console.print(f"  Total Labels Added: {summary.get('total_labels_added', 0)}")
-            console.print(f"  Total GitHub Updates: {summary.get('total_github_updates', 0)}")
+        if "summary" in results:
+            summary = results["summary"]
+            console.print("\n[bold green]Summary:[/bold green]")
+            console.print(
+                f"  Total Entities Processed: {summary.get('total_entities_processed', 0)}"
+            )
+            console.print(
+                f"  Total Labels Added: {summary.get('total_labels_added', 0)}"
+            )
+            console.print(
+                f"  Total GitHub Updates: {summary.get('total_github_updates', 0)}"
+            )
             console.print(f"  Total Errors: {summary.get('total_errors', 0)}")
 
         if dry_run:
-            console.print(f"\n[yellow]DRY RUN - No changes were applied[/yellow]")
+            console.print("\n[yellow]DRY RUN - No changes were applied[/yellow]")
         else:
-            console.print(f"\n[green]Changes have been applied successfully![/green]")
+            console.print("\n[green]Changes have been applied successfully![/green]")
 
     except Exception as e:
         console.print(f"[red]Epic inheritance processing failed: {e}[/red]")
         if ctx.obj["verbose"]:
             import traceback
+
             console.print(traceback.format_exc())
 
 
@@ -263,7 +295,7 @@ def scenarios(ctx, dry_run):
             with console.status("[bold green]Linking to User Stories..."):
                 stats = bdd_parser.link_scenarios_to_user_stories()
 
-            console.print(f"[green]Linking completed![/green]")
+            console.print("[green]Linking completed![/green]")
             console.print(f"Scenarios linked: {stats['scenarios_linked']}")
             console.print(f"User Stories updated: {stats['user_stories_updated']}")
 
@@ -304,7 +336,9 @@ def tests(ctx, sync_tests, link_scenarios, auto_defects, test_type):
         try:
             sync = TestDatabaseSync()
             stats = sync.sync_tests_to_database()
-            console.print(f"[green]Synced {stats['created'] + stats['updated']} tests[/green]")
+            console.print(
+                f"[green]Synced {stats['created'] + stats['updated']} tests[/green]"
+            )
         except Exception as e:
             console.print(f"[yellow]Warning: Test sync failed: {e}[/yellow]")
 
@@ -313,7 +347,9 @@ def tests(ctx, sync_tests, link_scenarios, auto_defects, test_type):
         try:
             bdd_parser = BDDScenarioParser()
             stats = bdd_parser.link_scenarios_to_user_stories()
-            console.print(f"[green]Linked {stats['scenarios_linked']} scenarios[/green]")
+            console.print(
+                f"[green]Linked {stats['scenarios_linked']} scenarios[/green]"
+            )
         except Exception as e:
             console.print(f"[yellow]Warning: Scenario linking failed: {e}[/yellow]")
 
@@ -348,10 +384,11 @@ def tests(ctx, sync_tests, link_scenarios, auto_defects, test_type):
             if test_type:
                 # Filter by test type if specified - handle both Windows and Unix paths
                 from sqlalchemy import or_
+
                 test_query = test_query.filter(
                     or_(
                         Test.test_file_path.like(f"tests/{test_type}/%"),
-                        Test.test_file_path.like(f"tests\\{test_type}\\%")
+                        Test.test_file_path.like(f"tests\\{test_type}\\%"),
                     )
                 )
 
@@ -381,22 +418,28 @@ def tests(ctx, sync_tests, link_scenarios, auto_defects, test_type):
                     updated_count += 1
 
                     if updated_count <= 3:  # Show first few updates for debugging
-                        console.print(f"[dim]Updated {test.test_function_name}: {status}[/dim]")
+                        console.print(
+                            f"[dim]Updated {test.test_function_name}: {status}[/dim]"
+                        )
 
                 except Exception as test_error:
-                    console.print(f"[yellow]Error updating test {test.test_function_name}: {test_error}[/yellow]")
+                    console.print(
+                        f"[yellow]Error updating test {test.test_function_name}: {test_error}[/yellow]"
+                    )
 
             # Commit the transaction
             console.print(f"[blue]Committing {updated_count} test updates...[/blue]")
             db.commit()
 
             # Verify the updates
-            verification_query = db.query(Test).filter(Test.last_execution_time.isnot(None))
+            verification_query = db.query(Test).filter(
+                Test.last_execution_time.isnot(None)
+            )
             if test_type:
                 verification_query = verification_query.filter(
                     or_(
                         Test.test_file_path.like(f"tests/{test_type}/%"),
-                        Test.test_file_path.like(f"tests\\{test_type}\\%")
+                        Test.test_file_path.like(f"tests\\{test_type}\\%"),
                     )
                 )
             verified_count = verification_query.count()
@@ -404,23 +447,34 @@ def tests(ctx, sync_tests, link_scenarios, auto_defects, test_type):
             db.close()
             tracker.end_test_session()
 
-            console.print(f"[green]Updated execution status for {updated_count} tests[/green]")
-            console.print(f"[green]Verified {verified_count} tests with execution data[/green]")
+            console.print(
+                f"[green]Updated execution status for {updated_count} tests[/green]"
+            )
+            console.print(
+                f"[green]Verified {verified_count} tests with execution data[/green]"
+            )
 
             if result.returncode == 0:
-                console.print(f"[green]All tests marked as PASSED[/green]")
+                console.print("[green]All tests marked as PASSED[/green]")
             else:
-                console.print(f"[yellow]Tests marked as FAILED due to pytest failures[/yellow]")
+                console.print(
+                    "[yellow]Tests marked as FAILED due to pytest failures[/yellow]"
+                )
 
         except Exception as e:
-            console.print(f"[yellow]Warning: Could not update test execution results: {e}[/yellow]")
+            console.print(
+                f"[yellow]Warning: Could not update test execution results: {e}[/yellow]"
+            )
             import traceback
+
             console.print(f"[red]Full error: {traceback.format_exc()}[/red]")
 
         # Handle auto-defects after test execution if needed
         if auto_defects and result.returncode != 0:
             console.print("[blue]Auto-defects not yet implemented in CLI mode[/blue]")
-            console.print("[blue]Use direct pytest for now, or implement defect creation here[/blue]")
+            console.print(
+                "[blue]Use direct pytest for now, or implement defect creation here[/blue]"
+            )
 
         if result.returncode == 0:
             console.print(
@@ -447,7 +501,7 @@ def status():
 def overview(ctx):
     """Show overall test-database integration status."""
     from be.database import get_db_session
-    from be.models.traceability import Defect, Epic, Test, UserStory
+    from be.models.traceability import Defect, Test
 
     try:
         db = get_db_session()
@@ -528,8 +582,7 @@ def utils():
 @click.option(
     "--show-epic-refs", is_flag=True, help="Show Epic references found in tests"
 )
-@click.option(
-    "--show-orphaned", is_flag=True, help="Show tests not linked to any Epic")
+@click.option("--show-orphaned", is_flag=True, help="Show tests not linked to any Epic")
 @click.pass_context
 def analyze(ctx, show_epic_refs, show_orphaned):
     """Analyze test-database integration patterns."""
@@ -539,8 +592,7 @@ def analyze(ctx, show_epic_refs, show_orphaned):
         discovered_tests = discovery.discover_tests()
 
         if show_epic_refs:
-            console.print(
-                "\n[bold cyan]Epic References Found in Tests:[/bold cyan]")
+            console.print("\n[bold cyan]Epic References Found in Tests:[/bold cyan]")
             epic_refs = {}
             for test in discovered_tests:
                 for epic_ref in test["epic_references"]:
@@ -568,8 +620,7 @@ def analyze(ctx, show_epic_refs, show_orphaned):
             if ctx.obj["verbose"] and orphaned:
                 for test in orphaned[:10]:  # Show first 10
                     console.print(
-                        f"  - {test['test_file_path']}::"
-                        f"{test['test_function_name']}"
+                        f"  - {test['test_file_path']}::{test['test_function_name']}"
                     )
                 if len(orphaned) > 10:
                     console.print(f"  ... and {len(orphaned) - 10} more")

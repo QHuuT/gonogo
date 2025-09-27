@@ -100,7 +100,9 @@ class BackupMonitor:
         self.sla_recovery_time_minutes = sla_recovery_time_minutes
 
         # Monitoring configuration
-        self.max_backup_age_hours = 25  # Alert if no backup in 25 hours (daily + buffer)
+        self.max_backup_age_hours = (
+            25  # Alert if no backup in 25 hours (daily + buffer)
+        )
         self.max_backup_duration_minutes = 30  # Alert if backup takes > 30min
         self.min_success_rate = 0.8  # Alert if success rate < 80%
 
@@ -235,7 +237,9 @@ class BackupMonitor:
             logger.error("Backup monitoring failed: %s", e)
             raise BackupError(f"Backup monitoring failed: {e}")
 
-    def _analyze_backup_metrics(self, metrics: BackupMetrics, backup_result: Dict) -> List[Alert]:
+    def _analyze_backup_metrics(
+        self, metrics: BackupMetrics, backup_result: Dict
+    ) -> List[Alert]:
         """Analyze backup metrics and generate alerts."""
         alerts = []
 
@@ -276,7 +280,8 @@ class BackupMonitor:
                     details={
                         "backup_id": metrics.backup_id,
                         "success_rate": success_rate,
-                        "failed_destinations": metrics.destinations_total - metrics.destinations_success,
+                        "failed_destinations": metrics.destinations_total
+                        - metrics.destinations_success,
                     },
                 )
             )
@@ -337,7 +342,9 @@ class BackupMonitor:
 
             # Check recent success rate
             recent_backups = [
-                b for b in self.backup_history if (now - b.end_time).total_seconds() < (7 * 24 * 3600)
+                b
+                for b in self.backup_history
+                if (now - b.end_time).total_seconds() < (7 * 24 * 3600)
             ]  # Last 7 days
 
             if recent_backups:
@@ -363,7 +370,9 @@ class BackupMonitor:
 
         return alerts
 
-    def detect_backup_corruption(self, backup_service: BackupService, backup_paths: List[str]) -> List[Alert]:
+    def detect_backup_corruption(
+        self, backup_service: BackupService, backup_paths: List[str]
+    ) -> List[Alert]:
         """
         Detect corruption in existing backup files.
 
@@ -377,7 +386,9 @@ class BackupMonitor:
         alerts = []
         now = datetime.now(UTC)
 
-        logger.info("Starting corruption detection for %d backup files", len(backup_paths))
+        logger.info(
+            "Starting corruption detection for %d backup files", len(backup_paths)
+        )
 
         for backup_path in backup_paths:
             try:
@@ -441,7 +452,10 @@ class BackupMonitor:
         )
 
         # Send email alert for warning level and above
-        if alert.level in [AlertLevel.WARNING, AlertLevel.ERROR, AlertLevel.CRITICAL] and self.alert_email:
+        if (
+            alert.level in [AlertLevel.WARNING, AlertLevel.ERROR, AlertLevel.CRITICAL]
+            and self.alert_email
+        ):
             self._send_email_alert(alert)
 
     def _send_email_alert(self, alert: Alert):
@@ -449,7 +463,9 @@ class BackupMonitor:
         try:
             # Create email message
             msg = MimeMultipart()
-            msg["From"] = self.smtp_config.get("smtp_username", "backup-monitor@gonogo.local")
+            msg["From"] = self.smtp_config.get(
+                "smtp_username", "backup-monitor@gonogo.local"
+            )
             msg["To"] = self.alert_email
             msg["Subject"] = f"[GoNoGo Backup Alert] {alert.title}"
 
@@ -472,7 +488,7 @@ Message:
                 for key, value in alert.details.items():
                     body += f"  {key}: {value}\n"
 
-            body += f"""
+            body += """
 
 This is an automated alert from the GoNoGo database backup monitoring system.
 Please investigate and take appropriate action.
@@ -485,13 +501,17 @@ US-00036: Comprehensive Database Backup Strategy
             msg.attach(MimeText(body, "plain"))
 
             # Send email
-            server = smtplib.SMTP(self.smtp_config["smtp_server"], self.smtp_config["smtp_port"])
+            server = smtplib.SMTP(
+                self.smtp_config["smtp_server"], self.smtp_config["smtp_port"]
+            )
 
             if self.smtp_config["smtp_use_tls"]:
                 server.starttls()
 
             if self.smtp_config["smtp_username"]:
-                server.login(self.smtp_config["smtp_username"], self.smtp_config["smtp_password"])
+                server.login(
+                    self.smtp_config["smtp_username"], self.smtp_config["smtp_password"]
+                )
 
             server.send_message(msg)
             server.quit()
@@ -521,9 +541,13 @@ US-00036: Comprehensive Database Backup Strategy
         # SLA compliance
         sla_target_seconds = self.sla_recovery_time_minutes * 60
         sla_compliant_backups = sum(
-            1 for b in self.backup_history if b.success and b.duration_seconds <= sla_target_seconds
+            1
+            for b in self.backup_history
+            if b.success and b.duration_seconds <= sla_target_seconds
         )
-        sla_compliance_rate = sla_compliant_backups / total_backups if total_backups > 0 else 0
+        sla_compliance_rate = (
+            sla_compliant_backups / total_backups if total_backups > 0 else 0
+        )
 
         dashboard = {
             "system_status": "operational" if success_rate > 0.8 else "degraded",
@@ -538,7 +562,9 @@ US-00036: Comprehensive Database Backup Strategy
             "recent_performance": {
                 "avg_duration_minutes": (
                     round(
-                        sum(b.duration_seconds for b in recent_backups) / len(recent_backups) / 60,
+                        sum(b.duration_seconds for b in recent_backups)
+                        / len(recent_backups)
+                        / 60,
                         2,
                     )
                     if recent_backups
@@ -546,7 +572,8 @@ US-00036: Comprehensive Database Backup Strategy
                 ),
                 "avg_file_size_mb": (
                     round(
-                        sum(b.file_size_mb for b in recent_backups) / len(recent_backups),
+                        sum(b.file_size_mb for b in recent_backups)
+                        / len(recent_backups),
                         2,
                     )
                     if recent_backups
@@ -554,7 +581,10 @@ US-00036: Comprehensive Database Backup Strategy
                 ),
                 "destination_reliability": (
                     round(
-                        sum(b.destinations_success / b.destinations_total for b in recent_backups)
+                        sum(
+                            b.destinations_success / b.destinations_total
+                            for b in recent_backups
+                        )
                         / len(recent_backups),
                         3,
                     )
@@ -563,16 +593,32 @@ US-00036: Comprehensive Database Backup Strategy
                 ),
             },
             "alert_summary": {
-                "critical": sum(1 for a in recent_alerts if a.level == AlertLevel.CRITICAL),
+                "critical": sum(
+                    1 for a in recent_alerts if a.level == AlertLevel.CRITICAL
+                ),
                 "error": sum(1 for a in recent_alerts if a.level == AlertLevel.ERROR),
-                "warning": sum(1 for a in recent_alerts if a.level == AlertLevel.WARNING),
+                "warning": sum(
+                    1 for a in recent_alerts if a.level == AlertLevel.WARNING
+                ),
                 "info": sum(1 for a in recent_alerts if a.level == AlertLevel.INFO),
             },
             "latest_backup": {
-                "backup_id": (self.backup_history[-1].backup_id if self.backup_history else None),
-                "timestamp": (self.backup_history[-1].end_time.isoformat() if self.backup_history else None),
-                "success": (self.backup_history[-1].success if self.backup_history else None),
-                "duration_seconds": (self.backup_history[-1].duration_seconds if self.backup_history else None),
+                "backup_id": (
+                    self.backup_history[-1].backup_id if self.backup_history else None
+                ),
+                "timestamp": (
+                    self.backup_history[-1].end_time.isoformat()
+                    if self.backup_history
+                    else None
+                ),
+                "success": (
+                    self.backup_history[-1].success if self.backup_history else None
+                ),
+                "duration_seconds": (
+                    self.backup_history[-1].duration_seconds
+                    if self.backup_history
+                    else None
+                ),
             },
             "configuration": {
                 "sla_recovery_time_minutes": self.sla_recovery_time_minutes,
@@ -616,7 +662,9 @@ US-00036: Comprehensive Database Backup Strategy
         # Check 2: Recent backup availability
         if self.backup_history:
             latest_backup = max(self.backup_history, key=lambda x: x.end_time)
-            hours_since_backup = (start_time - latest_backup.end_time).total_seconds() / 3600
+            hours_since_backup = (
+                start_time - latest_backup.end_time
+            ).total_seconds() / 3600
 
             if hours_since_backup <= self.max_backup_age_hours:
                 health_results["checks"].append(

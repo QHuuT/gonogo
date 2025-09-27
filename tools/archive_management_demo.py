@@ -11,16 +11,15 @@ Usage:
     python tools/archive_management_demo.py
 """
 
-import shutil
 import sys
 import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from shared.testing.archive_manager import RetentionPolicy, TestArchiveManager
+from shared.testing.archive_manager import TestArchiveManager
 
 
 def create_sample_files(base_path: Path) -> dict:
@@ -167,7 +166,7 @@ def create_sample_files(base_path: Path) -> dict:
 
         files_created["very_old"].append(str(file_path))
 
-    print(f"Created sample files:")
+    print("Created sample files:")
     print(f"  Recent files: {len(files_created['recent'])}")
     print(f"  Medium age files: {len(files_created['medium_age'])}")
     print(f"  Old files: {len(files_created['old'])}")
@@ -187,7 +186,7 @@ def demonstrate_retention_policies(manager: TestArchiveManager):
         )
 
     # Show dry run first
-    print(f"\n*** DRY RUN - What would happen:")
+    print("\n*** DRY RUN - What would happen:")
     dry_results = manager.apply_retention_policies(dry_run=True)
 
     print(f"  Actions planned: {len(dry_results['actions'])}")
@@ -197,7 +196,7 @@ def demonstrate_retention_policies(manager: TestArchiveManager):
     print(f"  Estimated space savings: {dry_results['space_saved_mb']:.1f} MB")
 
     if dry_results["actions"]:
-        print(f"\n  Sample actions:")
+        print("\n  Sample actions:")
         for action in dry_results["actions"][:5]:  # Show first 5
             print(
                 f"    [{action['type'].upper()}] {Path(action['file']).name} - {action['reason']}"
@@ -212,7 +211,7 @@ def demonstrate_storage_metrics(manager: TestArchiveManager):
 
     metrics = manager.generate_storage_metrics()
 
-    print(f"Current storage usage:")
+    print("Current storage usage:")
     print(f"  Total files: {metrics.total_files}")
     print(f"  Total size: {metrics.total_size_mb:.1f} MB")
     print(f"  Compressed files: {metrics.compressed_files}")
@@ -222,11 +221,11 @@ def demonstrate_storage_metrics(manager: TestArchiveManager):
     )
 
     if metrics.recommendations:
-        print(f"\n  Optimization recommendations:")
+        print("\n  Optimization recommendations:")
         for rec in metrics.recommendations:
             print(f"    - {rec}")
     else:
-        print(f"\n  No optimization recommendations at this time.")
+        print("\n  No optimization recommendations at this time.")
 
     return metrics
 
@@ -238,7 +237,7 @@ def demonstrate_compression_and_archiving(manager: TestArchiveManager):
     # Apply policies for real
     live_results = manager.apply_retention_policies(dry_run=False)
 
-    print(f"Actions completed:")
+    print("Actions completed:")
     print(f"  Files processed: {live_results['processed_files']}")
     print(f"  Files compressed: {live_results['compressed_files']}")
     print(f"  Files archived: {live_results['archived_files']}")
@@ -246,7 +245,7 @@ def demonstrate_compression_and_archiving(manager: TestArchiveManager):
     print(f"  Space saved: {live_results['space_saved_mb']:.1f} MB")
 
     if live_results["errors"]:
-        print(f"\n  Errors encountered:")
+        print("\n  Errors encountered:")
         for error in live_results["errors"]:
             print(f"    - {error}")
 
@@ -258,33 +257,30 @@ def demonstrate_search_capabilities(manager: TestArchiveManager):
     print("\n*** Archive Search Capabilities...")
 
     # Search for HTML reports
-    print(f"\nSearching for HTML reports...")
+    print("\nSearching for HTML reports...")
     html_results = manager.search_archives(query="html", limit=10)
 
     if html_results:
         print(f"  Found {len(html_results)} HTML reports in archive:")
         for result in html_results[:3]:  # Show first 3
             print(f"    - {Path(result.original_path).name}")
-            print(
-                f"      Archived:"
-                f"{result.archived_date.strftime('%Y-%m-%d %H:%M')}"
-            )
-            print(f"      Compression: {(1-result.compression_ratio)*100:.1f}%")
+            print(f"      Archived:{result.archived_date.strftime('%Y-%m-%d %H:%M')}")
+            print(f"      Compression: {(1 - result.compression_ratio) * 100:.1f}%")
     else:
-        print(f"  No HTML reports found in archive yet.")
+        print("  No HTML reports found in archive yet.")
 
     # Search for log files
-    print(f"\nSearching for log files...")
+    print("\nSearching for log files...")
     log_results = manager.search_archives(file_type=".log", limit=10)
 
     if log_results:
         print(f"  Found {len(log_results)} log files in archive:")
         for result in log_results[:3]:  # Show first 3
             print(f"    - {Path(result.original_path).name}")
-            print(f"      Original size: {result.original_size/1024:.1f} KB")
-            print(f"      Compressed size: {result.compressed_size/1024:.1f} KB")
+            print(f"      Original size: {result.original_size / 1024:.1f} KB")
+            print(f"      Compressed size: {result.compressed_size / 1024:.1f} KB")
     else:
-        print(f"  No log files found in archive yet.")
+        print("  No log files found in archive yet.")
 
     return html_results, log_results
 
@@ -301,7 +297,7 @@ def demonstrate_bundle_creation(manager: TestArchiveManager):
 
         bundle_size = bundle_path.stat().st_size / 1024
 
-        print(f"  Bundle created successfully:")
+        print("  Bundle created successfully:")
         print(f"    Path: {bundle_path}")
         print(f"    Size: {bundle_size:.1f} KB")
 
@@ -328,7 +324,7 @@ def demonstrate_file_restoration(manager: TestArchiveManager):
             restored_path = manager.retrieve_from_archive(first_file.archive_path)
             restored_size = restored_path.stat().st_size / 1024
 
-            print(f"  File restored successfully:")
+            print("  File restored successfully:")
             print(f"    Restored to: {restored_path}")
             print(f"    Size: {restored_size:.1f} KB")
 
@@ -338,7 +334,7 @@ def demonstrate_file_restoration(manager: TestArchiveManager):
             print(f"  Restoration failed: {e}")
             return None
     else:
-        print(f"  No archived files available for restoration demo.")
+        print("  No archived files available for restoration demo.")
         return None
 
 
@@ -354,10 +350,10 @@ def demonstrate_automation_config(manager: TestArchiveManager):
     cron_job = manager.schedule_cleanup("0 3 * * *")  # Daily at 3 AM
     print(f"  Suggested cron job: {cron_job}")
 
-    print(f"  To enable automated cleanup:")
-    print(f"    1. Add to crontab: crontab -e")
+    print("  To enable automated cleanup:")
+    print("    1. Add to crontab: crontab -e")
     print(f"    2. Add line: {cron_job}")
-    print(f"    3. Save and exit")
+    print("    3. Save and exit")
 
     return config_path
 
@@ -399,20 +395,17 @@ def main():
                 f"  Space saved through compression: {final_metrics.compression_savings_mb:.1f} MB"
             )
 
-            print(f"\nDemo completed successfully!")
+            print("\nDemo completed successfully!")
             print(f"Archive location: {manager.archive_base}")
 
             # Display key achievements
-            print(f"\n*** Key Achievements:")
-            print(
-                f"[DONE] Configurable"
-                f"retention policies with automatic application"
-            )
-            print(f"[DONE] File compression with space optimization")
-            print(f"[DONE] Archive search and retrieval capabilities")
-            print(f"[DONE] Automated cleanup with scheduling support")
-            print(f"[DONE] Storage metrics and optimization recommendations")
-            print(f"[DONE] Bundle creation for batch archiving")
+            print("\n*** Key Achievements:")
+            print("[DONE] Configurableretention policies with automatic application")
+            print("[DONE] File compression with space optimization")
+            print("[DONE] Archive search and retrieval capabilities")
+            print("[DONE] Automated cleanup with scheduling support")
+            print("[DONE] Storage metrics and optimization recommendations")
+            print("[DONE] Bundle creation for batch archiving")
 
         except Exception as e:
             print(f"Demo failed: {e}")

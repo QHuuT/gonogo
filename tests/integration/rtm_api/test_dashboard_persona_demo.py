@@ -40,13 +40,13 @@ class TestDashboardPersonaDemo:
         for key, expected_value in expected.items():
             actual_value = summary[key]
             if isinstance(expected_value, float):
-                assert actual_value == pytest.approx(
-                    expected_value, rel=1e-3
-                ), f"Unexpected {key} for {persona}: got {actual_value}, expected {expected_value}"
+                assert actual_value == pytest.approx(expected_value, rel=1e-3), (
+                    f"Unexpected {key} for {persona}: got {actual_value}, expected {expected_value}"
+                )
             else:
-                assert (
-                    actual_value == expected_value
-                ), f"Unexpected {key} for {persona}: got {actual_value}, expected {expected_value}"
+                assert actual_value == expected_value, (
+                    f"Unexpected {key} for {persona}: got {actual_value}, expected {expected_value}"
+                )
 
     def test_demo_dataset_covers_velocity_and_scope_dimensions(self):
         pm_summary = calculate_dashboard_summary(self.epics, "PM")

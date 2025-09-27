@@ -46,7 +46,9 @@ class FailureTrackingPlugin:
         # Extract test information
         test_id = report.nodeid
         test_name = report.nodeid.split("::")[-1]
-        test_file = report.fspath.relto(Path.cwd()) if hasattr(report, "fspath") else "unknown"
+        test_file = (
+            report.fspath.relto(Path.cwd()) if hasattr(report, "fspath") else "unknown"
+        )
 
         # Extract failure information
         failure_message = (
@@ -68,7 +70,9 @@ class FailureTrackingPlugin:
             environment_info=self._get_environment_info(),
             metadata={
                 "duration": getattr(report, "duration", 0),
-                "keywords": (list(report.keywords.keys()) if hasattr(report, "keywords") else []),
+                "keywords": (
+                    list(report.keywords.keys()) if hasattr(report, "keywords") else []
+                ),
                 "markers": [m.name for m in getattr(report, "markers", [])],
                 "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
                 "platform": platform.platform(),
@@ -76,7 +80,9 @@ class FailureTrackingPlugin:
         )
 
         # Auto-categorize and determine severity
-        failure.category = self.failure_tracker.categorize_failure(failure_message, stack_trace)
+        failure.category = self.failure_tracker.categorize_failure(
+            failure_message, stack_trace
+        )
         failure.severity = self.failure_tracker.determine_severity(failure)
 
         # Record the failure
@@ -101,7 +107,7 @@ class FailureTrackingPlugin:
     def pytest_sessionfinish(self, session, exitstatus):
         """Generate failure summary at end of test session."""
         if self.current_session_failures:
-            print(f"\n📊 Failure Tracking Summary:")
+            print("\n📊 Failure Tracking Summary:")
             print(f"   Session ID: {self.session_id}")
             print(f"   New failures recorded: {len(self.current_session_failures)}")
             print(f"   Execution mode: {self.execution_mode}")

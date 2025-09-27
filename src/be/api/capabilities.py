@@ -36,11 +36,17 @@ class CapabilityCreate(BaseModel):
     )
     description: Optional[str] = Field(None, description="Detailed description")
     strategic_priority: str = Field("medium", description="Strategic priority")
-    business_value_theme: Optional[str] = Field(None, description="Business value theme")
+    business_value_theme: Optional[str] = Field(
+        None, description="Business value theme"
+    )
     owner: Optional[str] = Field(None, description="Capability owner")
-    estimated_business_impact_score: float = Field(0.0, description="Business impact score (0-100)")
+    estimated_business_impact_score: float = Field(
+        0.0, description="Business impact score (0-100)"
+    )
     roi_target_percentage: float = Field(0.0, description="Target ROI percentage")
-    strategic_alignment_score: float = Field(0.0, description="Strategic alignment score (0-100)")
+    strategic_alignment_score: float = Field(
+        0.0, description="Strategic alignment score (0-100)"
+    )
 
 
 class CapabilityUpdate(BaseModel):
@@ -106,7 +112,9 @@ def get_capabilities(
 @router.get("/{capability_id}", response_model=CapabilityResponse)
 def get_capability(capability_id: str, db: Session = Depends(get_db)):
     """Get a specific capability by ID."""
-    capability = db.query(Capability).filter(Capability.capability_id == capability_id).first()
+    capability = (
+        db.query(Capability).filter(Capability.capability_id == capability_id).first()
+    )
     if not capability:
         raise HTTPException(status_code=404, detail="Capability not found")
 
@@ -119,7 +127,11 @@ def get_capability(capability_id: str, db: Session = Depends(get_db)):
 def create_capability(capability: CapabilityCreate, db: Session = Depends(get_db)):
     """Create a new capability."""
     # Check if capability_id already exists
-    existing = db.query(Capability).filter(Capability.capability_id == capability.capability_id).first()
+    existing = (
+        db.query(Capability)
+        .filter(Capability.capability_id == capability.capability_id)
+        .first()
+    )
     if existing:
         raise HTTPException(status_code=400, detail="Capability ID already exists")
 
@@ -140,7 +152,9 @@ def update_capability(
     db: Session = Depends(get_db),
 ):
     """Update an existing capability."""
-    capability = db.query(Capability).filter(Capability.capability_id == capability_id).first()
+    capability = (
+        db.query(Capability).filter(Capability.capability_id == capability_id).first()
+    )
     if not capability:
         raise HTTPException(status_code=404, detail="Capability not found")
 
@@ -159,7 +173,9 @@ def update_capability(
 @router.delete("/{capability_id}")
 def delete_capability(capability_id: str, db: Session = Depends(get_db)):
     """Delete a capability."""
-    capability = db.query(Capability).filter(Capability.capability_id == capability_id).first()
+    capability = (
+        db.query(Capability).filter(Capability.capability_id == capability_id).first()
+    )
     if not capability:
         raise HTTPException(status_code=404, detail="Capability not found")
 
@@ -168,7 +184,9 @@ def delete_capability(capability_id: str, db: Session = Depends(get_db)):
     if epic_count > 0:
         raise HTTPException(
             status_code=400,
-            detail=(f"Cannot delete capability with {epic_count} assigned epics. Remove epics first."),
+            detail=(
+                f"Cannot delete capability with {epic_count} assigned epics. Remove epics first."
+            ),
         )
 
     db.delete(capability)
@@ -180,7 +198,9 @@ def delete_capability(capability_id: str, db: Session = Depends(get_db)):
 @router.get("/{capability_id}/epics")
 def get_capability_epics(capability_id: str, db: Session = Depends(get_db)):
     """Get all epics assigned to a capability."""
-    capability = db.query(Capability).filter(Capability.capability_id == capability_id).first()
+    capability = (
+        db.query(Capability).filter(Capability.capability_id == capability_id).first()
+    )
     if not capability:
         raise HTTPException(status_code=404, detail="Capability not found")
 
@@ -194,9 +214,13 @@ def get_capability_epics(capability_id: str, db: Session = Depends(get_db)):
 
 
 @router.post("/{capability_id}/epics/{epic_id}")
-def assign_epic_to_capability(capability_id: str, epic_id: str, db: Session = Depends(get_db)):
+def assign_epic_to_capability(
+    capability_id: str, epic_id: str, db: Session = Depends(get_db)
+):
     """Assign an epic to a capability."""
-    capability = db.query(Capability).filter(Capability.capability_id == capability_id).first()
+    capability = (
+        db.query(Capability).filter(Capability.capability_id == capability_id).first()
+    )
     if not capability:
         raise HTTPException(status_code=404, detail="Capability not found")
 
@@ -216,9 +240,13 @@ def assign_epic_to_capability(capability_id: str, epic_id: str, db: Session = De
 
 
 @router.delete("/{capability_id}/epics/{epic_id}")
-def unassign_epic_from_capability(capability_id: str, epic_id: str, db: Session = Depends(get_db)):
+def unassign_epic_from_capability(
+    capability_id: str, epic_id: str, db: Session = Depends(get_db)
+):
     """Remove an epic from a capability."""
-    capability = db.query(Capability).filter(Capability.capability_id == capability_id).first()
+    capability = (
+        db.query(Capability).filter(Capability.capability_id == capability_id).first()
+    )
     if not capability:
         raise HTTPException(status_code=404, detail="Capability not found")
 
@@ -227,7 +255,9 @@ def unassign_epic_from_capability(capability_id: str, epic_id: str, db: Session 
         raise HTTPException(status_code=404, detail="Epic not found")
 
     if epic.capability_id != capability.id:
-        raise HTTPException(status_code=400, detail="Epic is not assigned to this capability")
+        raise HTTPException(
+            status_code=400, detail="Epic is not assigned to this capability"
+        )
 
     # Remove the epic from the capability
     epic.capability_id = None
@@ -244,7 +274,9 @@ def unassign_epic_from_capability(capability_id: str, epic_id: str, db: Session 
 @router.get("/{capability_id}/metrics")
 def get_capability_metrics(capability_id: str, db: Session = Depends(get_db)):
     """Get comprehensive metrics for a capability."""
-    capability = db.query(Capability).filter(Capability.capability_id == capability_id).first()
+    capability = (
+        db.query(Capability).filter(Capability.capability_id == capability_id).first()
+    )
     if not capability:
         raise HTTPException(status_code=404, detail="Capability not found")
 

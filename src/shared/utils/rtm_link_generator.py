@@ -55,8 +55,12 @@ class RTMLinkGenerator:
             "github": {"owner": "QHuuT", "repo": "gonogo"},
             "link_patterns": {
                 "epic": ("https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}"),
-                "user_story": ("https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}"),
-                "defect": ("https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}"),
+                "user_story": (
+                    "https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}"
+                ),
+                "defect": (
+                    "https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}"
+                ),
                 "gdpr": "../context/compliance/gdpr-requirements.md#{id}",
                 "bdd_scenario": "../../{path}",
                 "file": "../../{path}",
@@ -95,12 +99,16 @@ class RTMLinkGenerator:
         else:
             pattern = self.link_patterns.get("user_story")  # Default
 
-        url = pattern.format(owner=self.github_owner, repo=self.github_repo, id=issue_id)
+        url = pattern.format(
+            owner=self.github_owner, repo=self.github_repo, id=issue_id
+        )
 
         text = f"**{issue_id}**" if bold else issue_id
         return f"[{text}]({url})"
 
-    def generate_file_link(self, target_path: str, rtm_path: str, display_text: Optional[str] = None) -> str:
+    def generate_file_link(
+        self, target_path: str, rtm_path: str, display_text: Optional[str] = None
+    ) -> str:
         """Generate relative file link from RTM location."""
         # If it's an external URL, return as-is
         if target_path.startswith(("http://", "https://")):
@@ -127,7 +135,9 @@ class RTMLinkGenerator:
 
         return f"[{text}]({relative_path})"
 
-    def generate_bdd_scenario_link(self, feature_file: str, scenario_name: str, rtm_path: str) -> str:
+    def generate_bdd_scenario_link(
+        self, feature_file: str, scenario_name: str, rtm_path: str
+    ) -> str:
         """Generate BDD scenario link."""
         feature_name = Path(feature_file).stem
         display_text = f"{feature_name}.feature:{scenario_name}"
@@ -187,7 +197,9 @@ class RTMLinkGenerator:
             with open(rtm_file_path, "r", encoding="utf-8") as f:
                 content = f.read()
         except Exception as e:
-            return RTMValidationResult(total_links=0, valid_links=0, errors=[f"Failed to read RTM file: {e}"])
+            return RTMValidationResult(
+                total_links=0, valid_links=0, errors=[f"Failed to read RTM file: {e}"]
+            )
 
         references = self.extract_references_from_rtm(content)
         total_links = len(references)
@@ -228,7 +240,9 @@ class RTMLinkGenerator:
             warnings=warnings,
         )
 
-    def update_rtm_links(self, rtm_file_path: str, dry_run: bool = False) -> Dict[str, int]:
+    def update_rtm_links(
+        self, rtm_file_path: str, dry_run: bool = False
+    ) -> Dict[str, int]:
         """Update RTM links to current format."""
         try:
             with open(rtm_file_path, "r", encoding="utf-8") as f:

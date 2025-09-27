@@ -49,9 +49,9 @@ class TestDatabaseCleanupRegression:
                 ]
 
                 # Should have no cleanup warnings
-                assert (
-                    len(cleanup_warnings) == 0
-                ), f"Found {len(cleanup_warnings)} database cleanup warnings"
+                assert len(cleanup_warnings) == 0, (
+                    f"Found {len(cleanup_warnings)} database cleanup warnings"
+                )
 
             finally:
                 # Ensure cleanup even if test fails
@@ -137,9 +137,9 @@ class TestDatabaseCleanupRegression:
                 ]
 
                 # Should have no cleanup warnings
-                assert (
-                    len(cleanup_warnings) == 0
-                ), f"Found {len(cleanup_warnings)} database cleanup warnings in sequential test"
+                assert len(cleanup_warnings) == 0, (
+                    f"Found {len(cleanup_warnings)} database cleanup warnings in sequential test"
+                )
 
             finally:
                 # Final cleanup
@@ -169,6 +169,6 @@ class TestDatabaseCleanupRegression:
             ]
 
             # Should have no warnings from fixture usage
-            assert (
-                len(cleanup_warnings) == 0
-            ), f"Found {len(cleanup_warnings)} warnings from database fixture"
+            assert len(cleanup_warnings) == 0, (
+                f"Found {len(cleanup_warnings)} warnings from database fixture"
+            )

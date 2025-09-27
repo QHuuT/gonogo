@@ -13,8 +13,8 @@ sys.path.insert(0, str(src_path))
 
 from be.database import get_db_session
 from be.models.traceability.test import Test
-from sqlalchemy import func, and_
 from collections import defaultdict
+
 
 def normalize_paths_cleanup():
     """Normalise les chemins et supprime les doublons de path separators."""
@@ -32,7 +32,7 @@ def normalize_paths_cleanup():
         for test in all_tests:
             if test.test_file_path:
                 # Normaliser vers Unix style
-                normalized_path = test.test_file_path.replace('\\', '/')
+                normalized_path = test.test_file_path.replace("\\", "/")
                 key = (normalized_path, test.test_function_name)
                 path_groups[key].append(test)
 
@@ -46,7 +46,9 @@ def normalize_paths_cleanup():
 
         # 3. Montrer quelques exemples
         print("\nTop 10 path separator duplicates:")
-        sorted_duplicates = sorted(duplicates.items(), key=lambda x: len(x[1]), reverse=True)
+        sorted_duplicates = sorted(
+            duplicates.items(), key=lambda x: len(x[1]), reverse=True
+        )
         for (norm_path, func_name), tests in sorted_duplicates[:10]:
             paths = [t.test_file_path for t in tests]
             unique_paths = set(paths)
@@ -60,9 +62,12 @@ def normalize_paths_cleanup():
     finally:
         session.close()
 
+
 def execute_path_normalization(duplicates, dry_run=True):
     """Execute la normalisation des chemins."""
-    print(f"\n{'DRY RUN - ' if dry_run else ''}Normalizing paths and removing duplicates...")
+    print(
+        f"\n{'DRY RUN - ' if dry_run else ''}Normalizing paths and removing duplicates..."
+    )
 
     session = get_db_session()
     try:
@@ -84,7 +89,9 @@ def execute_path_normalization(duplicates, dry_run=True):
                 to_remove = [t for t in tests if t.id != best_test.id]
 
                 if to_remove:
-                    print(f"  {func_name}: keeping ID {best_test.id}, removing {len(to_remove)} duplicates")
+                    print(
+                        f"  {func_name}: keeping ID {best_test.id}, removing {len(to_remove)} duplicates"
+                    )
 
                     if not dry_run:
                         for test in to_remove:
@@ -102,6 +109,7 @@ def execute_path_normalization(duplicates, dry_run=True):
 
     finally:
         session.close()
+
 
 def choose_best_test(tests):
     """Choisit le meilleur test parmi les duplicatas."""
@@ -131,7 +139,11 @@ def choose_best_test(tests):
             score += 2
 
         # +1 préférence pour Unix style paths
-        if test.test_file_path and '/' in test.test_file_path and '\\' not in test.test_file_path:
+        if (
+            test.test_file_path
+            and "/" in test.test_file_path
+            and "\\" not in test.test_file_path
+        ):
             score += 1
 
         # +1 si plus récent (approximation avec ID plus élevé)
@@ -143,32 +155,44 @@ def choose_best_test(tests):
 
     return best_test
 
+
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description='RTM Path Normalization Cleanup')
-    parser.add_argument('--live', action='store_true', help='Execute live run (default: dry run)')
-    parser.add_argument('--confirm', action='store_true', help='Confirm live run without prompt')
+
+    parser = argparse.ArgumentParser(description="RTM Path Normalization Cleanup")
+    parser.add_argument(
+        "--live", action="store_true", help="Execute live run (default: dry run)"
+    )
+    parser.add_argument(
+        "--confirm", action="store_true", help="Confirm live run without prompt"
+    )
     args = parser.parse_args()
 
     if args.live and not args.confirm:
         try:
-            confirm = input("This will permanently modify file paths in the database. Continue? (yes/no): ")
-            if confirm.lower() != 'yes':
+            confirm = input(
+                "This will permanently modify file paths in the database. Continue? (yes/no): "
+            )
+            if confirm.lower() != "yes":
                 print("Aborted.")
                 return
         except EOFError:
-            print("No input available. Use --confirm flag for non-interactive execution.")
+            print(
+                "No input available. Use --confirm flag for non-interactive execution."
+            )
             return
 
     # Step 1: Analyze
     duplicates, total_excess = normalize_paths_cleanup()
 
     # Step 2: Execute cleanup
-    removed_count, normalized_count = execute_path_normalization(duplicates, dry_run=not args.live)
+    removed_count, normalized_count = execute_path_normalization(
+        duplicates, dry_run=not args.live
+    )
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("PATH NORMALIZATION SUMMARY")
-    print("="*60)
+    print("=" * 60)
     print(f"Path separator duplicates found: {len(duplicates)}")
     print(f"Excess entries from path separators: {total_excess}")
     print(f"Paths normalized: {normalized_count}")
@@ -185,12 +209,15 @@ def main():
             if remaining_excess <= 50:
                 print("Cleanup nearly complete! Remaining excess is minimal.")
             else:
-                print(f"Further investigation needed for {remaining_excess} remaining entries.")
+                print(
+                    f"Further investigation needed for {remaining_excess} remaining entries."
+                )
 
         finally:
             session.close()
     else:
         print("DRY RUN completed. Use --live --confirm to execute changes.")
+
 
 if __name__ == "__main__":
     main()

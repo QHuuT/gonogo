@@ -35,9 +35,9 @@ class TestRTMFilterValidation:
         # Test user stories structure
         if "User Stories" in html_content:
             assert 'class="us-row"' in html_content, "User story rows not found"
-            assert (
-                "data-us-status=" in html_content
-            ), "User story status data attributes not found"
+            assert "data-us-status=" in html_content, (
+                "User story status data attributes not found"
+            )
 
         # Test test structure
         if "Test" in html_content:
@@ -55,19 +55,19 @@ class TestRTMFilterValidation:
             js_content = f.read()
 
         # Test 1: Verify updated test filter selector
-        assert (
-            'table[aria-label*="Test Traceability"]' in js_content
-        ), "Updated test filter selector not found"
+        assert 'table[aria-label*="Test Traceability"]' in js_content, (
+            "Updated test filter selector not found"
+        )
 
         # Test 2: Verify updated user stories filter selector
-        assert (
-            'table[aria-label*="User Stories"]' in js_content
-        ), "Updated user stories filter selector not found"
+        assert 'table[aria-label*="User Stories"]' in js_content, (
+            "Updated user stories filter selector not found"
+        )
 
         # Test 3: Verify improved updateFilterButtonStates function
-        assert (
-            "filterGroup.includes('-defect')" in js_content
-        ), "Improved defect filter handling not found"
+        assert "filterGroup.includes('-defect')" in js_content, (
+            "Improved defect filter handling not found"
+        )
 
         # Test 4: Verify console warning added
         assert "console.warn(" in js_content, "Console warning for debugging not found"
@@ -91,27 +91,27 @@ class TestRTMFilterValidation:
         filter_defects_match = (
             "function filterDefects(epicId, filterType, filterValue)" in js_content
         )
-        assert (
-            filter_defects_match
-        ), "filterDefects function signature doesn't match expected parameters"
+        assert filter_defects_match, (
+            "filterDefects function signature doesn't match expected parameters"
+        )
 
         # Test filterTestsByType function signature
         # Should accept 2 parameters: (epicId, testType)
         filter_tests_match = (
             "function filterTestsByType(epicId, testType)" in js_content
         )
-        assert (
-            filter_tests_match
-        ), "filterTestsByType function signature doesn't match expected parameters"
+        assert filter_tests_match, (
+            "filterTestsByType function signature doesn't match expected parameters"
+        )
 
         # Test filterUserStoriesByStatus function signature
         # Should accept 2 parameters: (epicId, status)
         filter_us_match = (
             "function filterUserStoriesByStatus(epicId, status)" in js_content
         )
-        assert (
-            filter_us_match
-        ), "filterUserStoriesByStatus function signature doesn't match expected parameters"
+        assert filter_us_match, (
+            "filterUserStoriesByStatus function signature doesn't match expected parameters"
+        )
 
     def test_css_selector_improvements(self):
         """Test that CSS selectors have been improved to match HTML structure."""
@@ -134,9 +134,9 @@ class TestRTMFilterValidation:
         ), "User stories selector not properly updated"
 
         # Defect selector should still work (it was already correct)
-        assert (
-            ".defect-filter-section + table tbody" in js_content
-        ), "Defect filter selector missing"
+        assert ".defect-filter-section + table tbody" in js_content, (
+            "Defect filter selector missing"
+        )
 
     def test_button_state_management_fix(self):
         """Test that button state management has been fixed for defect buttons."""
@@ -145,19 +145,19 @@ class TestRTMFilterValidation:
             js_content = f.read()
 
         # Test that defect button handling is special-cased
-        assert (
-            ".defect-filter-button" in js_content
-        ), "Defect filter button selector not found"
+        assert ".defect-filter-button" in js_content, (
+            "Defect filter button selector not found"
+        )
 
         # Test that epic ID extraction for defects is implemented
-        assert (
-            "filterGroup.replace('-defect', '')" in js_content
-        ), "Epic ID extraction for defects not found"
+        assert "filterGroup.replace('-defect', '')" in js_content, (
+            "Epic ID extraction for defects not found"
+        )
 
         # Test that both 'active' and 'filter-button--active' classes are managed
-        assert (
-            "'filter-button--active', 'active'" in js_content
-        ), "Both active classes not managed"
+        assert "'filter-button--active', 'active'" in js_content, (
+            "Both active classes not managed"
+        )
 
     def test_error_handling_improvements(self):
         """Test that error handling and debugging have been improved."""
@@ -169,12 +169,12 @@ class TestRTMFilterValidation:
         assert "console.warn(" in js_content, "Console warnings not added"
 
         # Test specific error messages
-        assert (
-            "not found for epic" in js_content
-        ), "Epic-specific error messages not found"
-        assert (
-            "No filter buttons found" in js_content
-        ), "Button error messages not found"
+        assert "not found for epic" in js_content, (
+            "Epic-specific error messages not found"
+        )
+        assert "No filter buttons found" in js_content, (
+            "Button error messages not found"
+        )
 
     def test_regression_prevention(self):
         """Test that existing functionality hasn't been broken."""
@@ -183,9 +183,9 @@ class TestRTMFilterValidation:
             js_content = f.read()
 
         # Test epic toggle functionality still exists
-        assert (
-            "function toggleEpicDetails(" in js_content
-        ), "Epic toggle functionality missing"
+        assert "function toggleEpicDetails(" in js_content, (
+            "Epic toggle functionality missing"
+        )
 
         # Test search functionality still exists
         assert "function performSearch(" in js_content, "Search functionality missing"
@@ -194,9 +194,9 @@ class TestRTMFilterValidation:
         assert "function exportData(" in js_content, "Export functionality missing"
 
         # Test accessibility functions still exist
-        assert (
-            "announceToScreenReader(" in js_content
-        ), "Screen reader announcements missing"
+        assert "announceToScreenReader(" in js_content, (
+            "Screen reader announcements missing"
+        )
 
     def test_initialization_and_exposure(self):
         """Test that initialization and global function exposure work correctly."""
@@ -265,15 +265,15 @@ class TestRTMFilterUnitValidation:
         )
 
         # Verify selector format is correct
-        assert (
-            "aria-label*=" in expected_test_selector
-        ), "Test selector format incorrect"
-        assert (
-            "aria-label*=" in expected_us_selector
-        ), "User stories selector format incorrect"
-        assert (
-            ".defect-filter-section" in expected_defect_selector
-        ), "Defect selector format incorrect"
+        assert "aria-label*=" in expected_test_selector, (
+            "Test selector format incorrect"
+        )
+        assert "aria-label*=" in expected_us_selector, (
+            "User stories selector format incorrect"
+        )
+        assert ".defect-filter-section" in expected_defect_selector, (
+            "Defect selector format incorrect"
+        )
 
     def test_data_attribute_mapping(self):
         """Test that data attribute mapping is correct."""
@@ -288,9 +288,9 @@ class TestRTMFilterUnitValidation:
 
         # Verify patterns are valid HTML attribute names
         for category, pattern in expected_patterns.items():
-            assert pattern.startswith(
-                "data-"
-            ), f"Invalid data attribute pattern: {pattern}"
+            assert pattern.startswith("data-"), (
+                f"Invalid data attribute pattern: {pattern}"
+            )
             assert "-" in pattern, f"Data attribute should use kebab-case: {pattern}"
 
     def test_filter_group_naming_convention(self):
@@ -306,12 +306,12 @@ class TestRTMFilterUnitValidation:
 
         # Verify naming convention
         for filter_type, group_name in expected_groups.items():
-            assert group_name.startswith(
-                "epic-"
-            ), f"Filter group should start with 'epic-': {group_name}"
-            assert (
-                epic_id in group_name
-            ), f"Filter group should contain epic ID: {group_name}"
+            assert group_name.startswith("epic-"), (
+                f"Filter group should start with 'epic-': {group_name}"
+            )
+            assert epic_id in group_name, (
+                f"Filter group should contain epic ID: {group_name}"
+            )
 
 
 if __name__ == "__main__":

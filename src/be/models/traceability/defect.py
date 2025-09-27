@@ -176,7 +176,9 @@ class Defect(TraceabilityBase):
             from .user_story import UserStory
 
             user_story = (
-                session.query(UserStory).filter(UserStory.github_issue_number == self.github_user_story_number).first()
+                session.query(UserStory)
+                .filter(UserStory.github_issue_number == self.github_user_story_number)
+                .first()
             )
 
             if user_story and user_story.component:

@@ -8,18 +8,20 @@ Updates a user story with current GitHub labels and epic information.
 import requests
 import os
 import sys
-sys.path.append('src')
+
+sys.path.append("src")
 
 from be.database import SessionLocal
 from be.models.traceability.epic import Epic
 from be.models.traceability.user_story import UserStory
 
+
 def fetch_github_issue(issue_number: int):
     """Fetch a specific GitHub issue."""
-    github_token = os.getenv('GITHUB_TOKEN')
+    github_token = os.getenv("GITHUB_TOKEN")
     headers = {}
     if github_token:
-        headers['Authorization'] = f'token {github_token}'
+        headers["Authorization"] = f"token {github_token}"
 
     url = f"https://api.github.com/repos/QHuuT/gonogo/issues/{issue_number}"
     response = requests.get(url, headers=headers)
@@ -30,15 +32,18 @@ def fetch_github_issue(issue_number: int):
 
     return response.json()
 
+
 def update_user_story_epic(user_story_id: str, dry_run: bool = True):
     """Update user story epic from GitHub labels."""
     session = SessionLocal()
 
     try:
         # Find user story
-        user_story = session.query(UserStory).filter(
-            UserStory.user_story_id == user_story_id
-        ).first()
+        user_story = (
+            session.query(UserStory)
+            .filter(UserStory.user_story_id == user_story_id)
+            .first()
+        )
 
         if not user_story:
             print(f"User story {user_story_id} not found in database")
@@ -56,17 +61,17 @@ def update_user_story_epic(user_story_id: str, dry_run: bool = True):
         epic_mapping = {epic.epic_id: epic.id for epic in epics}
 
         # Extract epic from labels
-        labels = [label['name'] for label in issue.get('labels', [])]
+        labels = [label["name"] for label in issue.get("labels", [])]
         print(f"GitHub labels: {labels}")
 
         epic_label_mapping = {
-            'epic/blog-content': 'EP-00001',
-            'epic/comment-system': 'EP-00002',
-            'epic/privacy-consent': 'EP-00003',
-            'epic/github-workflow': 'EP-00004',
-            'epic/rtm': 'EP-00005',
-            'epic/github-project': 'EP-00006',
-            'epic/test-reporting': 'EP-00007'
+            "epic/blog-content": "EP-00001",
+            "epic/comment-system": "EP-00002",
+            "epic/privacy-consent": "EP-00003",
+            "epic/github-workflow": "EP-00004",
+            "epic/rtm": "EP-00005",
+            "epic/github-project": "EP-00006",
+            "epic/test-reporting": "EP-00007",
         }
 
         new_epic_id = None
@@ -87,11 +92,11 @@ def update_user_story_epic(user_story_id: str, dry_run: bool = True):
                 session.commit()
                 print(f"✅ Updated {user_story_id} epic successfully")
             else:
-                print(f"🔍 DRY RUN - Would update epic")
+                print("🔍 DRY RUN - Would update epic")
         elif new_epic_id == user_story.epic_id:
             print(f"✅ Epic already correct: {new_epic_id}")
         else:
-            print(f"⚠️ No epic label found in GitHub")
+            print("⚠️ No epic label found in GitHub")
 
     except Exception as e:
         print(f"Error: {e}")
@@ -100,27 +105,39 @@ def update_user_story_epic(user_story_id: str, dry_run: bool = True):
     finally:
         session.close()
 
+
 def main():
     """Main entry point."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Update user story from GitHub')
-    parser.add_argument('--user-story', required=True, help='User story ID (e.g., US-00013)')
-    parser.add_argument('--dry-run', action='store_true', default=True,
-                       help='Only show what would be updated (default: True)')
-    parser.add_argument('--execute', action='store_true', default=False,
-                       help='Actually execute the update (overrides --dry-run)')
+    parser = argparse.ArgumentParser(description="Update user story from GitHub")
+    parser.add_argument(
+        "--user-story", required=True, help="User story ID (e.g., US-00013)"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=True,
+        help="Only show what would be updated (default: True)",
+    )
+    parser.add_argument(
+        "--execute",
+        action="store_true",
+        default=False,
+        help="Actually execute the update (overrides --dry-run)",
+    )
 
     args = parser.parse_args()
 
     # If --execute is specified, turn off dry run
     dry_run = args.dry_run and not args.execute
 
-    print(f"=== Update User Story from GitHub ===")
+    print("=== Update User Story from GitHub ===")
     print(f"User Story: {args.user_story}")
     print(f"Mode: {'DRY RUN' if dry_run else 'EXECUTION'}")
 
     update_user_story_epic(args.user_story, dry_run)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

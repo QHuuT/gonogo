@@ -108,12 +108,12 @@ class TestMainApplication:
         health_data = health_response.json()
 
         # Service name should include RTM suffix to distinguish from simple blog
-        assert (
-            health_data["service"] == "gonogo-blog-rtm"
-        ), "Service should be 'gonogo-blog-rtm' not 'gonogo-blog'"
-        assert (
-            "database" in health_data
-        ), "Health check should include database status for RTM functionality"
+        assert health_data["service"] == "gonogo-blog-rtm", (
+            "Service should be 'gonogo-blog-rtm' not 'gonogo-blog'"
+        )
+        assert "database" in health_data, (
+            "Health check should include database status for RTM functionality"
+        )
 
         # Test that home endpoint reflects RTM integration
         home_response = client.get("/")
@@ -121,23 +121,23 @@ class TestMainApplication:
         home_data = home_response.json()
 
         # Message should indicate RTM system is included and ready
-        assert (
-            "RTM System" in home_data["message"]
-        ), "Home message should mention RTM System"
-        assert (
-            "Ready" in home_data["message"]
-        ), "Home message should indicate system is ready, not 'Coming Soon'"
+        assert "RTM System" in home_data["message"], (
+            "Home message should mention RTM System"
+        )
+        assert "Ready" in home_data["message"], (
+            "Home message should indicate system is ready, not 'Coming Soon'"
+        )
 
         # Test that app metadata reflects RTM integration
         from src.be.main import app
 
         # App title should include RTM to distinguish from simple blog
         assert "RTM System" in app.title, "App title should mention RTM System"
-        assert (
-            app.title == "GoNoGo Blog & RTM System"
-        ), "App title should be 'GoNoGo Blog & RTM System'"
+        assert app.title == "GoNoGo Blog & RTM System", (
+            "App title should be 'GoNoGo Blog & RTM System'"
+        )
 
         # Description should mention traceability matrix
-        assert (
-            "Requirements Traceability Matrix" in app.description
-        ), "Description should mention RTM database"
+        assert "Requirements Traceability Matrix" in app.description, (
+            "Description should mention RTM database"
+        )

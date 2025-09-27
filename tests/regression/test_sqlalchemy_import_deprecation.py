@@ -26,8 +26,6 @@ def test_no_declarative_base_deprecation_warnings():
         warnings.simplefilter("always")  # Catch all warnings
 
         # Import the files that previously had deprecated imports
-        from src.be.models.traceability.base import Base as TraceabilityBase
-        from src.security.gdpr.models import Base as GDPRBase
 
         # Check that no MovedIn20Warning was generated
         moved_warnings = [
@@ -117,7 +115,6 @@ def test_import_paths_are_future_proof():
     This ensures our code is forward-compatible with future SQLAlchemy versions.
     """
     # Test that the recommended import path works
-    from sqlalchemy.orm import declarative_base
 
     # Create a base using the recommended import
     TestBase = declarative_base()

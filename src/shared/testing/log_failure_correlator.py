@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from ..logging.logger import LogEntry, StructuredLogger, get_logger
-from .failure_tracker import FailureTracker, TestFailure
+from .failure_tracker import FailureTracker
 
 
 @dataclass
@@ -69,7 +69,9 @@ class LogFailureCorrelator:
         self.failure_tracker = failure_tracker or FailureTracker()
         self.logger = logger or get_logger()
 
-    def correlate_failure_with_logs(self, failure_id: int, time_window_minutes: int = 10) -> Optional[FailureContext]:
+    def correlate_failure_with_logs(
+        self, failure_id: int, time_window_minutes: int = 10
+    ) -> Optional[FailureContext]:
         """
         Correlate a specific failure with its related logs.
 
@@ -97,7 +99,9 @@ class LogFailureCorrelator:
         execution_state = self._extract_execution_state(logs)
 
         # Generate debugging assistance
-        reproduction_guide = self._generate_reproduction_guide(failure, logs, environment_info)
+        reproduction_guide = self._generate_reproduction_guide(
+            failure, logs, environment_info
+        )
         debugging_hints = self._generate_debugging_hints(failure, logs)
         related_failures = self._find_related_failures(failure)
 
@@ -138,7 +142,9 @@ class LogFailureCorrelator:
 
         for failure in recent_failures:
             context = self.correlate_failure_with_logs(failure["id"])
-            if context and (context.setup_logs or context.execution_logs or context.teardown_logs):
+            if context and (
+                context.setup_logs or context.execution_logs or context.teardown_logs
+            ):
                 failures_with_logs += 1
 
                 # Analyze patterns
@@ -157,7 +163,9 @@ class LogFailureCorrelator:
                     debugging_insights.extend(context.debugging_hints)
 
         # Calculate success rate
-        correlation_success_rate = (failures_with_logs / total_failures * 100) if total_failures > 0 else 0
+        correlation_success_rate = (
+            (failures_with_logs / total_failures * 100) if total_failures > 0 else 0
+        )
 
         # Convert patterns to list and sort by frequency
         common_patterns = list(failure_patterns.values())
@@ -191,7 +199,7 @@ class LogFailureCorrelator:
         script_lines = [
             "#!/usr/bin/env python3",
             '"""',
-            f"Failure Reproduction Script",
+            "Failure Reproduction Script",
             f"Generated for: {context.test_name}",
             f"Failure: {context.failure_message}",
             f"Generated: {datetime.now().isoformat()}",
@@ -258,8 +266,12 @@ class LogFailureCorrelator:
                 context_dict = asdict(context)
                 # Convert LogEntry objects to dicts
                 context_dict["setup_logs"] = [asdict(log) for log in context.setup_logs]
-                context_dict["execution_logs"] = [asdict(log) for log in context.execution_logs]
-                context_dict["teardown_logs"] = [asdict(log) for log in context.teardown_logs]
+                context_dict["execution_logs"] = [
+                    asdict(log) for log in context.execution_logs
+                ]
+                context_dict["teardown_logs"] = [
+                    asdict(log) for log in context.teardown_logs
+                ]
                 failure_contexts.append(context_dict)
 
         report = {
@@ -290,11 +302,15 @@ class LogFailureCorrelator:
         """Get failure details by ID from the failure tracker database."""
         with sqlite3.connect(self.failure_tracker.db_path) as conn:
             conn.row_factory = sqlite3.Row
-            result = conn.execute("SELECT * FROM test_failures WHERE id = ?", (failure_id,)).fetchone()
+            result = conn.execute(
+                "SELECT * FROM test_failures WHERE id = ?", (failure_id,)
+            ).fetchone()
 
         return dict(result) if result else None
 
-    def _get_logs_for_failure(self, failure: Dict[str, Any], time_window_minutes: int) -> List[LogEntry]:
+    def _get_logs_for_failure(
+        self, failure: Dict[str, Any], time_window_minutes: int
+    ) -> List[LogEntry]:
         """Get logs related to a specific failure."""
         # Get logs around the failure time
         failure_time = datetime.fromisoformat(failure["last_seen"])
@@ -302,7 +318,9 @@ class LogFailureCorrelator:
         end_time = failure_time + timedelta(minutes=5)  # Small buffer after failure
 
         # Get logs from the structured logger
-        all_logs = self.logger.get_recent_logs(10000)  # Large number to get enough context
+        all_logs = self.logger.get_recent_logs(
+            10000
+        )  # Large number to get enough context
 
         # Filter by time and test correlation
         related_logs = []
@@ -311,15 +329,25 @@ class LogFailureCorrelator:
             if start_time <= log_time <= end_time:
                 # Check if log is related to this test
                 if (
-                    (hasattr(log, "test_id") and log.test_id and log.test_id == failure.get("test_id"))
-                    or (hasattr(log, "test_name") and log.test_name and log.test_name == failure["test_name"])
+                    (
+                        hasattr(log, "test_id")
+                        and log.test_id
+                        and log.test_id == failure.get("test_id")
+                    )
+                    or (
+                        hasattr(log, "test_name")
+                        and log.test_name
+                        and log.test_name == failure["test_name"]
+                    )
                     or (failure["test_name"] in str(log.message))
                 ):
                     related_logs.append(log)
 
         return related_logs
 
-    def _organize_logs_by_phase(self, logs: List[LogEntry]) -> Tuple[List[LogEntry], List[LogEntry], List[LogEntry]]:
+    def _organize_logs_by_phase(
+        self, logs: List[LogEntry]
+    ) -> Tuple[List[LogEntry], List[LogEntry], List[LogEntry]]:
         """Organize logs into setup, execution, and teardown phases."""
         setup_logs = []
         execution_logs = []
@@ -327,9 +355,17 @@ class LogFailureCorrelator:
 
         for log in logs:
             if hasattr(log, "tags") and log.tags:
-                if "setup" in log.tags or "test_lifecycle" in log.tags and "start" in log.message.lower():
+                if (
+                    "setup" in log.tags
+                    or "test_lifecycle" in log.tags
+                    and "start" in log.message.lower()
+                ):
                     setup_logs.append(log)
-                elif "teardown" in log.tags or "test_lifecycle" in log.tags and "teardown" in log.message.lower():
+                elif (
+                    "teardown" in log.tags
+                    or "test_lifecycle" in log.tags
+                    and "teardown" in log.message.lower()
+                ):
                     teardown_logs.append(log)
                 else:
                     execution_logs.append(log)
@@ -414,13 +450,15 @@ class LogFailureCorrelator:
 
         if logs:
             guide_lines.append(f"- {len(logs)} related log entries found")
-            guide_lines.append(f"- Test execution timeline available")
+            guide_lines.append("- Test execution timeline available")
         else:
             guide_lines.append("- No correlated logs found")
 
         return "\n".join(guide_lines)
 
-    def _generate_debugging_hints(self, failure: Dict[str, Any], logs: List[LogEntry]) -> List[str]:
+    def _generate_debugging_hints(
+        self, failure: Dict[str, Any], logs: List[LogEntry]
+    ) -> List[str]:
         """Generate debugging hints based on failure and log analysis."""
         hints = []
 
@@ -443,7 +481,9 @@ class LogFailureCorrelator:
         if logs:
             error_logs = [log for log in logs if log.level == "ERROR"]
             if error_logs:
-                hints.append(f"Found {len(error_logs)} error log entries - review for additional context")
+                hints.append(
+                    f"Found {len(error_logs)} error log entries - review for additional context"
+                )
 
         return hints
 

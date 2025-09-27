@@ -15,12 +15,10 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
 import argparse
-import json
-import os
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import List
 
 # Add project root to Python path for imports
 project_root = Path(__file__).parent.parent
@@ -304,7 +302,7 @@ def generate_demo_report(output_path: str = None):
     if not output_path:
         output_path = "quality/reports/dynamic_rtm/rtm_matrix_demo.html"
 
-    print(f"[DEMO] Generating demo RTM report...")
+    print("[DEMO] Generating demo RTM report...")
 
     db = get_db_session()
     try:

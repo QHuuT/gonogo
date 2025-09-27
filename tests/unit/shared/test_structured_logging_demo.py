@@ -266,28 +266,28 @@ class TestStructuredLoggingDemo:
         buffer_entry = recent_logs[0]
 
         # Verify message is sanitized in buffer
-        assert (
-            "[EMAIL_REDACTED]" in buffer_entry.message
-        ), "Email should be redacted in buffer message"
-        assert (
-            "[IP_REDACTED]" in buffer_entry.message
-        ), "IP should be redacted in buffer message"
-        assert (
-            "john.doe@company.com" not in buffer_entry.message
-        ), "Original email should not be in buffer"
-        assert (
-            "10.0.0.5" not in buffer_entry.message
-        ), "Original IP should not be in buffer"
+        assert "[EMAIL_REDACTED]" in buffer_entry.message, (
+            "Email should be redacted in buffer message"
+        )
+        assert "[IP_REDACTED]" in buffer_entry.message, (
+            "IP should be redacted in buffer message"
+        )
+        assert "john.doe@company.com" not in buffer_entry.message, (
+            "Original email should not be in buffer"
+        )
+        assert "10.0.0.5" not in buffer_entry.message, (
+            "Original IP should not be in buffer"
+        )
 
         # Verify metadata is sanitized in buffer
         if buffer_entry.metadata:
             metadata_str = str(buffer_entry.metadata)
-            assert (
-                "jane.smith@example.org" not in metadata_str
-            ), "Email should be redacted in buffer metadata"
-            assert (
-                "192.168.0.100" not in metadata_str
-            ), "IP should be redacted in buffer metadata"
+            assert "jane.smith@example.org" not in metadata_str, (
+                "Email should be redacted in buffer metadata"
+            )
+            assert "192.168.0.100" not in metadata_str, (
+                "IP should be redacted in buffer metadata"
+            )
 
         # Verify file logging is also sanitized (create test formatter to check)
         from src.shared.logging.formatters import JSONFormatter
@@ -295,13 +295,13 @@ class TestStructuredLoggingDemo:
         formatter = JSONFormatter()
         json_output = formatter.format(buffer_entry)
 
-        assert (
-            "[EMAIL_REDACTED]" in json_output
-        ), "Email should be redacted in JSON output"
+        assert "[EMAIL_REDACTED]" in json_output, (
+            "Email should be redacted in JSON output"
+        )
         assert "[IP_REDACTED]" in json_output, "IP should be redacted in JSON output"
-        assert (
-            "john.doe@company.com" not in json_output
-        ), "Original email should not be in JSON"
+        assert "john.doe@company.com" not in json_output, (
+            "Original email should not be in JSON"
+        )
         assert "10.0.0.5" not in json_output, "Original IP should not be in JSON"
 
     def teardown_method(self):

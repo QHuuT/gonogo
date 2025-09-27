@@ -10,12 +10,11 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
 import json
-import os
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 # Add src to Python path
 src_path = Path(__file__).parent.parent / "src"
@@ -220,7 +219,7 @@ class GitHubDataImporter:
             (Defect, "defects"),
             (Test, "tests"),
             (UserStory, "user_stories"),
-            (Epic, "epics")
+            (Epic, "epics"),
         ]
 
         for model_class, table_name in tables_to_clear:
@@ -255,8 +254,9 @@ class GitHubDataImporter:
                 continue
 
             # Check if epic already exists in database
-            existing_epic = \
+            existing_epic = (
                 self.db_session.query(Epic).filter(Epic.epic_id == epic_id).first()
+            )
 
             # Clean epic title by removing epic ID prefix (handle both ": " and " - " separators)
             cleaned_title = issue["title"]
@@ -268,10 +268,12 @@ class GitHubDataImporter:
             if existing_epic:
                 # Update existing epic
                 existing_epic.title = cleaned_title
-                existing_epic.description = \
+                existing_epic.description = (
                     issue.get("body", "")[:500] if issue.get("body") else ""
-                existing_epic.priority = \
-                    self.get_priority_from_labels(issue.get("labels", []))
+                )
+                existing_epic.priority = self.get_priority_from_labels(
+                    issue.get("labels", [])
+                )
                 existing_epic.status = self.get_status_from_state_and_labels(
                     issue["state"], issue.get("labels", [])
                 )
@@ -286,7 +288,9 @@ class GitHubDataImporter:
                 epic = Epic(
                     epic_id=epic_id,
                     title=cleaned_title,
-                    description=issue.get("body", "")[:500] if issue.get("body") else "",
+                    description=issue.get("body", "")[:500]
+                    if issue.get("body")
+                    else "",
                     business_value="Imported from GitHub",
                     priority=self.get_priority_from_labels(issue.get("labels", [])),
                     status=self.get_status_from_state_and_labels(
@@ -381,8 +385,11 @@ class GitHubDataImporter:
                 continue
 
             # Check if user story already exists
-            existing_us = \
-                self.db_session.query(UserStory).filter(UserStory.user_story_id == us_id).first()
+            existing_us = (
+                self.db_session.query(UserStory)
+                .filter(UserStory.user_story_id == us_id)
+                .first()
+            )
 
             if existing_us:
                 # Update existing user story
@@ -391,14 +398,19 @@ class GitHubDataImporter:
                 existing_us.github_issue_state = issue["state"]
                 existing_us.github_labels = str(issue.get("labels", []))
                 existing_us.title = issue["title"].replace(f"{us_id}: ", "")
-                existing_us.description = \
+                existing_us.description = (
                     issue.get("body", "")[:500] if issue.get("body") else ""
-                existing_us.story_points = \
-                    self.extract_story_points(issue.get("body", ""))
-                existing_us.priority = \
-                    self.get_priority_from_labels(issue.get("labels", []))
-                existing_us.implementation_status = self.get_status_from_state_and_labels(
-                    issue["state"], issue.get("labels", [])
+                )
+                existing_us.story_points = self.extract_story_points(
+                    issue.get("body", "")
+                )
+                existing_us.priority = self.get_priority_from_labels(
+                    issue.get("labels", [])
+                )
+                existing_us.implementation_status = (
+                    self.get_status_from_state_and_labels(
+                        issue["state"], issue.get("labels", [])
+                    )
                 )
                 existing_us.updated_at = datetime.fromisoformat(
                     issue["updatedAt"].replace("Z", "+00:00")
@@ -413,7 +425,9 @@ class GitHubDataImporter:
                     github_issue_state=issue["state"],
                     github_labels=str(issue.get("labels", [])),
                     title=issue["title"].replace(f"{us_id}: ", ""),
-                    description=issue.get("body", "")[:500] if issue.get("body") else "",
+                    description=issue.get("body", "")[:500]
+                    if issue.get("body")
+                    else "",
                     story_points=self.extract_story_points(issue.get("body", "")),
                     priority=self.get_priority_from_labels(issue.get("labels", [])),
                     implementation_status=self.get_status_from_state_and_labels(
@@ -431,7 +445,7 @@ class GitHubDataImporter:
                 print(f"  {us_id}: {user_story.title} (NEW)")
 
         self.db_session.commit()
-        print(f"[OK] Imported user stories")
+        print("[OK] Imported user stories")
 
     def import_defects(self, epic_mapping: Dict[str, int]):
         """Import defects from GitHub issues."""
@@ -451,10 +465,7 @@ class GitHubDataImporter:
         for issue in defect_issues:
             defect_id = self.extract_defect_id(issue["title"], issue.get("body", ""))
             if not defect_id:
-                print(
-                    f"[WARNING] Could"
-                    f"not extract defect ID from: {issue['title']}"
-                )
+                print(f"[WARNING] Couldnot extract defect ID from: {issue['title']}")
                 continue
 
             # Skip if defect already processed
@@ -495,7 +506,7 @@ class GitHubDataImporter:
             print(f"  {defect_id}: {defect.title}")
 
         self.db_session.commit()
-        print(f"[OK] Imported defects")
+        print("[OK] Imported defects")
 
     def import_tests(self, epic_mapping: Dict[str, int]):
         """Import tests from codebase and link to epics."""
@@ -585,7 +596,7 @@ class GitHubDataImporter:
             defect_count = self.db_session.query(Defect).count()
             test_count = self.db_session.query(Test).count()
 
-            print(f"\n[OK] Real GitHub data import completed!")
+            print("\n[OK] Real GitHub data import completed!")
             print(f"  - Epics: {epic_count}")
             print(f"  - User Stories: {us_count}")
             print(f"  - Defects: {defect_count}")

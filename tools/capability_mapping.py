@@ -1,4 +1,4 @@
-﻿"""
+"""
 Canonical mapping between Epics and Capabilities.
 
 This helps keep the RTM database, GitHub labels, and documentation aligned.

@@ -24,8 +24,6 @@ class TestDatetimeUTCDeprecationRegression:
             warnings.simplefilter("always", DeprecationWarning)
 
             # Import modules that were fixed
-            from src.security.gdpr.service import GDPRService
-            from src.shared.testing.failure_tracker import FailureTracker
 
             # Check for datetime.utcnow deprecation warnings
             utcnow_warnings = [
@@ -34,9 +32,9 @@ class TestDatetimeUTCDeprecationRegression:
                 if "datetime.utcnow() is deprecated" in str(warning.message)
             ]
 
-            assert (
-                len(utcnow_warnings) == 0
-            ), f"Found {len(utcnow_warnings)} utcnow deprecation warnings during import"
+            assert len(utcnow_warnings) == 0, (
+                f"Found {len(utcnow_warnings)} utcnow deprecation warnings during import"
+            )
 
     def test_gdpr_service_uses_timezone_aware_datetime(self):
         """Test that GDPR service uses timezone-aware datetime objects."""
@@ -115,9 +113,9 @@ class TestDatetimeUTCDeprecationRegression:
                     content = f.read()
 
                 matches = deprecated_pattern.findall(content)
-                assert (
-                    len(matches) == 0
-                ), f"Found {len(matches)} deprecated datetime.utcnow() usage in {file_path}"
+                assert len(matches) == 0, (
+                    f"Found {len(matches)} deprecated datetime.utcnow() usage in {file_path}"
+                )
 
     def test_timezone_consistency(self):
         """Test that UTC timezone handling is consistent."""
@@ -181,9 +179,9 @@ class TestDatetimeUTCDeprecationRegression:
             ]
 
             # Should have significantly fewer warnings (target: 0)
-            assert (
-                len(utcnow_warnings) <= 2
-            ), f"Still found {len(utcnow_warnings)} utcnow deprecation warnings"
+            assert len(utcnow_warnings) <= 2, (
+                f"Still found {len(utcnow_warnings)} utcnow deprecation warnings"
+            )
 
     def test_rtm_cli_datetime_handling(self):
         """Test that RTM CLI tool handles datetime correctly."""
@@ -222,7 +220,6 @@ class TestDatetimeUTCDeprecationRegression:
             warnings.simplefilter("always", DeprecationWarning)
 
             # Import GDPR compliance test module
-            from tests.unit.security.test_gdpr_compliance import TestGDPRSecurity
 
             # Filter for datetime.utcnow deprecation warnings from our code
             utcnow_warnings = [
@@ -233,15 +230,14 @@ class TestDatetimeUTCDeprecationRegression:
             ]
 
             # Should have no warnings from our test code
-            assert (
-                len(utcnow_warnings) == 0
-            ), f"Found {len(utcnow_warnings)} utcnow deprecation warnings in GDPR compliance tests"
+            assert len(utcnow_warnings) == 0, (
+                f"Found {len(utcnow_warnings)} utcnow deprecation warnings in GDPR compliance tests"
+            )
 
     def test_timezone_aware_datetime_comparisons(self):
         """Test that datetime comparisons handle timezone-aware and naive datetimes properly."""
         from unittest.mock import MagicMock
 
-        from src.security.gdpr.models import ConsentType
         from src.security.gdpr.service import GDPRService
 
         # Create service instance
@@ -283,9 +279,9 @@ class TestDatetimeUTCDeprecationRegression:
                     content = f.read()
 
                 matches = deprecated_pattern.findall(content)
-                assert (
-                    len(matches) == 0
-                ), f"Found {len(matches)} deprecated 'data=' parameter usage in POST requests in {file_path}. Use 'content=' instead."
+                assert len(matches) == 0, (
+                    f"Found {len(matches)} deprecated 'data=' parameter usage in POST requests in {file_path}. Use 'content=' instead."
+                )
 
     def test_test_files_use_timezone_aware_datetime(self):
         """Test that test files use timezone-aware datetime patterns properly."""
@@ -293,9 +289,6 @@ class TestDatetimeUTCDeprecationRegression:
             warnings.simplefilter("always", DeprecationWarning)
 
             # Import the failure tracker test module
-            from tests.unit.shared.shared.testing.test_failure_tracker import (
-                TestFailureTracker,
-            )
 
             # Filter for datetime.utcnow deprecation warnings from test files
             utcnow_warnings = [
@@ -306,9 +299,9 @@ class TestDatetimeUTCDeprecationRegression:
             ]
 
             # Should have no warnings from our test code
-            assert (
-                len(utcnow_warnings) == 0
-            ), f"Found {len(utcnow_warnings)} datetime.utcnow deprecation warnings in failure tracker tests"
+            assert len(utcnow_warnings) == 0, (
+                f"Found {len(utcnow_warnings)} datetime.utcnow deprecation warnings in failure tracker tests"
+            )
 
     def test_sqlalchemy_legacy_api_usage(self):
         """Test that code uses SQLAlchemy 2.0 Session.get() instead of deprecated Query.get()."""
@@ -347,9 +340,9 @@ class TestDatetimeUTCDeprecationRegression:
                         context = "\n".join(context_lines)
 
                         if not compatibility_check.search(context):
-                            assert (
-                                False
-                            ), f"Found deprecated Query.get() usage at {file_path}:{line_num}\nLine: {line.strip()}\nUse Session.get(Model, primary_key) instead"
+                            assert False, (
+                                f"Found deprecated Query.get() usage at {file_path}:{line_num}\nLine: {line.strip()}\nUse Session.get(Model, primary_key) instead"
+                            )
 
     def test_sqlalchemy_session_get_functionality(self):
         """Test that Session.get() works correctly as replacement for Query.get()."""
@@ -375,15 +368,15 @@ class TestDatetimeUTCDeprecationRegression:
             session = TestingSessionLocal()
 
             # Test that Session.get() method exists and works
-            assert hasattr(
-                session, "get"
-            ), "Session should have get() method in SQLAlchemy 2.0"
+            assert hasattr(session, "get"), (
+                "Session should have get() method in SQLAlchemy 2.0"
+            )
 
             # Test Session.get() with non-existent record (should return None)
             result = session.get(ConsentRecord, "nonexistent-id")
-            assert (
-                result is None
-            ), "Session.get() should return None for non-existent records"
+            assert result is None, (
+                "Session.get() should return None for non-existent records"
+            )
 
             session.close()
             engine.dispose()

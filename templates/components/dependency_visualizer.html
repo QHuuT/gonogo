@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epic Dependencies Visualizer - GoNoGo Project</title>
+
+    <!-- Libraries for graph visualization -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --secondary-color: #95a5a6;
+            --background-color: #f8f9fa;
+            --card-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        /* Dashboard Navigation */
+        .dashboard-nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            gap: 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            border-bottom-color: #fff;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+            padding: 15px 0;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .controls-panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-item label {
+            font-weight: 500;
+            color: #555;
+            white-space: nowrap;
+        }
+
+        .control-item select, .control-item input {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #219a52;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+
+        .visualization-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .viz-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .viz-title {
+            font-weight: 600;
+            color: #495057;
+            font-size: 18px;
+        }
+
+        .viz-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .zoom-control {
+            display: flex;
+            gap: 5px;
+        }
+
+        .zoom-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .zoom-btn:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        #dependency-graph {
+            width: 100%;
+            height: 600px;
+            background: #fafafa;
+        }
+
+        .stats-panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .legend {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-top: 20px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .legend-section {
+            margin-bottom: 20px;
+        }
+
+        .legend-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-section-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #495057;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .legend-section-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        .legend-line {
+            width: 20px;
+            height: 2px;
+        }
+
+        .legend-border {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid;
+            background: transparent;
+        }
+
+        .legend-arrow {
+            width: 20px;
+            height: 2px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .legend-arrow-line {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+
+        .legend-arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+        }
+
+        /* Specific arrowhead styles for legend - DRAMATICALLY SIZED for accessibility */
+        .legend-arrow.blocking::after {
+            border-left: 12px solid #e74c3c;
+            border-top: 9px solid transparent;
+            border-bottom: 9px solid transparent;
+        }
+        .legend-arrow.blocking .legend-arrow-line { background: #e74c3c; height: 3px; top: -0.5px; }
+
+        .legend-arrow.prerequisite::after {
+            border-left: 7px solid #3498db;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .legend-arrow.prerequisite .legend-arrow-line { background: #3498db; height: 2px; top: 0px; }
+
+        .legend-arrow.technical::after {
+            border-left: 7px solid #9b59b6;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .legend-arrow.technical .legend-arrow-line { background: #9b59b6; height: 2px; top: 0px; }
+
+        .legend-arrow.business::after {
+            border-left: 7px solid #27ae60;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .legend-arrow.business .legend-arrow-line { background: #27ae60; height: 2px; top: 0px; }
+
+        .legend-arrow.informational::after {
+            border-left: 3px solid #95a5a6;
+            border-top: 2px solid transparent;
+            border-bottom: 2px solid transparent;
+        }
+        .legend-arrow.informational .legend-arrow-line {
+            background: #95a5a6;
+            height: 1px;
+            background-image: repeating-linear-gradient(to right, #95a5a6 0px, #95a5a6 5px, transparent 5px, transparent 10px);
+        }
+
+        /* Legend color styles */
+        .legend-color.epic-planned { background: #3498db; }
+        .legend-color.epic-active { background: #f39c12; }
+        .legend-color.epic-in-progress { background: #f39c12; }
+        .legend-color.epic-completed { background: #27ae60; }
+        .legend-color.epic-on-hold { background: #95a5a6; }
+
+        /* Layer toggle controls */
+        .layer-toggle {
+            background: white;
+            border-radius: 6px;
+            padding: 4px;
+            border: 1px solid #ddd;
+            display: flex;
+            gap: 2px;
+        }
+
+        .layer-btn {
+            padding: 8px 12px;
+            border: none;
+            background: transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .layer-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .layer-btn:hover:not(.active) {
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .legend-line.blocking { background: #e74c3c; height: 2px; }
+        .legend-line.prerequisite { background: #3498db; height: 2px; }
+        .legend-line.technical { background: #9b59b6; height: 2px; }
+        .legend-line.business { background: #27ae60; height: 2px; }
+        .legend-line.informational { background: #95a5a6; height: 1px; }
+
+        /* Graph styling */
+        .node {
+            cursor: pointer;
+            stroke: #fff;
+            stroke-width: 2px;
+        }
+
+        .node.selected {
+            stroke-width: 3px;
+            stroke: #333;
+        }
+
+        .node.epic-planned { fill: #3498db; }
+        .node.epic-active { fill: #f39c12; }
+        .node.epic-in-progress { fill: #f39c12; }
+        .node.epic-completed { fill: #27ae60; }
+        .node.epic-on-hold { fill: #95a5a6; }
+
+        /* Capability clustering areas */
+        .capability-cluster {
+            fill: rgba(52, 152, 219, 0.1);
+            stroke: #3498db;
+            stroke-width: 2;
+            stroke-dasharray: 5,5;
+        }
+
+        .capability-cluster.cap-CAP-00001 { fill: rgba(142, 68, 173, 0.1); stroke: #8e44ad; } /* GitHub Integration - Purple */
+        .capability-cluster.cap-CAP-00002 { fill: rgba(22, 160, 133, 0.1); stroke: #16a085; } /* Requirements Traceability - Teal */
+        .capability-cluster.cap-CAP-00003 { fill: rgba(230, 126, 34, 0.1); stroke: #e67e22; } /* Blog Platform - Orange */
+        .capability-cluster.cap-CAP-00004 { fill: rgba(192, 57, 43, 0.1); stroke: #c0392b; } /* GDPR Compliance - Red */
+
+        /* Capability border styles for epic nodes */
+        .capability-border {
+            stroke-width: 4px;
+            fill: none;
+            opacity: 0.8;
+        }
+
+        .capability-border-CAP-00001 { stroke: #8e44ad; } /* GitHub Integration - Purple */
+        .capability-border-CAP-00002 { stroke: #16a085; } /* Requirements Traceability - Teal */
+        .capability-border-CAP-00003 { stroke: #e67e22; } /* Blog Platform - Orange */
+        .capability-border-CAP-00004 { stroke: #c0392b; } /* GDPR Compliance - Red */
+        .capability-border-unassigned { stroke: #95a5a6; } /* No capability - Gray */
+
+        /* Legend border color styles */
+        .legend-border.capability-border-CAP-00001 { border-color: #8e44ad; } /* GitHub Integration - Purple */
+        .legend-border.capability-border-CAP-00002 { border-color: #16a085; } /* Requirements Traceability - Teal */
+        .legend-border.capability-border-CAP-00003 { border-color: #e67e22; } /* Blog Platform - Orange */
+        .legend-border.capability-border-CAP-00004 { border-color: #c0392b; } /* GDPR Compliance - Red */
+
+        .capability-label {
+            font-size: 14px;
+            font-weight: 600;
+            fill: #495057;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+        .node.capability-default { fill: #95a5a6; stroke: #7f8c8d; stroke-width: 2px; } /* No capability */
+
+        .link {
+            stroke: #999;
+            stroke-opacity: 0.7;
+            stroke-width: 2px;
+            marker-end: url(#arrowhead);
+        }
+
+        .link.blocking { stroke: #e74c3c; stroke-width: 3px; marker-end: url(#arrowhead-blocking); }
+        .link.prerequisite { stroke: #3498db; stroke-width: 2px; marker-end: url(#arrowhead-prerequisite); }
+        .link.technical { stroke: #9b59b6; stroke-width: 2px; marker-end: url(#arrowhead-technical); }
+        .link.business { stroke: #27ae60; stroke-width: 2px; marker-end: url(#arrowhead-business); }
+        .link.informational { stroke: #95a5a6; stroke-width: 1px; stroke-dasharray: 5,5; marker-end: url(#arrowhead-informational); }
+
+        .link.critical-path {
+            stroke: #e74c3c;
+            stroke-width: 4px;
+            animation: critical-pulse 2s infinite;
+            marker-end: url(#arrowhead-critical);
+        }
+
+        @keyframes critical-pulse {
+            0%, 100% { stroke-opacity: 0.7; }
+            50% { stroke-opacity: 1.0; }
+        }
+
+        .node-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            fill: #333;
+            pointer-events: none;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 1000;
+            max-width: 250px;
+            line-height: 1.4;
+        }
+
+        .cycle-alert {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .cycle-alert.show {
+            display: block;
+        }
+
+        .cycle-alert h4 {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .main-container {
+                padding: 15px;
+            }
+
+            .controls-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .control-group {
+                justify-content: center;
+            }
+
+            #dependency-graph {
+                height: 400px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .legend-items {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="dashboard-nav">
+        <a href="/api/rtm/dashboard/multipersona" class="nav-link">
+            <i class="fas fa-users"></i> Multi-Persona
+        </a>
+        <a href="/api/rtm/dashboard/dependencies" class="nav-link active">
+            <i class="fas fa-project-diagram"></i> Dependencies
+        </a>
+        <a href="/api/rtm/dashboard/capabilities" class="nav-link">
+            <i class="fas fa-layer-group"></i> Capabilities
+        </a>
+    </nav>
+
+    <div class="header">
+        <div class="header-content">
+            <h1><i class="fas fa-project-diagram"></i> Epic Dependencies Visualizer</h1>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Cycle Detection Alert -->
+        <div class="cycle-alert" id="cycle-alert">
+            <h4><i class="fas fa-exclamation-triangle"></i> Dependency Cycles Detected!</h4>
+            <div id="cycle-details"></div>
+        </div>
+
+        <!-- Controls Panel -->
+        <div class="controls-panel">
+            <div class="control-group">
+                <div class="control-item">
+                    <label for="layout-select">Layout:</label>
+                    <select id="layout-select">
+                        <option value="force">Force-Directed</option>
+                        <option value="hierarchy">Hierarchical</option>
+                        <option value="circular">Circular</option>
+                    </select>
+                </div>
+                <div class="control-item">
+                    <label for="filter-status">Status:</label>
+                    <select id="filter-status">
+                        <option value="">All Statuses</option>
+                        <option value="planned">Planned</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="on_hold">On Hold</option>
+                    </select>
+                </div>
+                <div class="control-item">
+                    <label for="filter-component">Component:</label>
+                    <select id="filter-component">
+                        <option value="">All Components</option>
+                        <!-- Options populated dynamically -->
+                    </select>
+                </div>
+                <div class="control-item">
+                    <label for="filter-capability">Capability:</label>
+                    <select id="filter-capability">
+                        <option value="">All Capabilities</option>
+                        <!-- Options populated dynamically -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <button class="action-btn btn-primary" onclick="refreshVisualization()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="action-btn btn-warning" onclick="highlightCriticalPath()">
+                    <i class="fas fa-route"></i> Critical Path
+                </button>
+                <button class="action-btn btn-success" onclick="detectCycles()">
+                    <i class="fas fa-search"></i> Find Cycles
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Visualization -->
+        <div class="visualization-container">
+            <div class="viz-header">
+                <div class="viz-title" id="viz-title">Epic Dependencies Graph</div>
+                <div class="viz-controls">
+                    <div class="layer-toggle">
+                        <button class="layer-btn active" id="epic-layer-btn" onclick="switchLayer('epic')">Epic View</button>
+                        <button class="layer-btn" id="capability-layer-btn" onclick="switchLayer('capability')">Capability View</button>
+                    </div>
+                    <div class="zoom-control">
+                        <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <svg id="dependency-graph">
+                <defs>
+                    <!-- Prerequisite dependency arrowhead (blue) - Standard size -->
+                    <marker id="arrowhead-prerequisite" markerWidth="10" markerHeight="7"
+                            refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#3498db" />
+                    </marker>
+
+                    <!-- Technical dependency arrowhead (purple) - Standard size -->
+                    <marker id="arrowhead-technical" markerWidth="10" markerHeight="7"
+                            refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#9b59b6" />
+                    </marker>
+
+                    <!-- Business dependency arrowhead (green) - Standard size -->
+                    <marker id="arrowhead-business" markerWidth="10" markerHeight="7"
+                            refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#27ae60" />
+                    </marker>
+
+                    <!-- Blocking dependency arrowhead (red) - Slightly larger for visibility -->
+                    <marker id="arrowhead-blocking" markerWidth="12" markerHeight="9"
+                            refX="11" refY="4.5" orient="auto">
+                        <polygon points="0 0, 12 4.5, 0 9" fill="#e74c3c" />
+                    </marker>
+
+                    <!-- Informational dependency arrowhead (gray) - Slightly smaller -->
+                    <marker id="arrowhead-informational" markerWidth="8" markerHeight="6"
+                            refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#95a5a6" />
+                    </marker>
+
+                    <!-- Critical path arrowhead (red) - Larger for critical -->
+                    <marker id="arrowhead-critical" markerWidth="14" markerHeight="10"
+                            refX="13" refY="5" orient="auto">
+                        <polygon points="0 0, 14 5, 0 10" fill="#e74c3c" />
+                    </marker>
+
+                    <!-- Default arrowhead (fallback) -->
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7"
+                            refX="9" refY="3.5" orient="auto" markerUnits="strokeWidth">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#999" />
+                    </marker>
+                </defs>
+            </svg>
+        </div>
+
+        <!-- Statistics Panel -->
+        <div class="stats-panel">
+            <h3><i class="fas fa-chart-bar"></i> Dependency Statistics</h3>
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-epics">-</div>
+                    <div class="stat-label">Total Epics</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="total-dependencies">-</div>
+                    <div class="stat-label">Dependencies</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="blocking-dependencies">-</div>
+                    <div class="stat-label">Blocking</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="critical-path-length">-</div>
+                    <div class="stat-label">Critical Path</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="cycle-count">-</div>
+                    <div class="stat-label">Cycles Detected</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-title">Legend</div>
+
+            <!-- Epic Status Colors (Inner Fill) -->
+            <div class="legend-section">
+                <div class="legend-section-title">📊 Epic Status (Inner Fill)</div>
+                <div class="legend-section-items">
+                    <div class="legend-item">
+                        <div class="legend-color epic-active"></div>
+                        <span>Active Epic</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color epic-planned"></div>
+                        <span>Planned Epic</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color epic-completed"></div>
+                        <span>Completed Epic</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color epic-on-hold"></div>
+                        <span>On Hold Epic</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Capability Borders (Outer Ring) -->
+            <div class="legend-section">
+                <div class="legend-section-title">🎯 Capability Assignment (Outer Border)</div>
+                <div class="legend-section-items">
+                    <div class="legend-item">
+                        <div class="legend-border capability-border-CAP-00001"></div>
+                        <span>GitHub Integration</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-border capability-border-CAP-00002"></div>
+                        <span>Requirements Traceability</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-border capability-border-CAP-00003"></div>
+                        <span>Blog Platform</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-border capability-border-CAP-00004"></div>
+                        <span>GDPR Compliance</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dependency Types (Arrows) -->
+            <div class="legend-section">
+                <div class="legend-section-title">🔗 Dependency Types (Colored Arrows)</div>
+                <div class="legend-section-items">
+                    <div class="legend-item">
+                        <div class="legend-arrow blocking">
+                            <div class="legend-arrow-line"></div>
+                        </div>
+                        <span>Blocking Dependency</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-arrow prerequisite">
+                            <div class="legend-arrow-line"></div>
+                        </div>
+                        <span>Prerequisite</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-arrow technical">
+                            <div class="legend-arrow-line"></div>
+                        </div>
+                        <span>Technical Dependency</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-arrow business">
+                            <div class="legend-arrow-line"></div>
+                        </div>
+                        <span>Business Dependency</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-arrow informational">
+                            <div class="legend-arrow-line"></div>
+                        </div>
+                        <span>Informational</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tooltip -->
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // Global variables
+        let svg, g, zoom;
+        let simulation;
+        let nodes = [], links = [];
+        let epicData = {};
+        let dependencyData = {};
+        let capabilityData = {};
+        let currentLayout = 'force';
+        let currentLayer = 'epic'; // 'epic' or 'capability'
+        let tooltip;
+        let capabilityClusters = new Map(); // Store capability cluster data
+
+        // Initialize visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Epic Dependencies Visualizer initialized');
+            initializeVisualization();
+            loadDependencyData();
+        });
+
+        // Initialize D3 visualization
+        function initializeVisualization() {
+            const container = d3.select("#dependency-graph");
+            const containerNode = container.node();
+            const rect = containerNode.getBoundingClientRect();
+
+            svg = container
+                .attr("width", rect.width)
+                .attr("height", rect.height);
+
+            // Create zoom behavior
+            zoom = d3.zoom()
+                .scaleExtent([0.1, 4])
+                .on("zoom", function(event) {
+                    g.attr("transform", event.transform);
+                });
+
+            svg.call(zoom);
+
+            // Create main group for zoomable content
+            g = svg.append("g");
+
+            // Initialize tooltip
+            tooltip = d3.select("#tooltip");
+
+            // Initialize force simulation
+            simulation = d3.forceSimulation()
+                .force("link", d3.forceLink().id(d => d.id).distance(100))
+                .force("charge", d3.forceManyBody().strength(-400))
+                .force("center", d3.forceCenter(rect.width / 2, rect.height / 2))
+                .force("collision", d3.forceCollide().radius(45));
+        }
+
+        // Load dependency data from API
+        async function loadDependencyData() {
+            try {
+                // Skip loading spinner - show content immediately
+
+                // Load epics and capabilities in parallel
+                const [epicsResponse, capabilitiesResponse] = await Promise.all([
+                    axios.get('/api/rtm/epics/'),
+                    axios.get('/api/capabilities/')
+                ]);
+
+                epicData = {};
+                epicsResponse.data.forEach(epic => {
+                    epicData[epic.id] = epic;
+                });
+
+                // Store capability data for grouping
+                capabilityData = {};
+                capabilitiesResponse.data.forEach(capability => {
+                    capabilityData[capability.id] = capability;
+                });
+
+                // Fetch real dependencies from database API
+                console.log('Loading real dependencies from database');
+                const dependenciesResponse = await fetch('/api/rtm/dependencies');
+                const dependenciesData = await dependenciesResponse.json();
+
+                dependencyData = {
+                    dependencies: dependenciesData,
+                    epics: epicsResponse.data,
+                    capabilities: capabilitiesResponse.data
+                };
+
+                populateCapabilityFilter();
+                populateComponentFilter();
+                processDataAndRender();
+                updateStatistics();
+
+            } catch (error) {
+                console.error('Failed to load dependency data:', error);
+                showError('Failed to load dependency data. Please try again.');
+            }
+        }
+
+        // Populate capability filter dropdown
+        function populateCapabilityFilter() {
+            const capabilitySelect = document.getElementById('filter-capability');
+
+            // Clear existing options except "All Capabilities"
+            capabilitySelect.innerHTML = '<option value="">All Capabilities</option>';
+
+            // Add capability options
+            dependencyData.capabilities.forEach(capability => {
+                const option = document.createElement('option');
+                option.value = capability.capability_id;
+                option.textContent = `${capability.capability_id} - ${capability.name}`;
+                capabilitySelect.appendChild(option);
+            });
+        }
+
+        // Populate component filter dropdown
+        function populateComponentFilter() {
+            const componentSelect = document.getElementById('filter-component');
+
+            // Get all components from both primary and inherited components
+            const allComponents = new Set();
+
+            dependencyData.epics.forEach(epic => {
+                // Add primary component
+                if (epic.component) {
+                    allComponents.add(epic.component);
+                }
+
+                // Add inherited components
+                if (epic.inherited_components && Array.isArray(epic.inherited_components)) {
+                    epic.inherited_components.forEach(component => {
+                        if (component) {
+                            allComponents.add(component);
+                        }
+                    });
+                }
+            });
+
+            // Clear existing options except "All Components"
+            componentSelect.innerHTML = '<option value="">All Components</option>';
+
+            // Add component options (sorted)
+            [...allComponents].sort().forEach(component => {
+                const option = document.createElement('option');
+                option.value = component;
+                option.textContent = component.charAt(0).toUpperCase() + component.slice(1);
+                componentSelect.appendChild(option);
+            });
+        }
+
+        // Process data and render visualization
+        function processDataAndRender() {
+            // Filter data based on current filters
+            const statusFilter = document.getElementById('filter-status').value;
+            const componentFilter = document.getElementById('filter-component').value;
+            const capabilityFilter = document.getElementById('filter-capability').value;
+
+            // Filter epics
+            let filteredEpics = dependencyData.epics;
+
+            if (statusFilter) {
+                filteredEpics = filteredEpics.filter(epic => epic.status === statusFilter);
+            }
+
+            if (componentFilter) {
+                filteredEpics = filteredEpics.filter(epic => {
+                    // Check primary component
+                    if (epic.component === componentFilter) {
+                        return true;
+                    }
+                    // Check inherited components
+                    if (epic.inherited_components && Array.isArray(epic.inherited_components)) {
+                        return epic.inherited_components.includes(componentFilter);
+                    }
+                    return false;
+                });
+            }
+
+            if (capabilityFilter) {
+                filteredEpics = filteredEpics.filter(epic =>
+                    epic.capability_capability_id === capabilityFilter
+                );
+            }
+
+            // Create nodes
+            nodes = filteredEpics.map(epic => ({
+                id: epic.id,
+                epic_id: epic.epic_id,
+                title: epic.title,
+                status: epic.status,
+                component: epic.component,
+                completion_percentage: epic.completion_percentage || 0,
+                priority: epic.priority || 'medium',
+                capability_id: epic.capability_capability_id,
+                capability_name: epic.capability_name,
+                capability_priority: epic.capability_strategic_priority
+            }));
+
+            // Filter dependencies to only include filtered epics
+            const filteredEpicIds = new Set(filteredEpics.map(epic => epic.id));
+
+            links = dependencyData.dependencies
+                .filter(dep =>
+                    filteredEpicIds.has(dep.parent_epic_id) &&
+                    filteredEpicIds.has(dep.dependent_epic_id)
+                )
+                .map(dep => ({
+                    source: dep.parent_epic_id,
+                    target: dep.dependent_epic_id,
+                    type: dep.dependency_type,
+                    priority: dep.priority,
+                    reason: dep.reason,
+                    is_active: dep.is_active,
+                    is_resolved: dep.is_resolved
+                }));
+
+            if (currentLayer === 'capability') {
+                renderCapabilityView();
+            } else {
+                renderVisualization();
+            }
+        }
+
+        // Render the visualization
+        function renderVisualization() {
+            // Clear existing elements
+            g.selectAll("*").remove();
+
+            if (nodes.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            // Add capability clustering if in epic view
+            if (currentLayer === 'epic') {
+                createCapabilityClusters();
+            }
+
+            // Update simulation
+            simulation.nodes(nodes);
+            simulation.force("link").links(links);
+
+            // Create links
+            const link = g.append("g")
+                .selectAll("line")
+                .data(links)
+                .enter()
+                .append("line")
+                .attr("class", d => `link ${d.type}`)
+                .attr("stroke-width", d => {
+                    if (d.priority === 'critical') return 4;
+                    if (d.type === 'blocking') return 3;
+                    if (d.priority === 'high') return 3;
+                    if (d.type === 'informational') return 1;
+                    return 2;
+                });
+
+            // Create nodes
+            const node = g.append("g")
+                .selectAll("g")
+                .data(nodes)
+                .enter()
+                .append("g")
+                .attr("class", "node-group")
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+
+            // Add capability border ring (outer circle)
+            node.append("circle")
+                .attr("class", d => {
+                    const capId = d.capability_id || 'unassigned';
+                    return `capability-border capability-border-${capId}`;
+                })
+                .attr("r", d => {
+                    // Larger for border effect and text visibility
+                    return 30 + (d.completion_percentage / 100) * 8;
+                })
+                .attr("fill", "none")
+                .attr("stroke-width", 4)
+                .attr("opacity", 0.8);
+
+            // Add main epic circles
+            node.append("circle")
+                .attr("class", d => `node epic-${d.status}`)
+                .attr("data-capability", d => d.capability_id || 'unassigned')
+                .attr("r", d => {
+                    // Larger size for text visibility
+                    return 25 + (d.completion_percentage / 100) * 8;
+                })
+                .attr("fill", d => {
+                    // Force explicit colors to prevent black nodes
+                    // Handle both database format (in_progress) and display format (in-progress)
+                    const status = d.status || 'planned';
+                    switch(status) {
+                        case 'planned': return '#3498db';
+                        case 'active': return '#f39c12';
+                        case 'in_progress': return '#f39c12';
+                        case 'in-progress': return '#f39c12';
+                        case 'completed': return '#27ae60';
+                        case 'on_hold': return '#95a5a6';
+                        case 'on-hold': return '#95a5a6';
+                        default: return '#3498db';
+                    }
+                })
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 2)
+                .on("mouseover", showTooltip)
+                .on("mousemove", moveTooltip)
+                .on("mouseout", hideTooltip)
+                .on("click", selectNode);
+
+            // Add labels to nodes
+            node.append("text")
+                .attr("class", "node-label")
+                .attr("dy", 4)
+                .text(d => d.epic_id);
+
+            // Helper function to get node radius (matches capability border radius)
+            function getNodeRadius(node) {
+                return 30 + (node.completion_percentage / 100) * 8;
+            }
+
+            // Helper function to calculate border intersection point
+            function getBorderIntersection(sourceNode, targetNode, isSource = true) {
+                const radius = getNodeRadius(isSource ? sourceNode : targetNode);
+                const dx = isSource ? (targetNode.x - sourceNode.x) : (sourceNode.x - targetNode.x);
+                const dy = isSource ? (targetNode.y - sourceNode.y) : (sourceNode.y - targetNode.y);
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance === 0) return { x: sourceNode.x, y: sourceNode.y };
+
+                const baseX = isSource ? sourceNode.x : targetNode.x;
+                const baseY = isSource ? sourceNode.y : targetNode.y;
+
+                return {
+                    x: baseX + (dx / distance) * radius,
+                    y: baseY + (dy / distance) * radius
+                };
+            }
+
+            // Update positions on simulation tick
+            simulation.on("tick", () => {
+                link
+                    .attr("x1", d => getBorderIntersection(d.source, d.target, true).x)
+                    .attr("y1", d => getBorderIntersection(d.source, d.target, true).y)
+                    .attr("x2", d => getBorderIntersection(d.source, d.target, false).x)
+                    .attr("y2", d => getBorderIntersection(d.source, d.target, false).y);
+
+                node
+                    .attr("transform", d => `translate(${d.x},${d.y})`);
+            });
+
+            // Apply layout
+            applyLayout();
+
+            // Restart simulation
+            simulation.alpha(1).restart();
+        }
+
+        // Apply selected layout
+        function applyLayout() {
+            const layoutType = document.getElementById('layout-select').value;
+
+            if (layoutType === 'hierarchy') {
+                applyHierarchicalLayout();
+            } else if (layoutType === 'circular') {
+                applyCircularLayout();
+            } else {
+                applyForceLayout();
+            }
+        }
+
+        // Force-directed layout
+        function applyForceLayout() {
+            // Clear fixed positions from other layouts
+            nodes.forEach(node => {
+                node.fx = null;
+                node.fy = null;
+            });
+
+            simulation
+                .force("link", d3.forceLink(links).id(d => d.id).distance(100))
+                .force("charge", d3.forceManyBody().strength(-400))
+                .force("center", d3.forceCenter(400, 300))
+                .force("collision", d3.forceCollide().radius(45))
+                .alpha(1).restart();
+        }
+
+        // Hierarchical layout
+        function applyHierarchicalLayout() {
+            try {
+                // Find root nodes (nodes with no incoming dependencies)
+                const rootNodes = nodes.filter(node =>
+                    !links.some(link => link.target.id === node.id || link.target === node.id)
+                );
+
+                if (rootNodes.length === 0) {
+                    console.warn('No root nodes found, using first node as root');
+                    rootNodes.push(nodes[0]);
+                }
+
+                // Create multiple trees for multiple roots
+                const trees = [];
+                const processedNodes = new Set();
+
+                rootNodes.forEach((rootNode, rootIndex) => {
+                    if (processedNodes.has(rootNode.id)) return;
+
+                    // Build tree data for this root
+                    const treeData = buildTreeFromRoot(rootNode, processedNodes);
+
+                    if (treeData.length > 0) {
+                        // Create virtual root for stratify
+                        const virtualRoot = { id: `virtual-root-${rootIndex}`, parentId: null };
+                        treeData.forEach(node => {
+                            if (!node.parentId) {
+                                node.parentId = virtualRoot.id;
+                            }
+                        });
+                        treeData.unshift(virtualRoot);
+
+                        try {
+                            const hierarchy = d3.stratify()
+                                .id(d => d.id)
+                                .parentId(d => d.parentId)(treeData);
+
+                            const treeLayout = d3.tree().size([300, 200]);
+                            treeLayout(hierarchy);
+
+                            trees.push({ hierarchy, rootIndex });
+                        } catch (e) {
+                            console.warn('Failed to create hierarchy for root', rootNode.id, e);
+                        }
+                    }
+                });
+
+                // Position trees side by side
+                trees.forEach(({ hierarchy, rootIndex }) => {
+                    const offsetX = rootIndex * 400 + 200;
+                    const offsetY = 150;
+
+                    hierarchy.descendants().forEach(treeNode => {
+                        const nodeId = treeNode.data ? treeNode.data.id : treeNode.id;
+                        if (!nodeId || (typeof nodeId === 'string' && nodeId.startsWith('virtual-root-'))) return;
+
+                        const actualNode = nodes.find(n => n.id === nodeId);
+                        if (actualNode) {
+                            actualNode.fx = treeNode.y + offsetX;
+                            actualNode.fy = treeNode.x + offsetY;
+                        }
+                    });
+                });
+
+                simulation.alpha(1).restart();
+
+            } catch (error) {
+                console.error('Hierarchical layout failed:', error);
+                // Fallback to force layout
+                applyForceLayout();
+            }
+        }
+
+        // Helper function to build tree data from a root node
+        function buildTreeFromRoot(rootNode, processedNodes) {
+            const treeData = [];
+            const queue = [{ node: rootNode, parentId: null }];
+
+            while (queue.length > 0) {
+                const { node, parentId } = queue.shift();
+
+                if (processedNodes.has(node.id)) continue;
+                processedNodes.add(node.id);
+
+                treeData.push({
+                    id: node.id,
+                    parentId: parentId,
+                    node: node
+                });
+
+                // Find children (nodes that depend on this node)
+                links.forEach(link => {
+                    const sourceId = link.source.id || link.source;
+                    const targetId = link.target.id || link.target;
+
+                    if (sourceId === node.id && !processedNodes.has(targetId)) {
+                        const childNode = nodes.find(n => n.id === targetId);
+                        if (childNode) {
+                            queue.push({ node: childNode, parentId: node.id });
+                        }
+                    }
+                });
+            }
+
+            return treeData;
+        }
+
+        // Circular layout
+        function applyCircularLayout() {
+            const radius = 200;
+            const centerX = 400;
+            const centerY = 300;
+
+            nodes.forEach((node, i) => {
+                const angle = (2 * Math.PI * i) / nodes.length;
+                node.fx = centerX + radius * Math.cos(angle);
+                node.fy = centerY + radius * Math.sin(angle);
+            });
+
+            simulation.alpha(1).restart();
+        }
+
+        // Clear fixed positions when switching layouts
+        function clearFixedPositions() {
+            nodes.forEach(node => {
+                node.fx = null;
+                node.fy = null;
+            });
+        }
+
+        // Highlight critical path
+        async function highlightCriticalPath() {
+            try {
+                // Demo critical path analysis - TODO: Connect to real API
+                console.log('Using demo critical path analysis');
+                const data = {
+                    critical_path: links.slice(0, 2), // Use first 2 dependencies as demo critical path
+                    path_length: Math.min(2, links.length),
+                    total_impact: links.reduce((sum, link) => sum + (link.impact_days || 3), 0)
+                };
+
+                // Reset all links
+                g.selectAll('.link')
+                    .classed('critical-path', false)
+                    .attr('marker-end', 'url(#arrowhead)');
+
+                // Highlight critical path
+                if (data.critical_path && data.critical_path.length > 1) {
+                    for (let i = 0; i < data.critical_path.length - 1; i++) {
+                        const sourceId = data.critical_path[i];
+                        const targetId = data.critical_path[i + 1];
+
+                        g.selectAll('.link')
+                            .filter(d => d.source.id === sourceId && d.target.id === targetId)
+                            .classed('critical-path', true)
+                            .attr('marker-end', 'url(#arrowhead-critical)');
+                    }
+
+                    document.getElementById('critical-path-length').textContent = data.critical_path.length;
+
+                    // Update visualization title
+                    document.getElementById('viz-title').textContent =
+                        `Epic Dependencies Graph - Critical Path Highlighted (${data.critical_path.length} epics)`;
+                }
+
+            } catch (error) {
+                console.error('Failed to get critical path:', error);
+            }
+        }
+
+        // Detect and show cycles
+        async function detectCycles() {
+            try {
+                // Demo cycle detection - TODO: Connect to real API
+                console.log('Using demo cycle detection');
+                const data = {
+                    has_cycles: false,
+                    cycles: [],
+                    cycle_count: 0
+                };
+
+                const cycleAlert = document.getElementById('cycle-alert');
+                const cycleDetails = document.getElementById('cycle-details');
+
+                if (data.cycles_detected && data.cycles.length > 0) {
+                    let cycleHtml = `<p>Found ${data.cycle_count} dependency cycle(s):</p><ul>`;
+
+                    data.cycles.forEach((cycle, index) => {
+                        const epicNames = cycle.map(epicId => {
+                            const epic = Object.values(epicData).find(e => e.id === epicId);
+                            return epic ? epic.epic_id : `Epic ${epicId}`;
+                        });
+                        cycleHtml += `<li>Cycle ${index + 1}: ${epicNames.join(' → ')}</li>`;
+                    });
+
+                    cycleHtml += '</ul>';
+                    cycleDetails.innerHTML = cycleHtml;
+                    cycleAlert.classList.add('show');
+
+                    // Highlight cycles in graph
+                    highlightCycles(data.cycles);
+
+                } else {
+                    cycleAlert.classList.remove('show');
+                    // Update stats
+                    document.getElementById('cycle-count').textContent = '0';
+
+                    // Show success message
+                    alert('No dependency cycles detected! 🎉');
+                }
+
+            } catch (error) {
+                console.error('Failed to detect cycles:', error);
+            }
+        }
+
+        // Highlight cycles in the graph
+        function highlightCycles(cycles) {
+            // Reset highlighting
+            g.selectAll('.link').classed('cycle-highlight', false);
+            g.selectAll('.node').classed('cycle-node', false);
+
+            cycles.forEach(cycle => {
+                // Highlight nodes in cycle
+                cycle.forEach(epicId => {
+                    g.selectAll('.node')
+                        .filter(d => d.id === epicId)
+                        .classed('cycle-node', true);
+                });
+
+                // Highlight links in cycle
+                for (let i = 0; i < cycle.length; i++) {
+                    const sourceId = cycle[i];
+                    const targetId = cycle[(i + 1) % cycle.length];
+
+                    g.selectAll('.link')
+                        .filter(d => d.source.id === sourceId && d.target.id === targetId)
+                        .classed('cycle-highlight', true);
+                }
+            });
+
+            document.getElementById('cycle-count').textContent = cycles.length;
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const totalEpics = nodes.length;
+            const totalDeps = links.length;
+            const blockingDeps = links.filter(link => link.type === 'blocking').length;
+
+            document.getElementById('total-epics').textContent = totalEpics;
+            document.getElementById('total-dependencies').textContent = totalDeps;
+            document.getElementById('blocking-dependencies').textContent = blockingDeps;
+        }
+
+        // Drag functions
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+        }
+
+        // Tooltip functions
+        function showTooltip(event, d) {
+            const epic = epicData[d.id];
+
+            // Build components display (all components combined)
+            const originalEpic = dependencyData.epics.find(e => e.id === d.id);
+            const allComponents = new Set();
+
+            // Add primary component
+            if (d.component) {
+                allComponents.add(d.component);
+            }
+
+            // Add inherited components
+            if (originalEpic && originalEpic.inherited_components && originalEpic.inherited_components.length > 0) {
+                originalEpic.inherited_components.forEach(component => {
+                    if (component) {
+                        allComponents.add(component);
+                    }
+                });
+            }
+
+            const componentsDisplay = allComponents.size > 0 ? [...allComponents].sort().join(', ') : 'None';
+
+            let content = `
+                <strong>${d.epic_id}: ${d.title}</strong><br>
+                Status: ${d.status}<br>
+                Components: ${componentsDisplay}<br>
+                Completion: ${d.completion_percentage.toFixed(1)}%<br>
+                Priority: ${d.priority}<br>
+                ${d.capability_name ? `<strong>Capability:</strong> ${d.capability_id} - ${d.capability_name}<br>` : '<span style="color: #ffc107;">⚠️ No capability assigned</span><br>'}
+                ${d.capability_priority ? `Capability Priority: ${d.capability_priority}` : ''}
+            `;
+
+            if (epic) {
+                const blockingCount = links.filter(link => link.source.id === d.id && link.type === 'blocking').length;
+                const blockedByCount = links.filter(link => link.target.id === d.id && link.type === 'blocking').length;
+
+                content += `<br>Blocks: ${blockingCount} epics`;
+                content += `<br>Blocked by: ${blockedByCount} epics`;
+            }
+
+            tooltip
+                .html(content)
+                .style("opacity", 1)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY + 10) + "px");
+        }
+
+        function moveTooltip(event) {
+            tooltip
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY + 10) + "px");
+        }
+
+        function hideTooltip() {
+            tooltip.style("opacity", 0);
+        }
+
+        // Node selection
+        function selectNode(event, d) {
+            // Remove previous selection
+            g.selectAll('.node').classed('selected', false);
+
+            // Select current node
+            d3.select(this).classed('selected', true);
+
+            // Highlight connected dependencies
+            highlightConnectedDependencies(d.id);
+        }
+
+        // Highlight connected dependencies
+        function highlightConnectedDependencies(nodeId) {
+            // Reset all link highlighting
+            g.selectAll('.link')
+                .style('opacity', 0.2)
+                .style('stroke-width', '1px');
+
+            // Highlight connected links
+            g.selectAll('.link')
+                .filter(d => d.source.id === nodeId || d.target.id === nodeId)
+                .style('opacity', 1.0)
+                .style('stroke-width', '3px');
+
+            // Highlight connected nodes
+            g.selectAll('.node').style('opacity', 0.3);
+
+            const connectedNodeIds = new Set([nodeId]);
+            links.forEach(link => {
+                if (link.source.id === nodeId || link.target.id === nodeId) {
+                    connectedNodeIds.add(link.source.id);
+                    connectedNodeIds.add(link.target.id);
+                }
+            });
+
+            g.selectAll('.node')
+                .filter(d => connectedNodeIds.has(d.id))
+                .style('opacity', 1.0);
+        }
+
+        // Zoom functions
+        function zoomIn() {
+            svg.transition().call(zoom.scaleBy, 1.5);
+        }
+
+        function zoomOut() {
+            svg.transition().call(zoom.scaleBy, 0.75);
+        }
+
+        function resetZoom() {
+            svg.transition().call(zoom.transform, d3.zoomIdentity);
+        }
+
+        // Layer switching functionality
+        function switchLayer(layer) {
+            if (currentLayer === layer) return;
+
+            currentLayer = layer;
+
+            // Update button states
+            document.getElementById('epic-layer-btn').classList.toggle('active', layer === 'epic');
+            document.getElementById('capability-layer-btn').classList.toggle('active', layer === 'capability');
+
+            // Update title
+            const title = layer === 'epic' ? 'Epic Dependencies Graph' : 'Capability Dependencies Graph';
+            document.getElementById('viz-title').textContent = title;
+
+            // Recreate visualization with new layer
+            if (layer === 'epic') {
+                renderEpicView();
+            } else {
+                renderCapabilityView();
+            }
+        }
+
+        // Render epic-level view (current default)
+        function renderEpicView() {
+            console.log('Rendering epic view');
+
+            // Clear existing content
+            g.selectAll('*').remove();
+
+            // Show individual epics with capability clustering areas
+            createCapabilityClusters();
+            drawEpicNodes();
+            drawDependencyLinks();
+        }
+
+        // Render capability-level view
+        function renderCapabilityView() {
+            console.log('Rendering capability view');
+
+            // Clear existing content
+            g.selectAll('*').remove();
+
+            // Aggregate epics into capability nodes
+            const capabilityNodes = aggregateEpicsToCapabilities();
+            const capabilityLinks = aggregateEpicDependenciesToCapabilities(capabilityNodes);
+
+            if (capabilityNodes.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            const containerNode = document.getElementById('dependency-graph');
+            const rect = containerNode.getBoundingClientRect();
+            const width = rect.width;
+            const height = rect.height;
+
+            const link = g.append('g')
+                .selectAll('.capability-link')
+                .data(capabilityLinks)
+                .enter()
+                .append('line')
+                .attr('class', 'capability-link')
+                .style('stroke', '#999')
+                .style('stroke-width', d => Math.max(1, d.count))
+                .style('opacity', 0.6);
+
+            const node = g.append('g')
+                .selectAll('.capability-node')
+                .data(capabilityNodes)
+                .enter()
+                .append('g')
+                .attr('class', 'capability-node');
+
+            node.append('circle')
+                .attr('r', d => 30 + d.epics.length * 5)
+                .attr('class', d => `capability-cluster cap-${d.id}`)
+                .style('opacity', 0.8);
+
+            node.append('text')
+                .attr('class', 'capability-label')
+                .attr('text-anchor', 'middle')
+                .attr('dy', 5)
+                .text(d => d.name);
+
+            simulation
+                .nodes(capabilityNodes)
+                .force('link', d3.forceLink(capabilityLinks).id(d => d.id).distance(200))
+                .force('charge', d3.forceManyBody().strength(-600))
+                .force('center', d3.forceCenter(width / 2, height / 2))
+                .force('collision', d3.forceCollide().radius(d => {
+                    const epicCount = Array.isArray(d.epics) ? d.epics.length : 0;
+                    return 40 + epicCount * 4;
+                }));
+
+            simulation.alpha(1).restart();
+
+            simulation.on('tick', () => {
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+                link
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+            });
+        }
+
+        // Utility functions
+        function refreshVisualization() {
+            loadDependencyData();
+        }
+
+        function showLoading() {
+            document.getElementById('viz-title').innerHTML =
+                '<div class="spinner"></div> Loading dependency data...';
+        }
+
+        function showError(message) {
+            document.getElementById('viz-title').textContent = message;
+        }
+
+        function showEmptyState() {
+            g.append("text")
+                .attr("x", 400)
+                .attr("y", 300)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#6c757d")
+                .attr("font-size", "18px")
+                .text("No dependencies found matching the current filters.");
+        }
+
+        // Event listeners
+        document.getElementById('layout-select').addEventListener('change', function() {
+            applyLayout();
+        });
+
+        document.getElementById('filter-status').addEventListener('change', function() {
+            processDataAndRender();
+            updateStatistics();
+        });
+
+        document.getElementById('filter-component').addEventListener('change', function() {
+            processDataAndRender();
+            updateStatistics();
+        });
+
+        document.getElementById('filter-capability').addEventListener('change', function() {
+            processDataAndRender();
+            updateStatistics();
+        });
+
+        // Capability clustering functions
+        function createCapabilityClusters() {
+            // Group epics by capability
+            const capabilityGroups = new Map();
+
+            nodes.forEach(epic => {
+                const capId = epic.capability_id || 'unassigned';
+                if (!capabilityGroups.has(capId)) {
+                    capabilityGroups.set(capId, []);
+                }
+                capabilityGroups.get(capId).push(epic);
+            });
+
+            // Get container dimensions
+            const containerNode = document.getElementById('dependency-graph');
+            const rect = containerNode.getBoundingClientRect();
+            const width = rect.width;
+            const height = rect.height;
+
+            // Pre-position capabilities in a distributed layout
+            const capabilityList = Array.from(capabilityGroups.entries()).filter(([capId]) => capId !== 'unassigned');
+            const numCapabilities = capabilityList.length;
+
+            capabilityList.forEach(([capId, epics], index) => {
+                const capability = capabilityData[capId];
+                if (!capability) return;
+
+                // Calculate distributed positions to avoid stacking
+                const center = calculateDistributedCapabilityPosition(index, numCapabilities, width, height);
+                const radius = calculateClusterRadius(epics.length);
+
+                // Pre-position epics within their capability cluster
+                positionEpicsInCluster(epics, center, radius);
+
+                // Create cluster background
+                g.append('circle')
+                    .attr('class', `capability-cluster cap-${capId}`)
+                    .attr('cx', center.x)
+                    .attr('cy', center.y)
+                    .attr('r', radius)
+                    .style('opacity', 0.3);
+
+                // Add capability label
+                g.append('text')
+                    .attr('class', 'capability-label')
+                    .attr('x', center.x)
+                    .attr('y', center.y - radius - 10)
+                    .text(capability.name || capId);
+            });
+        }
+
+        function calculateDistributedCapabilityPosition(index, totalCapabilities, width, height) {
+            if (totalCapabilities === 1) {
+                return { x: width / 2, y: height / 2 };
+            }
+
+            // Arrange capabilities in a circle or grid pattern
+            if (totalCapabilities <= 4) {
+                // Circular arrangement for small numbers
+                const angle = (2 * Math.PI * index) / totalCapabilities;
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const radius = Math.min(width, height) * 0.3;
+
+                return {
+                    x: centerX + Math.cos(angle) * radius,
+                    y: centerY + Math.sin(angle) * radius
+                };
+            } else {
+                // Grid arrangement for larger numbers
+                const cols = Math.ceil(Math.sqrt(totalCapabilities));
+                const rows = Math.ceil(totalCapabilities / cols);
+                const col = index % cols;
+                const row = Math.floor(index / cols);
+
+                return {
+                    x: (width / (cols + 1)) * (col + 1),
+                    y: (height / (rows + 1)) * (row + 1)
+                };
+            }
+        }
+
+        function positionEpicsInCluster(epics, clusterCenter, clusterRadius) {
+            // Position epics within the cluster area
+            epics.forEach((epic, index) => {
+                if (epics.length === 1) {
+                    // Single epic at cluster center
+                    epic.x = clusterCenter.x;
+                    epic.y = clusterCenter.y;
+                } else {
+                    // Distribute epics in a circle within the cluster
+                    const angle = (2 * Math.PI * index) / epics.length;
+                    const epicRadius = clusterRadius * 0.6; // Keep epics within cluster boundary
+
+                    epic.x = clusterCenter.x + Math.cos(angle) * epicRadius;
+                    epic.y = clusterCenter.y + Math.sin(angle) * epicRadius;
+                }
+            });
+        }
+
+        function calculateClusterRadius(epicCount) {
+            return Math.max(100, 60 + epicCount * 20);
+        }
+
+        function aggregateEpicsToCapabilities() {
+            const capabilityNodes = new Map();
+
+            nodes.forEach(epic => {
+                const capId = epic.capability_id || 'unassigned';
+
+                if (!capabilityNodes.has(capId)) {
+                    const capability = capabilityData[capId] || {
+                        capability_id: capId,
+                        name: capId === 'unassigned' ? 'Unassigned' : capId
+                    };
+
+                    capabilityNodes.set(capId, {
+                        id: capId,
+                        name: capability.name,
+                        epics: [],
+                        totalStoryPoints: 0,
+                        completedStoryPoints: 0,
+                        status: 'planned'
+                    });
+                }
+
+                const capNode = capabilityNodes.get(capId);
+                capNode.epics.push(epic);
+                capNode.totalStoryPoints += epic.story_points || 0;
+
+                if (epic.status === 'completed') {
+                    capNode.completedStoryPoints += epic.story_points || 0;
+                }
+
+                // Update capability status based on epic statuses
+                if (epic.status === 'in-progress' && capNode.status === 'planned') {
+                    capNode.status = 'in-progress';
+                } else if (epic.status === 'completed' && capNode.epics.every(e => e.status === 'completed')) {
+                    capNode.status = 'completed';
+                }
+            });
+
+            return Array.from(capabilityNodes.values());
+        }
+
+        function aggregateEpicDependenciesToCapabilities(capabilityNodes) {
+            const capabilityLinks = new Map();
+            const capabilityMap = new Map(capabilityNodes.map(cap => [cap.id, cap]));
+
+            links.forEach(link => {
+                const sourceCapId = nodes.find(n => n.id === link.source.id)?.capability_id || 'unassigned';
+                const targetCapId = nodes.find(n => n.id === link.target.id)?.capability_id || 'unassigned';
+
+                if (sourceCapId === targetCapId) return; // Skip intra-capability dependencies
+
+                const linkKey = `${sourceCapId}-${targetCapId}`;
+                if (!capabilityLinks.has(linkKey)) {
+                    capabilityLinks.set(linkKey, {
+                        source: sourceCapId,
+                        target: targetCapId,
+                        type: link.type,
+                        count: 0
+                    });
+                }
+                capabilityLinks.get(linkKey).count++;
+            });
+
+            return Array.from(capabilityLinks.values());
+        }
+
+        function drawCapabilityNodes(capabilityNodes) {
+            const nodeSelection = g.selectAll('.capability-node')
+                .data(capabilityNodes)
+                .enter()
+                .append('g')
+                .attr('class', 'capability-node');
+
+            nodeSelection.append('circle')
+                .attr('r', d => 30 + d.epics.length * 5)
+                .attr('class', d => `capability-cluster cap-${d.id}`)
+                .style('opacity', 0.8);
+
+            nodeSelection.append('text')
+                .attr('class', 'capability-label')
+                .attr('text-anchor', 'middle')
+                .attr('dy', 5)
+                .text(d => d.name);
+
+            // Position nodes using force simulation
+            simulation.nodes(capabilityNodes);
+            simulation.on('tick', () => {
+                nodeSelection.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+        }
+
+        function drawCapabilityLinks(capabilityLinks) {
+            g.selectAll('.capability-link')
+                .data(capabilityLinks)
+                .enter()
+                .append('line')
+                .attr('class', 'capability-link')
+                .style('stroke', '#999')
+                .style('stroke-width', d => Math.max(1, d.count))
+                .style('opacity', 0.6);
+
+            simulation.force('link').links(capabilityLinks);
+        }
+
+        // Enhanced rendering functions for epic view
+        function drawEpicNodes() {
+            // Use existing node rendering logic but ensure capability clustering is applied
+            processDataAndRender();
+        }
+
+        function drawDependencyLinks() {
+            // Use existing link rendering logic
+            // This will be called from processDataAndRender()
+        }
+
+        // Window resize handler
+        window.addEventListener('resize', function() {
+            const container = document.getElementById('dependency-graph');
+            const rect = container.getBoundingClientRect();
+
+            svg.attr("width", rect.width).attr("height", rect.height);
+
+            simulation.force("center", d3.forceCenter(rect.width / 2, rect.height / 2));
+            simulation.alpha(1).restart();
+        });
+    </script>
+</body>
+</html>

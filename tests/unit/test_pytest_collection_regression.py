@@ -206,9 +206,9 @@ class TestPytestCollectionRegression:
                 test_false_found = True
                 break
 
-        assert (
-            test_false_found
-        ), "TestCoverageReporter class should have __test__ = False"
+        assert test_false_found, (
+            "TestCoverageReporter class should have __test__ = False"
+        )
 
     def test_diagnostic_classes_not_collected(self):
         """Test that diagnostic classes are not collected."""

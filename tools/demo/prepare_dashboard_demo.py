@@ -2,6 +2,7 @@
 
 Run with:  python tools/demo/prepare_dashboard_demo.py
 """
+
 from __future__ import annotations
 
 import json

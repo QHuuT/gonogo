@@ -8,7 +8,6 @@ Generates reports showing test coverage for User Stories, Epics, and Components.
 import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
@@ -35,9 +34,9 @@ class TestCoverageReporter:
 
     def generate_report(self, user_story_filter=None):
         """Generate test coverage report."""
-        print("="*80)
+        print("=" * 80)
         print("TEST COVERAGE REPORT")
-        print("="*80 + "\n")
+        print("=" * 80 + "\n")
 
         if user_story_filter:
             self._report_user_story(user_story_filter)
@@ -50,21 +49,29 @@ class TestCoverageReporter:
     def _report_overview(self):
         """Print overview statistics."""
         total_tests = self.session.query(Test).count()
-        tests_with_us = self.session.query(Test).filter(
-            Test.github_user_story_number.isnot(None)
-        ).count()
-        tests_with_epic = self.session.query(Test).filter(
-            Test.epic_id.isnot(None)
-        ).count()
-        tests_with_component = self.session.query(Test).filter(
-            Test.component.isnot(None)
-        ).count()
+        tests_with_us = (
+            self.session.query(Test)
+            .filter(Test.github_user_story_number.isnot(None))
+            .count()
+        )
+        tests_with_epic = (
+            self.session.query(Test).filter(Test.epic_id.isnot(None)).count()
+        )
+        tests_with_component = (
+            self.session.query(Test).filter(Test.component.isnot(None)).count()
+        )
 
         print("OVERVIEW:")
         print(f"  Total tests: {total_tests}")
-        print(f"  Tests with User Story: {tests_with_us} ({tests_with_us*100//total_tests if total_tests else 0}%)")
-        print(f"  Tests with Epic: {tests_with_epic} ({tests_with_epic*100//total_tests if total_tests else 0}%)")
-        print(f"  Tests with Component: {tests_with_component} ({tests_with_component*100//total_tests if total_tests else 0}%)")
+        print(
+            f"  Tests with User Story: {tests_with_us} ({tests_with_us * 100 // total_tests if total_tests else 0}%)"
+        )
+        print(
+            f"  Tests with Epic: {tests_with_epic} ({tests_with_epic * 100 // total_tests if total_tests else 0}%)"
+        )
+        print(
+            f"  Tests with Component: {tests_with_component} ({tests_with_component * 100 // total_tests if total_tests else 0}%)"
+        )
         print()
 
     def _report_by_epic(self):
@@ -75,13 +82,15 @@ class TestCoverageReporter:
         epics = self.session.query(Epic).all()
 
         for epic in epics:
-            test_count = self.session.query(Test).filter(
-                Test.epic_id == epic.id
-            ).count()
+            test_count = (
+                self.session.query(Test).filter(Test.epic_id == epic.id).count()
+            )
 
-            us_count = self.session.query(UserStory).filter(
-                UserStory.epic_id == epic.id
-            ).count()
+            us_count = (
+                self.session.query(UserStory)
+                .filter(UserStory.epic_id == epic.id)
+                .count()
+            )
 
             print(f"  {epic.title or f'Epic #{epic.github_issue_number}'}:")
             print(f"    Tests: {test_count}")
@@ -99,7 +108,7 @@ class TestCoverageReporter:
 
         for test in tests:
             if test.component:
-                components = [c.strip() for c in test.component.split(',')]
+                components = [c.strip() for c in test.component.split(",")]
                 for comp in components:
                     component_tests[comp] += 1
 
@@ -128,23 +137,29 @@ class TestCoverageReporter:
 
     def _report_user_story(self, us_number: int):
         """Print detailed report for specific User Story."""
-        user_story = self.session.query(UserStory).filter(
-            UserStory.github_issue_number == us_number
-        ).first()
+        user_story = (
+            self.session.query(UserStory)
+            .filter(UserStory.github_issue_number == us_number)
+            .first()
+        )
 
         if not user_story:
             print(f"User Story #{us_number} not found in database")
             return
 
-        tests = self.session.query(Test).filter(
-            Test.github_user_story_number == us_number
-        ).all()
+        tests = (
+            self.session.query(Test)
+            .filter(Test.github_user_story_number == us_number)
+            .all()
+        )
 
         print(f"USER STORY: {user_story.title or f'US #{us_number}'}")
         print("-" * 80)
         print(f"  GitHub Issue: #{us_number}")
         if user_story.epic:
-            print(f"  Epic: {user_story.epic.title or f'Epic #{user_story.epic.github_issue_number}'}")
+            print(
+                f"  Epic: {user_story.epic.title or f'Epic #{user_story.epic.github_issue_number}'}"
+            )
         print(f"  Component: {user_story.component or 'Not specified'}")
         print(f"  Total Tests: {len(tests)}")
         print()
@@ -174,7 +189,9 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Generate test coverage reports")
-    parser.add_argument('--user-story', type=int, help='Generate report for specific User Story number')
+    parser.add_argument(
+        "--user-story", type=int, help="Generate report for specific User Story number"
+    )
     args = parser.parse_args()
 
     reporter = TestCoverageReporter()

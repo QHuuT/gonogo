@@ -69,9 +69,9 @@ class TestInputValidation:
                 ]
 
                 for indicator in sql_injection_indicators:
-                    assert (
-                        indicator not in response_text
-                    ), f"SQL injection vulnerability detected: {indicator} in response"
+                    assert indicator not in response_text, (
+                        f"SQL injection vulnerability detected: {indicator} in response"
+                    )
 
                 # Legitimate responses from health endpoints should NOT be flagged
                 # Health endpoints can legitimately contain database status info
@@ -81,9 +81,9 @@ class TestInputValidation:
 
                 for dangerous_part in dangerous_payload_parts:
                     if dangerous_part in response_text:
-                        assert (
-                            False
-                        ), f"SQL injection payload reflected in response: {dangerous_part} from payload {payload}"
+                        assert False, (
+                            f"SQL injection payload reflected in response: {dangerous_part} from payload {payload}"
+                        )
 
     @pytest.mark.component("security")
     def test_sql_injection_detection_logic_regression(self, client: TestClient):
@@ -121,12 +121,12 @@ class TestInputValidation:
 
         # Should NOT reflect the malicious payload back
         malicious_text = str(malicious_response.json()).lower()
-        assert (
-            "drop table" not in malicious_text
-        ), "SQL injection payload should not be reflected"
-        assert (
-            "' or '1'='1" not in malicious_text
-        ), "SQL injection payload should not be reflected"
+        assert "drop table" not in malicious_text, (
+            "SQL injection payload should not be reflected"
+        )
+        assert "' or '1'='1" not in malicious_text, (
+            "SQL injection payload should not be reflected"
+        )
 
     @pytest.mark.component("security")
     def test_template_injection_prevention(self, client: TestClient):
@@ -172,7 +172,9 @@ class TestInputValidation:
                     400,
                     403,
                     404,
-                ], f"Path traversal payload {payload} should be blocked with error status"
+                ], (
+                    f"Path traversal payload {payload} should be blocked with error status"
+                )
 
                 if response.status_code == 200:
                     # Should not return system file content
@@ -188,9 +190,9 @@ class TestInputValidation:
                     ]
 
                     for indicator in system_indicators:
-                        assert (
-                            indicator not in content
-                        ), f"System file content detected for payload: {payload}"
+                        assert indicator not in content, (
+                            f"System file content detected for payload: {payload}"
+                        )
 
             except ValueError as e:
                 # Path resolution errors (like "Paths don't have the same drive") indicate
@@ -208,9 +210,9 @@ class TestInputValidation:
                 # Other exceptions could indicate successful prevention or unexpected errors
                 # For security testing, we'll treat unhandled exceptions as prevention success
                 # but log the specific error for debugging
-                assert (
-                    False
-                ), f"Unexpected exception for payload {payload}: {type(e).__name__}: {e}"
+                assert False, (
+                    f"Unexpected exception for payload {payload}: {type(e).__name__}: {e}"
+                )
 
     @pytest.mark.component("security")
     def test_path_traversal_windows_path_resolution_regression(
@@ -240,9 +242,9 @@ class TestInputValidation:
             # This is successful prevention - the malformed path was caught
         except Exception as e:
             # Any other exception should be investigated
-            assert (
-                False
-            ), f"Unexpected exception type for Windows path resolution: {type(e).__name__}: {e}"
+            assert False, (
+                f"Unexpected exception type for Windows path resolution: {type(e).__name__}: {e}"
+            )
 
         # Additional edge cases that could cause similar path resolution issues
         edge_case_payloads = [
@@ -269,9 +271,9 @@ class TestInputValidation:
                 else:
                     assert False, f"Unexpected ValueError for payload {payload}: {e}"
             except Exception as e:
-                assert (
-                    False
-                ), f"Unexpected exception for edge case {payload}: {type(e).__name__}: {e}"
+                assert False, (
+                    f"Unexpected exception for edge case {payload}: {type(e).__name__}: {e}"
+                )
 
     @pytest.mark.component("security")
     def test_command_injection_prevention(self, client: TestClient):
