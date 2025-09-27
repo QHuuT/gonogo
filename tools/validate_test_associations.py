@@ -27,7 +27,9 @@ from be.models.traceability.user_story import UserStory
 
 
 class TestAssociationValidator:
-    def __init__(self, test_root="tests", database_url="sqlite:///./gonogo.db"):
+    def __init__(
+        self, test_root="tests", database_url="sqlite:///./gonogo.db"
+    ):
         self.test_root = Path(test_root)
         self.database_url = database_url
         self.session = None
@@ -69,7 +71,9 @@ class TestAssociationValidator:
 
             content = test_file.read_text(encoding='utf-8')
 
-            has_us_marker = bool(re.search(r'@pytest\.mark\.user_story', content))
+            has_us_marker = bool(
+                re.search(r'@pytest\.mark\.user_story', content)
+            )
             has_epic_marker = bool(re.search(r'@pytest\.mark\.epic', content))
 
             if not has_us_marker and not has_epic_marker:
@@ -84,8 +88,12 @@ class TestAssociationValidator:
         test_files = list(self.test_root.rglob("test_*.py"))
         test_files += list(self.test_root.rglob("*_test.py"))
 
-        valid_us_numbers = {us.github_issue_number for us in self.session.query(UserStory).all()}
-        valid_epic_numbers = {epic.github_issue_number for epic in self.session.query(Epic).all()}
+        valid_us_numbers = {
+            us.github_issue_number for us in self.session.query(UserStory).all()
+        }
+        valid_epic_numbers = {
+            epic.github_issue_number for epic in self.session.query(Epic).all()
+        }
 
         for test_file in test_files:
             if 'bdd' in str(test_file):
@@ -93,9 +101,13 @@ class TestAssociationValidator:
 
             content = test_file.read_text(encoding='utf-8')
 
-            us_markers = re.findall(r'@pytest\.mark\.user_story\(["\']([^"\']+)', content)
+            us_markers = re.findall(
+                r'@pytest\.mark\.user_story\(["\']([^"\']+)', content
+            )
             for us_marker in us_markers:
-                us_refs = us_marker.replace('"', '').replace("'", "").split(',')
+                us_refs = us_marker.replace(
+                    '"', ''
+                ).replace("'", "").split(',')
                 for us_ref in us_refs:
                     us_ref = us_ref.strip()
                     match = re.match(r'US-0*(\d+)', us_ref)
@@ -109,7 +121,9 @@ class TestAssociationValidator:
 
             epic_markers = re.findall(r'@pytest\.mark\.epic\(["\']([^"\']+)', content)
             for epic_marker in epic_markers:
-                epic_refs = epic_marker.replace('"', '').replace("'", "").split(',')
+                epic_refs = epic_marker.replace(
+                    '"', ''
+                ).replace("'", "").split(',')
                 for epic_ref in epic_refs:
                     epic_ref = epic_ref.strip()
                     match = re.match(r'EP-0*(\d+)', epic_ref)
@@ -121,8 +135,13 @@ class TestAssociationValidator:
                                 'reference': epic_ref
                             })
 
-        print(f"  Found {len(self.issues['invalid_us_refs'])} invalid US references")
-        print(f"  Found {len(self.issues['invalid_epic_refs'])} invalid Epic references\n")
+        print(
+            f"  Found {len(self.issues['invalid_us_refs'])} invalid US references"
+        )
+        print(
+            f"  Found {len(self.issues['invalid_epic_refs'])} "
+            f"invalid Epic references\n"
+        )
 
     def _check_database_sync(self):
         """Check if all test files are synced to database."""
@@ -131,7 +150,9 @@ class TestAssociationValidator:
         test_files = list(self.test_root.rglob("test_*.py"))
         test_files += list(self.test_root.rglob("*_test.py"))
 
-        db_test_paths = {test.test_file_path for test in self.session.query(Test).all()}
+        db_test_paths = {
+            test.test_file_path for test in self.session.query(Test).all()
+        }
 
         for test_file in test_files:
             if 'bdd' in str(test_file):
@@ -142,7 +163,9 @@ class TestAssociationValidator:
             if test_path not in db_test_paths:
                 self.issues['not_in_db'].append(str(test_file))
 
-        print(f"  Found {len(self.issues['not_in_db'])} tests not in database\n")
+        print(
+            f"  Found {len(self.issues['not_in_db'])} tests not in database\n"
+        )
 
     def _print_report(self):
         """Print validation report."""
@@ -169,7 +192,10 @@ class TestAssociationValidator:
             print()
 
         if self.issues['invalid_us_refs']:
-            print(f"INVALID USER STORY REFERENCES ({len(self.issues['invalid_us_refs'])}):")
+            print(
+                f"INVALID USER STORY REFERENCES "
+                f"({len(self.issues['invalid_us_refs'])}):"
+            )
             print("-" * 80)
             for issue in self.issues['invalid_us_refs'][:5]:
                 print(f"  - {issue['file']}: {issue['reference']}")

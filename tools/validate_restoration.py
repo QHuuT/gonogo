@@ -52,9 +52,14 @@ def validate_epic_data(session: Session) -> List[str]:
 
         # Check capability relationship
         if epic.capability_id:
-            capability = session.query(Capability).filter(Capability.id == epic.capability_id).first()
+            capability = session.query(Capability).filter(
+                Capability.id == epic.capability_id
+            ).first()
             if not capability:
-                issues.append(f"Epic {epic.epic_id} references non-existent capability {epic.capability_id}")
+                issues.append(
+                    f"Epic {epic.epic_id} references non-existent capability "
+                    f"{epic.capability_id}"
+                )
 
     return issues
 
@@ -71,7 +76,9 @@ def validate_user_story_data(session: Session) -> List[str]:
         if not us.title:
             issues.append(f"User Story {us.user_story_id} missing title")
         if us.github_issue_number is None:
-            issues.append(f"User Story {us.user_story_id} missing github_issue_number")
+            issues.append(
+                f"User Story {us.user_story_id} missing github_issue_number"
+            )
         if us.epic_id is None:
             issues.append(f"User Story {us.user_story_id} missing epic_id")
 
@@ -79,7 +86,11 @@ def validate_user_story_data(session: Session) -> List[str]:
         if us.epic_id:
             epic = session.query(Epic).filter(Epic.id == us.epic_id).first()
             if not epic:
-                issues.append(f"User Story {us.user_story_id} references non-existent epic {us.epic_id}")
+                issues.append(
+                    f"User Story {us.user_story_id} references "
+                    f"non-existent epic "
+                    f"{us.epic_id}"
+                )
 
     return issues
 
@@ -96,13 +107,20 @@ def validate_defect_data(session: Session) -> List[str]:
         if not defect.title:
             issues.append(f"Defect {defect.defect_id} missing title")
         if defect.github_issue_number is None:
-            issues.append(f"Defect {defect.defect_id} missing github_issue_number")
+            issues.append(
+                f"Defect {defect.defect_id} missing github_issue_number"
+            )
 
         # Check epic relationship (optional for defects)
         if defect.epic_id:
-            epic = session.query(Epic).filter(Epic.id == defect.epic_id).first()
+            epic = session.query(Epic).filter(
+                Epic.id == defect.epic_id
+            ).first()
             if not epic:
-                issues.append(f"Defect {defect.defect_id} references non-existent epic {defect.epic_id}")
+                issues.append(
+                    f"Defect {defect.defect_id} references non-existent epic "
+                    f"{defect.epic_id}"
+                )
 
     return issues
 
@@ -110,7 +128,9 @@ def validate_capability_data(session: Session) -> List[str]:
     """Validate capability data integrity."""
     issues = []
 
-    expected_capabilities = ["CAP-00001", "CAP-00002", "CAP-00003", "CAP-00004"]
+    expected_capabilities = [
+        "CAP-00001", "CAP-00002", "CAP-00003", "CAP-00004"
+    ]
     existing_capabilities = session.query(Capability.capability_id).all()
     existing_cap_ids = [cap[0] for cap in existing_capabilities]
 
@@ -137,7 +157,10 @@ def check_foreign_key_integrity(session: Session) -> List[str]:
     ).all()
 
     for us in orphaned_us:
-        issues.append(f"User Story {us.user_story_id} references non-existent epic (ID: {us.epic_id})")
+        issues.append(
+            f"User Story {us.user_story_id} references non-existent epic "
+            f"(ID: {us.epic_id})"
+        )
 
     # Check epics have valid capability references
     orphaned_epics = session.query(Epic).filter(
@@ -146,7 +169,10 @@ def check_foreign_key_integrity(session: Session) -> List[str]:
     ).all()
 
     for epic in orphaned_epics:
-        issues.append(f"Epic {epic.epic_id} references non-existent capability (ID: {epic.capability_id})")
+        issues.append(
+            f"Epic {epic.epic_id} references non-existent capability "
+            f"(ID: {epic.capability_id})"
+        )
 
     return issues
 
@@ -167,7 +193,9 @@ def validate_expected_counts() -> Tuple[bool, List[str]]:
         for table, expected_count in expected.items():
             actual_count = actual[table]
             if actual_count != expected_count:
-                issues.append(f"{table}: expected {expected_count}, got {actual_count}")
+                issues.append(
+                    f"{table}: expected {expected_count}, got {actual_count}"
+                )
 
         return len(issues) == 0, issues
     finally:
@@ -228,7 +256,9 @@ def run_validation() -> bool:
         # Capability validation
         cap_issues = validate_capability_data(session)
         if cap_issues:
-            print(f"  ❌ Capability issues found: {len(cap_issues)}")
+            print(
+                f"  ❌ Capability issues found: {len(cap_issues)}"
+            )
             all_issues.extend(cap_issues)
         else:
             print("  ✅ Capabilities data integrity OK")
@@ -253,7 +283,10 @@ def run_validation() -> bool:
         else:
             print("✅ VALIDATION PASSED: All checks successful!")
             print("\nThe GitHub issues restoration completed successfully!")
-            print("All 84 items (8 epics + 66 user stories + 10 defects) are properly restored.")
+            print(
+                "All 84 items (8 epics + 66 user stories + 10 defects) are "
+                "properly restored."
+            )
             return True
 
     finally:
