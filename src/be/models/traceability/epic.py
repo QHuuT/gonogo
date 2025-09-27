@@ -107,38 +107,58 @@ class Epic(TraceabilityBase):
     business_impact_score = Column(
         Float, default=0.0, nullable=False
     )  # Estimated business impact
-    roi_percentage = Column(Float, default=0.0, nullable=False)  # Return on investment
-    user_adoption_rate = Column(Float, default=0.0, nullable=False)  # % user adoption (post-release)
+    roi_percentage = Column(
+        Float, default=0.0, nullable=False
+    )  # Return on investment
+    user_adoption_rate = Column(
+        Float, default=0.0, nullable=False
+    )  # % user adoption (post-release)
 
     # Tracking and history
-    last_metrics_update = Column(DateTime, nullable=True)  # When metrics were last calculated
-    metrics_calculation_frequency = Column(String(20), default="daily", nullable=False)
+    last_metrics_update = Column(
+        DateTime, nullable=True
+    )  # When metrics were last calculated
+    metrics_calculation_frequency = Column(
+        String(20), default="daily", nullable=False
+    )
 
     metrics_cache = Column(Text, nullable=True)
-    metrics_cache_updated_at = Column(DateTime, nullable=True, index=True)  # daily, weekly, etc.
+    metrics_cache_updated_at = Column(
+        DateTime, nullable=True, index=True
+    )  # daily, weekly, etc.
 
     # Epic Label Management (US-00006)
-    epic_label_name = Column(String(50), nullable=True, index=True)
-    # Format: "rtm-automation", "github-project", etc. (used in epic/x GitHub labels)
+    epic_label_name = Column(
+        String(50), nullable=True, index=True
+    )
+    # Format: "rtm-automation", "github-project", etc.
+    # (used in epic/x GitHub labels)
 
-    github_epic_label = Column(String(100), nullable=True, index=True)
+    github_epic_label = Column(
+        String(100), nullable=True, index=True
+    )
     # Format: "epic/rtm-automation" (full GitHub label name)
 
     last_github_sync = Column(String(50), nullable=True)
     # Timestamp of last sync with GitHub labels
 
     # Program Areas/Capabilities (US-00062) - Strategic Epic Grouping
-    capability_id = Column(Integer, ForeignKey("capabilities.id"), nullable=True, index=True)
+    capability_id = Column(
+        Integer, ForeignKey("capabilities.id"), nullable=True, index=True
+    )
     # Links Epic to a Program Area/Capability for strategic grouping
 
     # Relationships
-    # User Stories - hybrid relationship (cached in DB, source of truth in GitHub)
+    # User Stories - hybrid relationship
+    # (cached in DB, source of truth in GitHub)
     user_stories = relationship(
         "UserStory", back_populates="epic", cascade="all, delete-orphan"
     )
 
     # Tests - direct database relationship
-    tests = relationship("Test", back_populates="epic", cascade="all, delete-orphan")
+    tests = relationship(
+        "Test", back_populates="epic", cascade="all, delete-orphan"
+    )
 
     # Defects - indirect relationship through user stories and tests
     defects = relationship("Defect", back_populates="epic")
@@ -172,16 +192,33 @@ class Epic(TraceabilityBase):
     __table_args__ = (
         Index("idx_epic_status_priority", "status", "priority"),
         Index("idx_epic_completion", "completion_percentage"),
-        Index("idx_epic_release", "target_release_version", "priority"),
+        Index(
+            "idx_epic_release", "target_release_version", "priority"
+        ),
         Index("idx_epic_component", "component"),
-        Index("idx_epic_label", "epic_label_name", "github_epic_label"),
-        Index("idx_epic_capability", "capability_id"),  # Program Areas/Capabilities index
+        Index(
+            "idx_epic_label", "epic_label_name", "github_epic_label"
+        ),
+        Index("idx_epic_capability", "capability_id"),
+        # Program Areas/Capabilities index
 
         # Advanced metrics indexes (US-00071)
-        Index("idx_epic_timeline", "planned_start_date", "planned_end_date"),
-        Index("idx_epic_velocity", "velocity_points_per_sprint", "completion_percentage"),
-        Index("idx_epic_quality", "defect_density", "test_coverage_percentage"),
-        Index("idx_epic_business_impact", "business_impact_score", "roi_percentage"),
+        Index(
+            "idx_epic_timeline", "planned_start_date", "planned_end_date"
+        ),
+        Index(
+            "idx_epic_velocity",
+            "velocity_points_per_sprint",
+            "completion_percentage"
+        ),
+        Index(
+            "idx_epic_quality", "defect_density", "test_coverage_percentage"
+        ),
+        Index(
+            "idx_epic_business_impact",
+            "business_impact_score",
+            "roi_percentage"
+        ),
         Index("idx_epic_metrics_update", "last_metrics_update"),
     )
 
@@ -261,8 +298,10 @@ class Epic(TraceabilityBase):
             'ci-cd': 'component/ci-cd',
             'documentation': 'component/documentation'
         }
-        component_key = self.component.lower().replace(' ', '/').replace('-', '/')
-        return mapping.get(component_key, mapping.get(self.component.lower(), f'component/{self.component.lower().replace("/", "-").replace(" ", "-")}'))
+        component_key = (
+            self.component.lower().replace(' ', '/').replace('-', '/')
+        )
+        default_key = (\n            f'component/{self.component.lower().replace("/", "-").replace(" ", "-")}'\n        )\n        return mapping.get(\n            component_key,\n            mapping.get(self.component.lower(), default_key)\n        )
 
     def validate_component(self) -> bool:
         """Validate component value against allowed options."""
