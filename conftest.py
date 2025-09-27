@@ -33,7 +33,9 @@ class TestOutputCapture:
         self.log_path = log_dir / f"pytest_{test_type}_output_{timestamp}.log"
 
         # Open log file with proper encoding for Windows
-        self.log_file = open(self.log_path, 'w', encoding='utf-8', errors='replace', newline='')
+        self.log_file = open(
+            self.log_path, 'w', encoding='utf-8', errors='replace', newline=''
+        )
 
         # Save original streams
         self.original_stdout = sys.stdout
@@ -46,7 +48,8 @@ class TestOutputCapture:
         print(f"[PYTEST] Test output being saved to: {self.log_path}")
 
     def _determine_test_type(self, config):
-        """Determine the test type based on command line arguments or test paths."""
+        """Determine the test type based on command line arguments or test
+        paths."""
         if config is None:
             return "all"
 
@@ -58,7 +61,10 @@ class TestOutputCapture:
             arg_str = str(arg).lower()
             if 'tests/unit' in arg_str or 'tests\\unit' in arg_str:
                 return "unit"
-            elif 'tests/integration' in arg_str or 'tests\\integration' in arg_str:
+            elif (
+                'tests/integration' in arg_str or
+                'tests\\integration' in arg_str
+            ):
                 return "integration"
             elif 'tests/security' in arg_str or 'tests\\security' in arg_str:
                 return "security"
@@ -107,18 +113,29 @@ class TestOutputCapture:
                 sys.executable,
                 "tools/process_test_logs.py",
                 str(self.log_path)
-            ], capture_output=True, text=True, encoding='utf-8', errors='replace')
+            ], capture_output=True, text=True, encoding='utf-8',
+               errors='replace')
 
             if result.returncode == 0:
                 # Check the output for failure count
                 if "[FAILURES]" in result.stdout:
-                    failures_line = [line for line in result.stdout.split('\n') if '[FAILURES]' in line]
+                    failures_line = [
+                        line for line in result.stdout.split('\n')
+                        if '[FAILURES]' in line
+                    ]
                     if failures_line:
-                        print(f"[PYTEST] {failures_line[0]} - Processed log created")
+                        print(
+                            f"[PYTEST] {failures_line[0]} - "
+                            "Processed log created"
+                        )
                     else:
-                        print(f"[PYTEST] Failures found - Processed log created")
+                        print(
+                            "[PYTEST] Failures found - Processed log created"
+                        )
                 else:
-                    print(f"[PYTEST] No failures found - Processed log created")
+                    print(
+                        "[PYTEST] No failures found - Processed log created"
+                    )
             else:
                 print(f"[PYTEST] Note: Post-processing failed")
                 if result.stderr:
@@ -143,8 +160,12 @@ class TeeWriter:
         try:
             # Remove ANSI escape sequences and problematic Unicode characters
             import re
-            clean_text = re.sub(r'\x1b\[[0-9;]*m', '', text)  # Remove ANSI color codes
-            clean_text = clean_text.encode('ascii', errors='ignore').decode('ascii')  # Keep only ASCII
+            clean_text = re.sub(
+                r'\x1b\[[0-9;]*m', '', text
+            )  # Remove ANSI color codes
+            clean_text = clean_text.encode(
+                'ascii', errors='ignore'
+            ).decode('ascii')  # Keep only ASCII
             self.file.write(clean_text)
         except Exception:
             # Final fallback - write basic text only
