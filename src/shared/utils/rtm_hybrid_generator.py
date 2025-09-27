@@ -308,7 +308,10 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                 else "📝 Planned"
             )
 
-            github_link = f"https://github.com/{self.github_owner}/{self.github_repo}/issues?q=is%3Aissue+{epic.epic_id}"
+            github_link = (
+                f"https://github.com/{self.github_owner}/{self.github_repo}/issues"
+                f"?q=is%3Aissue+{epic.epic_id}"
+            )
             content += (
                 f"| [**{epic.epic_id}**]({github_link}) | {epic.title} "
                 f"| {us_list} | {status} |\n"

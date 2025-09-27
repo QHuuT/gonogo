@@ -868,7 +868,7 @@ metric-card--{
                                             onclick="filterTestsByType('{epic.epic_id}', 'all')"
                                             aria-pressed="true">All Tests</button>
                                 </div>
-                                <div class="test-count-display filter-count" role="status" aria-live="polite">Showing all tests</div>
+                                {self._render_template("test_count_display.html")}
                             </div>
 
                             <!-- Test Traceability Table -->
@@ -918,49 +918,22 @@ metric-card--{
                             <td class="function-cell">{test_name}</td>
                             <td>{self._render_component_badges(test.get("component"))}</td>
                             <td>{formatted_time}</td>
-                            <td><span class="badge badge--status badge--status-{status_class}">{status.title()}</span></td>
+                            <td>{self._render_template(
+                                "test_status_badge.html", status=status, status_class=status_class
+                            )}</td>
                             <td>
-                                <div class="file-path-container">
-                                    <button class="copy-btn"
-                                            onclick="copyToClipboard('{file_path.replace(chr(92), chr(92) + chr(92))}', this)"
-                                            title="Copy full path"
-                                            aria-label="Copy full file path">
-                                        <span class="copy-btn__text">COPY</span>
-                                    </button>
-                                    <span class="copy-feedback" id="feedback-{test.get("test_id", "")}" style="display: none;">Copied!</span>
-                                </div>
+{self._render_template("copy_button_with_feedback.html", file_path=file_path, test_id=test.get("test_id", ""))}
                             </td>
                         </tr>
 """
 
             # If no tests, show message
             if not epic_data.get("tests", []):
-                html += """
-                        <tr>
-                            <td colspan="6" style="text-align: center; color: #7f8c8d; font-style: italic;">No tests available for this epic</td>
-                        </tr>
-"""
+                html += self._render_template("no_tests_message.html")
 
-            # For now, keep the original tests table structure until we refactor the test rows generation
-            # test_headers = "<tr><th scope='col'>Test Type</th><th scope='col'>Function/Scenario</th><th scope='col'>Last Execution</th><th scope='col'>Status</th><th scope='col'>File Path</th></tr>"
-            # tests_is_expanded = filters.get(f'tests_{epic.epic_id}') == 'expand'
-            # tests_table = self._generate_table_with_row_limiting(
-            #     "",  # We'll need to refactor the test rows generation
-            #     "tests",
-            #     len(epic_data.get("tests", [])),
-            #     test_headers,
-            #     f"Test Traceability for {epic.epic_id}",
-            #     epic.epic_id,
-            #     tests_is_expanded
-            # )
-            # For now, let's keep the original structure and add the enhancement later
             # Add dynamic empty state row for tests
-            html += (
-                """
-                                    <!-- Empty state row for tests (hidden by default, shown when filtered count = 0) -->
-                                    <tr class="empty-state-row" style="display: none;">
-                                        <td colspan="6" style="text-align: center; color: #7f8c8d; font-style: italic;">No tests match the current filter</td>
-                                    </tr>
+            html += f"""
+{self._render_template("empty_filter_state.html")}
                     </tbody>
                 </table>
                 </div>
@@ -970,26 +943,17 @@ metric-card--{
 
                 <!-- Defect Management Collapsible Section -->
                 <section class="collapsible" aria-label="Defect Management">
-                    <input type="checkbox" class="collapsible__toggle" id="toggle-defects-"""
-                + epic.epic_id
-                + """">
-                    <label for="toggle-defects-"""
-                + epic.epic_id
-                + """" class="collapsible__header">
-                        <h3 class="collapsible__title">Defect Management ("""
-                + str(defects_count)
-                + """)</h3>
+                    <input type="checkbox" class="collapsible__toggle" id="toggle-defects-{epic.epic_id}">
+                    <label for="toggle-defects-{epic.epic_id}" class="collapsible__header">
+                        <h3 class="collapsible__title">Defect Management ({defects_count})</h3>
                         <span class="collapsible__icon">▼</span>
                     </label>
-                    <div class="collapsible__content" id="defects-"""
-                + epic.epic_id
-                + """">
+                    <div class="collapsible__content" id="defects-{epic.epic_id}">
                         <div class="collapsible__body">
                             <!-- Enhanced Defect Metrics Dashboard -->
                             <div class="metrics-dashboard">
                                 <h4 class="metrics-dashboard__title">Defect Metrics</h4>
                                 <div class="metrics-grid">"""
-            )
 
             # Add defect metrics here
             defects = epic_data.get("defects", [])
@@ -1078,7 +1042,7 @@ metric-card--{
                                             aria-pressed="false">\
 In Progress</button>
                                 </div>
-                                <div class="defect-count-display filter-count" role="status" aria-live="polite">Showing all defects</div>
+                                {self._render_template("defect_count_display.html")}
                             </div>
 
                             <!-- Defect Traceability Table -->
@@ -1136,9 +1100,7 @@ title="Open {defect_id} in GitHub"><strong>{defect_id}</strong></a>'
                             <td>{defect_id_link}</td>
                             <td>{title}</td>
                             <td>{self._render_component_badges(defect.get("component"))}</td>
-                            <td><span class="badge badge--priority badge--priority-{priority}">{priority.title()}</span></td>
-                            <td><span class="badge badge--status badge--status-{status.replace('_', '-')}">{status.replace('_', ' ').title()}</span></td>
-                            <td><span class="badge badge--severity badge--severity-{severity}">{severity.title()}</span></td>
+{self._render_template("defect_badges_row.html", priority=priority, status=status, severity=severity)}
                         </tr>
 """
 
