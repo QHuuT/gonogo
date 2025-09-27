@@ -2,14 +2,17 @@
 """
 Comprehensive GitHub Issues Restoration Script
 
-This script restores ALL GitHub issues (epics, user stories, defects) to the RTM database.
-It fetches data using GitHub CLI, maps labels to proper epic IDs, and creates all database
+This script restores ALL GitHub issues (epics, user stories, defects) to the
+RTM database.
+It fetches data using GitHub CLI, maps labels to proper epic IDs, and creates
+all database
 records with correct foreign key relationships.
 
 Scope: 8 Epics + 66 User Stories + 10 Defects = 84 total items
 
 Usage:
-    python tools/restore_github_issues_comprehensive.py [--dry-run] [--repo REPO] [--verbose]
+    python tools/restore_github_issues_comprehensive.py [--dry-run] \
+        [--repo REPO] [--verbose]
 
 Requirements:
     - GitHub CLI (gh) must be installed and authenticated
@@ -43,13 +46,16 @@ from be.models.traceability.defect import Defect
 from be.models.traceability.capability import Capability
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 class GitHubIssueRestorer:
     """Main class for restoring GitHub issues to the database."""
 
-    def __init__(self, repo: str = "your-org/your-repo", dry_run: bool = False, verbose: bool = False):
+    def __init__(
+            self, repo: str = "your-org/your-repo", dry_run: bool = False,
+            verbose: bool = False):
         self.repo = repo
         self.dry_run = dry_run
         self.verbose = verbose
@@ -68,14 +74,14 @@ class GitHubIssueRestorer:
 
         # Capability mapping from tools/capability_mapping.py
         self.epic_to_capability = {
-            "EP-00001": "CAP-00003",  # Blog Content Management -> Blog Platform
-            "EP-00002": "CAP-00004",  # GDPR-Compliant Comment System -> GDPR Compliance
-            "EP-00003": "CAP-00004",  # Privacy and Consent Management -> GDPR Compliance
-            "EP-00004": "CAP-00001",  # GitHub Workflow Integration -> GitHub Integration
+            "EP-00001": "CAP-00003",  # Blog Content -> Blog Platform"
+            "EP-00002": "CAP-00004",  # GDPR Comment System -> GDPR Compliance"
+            "EP-00003": "CAP-00004",  # Privacy and Consent -> GDPR Compliance"
+            "EP-00004": "CAP-00001",  # GitHub Workflow -> GitHub Integration"
             "EP-00005": "CAP-00002",  # RTM Automation -> Requirements Traceability
-            "EP-00006": "CAP-00001",  # GitHub Project Management Integration -> GitHub Integration
-            "EP-00007": "CAP-00002",  # Test logging and reporting -> Requirements Traceability
-            "EP-00010": "CAP-00002",  # Multi-persona dashboard -> Requirements Traceability
+            "EP-00006": "CAP-00001",  # GitHub Project -> GitHub Integration"
+            "EP-00007": "CAP-00002",  # Test logging -> Requirements Traceability"
+            "EP-00010": "CAP-00002",  # Multi-persona -> Requirements Traceability"
         }
 
         # Epic details based on user requirements

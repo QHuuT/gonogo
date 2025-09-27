@@ -13,7 +13,8 @@ Processing order:
 
 Usage:
     python tools/process_test_logs.py quality/logs/unit_tests_20250926.log
-    python tools/process_test_logs.py quality/logs/unit_tests_20250926.log --output quality/logs/processed_unit_tests.log
+    python tools/process_test_logs.py quality/logs/unit_tests_20250926.log \
+        --output quality/logs/processed_unit_tests.log
 """
 
 import re
@@ -24,7 +25,10 @@ from datetime import datetime
 
 
 def extract_failures_and_traces(log_content):
-    """Extract all test failures, group similar ones, and return complete stack traces with numbered tags."""
+    """
+    Extract all test failures, group similar ones, and return complete
+    stack traces with numbered tags.
+    """
     lines = log_content.split('\n')
 
     # Find all FAILED test lines
@@ -44,7 +48,8 @@ def extract_failures_and_traces(log_content):
     failures_section_end = None
 
     for i, line in enumerate(lines):
-        if line.strip() == "FAILURES" or "== FAILURES ==" in line:
+        if (line.strip() == "FAILURES" or
+                "== FAILURES ==" in line):
             failures_section_start = i
             break
 
@@ -52,8 +57,9 @@ def extract_failures_and_traces(log_content):
         # Find the end of failures section (usually before short test summary)
         for i in range(failures_section_start + 1, len(lines)):
             if ("== short test summary info ==" in lines[i] or
-                "====" in lines[i] and "test session starts" in lines[i] or
-                lines[i].strip() == "" and i + 1 < len(lines) and "====" in lines[i + 1]):
+                    "====" in lines[i] and "test session starts" in lines[i] or
+                    (lines[i].strip() == "" and i + 1 < len(lines) and
+                     "====" in lines[i + 1])):
                 failures_section_end = i
                 break
 
@@ -61,7 +67,8 @@ def extract_failures_and_traces(log_content):
             failures_section_end = len(lines)
 
         # Extract and tag individual failures within the section
-        failure_details = add_failure_tags(lines[failures_section_start:failures_section_end], failed_tests)
+        failure_details = add_failure_tags(
+            lines[failures_section_start:failures_section_end], failed_tests)
     else:
         failure_details = ""
 
@@ -94,15 +101,18 @@ def add_failure_tags(failure_lines, failed_tests):
         line = failure_lines[i]
 
         # Check if this line starts a new failure section
-        if line.startswith('_') and len(line) > 10 and line.endswith('_'):
-            # This is likely a failure separator line like "_________________ TestClass.test_method _________________"
+        if (line.startswith('_') and len(line) > 10 and
+                line.endswith('_')):
+            # This is likely a failure separator line like
+            # "_________________ TestClass.test_method _________________"
             # Extract the test method name
             test_identifier = line.strip('_').strip()
 
             # Find matching test name and assign failure number
             failure_num = None
             for test_pattern, num in test_method_to_num.items():
-                if test_pattern in test_identifier or test_identifier in test_pattern:
+                if (test_pattern in test_identifier or
+                        test_identifier in test_pattern):
                     failure_num = num
                     break
 
@@ -134,7 +144,8 @@ def group_similar_failures(failed_tests, log_content):
         test_name = test_line.split(' FAILED ')[0].strip()
 
         # Find the actual failure details in the FAILURES section
-        failure_type, failure_message = extract_failure_type_and_message(test_name, lines)
+        failure_type, failure_message = extract_failure_type_and_message(
+            test_name, lines)
 
         # Create group key based on failure type and normalized message
         group_key = create_failure_group_key(failure_type, failure_message)
@@ -154,9 +165,13 @@ def group_similar_failures(failed_tests, log_content):
 
 
 def extract_failure_type_and_message(test_name, lines):
-    """Extract failure type and message for a specific test from the failure details."""
+    """
+    Extract failure type and message for a specific test from the
+    failure details.
+    """
     # Find the test name in the failure section
-    test_method = test_name.split('::')[-1] if '::' in test_name else test_name
+    test_method = (
+        test_name.split('::')[-1] if '::' in test_name else test_name)
 
     in_test_failure = False
     failure_type = "TestFailure"
@@ -164,36 +179,47 @@ def extract_failure_type_and_message(test_name, lines):
 
     for i, line in enumerate(lines):
         # Look for the failure separator line for this test
-        if test_method in line and line.startswith('_') and line.endswith('_'):
+        if (test_method in line and line.startswith('_') and
+                line.endswith('_')):
             in_test_failure = True
             continue
 
         # If we're in the test failure section, look for error patterns
         if in_test_failure:
             # Stop when we hit the next test failure or end of section
-            if line.startswith('_') and line.endswith('_') and test_method not in line:
+            if (line.startswith('_') and line.endswith('_') and
+                    test_method not in line):
                 break
 
             # Look for common assertion/error patterns
             if 'AssertionError:' in line:
                 failure_type = "AssertionError"
-                failure_message = line.split('AssertionError:')[1].strip() if ':' in line else line.strip()
+                failure_message = (
+                    line.split('AssertionError:')[1].strip()
+                    if ':' in line else line.strip())
                 break
-            elif 'assert ' in line and (' == ' in line or ' != ' in line or ' in ' in line):
+            elif ('assert ' in line and
+                  (' == ' in line or ' != ' in line or ' in ' in line)):
                 failure_type = "AssertionError"
                 failure_message = line.strip()
                 break
-            elif any(error in line for error in ['Error:', 'Exception:', 'ImportError:', 'AttributeError:', 'KeyError:', 'ValueError:', 'TypeError:']):
+            elif any(error in line for error in [
+                    'Error:', 'Exception:', 'ImportError:',
+                    'AttributeError:', 'KeyError:', 'ValueError:',
+                    'TypeError:']):
                 # Extract error type and message
                 for error_pattern in ['Error:', 'Exception:']:
                     if error_pattern in line:
                         error_parts = line.split(error_pattern, 1)
                         if len(error_parts) == 2:
-                            failure_type = error_parts[0].split()[-1] + "Error" if error_parts[0] else "Error"
+                            failure_type = (
+                                error_parts[0].split()[-1] + "Error"
+                                if error_parts[0] else "Error")
                             failure_message = error_parts[1].strip()
                             break
                 break
-            elif '>' in line and ('assert' in line.lower() or 'expect' in line.lower()):
+            elif ('>' in line and
+                  ('assert' in line.lower() or 'expect' in line.lower())):
                 failure_type = "AssertionError"
                 failure_message = line.strip()
                 break
@@ -205,9 +231,13 @@ def create_failure_group_key(failure_type, message):
     """Create a grouping key for similar failures."""
     # Normalize the message for grouping similar failures
     normalized = re.sub(r'\d+', '<NUM>', message)  # Replace numbers
-    normalized = re.sub(r'[\'"][^\'\"]*[\'"]', '<STRING>', normalized)  # Replace strings
-    normalized = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '<EMAIL>', normalized)  # Replace emails
-    normalized = re.sub(r'\b(?:\d{1,3}\.){3}\d{1,3}\b', '<IP>', normalized)  # Replace IPs
+    normalized = re.sub(
+        r'[\'"][^\'\"]*[\'"]', '<STRING>', normalized)  # Replace strings
+    normalized = re.sub(
+        r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
+        '<EMAIL>', normalized)  # Replace emails
+    normalized = re.sub(
+        r'\b(?:\d{1,3}\.){3}\d{1,3}\b', '<IP>', normalized)  # Replace IPs
     normalized = re.sub(r'0x[0-9a-fA-F]+', '<HEX>', normalized)  # Replace hex values
     normalized = re.sub(r'/[^/\s]+/', '<PATH>/', normalized)  # Replace paths
 
