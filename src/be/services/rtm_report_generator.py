@@ -32,7 +32,9 @@ class RTMReportGenerator:
             "metadata": {
                 "generated_at": datetime.utcnow().isoformat(),
                 "total_epics": len(epics),
-                "filters_applied": {k: v for k, v in filters.items() if v is not None},
+                "filters_applied": {
+                    k: v for k, v in filters.items() if v is not None
+                },
             },
             "epics": [],
         }
@@ -47,15 +49,19 @@ class RTMReportGenerator:
         """Generate RTM matrix in Markdown format."""
         epics = self._get_filtered_epics(filters)
 
-        markdown = "# Dynamic Requirements Traceability Matrix\n\n"
+        markdown = (
+            "# Dynamic Requirements Traceability Matrix\n\n")
         markdown += (
             f"**Generated**: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n"
         )
         markdown += f"**Total Epics**: {len(epics)}\n\n"
 
         # Epic to User Story mapping table
-        markdown += "## Epic to User Story Mapping\n\n"
-        markdown += "| Epic ID | Epic Name | User Stories | Story Points | Status | Progress |\n"
+        markdown += (
+            "## Epic to User Story Mapping\n\n")
+        markdown += (
+            "| Epic ID | Epic Name | User Stories | "
+            "Story Points | Status | Progress |\n")
         markdown += "|---------|-----------|--------------|--------------|--------|----------|\n"
 
         for epic in epics:

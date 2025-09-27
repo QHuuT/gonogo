@@ -132,7 +132,8 @@ class BackupMonitor:
         
 }
 
-    def monitor_backup_operation(self, backup_service: BackupService) -> Dict[str, any]:
+    def monitor_backup_operation(
+            self, backup_service: BackupService) -> Dict[str, any]:
         """
         Monitor a backup operation in real-time.
 
@@ -156,7 +157,8 @@ class BackupMonitor:
             duration = backup_result["duration_seconds"]
 
             # Determine success based on backup results
-            successful_destinations = backup_result.get("successful_destinations", 0)
+            successful_destinations = backup_result.get(
+                "successful_destinations", 0)
             total_destinations = backup_result.get("total_destinations", 1)
             success = successful_destinations > 0
 
@@ -204,11 +206,15 @@ class BackupMonitor:
                     "file_size_mb": file_size_mb,
                     "destinations_success": successful_destinations,
                     "destinations_total": total_destinations,
-                    "sla_met": duration <= (self.sla_recovery_time_minutes * 60),
+                    "sla_met": (
+                        duration <= (self.sla_recovery_time_minutes * 60)
+                    ),
                 
 },
                 "alerts_generated": len(alerts),
-                "alerts": [{"level": a.level.value, "title": a.title} for a in alerts],
+                "alerts": [
+                    {"level": a.level.value, "title": a.title} for a in alerts
+                ],
             }
 
             logger.info("Backup monitoring completed successfully: %s", backup_id)
@@ -258,7 +264,8 @@ class BackupMonitor:
         alerts = []
 
         # Check backup duration
-        if metrics.duration_seconds > (self.max_backup_duration_minutes * 60):
+        if metrics.duration_seconds > (
+                self.max_backup_duration_minutes * 60):
             alerts.append(
     Alert(
                     level=AlertLevel.WARNING,
@@ -277,14 +284,16 @@ class BackupMonitor:
             )
 
         # Check destination success rate
-        success_rate = metrics.destinations_success / metrics.destinations_total
+        success_rate = (
+            metrics.destinations_success / metrics.destinations_total)
         if success_rate < self.min_success_rate:
             alerts.append(
     Alert(
                     level=AlertLevel.ERROR,
     title="Backup Destination Failures",
     message=f"Only {metrics.destinations_success}/{metrics.destinations_total} "
-                    f"destinations succeeded (success rate: {success_rate:.1%})",
+                    f"destinations succeeded "
+                    f"(success rate: {success_rate:.1%})",
                     timestamp=metrics.end_time,
                     component="backup_destinations",
                     details={
