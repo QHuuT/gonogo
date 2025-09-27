@@ -11,9 +11,10 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 import pytest
 from fastapi.testclient import TestClient
 
-from src.be.main import app
 from src.be.database import SessionLocal
-from src.be.models.traceability import Epic, UserStory, Test, Defect
+from src.be.main import app
+
+# Imports removed - models available from database fixtures
 
 
 @pytest.fixture
@@ -49,7 +50,7 @@ class TestComponentEndpoints:
         assert len(components) > 0
 
         # Should include expected components
-        expected_components = ['backend', 'frontend', 'testing', 'ci-cd']
+        expected_components = ["backend", "frontend", "testing", "ci-cd"]
         for comp in expected_components:
             assert comp in components
 
@@ -79,8 +80,10 @@ class TestComponentEndpoints:
 
             # Verify total_items calculation
             expected_total = (
-                stats["epic_count"] + stats["user_story_count"] +
-                stats["test_count"] + stats["defect_count"]
+                stats["epic_count"]
+                + stats["user_story_count"]
+                + stats["test_count"]
+                + stats["defect_count"]
             )
             assert stats["total_items"] == expected_total
 
@@ -178,7 +181,7 @@ class TestComponentFiltering:
         epics = response.json()
         for epic in epics:
             # Epic component should contain 'backend' (may be comma-separated)
-            assert 'backend' in epic.get('component', '')
+            assert "backend" in epic.get("component", "")
 
         # Test multiple component filter
         response = client.get("/api/rtm/epics/?component=backend,frontend")
@@ -186,8 +189,8 @@ class TestComponentFiltering:
 
         epics = response.json()
         for epic in epics:
-            component = epic.get('component', '')
-            assert 'backend' in component or 'frontend' in component
+            component = epic.get("component", "")
+            assert "backend" in component or "frontend" in component
 
         # Test exclude component filter
         response = client.get("/api/rtm/epics/?exclude_component=testing")
@@ -195,8 +198,8 @@ class TestComponentFiltering:
 
         epics = response.json()
         for epic in epics:
-            component = epic.get('component', '')
-            assert 'testing' not in component
+            component = epic.get("component", "")
+            assert "testing" not in component
 
     @pytest.mark.test_category("smoke")
     @pytest.mark.priority("medium")
@@ -207,7 +210,7 @@ class TestComponentFiltering:
 
         user_stories = response.json()
         for us in user_stories:
-            assert us.get('component') == 'backend'
+            assert us.get("component") == "backend"
 
         # Test multiple components
         response = client.get("/api/rtm/user-stories/?component=backend,frontend")
@@ -215,7 +218,7 @@ class TestComponentFiltering:
 
         user_stories = response.json()
         for us in user_stories:
-            assert us.get('component') in ['backend', 'frontend']
+            assert us.get("component") in ["backend", "frontend"]
 
     @pytest.mark.test_category("smoke")
     @pytest.mark.priority("medium")
@@ -226,7 +229,7 @@ class TestComponentFiltering:
 
         defects = response.json()
         for defect in defects:
-            assert defect.get('component') == 'backend'
+            assert defect.get("component") == "backend"
 
     @pytest.mark.test_category("smoke")
     @pytest.mark.priority("medium")
@@ -238,9 +241,9 @@ class TestComponentFiltering:
         tests = response.json()
         for test in tests:
             # Component may be None for tests that haven't inherited yet
-            component = test.get('component')
+            component = test.get("component")
             if component is not None:
-                assert component == 'backend'
+                assert component == "backend"
 
 
 @pytest.mark.epic("EP-00005")
@@ -295,9 +298,9 @@ class TestComponentAPIEdgeCases:
         # Should handle spaces correctly (strip them)
         user_stories = response.json()
         for us in user_stories:
-            component = us.get('component')
+            component = us.get("component")
             if component:
-                assert component in ['backend', 'frontend']
+                assert component in ["backend", "frontend"]
 
 
 @pytest.mark.epic("EP-00005")
@@ -355,7 +358,7 @@ class TestComponentAPIPerformance:
         assert len(filtered_stories) <= 50
 
         for us in filtered_stories:
-            assert us.get('component') == 'backend'
+            assert us.get("component") == "backend"
 
 
 @pytest.mark.epic("EP-00005")
@@ -408,7 +411,6 @@ class TestComponentAPIIntegration:
                     for us in epic_data["user_stories"]:
                         assert "component" in us
 
-
     @pytest.mark.test_category("regression")
     @pytest.mark.priority("medium")
     def test_rtm_matrix_html_component_columns(self, client):
@@ -423,14 +425,24 @@ class TestComponentAPIIntegration:
 
         # Check that all expected columns exist in the HTML tables
         expected_columns = [
-            'ID', 'Title', 'Component', 'Story Points', 'Status',  # User Stories
-            'Test Type', 'Function/Scenario', 'Last Execution', 'File Path',  # Tests
-            'Priority', 'Severity'  # Defects
+            "ID",
+            "Title",
+            "Component",
+            "Story Points",
+            "Status",  # User Stories
+            "Test Type",
+            "Function/Scenario",
+            "Last Execution",
+            "File Path",  # Tests
+            "Priority",
+            "Severity",  # Defects
         ]
 
         for column in expected_columns:
             column_header = f'<th scope="col">{column}</th>'
-            assert column_header in html_content, f"Missing '{column}' column in RTM matrix HTML"
+            assert (
+                column_header in html_content
+            ), f"Missing '{column}' column in RTM matrix HTML"
 
         # Check that empty state messages have correct colspan
         assert 'colspan="5"' in html_content  # User stories (5 columns now)
@@ -446,9 +458,9 @@ class TestComponentAPIIntegration:
         html_content = response.text
 
         # Check horizontal scrolling CSS is present
-        assert 'overflow-x: auto' in html_content
-        assert 'min-width: 800px' in html_content
-        assert 'position: sticky' in html_content
+        assert "overflow-x: auto" in html_content
+        assert "min-width: 800px" in html_content
+        assert "position: sticky" in html_content
 
         # Check table container structure
         assert 'class="rtm-table-container"' in html_content
@@ -457,15 +469,15 @@ class TestComponentAPIIntegration:
         assert 'class="rtm-table__body"' in html_content
 
         # Check sticky header styling
-        assert 'z-index: 10' in html_content
-        assert 'top: 0' in html_content
+        assert "z-index: 10" in html_content
+        assert "top: 0" in html_content
 
         # Check scrollbar customization
-        assert '::-webkit-scrollbar' in html_content
-        assert 'height: 8px' in html_content
+        assert "::-webkit-scrollbar" in html_content
+        assert "height: 8px" in html_content
 
         # Check responsive design
-        assert 'min-width: 600px' in html_content  # Mobile breakpoint
+        assert "min-width: 600px" in html_content  # Mobile breakpoint
 
 
 @pytest.mark.asyncio

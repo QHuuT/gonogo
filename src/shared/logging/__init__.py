@@ -9,8 +9,19 @@ User Story: US-00022 Structured logging system for test execution
 """
 
 from .config import EnvironmentMode, LoggingConfig
-from .formatters import JSONFormatter, SummaryFormatter, TableFormatter, TestFormatter
-from .logger import LogEntry, LogLevel, StructuredLogger, get_logger, setup_logging
+from .formatters import (
+    JSONFormatter,
+    SummaryFormatter,
+    TableFormatter,
+    TestFormatter,
+)
+from .logger import (
+    LogEntry,
+    LogLevel,
+    StructuredLogger,
+    get_logger,
+    setup_logging,
+)
 from .pytest_integration import PytestLoggingPlugin, setup_pytest_logging
 from .sanitizer import LogSanitizer, SanitizationLevel
 

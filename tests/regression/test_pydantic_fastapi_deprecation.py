@@ -13,8 +13,6 @@ This test ensures that:
 """
 
 import warnings
-from contextlib import redirect_stderr
-from io import StringIO
 
 import pytest
 
@@ -32,9 +30,10 @@ def test_no_pydantic_class_config_warnings():
 
         # Check that no PydanticDeprecatedSince20 warnings were generated
         pydantic_warnings = [
-            w for w in warning_list
-            if "PydanticDeprecatedSince20" in str(w.message) and
-               "class-based `config` is deprecated" in str(w.message)
+            w
+            for w in warning_list
+            if "PydanticDeprecatedSince20" in str(w.message)
+            and "class-based `config` is deprecated" in str(w.message)
         ]
 
         assert len(pydantic_warnings) == 0, (
@@ -54,9 +53,10 @@ def test_no_pydantic_field_extra_kwargs_warnings():
 
         # Check that no Field extra kwargs warnings were generated
         field_warnings = [
-            w for w in warning_list
-            if "PydanticDeprecatedSince20" in str(w.message) and
-               "extra keyword arguments on `Field`" in str(w.message)
+            w
+            for w in warning_list
+            if "PydanticDeprecatedSince20" in str(w.message)
+            and "extra keyword arguments on `Field`" in str(w.message)
         ]
 
         assert len(field_warnings) == 0, (
@@ -76,9 +76,10 @@ def test_no_fastapi_on_event_warnings():
 
         # Check that no FastAPI on_event warnings were generated
         fastapi_warnings = [
-            w for w in warning_list
-            if "DeprecationWarning" in str(w.category.__name__) and
-               "on_event is deprecated" in str(w.message)
+            w
+            for w in warning_list
+            if "DeprecationWarning" in str(w.category.__name__)
+            and "on_event is deprecated" in str(w.message)
         ]
 
         assert len(fastapi_warnings) == 0, (
@@ -92,30 +93,36 @@ def test_models_use_modern_configdict():
 
     # Test capabilities models
     from src.be.api.capabilities import CapabilityResponse
-    assert hasattr(CapabilityResponse, 'model_config'), (
-        "CapabilityResponse should use model_config instead of class Config"
-    )
-    assert CapabilityResponse.model_config['from_attributes'] is True
+
+    assert hasattr(
+        CapabilityResponse, "model_config"
+    ), "CapabilityResponse should use model_config instead of class Config"
+    assert CapabilityResponse.model_config["from_attributes"] is True
 
     # Test epic dependencies models
     from src.be.api.epic_dependencies import DependencyCreate, DependencyResponse
-    assert hasattr(DependencyCreate, 'model_config'), (
-        "DependencyCreate should use model_config instead of class Config"
-    )
-    assert hasattr(DependencyResponse, 'model_config'), (
-        "DependencyResponse should use model_config instead of class Config"
-    )
-    assert DependencyResponse.model_config['from_attributes'] is True
+
+    assert hasattr(
+        DependencyCreate, "model_config"
+    ), "DependencyCreate should use model_config instead of class Config"
+    assert hasattr(
+        DependencyResponse, "model_config"
+    ), "DependencyResponse should use model_config instead of class Config"
+    assert DependencyResponse.model_config["from_attributes"] is True
 
     # Test GDPR models
-    from src.security.gdpr.models import DataSubjectRequestCreate, DataSubjectRequestResponse
-    assert hasattr(DataSubjectRequestCreate, 'model_config'), (
-        "DataSubjectRequestCreate should use model_config instead of class Config"
+    from src.security.gdpr.models import (
+        DataSubjectRequestCreate,
+        DataSubjectRequestResponse,
     )
-    assert hasattr(DataSubjectRequestResponse, 'model_config'), (
-        "DataSubjectRequestResponse should use model_config instead of class Config"
-    )
-    assert DataSubjectRequestResponse.model_config['from_attributes'] is True
+
+    assert hasattr(
+        DataSubjectRequestCreate, "model_config"
+    ), "DataSubjectRequestCreate should use model_config instead of class Config"
+    assert hasattr(
+        DataSubjectRequestResponse, "model_config"
+    ), "DataSubjectRequestResponse should use model_config instead of class Config"
+    assert DataSubjectRequestResponse.model_config["from_attributes"] is True
 
 
 def test_fastapi_uses_lifespan_pattern():
@@ -124,9 +131,9 @@ def test_fastapi_uses_lifespan_pattern():
     from src.be.main import app
 
     # Check that the app has a lifespan configured through the router
-    assert hasattr(app.router, 'lifespan_context'), (
-        "FastAPI app should use lifespan context manager instead of @app.on_event()"
-    )
+    assert hasattr(
+        app.router, "lifespan_context"
+    ), "FastAPI app should use lifespan context manager instead of @app.on_event()"
 
 
 def test_field_uses_json_schema_extra():
@@ -135,15 +142,15 @@ def test_field_uses_json_schema_extra():
     from src.be.api.epic_dependencies import DependencyCreate
 
     # Check that the model config has json_schema_extra defined
-    assert hasattr(DependencyCreate, 'model_config'), (
-        "DependencyCreate should have model_config defined"
-    )
+    assert hasattr(
+        DependencyCreate, "model_config"
+    ), "DependencyCreate should have model_config defined"
 
     # The json_schema_extra should be in the ConfigDict
     config = DependencyCreate.model_config
-    assert 'json_schema_extra' in config, (
-        "DependencyCreate should use json_schema_extra instead of Field example parameter"
-    )
+    assert (
+        "json_schema_extra" in config
+    ), "DependencyCreate should use json_schema_extra instead of Field example parameter"
 
 
 def test_comprehensive_import_without_warnings():
@@ -163,12 +170,17 @@ def test_comprehensive_import_without_warnings():
 
         # Filter for the specific deprecation warnings we fixed
         relevant_warnings = [
-            w for w in warning_list
-            if any([
-                "PydanticDeprecatedSince20" in str(w.message),
-                ("DeprecationWarning" in str(w.category.__name__) and
-                 "on_event is deprecated" in str(w.message))
-            ])
+            w
+            for w in warning_list
+            if any(
+                [
+                    "PydanticDeprecatedSince20" in str(w.message),
+                    (
+                        "DeprecationWarning" in str(w.category.__name__)
+                        and "on_event is deprecated" in str(w.message)
+                    ),
+                ]
+            )
         ]
 
         assert len(relevant_warnings) == 0, (

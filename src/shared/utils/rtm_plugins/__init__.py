@@ -8,10 +8,8 @@ Related Issue: US-00017 - Comprehensive testing and extensibility framework
 Epic: EP-00005 - RTM Automation
 """
 
-import importlib
-import pkgutil
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Type
+from typing import Any, Dict, List
 
 
 class RTMPlugin(ABC):
@@ -45,7 +43,11 @@ class PluginManager:
 
     def __init__(self):
         self.plugins: Dict[str, RTMPlugin] = {}
-        self.plugin_types = {"link_generators": [], "validators": [], "parsers": []}
+        self.plugin_types = {
+            "link_generators": [],
+            "validators": [],
+            "parsers": [],
+        }
 
     def discover_plugins(self, plugin_dir: str = None) -> None:
         """Discover and load plugins from specified directory."""
@@ -63,7 +65,6 @@ class PluginManager:
     def _load_plugins_from_dir(self, directory: str, plugin_type: str) -> None:
         """Load plugins from a specific directory."""
         import importlib.util
-        import sys
 
         for item in os.listdir(directory):
             if item.startswith("__") or not item.endswith(".py"):
@@ -73,7 +74,9 @@ class PluginManager:
             module_name = item[:-3]  # Remove .py extension
 
             try:
-                spec = importlib.util.spec_from_file_location(module_name, module_path)
+                spec = importlib.util.spec_from_file_location(
+                    module_name, module_path
+                )
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
@@ -114,11 +117,13 @@ class PluginManager:
         for plugin_type, plugins in self.plugin_types.items():
             result[plugin_type] = [
                 {
+    
                     "name": p.name,
                     "version": p.version,
                     "description": p.description,
                     "enabled": p.enabled,
-                }
+                
+}
                 for p in plugins
             ]
         return result

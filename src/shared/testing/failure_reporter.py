@@ -8,11 +8,11 @@ Related to: US-00025 Test failure tracking and reporting
 """
 
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from .failure_tracker import FailureStatistics, FailureTracker
+from .failure_tracker import FailureTracker
 
 
 class FailureReporter:
@@ -41,6 +41,7 @@ class FailureReporter:
         patterns = self.tracker.detect_patterns()
 
         report_data = {
+    
             "generated_at": datetime.utcnow().isoformat(),
             "summary": {
                 "today": {
@@ -48,25 +49,32 @@ class FailureReporter:
                     "unique_failures": today_stats.unique_failures,
                     "failure_rate": today_stats.failure_rate,
                     "critical_count": today_stats.critical_failure_count,
-                },
+                
+},
                 "week": {
+    
                     "total_failures": week_stats.total_failures,
                     "unique_failures": week_stats.unique_failures,
                     "failure_rate": week_stats.failure_rate,
                     "trend": week_stats.trend_analysis.get(
-                        "trend_direction", "unknown"
+                        "trend_direction",
+    "unknown"
                     ),
-                },
+                
+},
                 "month": {
+    
                     "total_failures": month_stats.total_failures,
                     "unique_failures": month_stats.unique_failures,
                     "failure_rate": month_stats.failure_rate,
                     "most_common_category": month_stats.most_common_category.value,
-                },
+                
+},
             },
             "top_failing_tests": top_failing,
             "detected_patterns": [
                 {
+    
                     "pattern_id": p.pattern_id,
                     "description": p.description,
                     "occurrences": p.occurrences,
@@ -74,7 +82,8 @@ class FailureReporter:
                     "severity": p.severity.value,
                     "impact_score": p.impact_score,
                     "affected_test_count": len(p.affected_tests),
-                }
+                
+}
                 for p in patterns
             ],
             "recommendations": self._generate_recommendations(
@@ -106,43 +115,50 @@ class FailureReporter:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Failure Analysis Report</title>
     <style>
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        body {
+            font-family: -apple-system,
+                BlinkMacSystemFont,
+                'Segoe UI',
+                sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #f5f5f5;
             color: #333;
-        }}
-        .container {{
+        }
+        .container {
             max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             overflow: hidden;
-        }}
-        .header {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .header {
+            background: linear-gradient(135deg,
+    #667eea 0%,
+    #764ba2 100%);
             color: white;
             padding: 30px;
             text-align: center;
-        }}
-        .header h1 {{
+        }
+        .header h1 {
             margin: 0;
             font-size: 2.5em;
             font-weight: 300;
-        }}
-        .timestamp {{
+        }
+        .timestamp {
             opacity: 0.9;
             font-size: 0.9em;
             margin-top: 10px;
-        }}
-        .content {{
+        }
+        .content {
             padding: 30px;
-        }}
+        }
         .metrics-grid {{
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit,
+    minmax(250px,
+    1fr));
             gap: 20px;
             margin-bottom: 40px;
         }}
@@ -264,7 +280,9 @@ class FailureReporter:
                         <div class="metric-value">{stats.unique_failures}</div>
                         <div class="metric-label">Unique Failures</div>
                     </div>
-                    <div class="metric-card {'danger' if stats.failure_rate > 10 else 'warning' if stats.failure_rate > 5 else 'success'}">
+                    <div class="metric-card {
+    'danger' if stats.failure_rate > 10 else 'warning' if stats.failure_rate > 5 else 'success'
+}">
                         <div class="metric-value">{stats.failure_rate:.1f}%</div>
                         <div class="metric-label">Failure Rate</div>
                     </div>
@@ -340,12 +358,14 @@ class FailureReporter:
             severity_class = f"severity-{test['severity']}"
 
             rows.append(
-                f"""
+    f"""
                 <tr>
                     <td>{test['test_name']}</td>
                     <td><code>{test['test_file']}</code></td>
                     <td><strong>{test['total_failures']}</strong></td>
-                    <td><span class="category-badge {category_class}">{test['category'].replace('_', ' ').title()}</span></td>
+                    <td><span class="category-badge {category_class}">{test['category'].replace('_',
+    ' '
+).title()}</span></td>
                     <td><span class="{severity_class}">{test['severity'].title()}</span></td>
                     <td>{test['last_failure'][:10] if test['last_failure'] else 'Unknown'}</td>
                 </tr>
@@ -362,12 +382,14 @@ class FailureReporter:
         cards = []
         for pattern in patterns:
             cards.append(
-                f"""
+    f"""
                 <div class="pattern-card">
                     <div class="pattern-header">{pattern.description}</div>
                     <div class="pattern-meta">
                         <strong>Occurrences:</strong> {pattern.occurrences} |
-                        <strong>Category:</strong> {pattern.category.value.replace('_', ' ').title()} |
+                        <strong>Category:</strong> {pattern.category.value.replace('_',
+    ' '
+).title()} |
                         <strong>Impact Score:</strong> {pattern.impact_score:.1f} |
                         <strong>Affected Tests:</strong> {len(pattern.affected_tests)}
                     </div>
@@ -396,7 +418,10 @@ class FailureReporter:
         # Flaky test recommendations
         if week_stats.flaky_test_count > 0:
             recommendations.append(
-                f"🔄 {week_stats.flaky_test_count} flaky tests detected - investigate intermittent issues"
+                (
+    f"🔄 {week_stats.flaky_test_count} flaky tests "
+    f"detected - investigate intermittent issues"
+)
             )
 
         # Pattern-based recommendations
@@ -424,12 +449,12 @@ class FailureReporter:
         # Default recommendations if no specific issues
         if not recommendations:
             recommendations.extend(
-                [
+    [
                     "✅ Test failure rates are within acceptable ranges",
-                    "🔄 Continue monitoring for patterns and trends",
-                    "📋 Review this report weekly to identify emerging issues",
-                ]
-            )
+    "🔄 Continue monitoring for patterns and trends",
+    "📋 Review this report weekly to identify emerging issues",
+    ]
+)
 
         return recommendations
 

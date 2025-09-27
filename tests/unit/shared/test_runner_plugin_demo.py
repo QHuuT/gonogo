@@ -51,4 +51,3 @@ class TestRunnerPluginDemo:
     def test_standard_mode_compatible(self):
         """Test that works with standard mode."""
         assert len("hello") == 5
-

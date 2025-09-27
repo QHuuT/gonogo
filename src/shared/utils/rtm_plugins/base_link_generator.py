@@ -8,8 +8,8 @@ Related Issue: US-00017 - Comprehensive testing and extensibility framework
 Epic: EP-00005 - RTM Automation
 """
 
-from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
+from abc import abstractmethod
+from typing import Dict, Optional
 
 from . import RTMPlugin
 
@@ -23,7 +23,8 @@ class BaseLinkGenerator(RTMPlugin):
         Return True if this generator can handle the reference type.
 
         Args:
-            reference_type: Type of reference (e.g., 'epic', 'user_story', 'file')
+            reference_type: Type of reference (e.g., 'epic', 'user_story',
+                'file')
 
         Returns:
             True if this generator handles the reference type
@@ -36,7 +37,8 @@ class BaseLinkGenerator(RTMPlugin):
         Generate clickable markdown link for the reference.
 
         Args:
-            reference: The reference identifier (e.g., 'EP-00001', 'auth.feature')
+            reference: The reference identifier (e.g., 'EP-00001',
+                'auth.feature')
             context: Additional context information
 
         Returns:
@@ -94,7 +96,9 @@ class GitHubIssueLinkGenerator(BaseLinkGenerator):
 
     @property
     def description(self) -> str:
-        return "Generate links for GitHub issues (EP-XXXXX, US-XXXXX, DEF-XXXXX)"
+        return (
+            "Generate links for GitHub issues (EP-XXXXX, US-XXXXX, DEF-XXXXX)"
+        )
 
     def can_handle(self, reference_type: str) -> bool:
         """Handle GitHub issue types."""
@@ -111,7 +115,10 @@ class GitHubIssueLinkGenerator(BaseLinkGenerator):
         # Determine if bold formatting is needed (epics)
         bold = reference.startswith("EP-")
 
-        url = f"https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{reference}"
+        url = (
+            f"https://github.com/{owner}/{repo}/issues?q=is%3Aissue+"
+            f"{reference}"
+        )
 
         if bold:
             return f"[**{reference}**]({url})"
@@ -154,7 +161,9 @@ class BDDScenarioLinkGenerator(BaseLinkGenerator):
         feature_file, scenario_name = reference.split(":", 1)
 
         # Build relative path
-        rtm_file = context.get("rtm_file", "docs/traceability/requirements-matrix.md")
+        rtm_file = context.get(
+            "rtm_file", "docs/traceability/requirements-matrix.md"
+        )
         rtm_dir = os.path.dirname(rtm_file)
 
         # Default BDD features location
@@ -179,7 +188,9 @@ class BDDScenarioLinkGenerator(BaseLinkGenerator):
 
         feature_file, _ = reference.split(":", 1)
 
-        rtm_file = context.get("rtm_file", "docs/traceability/requirements-matrix.md")
+        rtm_file = context.get(
+            "rtm_file", "docs/traceability/requirements-matrix.md"
+        )
         rtm_dir = os.path.dirname(rtm_file)
         features_dir = context.get("bdd_features_dir", "tests/bdd/features")
         feature_path = os.path.join(rtm_dir, features_dir, feature_file)

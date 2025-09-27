@@ -19,7 +19,8 @@ from .models.traceability.base import Base
 
 # Database configuration
 DATABASE_URL = os.getenv(
-    "DATABASE_URL", "sqlite:///./gonogo.db"  # Default to SQLite for development
+    "DATABASE_URL",
+    "sqlite:///./gonogo.db",  # Default to SQLite for development
 )
 
 # SQLite-specific configuration for development
@@ -98,7 +99,9 @@ def check_database_health() -> dict:
             return {
                 "status": "healthy",
                 "database_url": (
-                    DATABASE_URL.split("@")[-1] if "@" in DATABASE_URL else DATABASE_URL
+                    DATABASE_URL.split("@")[-1]
+                    if "@" in DATABASE_URL
+                    else DATABASE_URL
                 ),
                 "engine": (
                     str(engine.url).split("@")[-1]
@@ -113,6 +116,8 @@ def check_database_health() -> dict:
             "status": "unhealthy",
             "error": str(e),
             "database_url": (
-                DATABASE_URL.split("@")[-1] if "@" in DATABASE_URL else DATABASE_URL
+                DATABASE_URL.split("@")[-1]
+                if "@" in DATABASE_URL
+                else DATABASE_URL
             ),
         }

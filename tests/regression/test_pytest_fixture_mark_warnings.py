@@ -13,7 +13,6 @@ This test ensures that:
 
 import subprocess
 import sys
-import warnings
 from pathlib import Path
 
 import pytest
@@ -26,30 +25,32 @@ def test_no_pytest_fixture_mark_warnings():
     test_paths = [
         "tests/unit/shared/models/",
         "tests/integration/rtm_api/",
-        "tests/integration/component_system/"
+        "tests/integration/component_system/",
     ]
 
     for test_path in test_paths:
         if Path(test_path).exists():
             # Use subprocess to run pytest and capture warnings
             cmd = [
-                sys.executable, "-m", "pytest",
+                sys.executable,
+                "-m",
+                "pytest",
                 test_path,
-                "--tb=no", "-q", "--disable-warnings"
+                "--tb=no",
+                "-q",
+                "--disable-warnings",
             ]
 
             result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                cwd=".",
-                timeout=60
+                cmd, capture_output=True, text=True, cwd=".", timeout=60
             )
 
             # Check that no PytestRemovedIn9Warning appears for fixture marks
             fixture_mark_warnings = [
-                line for line in result.stderr.split('\n')
-                if "PytestRemovedIn9Warning" in line and "Marks applied to fixtures" in line
+                line
+                for line in result.stderr.split("\n")
+                if "PytestRemovedIn9Warning" in line
+                and "Marks applied to fixtures" in line
             ]
 
             assert len(fixture_mark_warnings) == 0, (
@@ -65,23 +66,27 @@ def test_fixture_definitions_have_no_marks():
         "tests/unit/shared/models/test_test_model.py",
         "tests/unit/shared/models/test_traceability_base.py",
         "tests/integration/rtm_api/test_rtm_api.py",
-        "tests/integration/rtm_api/test_dashboard_metrics_regression.py"
+        "tests/integration/rtm_api/test_dashboard_metrics_regression.py",
     ]
 
     for test_file in test_files:
         filepath = Path(test_file)
         if filepath.exists():
-            content = filepath.read_text(encoding='utf-8')
-            lines = content.split('\n')
+            content = filepath.read_text(encoding="utf-8")
+            lines = content.split("\n")
 
             for i, line in enumerate(lines):
-                if '@pytest.fixture' in line:
+                if "@pytest.fixture" in line:
                     # Check if any previous lines (within 5 lines) have @pytest.mark
-                    for j in range(max(0, i-5), i):
-                        if '@pytest.mark' in lines[j] and lines[j].strip():
+                    for j in range(max(0, i - 5), i):
+                        if "@pytest.mark" in lines[j] and lines[j].strip():
                             # Make sure it's not just whitespace or comment between mark and fixture
-                            lines_between = lines[j+1:i]
-                            non_empty_between = [l for l in lines_between if l.strip() and not l.strip().startswith('#')]
+                            lines_between = lines[j + 1 : i]
+                            non_empty_between = [
+                                l
+                                for l in lines_between
+                                if l.strip() and not l.strip().startswith("#")
+                            ]
 
                             if len(non_empty_between) == 0:
                                 pytest.fail(
@@ -97,22 +102,22 @@ def test_marks_are_only_on_test_functions():
 
     test_files = [
         "tests/unit/shared/models/test_test_model.py",
-        "tests/unit/shared/models/test_traceability_base.py"
+        "tests/unit/shared/models/test_traceability_base.py",
     ]
 
     for test_file in test_files:
         filepath = Path(test_file)
         if filepath.exists():
-            content = filepath.read_text(encoding='utf-8')
-            lines = content.split('\n')
+            content = filepath.read_text(encoding="utf-8")
+            lines = content.split("\n")
 
             for i, line in enumerate(lines):
-                if '@pytest.mark' in line:
+                if "@pytest.mark" in line:
                     # Find the next non-empty, non-comment line
                     next_line_idx = i + 1
                     while next_line_idx < len(lines):
                         next_line = lines[next_line_idx].strip()
-                        if next_line and not next_line.startswith('#'):
+                        if next_line and not next_line.startswith("#"):
                             break
                         next_line_idx += 1
 
@@ -125,7 +130,7 @@ def test_marks_are_only_on_test_functions():
                         # 3. Another mark (@pytest.mark)
                         # NOT a fixture (@pytest.fixture)
 
-                        if '@pytest.fixture' in next_line:
+                        if "@pytest.fixture" in next_line:
                             pytest.fail(
                                 f"Found @pytest.mark directly before @pytest.fixture in {test_file}:{next_line_idx+1}\n"
                                 f"Line {i+1}: {line.strip()}\n"
@@ -164,10 +169,10 @@ def test_another_with_marks(another_fixture):
 '''
 
     # Write to a temporary file
-    import tempfile
     import os
+    import tempfile
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='_test.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix="_test.py", delete=False) as f:
         f.write(test_content)
         temp_test_file = f.name
 
@@ -177,17 +182,17 @@ def test_another_with_marks(another_fixture):
             [sys.executable, "-m", "pytest", temp_test_file, "--tb=no", "-q"],
             capture_output=True,
             text=True,
-            cwd="."
+            cwd=".",
         )
 
         # Should pass without fixture mark warnings
         assert result.returncode == 0, f"Test failed: {result.stderr}"
-        assert "RemovedIn9Warning" not in result.stderr, (
-            f"Should not have fixture mark warnings: {result.stderr}"
-        )
-        assert "Marks applied to fixtures" not in result.stderr, (
-            f"Should not have fixture mark warnings: {result.stderr}"
-        )
+        assert (
+            "RemovedIn9Warning" not in result.stderr
+        ), f"Should not have fixture mark warnings: {result.stderr}"
+        assert (
+            "Marks applied to fixtures" not in result.stderr
+        ), f"Should not have fixture mark warnings: {result.stderr}"
 
     finally:
         # Clean up temporary file
@@ -208,38 +213,42 @@ def test_fixture_mark_patterns_comprehensive():
     # Search through all test files
     for root, dirs, files in os.walk("tests/"):
         # Skip __pycache__ and .git directories
-        dirs[:] = [d for d in dirs if not d.startswith('__pycache__') and d != '.git']
+        dirs[:] = [d for d in dirs if not d.startswith("__pycache__") and d != ".git"]
 
         for file in files:
-            if file.endswith('.py'):
+            if file.endswith(".py"):
                 filepath = os.path.join(root, file)
                 try:
-                    with open(filepath, 'r', encoding='utf-8') as f:
+                    with open(filepath, "r", encoding="utf-8") as f:
                         content = f.read()
 
                     # Look for patterns where @pytest.mark is followed by @pytest.fixture
                     # This regex looks for mark decorators followed by fixture decorators
-                    pattern = r'(@pytest\.mark\.[^\n]+(?:\n\s*@pytest\.mark\.[^\n]+)*)\s*\n\s*@pytest\.fixture'
+                    pattern = r"(@pytest\.mark\.[^\n]+(?:\n\s*@pytest\.mark\.[^\n]+)*)\s*\n\s*@pytest\.fixture"
                     matches = re.finditer(pattern, content, re.MULTILINE)
 
                     for match in matches:
-                        line_num = content[:match.start()].count('\n') + 1
-                        fixture_mark_patterns.append({
-                            'file': filepath,
-                            'line': line_num,
-                            'match': match.group(0)
-                        })
+                        line_num = content[: match.start()].count("\n") + 1
+                        fixture_mark_patterns.append(
+                            {
+                                "file": filepath,
+                                "line": line_num,
+                                "match": match.group(0),
+                            }
+                        )
 
                 except Exception:
                     continue  # Skip files that can't be read
 
     # Assert no fixture mark patterns found
     assert len(fixture_mark_patterns) == 0, (
-        f"Found {len(fixture_mark_patterns)} fixture mark patterns that should be removed:\n" +
-        "\n".join([
-            f"  {p['file']}:{p['line']} - {repr(p['match'][:100])}"
-            for p in fixture_mark_patterns
-        ])
+        f"Found {len(fixture_mark_patterns)} fixture mark patterns that should be removed:\n"
+        + "\n".join(
+            [
+                f"  {p['file']}:{p['line']} - {repr(p['match'][:100])}"
+                for p in fixture_mark_patterns
+            ]
+        )
     )
 
 
@@ -251,7 +260,7 @@ def test_unknown_marks_are_registered():
         [sys.executable, "-m", "pytest", "--markers"],
         capture_output=True,
         text=True,
-        cwd="."
+        cwd=".",
     )
 
     assert result.returncode == 0, f"pytest --markers failed: {result.stderr}"
@@ -259,7 +268,7 @@ def test_unknown_marks_are_registered():
     # Check that previously unknown marks are now registered
     expected_marks = [
         "integration: marks tests as integration tests",
-        "test_category(category): categorizes tests by specific category"
+        "test_category(category): categorizes tests by specific category",
     ]
 
     for mark in expected_marks:

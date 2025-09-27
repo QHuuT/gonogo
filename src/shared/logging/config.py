@@ -1,7 +1,8 @@
 """
 Logging Configuration for GoNoGo Test System
 
-Provides environment-aware configuration for structured logging with GDPR compliance.
+Provides environment-aware configuration for structured logging with GDPR
+compliance.
 """
 
 import os
@@ -75,6 +76,7 @@ class LoggingConfig:
 
         # Base configuration
         base_config = {
+    
             "environment": environment,
             "log_directory": Path("quality/logs"),
             "log_filename": "test_execution.log",
@@ -83,48 +85,57 @@ class LoggingConfig:
             "buffer_size": 1000,
             "flush_interval_seconds": 5.0,
             "data_retention_days": 30,
-        }
+        
+}
 
         # Environment-specific configurations
         if environment == EnvironmentMode.DEVELOPMENT:
             return cls(
-                **base_config,
-                log_level=LogLevel.DEBUG,
-                include_metadata=True,
-                include_stack_traces=True,
-                sanitize_personal_data=False,  # Full logging for debugging
+    **base_config,
+    log_level=LogLevel.DEBUG,
+    include_metadata=True,
+    include_stack_traces=True,
+    sanitize_personal_data=False,
+    # Full logging for debugging
                 anonymize_ips=False,
-                exclude_user_data=False,
-            )
+    exclude_user_data=False,
+    
+)
 
         elif environment == EnvironmentMode.TESTING:
             return cls(
-                **base_config,
-                log_level=LogLevel.INFO,
-                include_metadata=True,
-                include_stack_traces=True,
-                sanitize_personal_data=True,  # Basic sanitization
+    **base_config,
+    log_level=LogLevel.INFO,
+    include_metadata=True,
+    include_stack_traces=True,
+    sanitize_personal_data=True,
+    # Basic sanitization
                 anonymize_ips=True,
-                exclude_user_data=False,
-                log_filename="test_execution_test.log",
-            )
+    exclude_user_data=False,
+    log_filename="test_execution_test.log",
+    
+)
 
         else:  # PRODUCTION
             return cls(
-                **base_config,
-                log_level=LogLevel.WARNING,
-                include_metadata=False,
-                include_stack_traces=False,
-                sanitize_personal_data=True,  # Full GDPR compliance
+    **base_config,
+    log_level=LogLevel.WARNING,
+    include_metadata=False,
+    include_stack_traces=False,
+    sanitize_personal_data=True,
+    # Full GDPR compliance
                 anonymize_ips=True,
-                exclude_user_data=True,
-                data_retention_days=7,  # Shorter retention in prod
+    exclude_user_data=True,
+    data_retention_days=7,
+    # Shorter retention in prod
                 log_filename="test_execution_prod.log",
-            )
+    
+)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert configuration to dictionary."""
         return {
+    
             "environment": self.environment.value,
             "log_level": self.log_level.value,
             "log_directory": str(self.log_directory),
@@ -139,7 +150,8 @@ class LoggingConfig:
             "data_retention_days": self.data_retention_days,
             "anonymize_ips": self.anonymize_ips,
             "exclude_user_data": self.exclude_user_data,
-        }
+        
+}
 
     def get_log_file_path(self) -> Path:
         """Get the full path to the log file."""

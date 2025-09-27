@@ -23,10 +23,7 @@ from shared.utils.rtm_plugins.base_link_generator import (
     BaseLinkGenerator,
     GitHubIssueLinkGenerator,
 )
-from shared.utils.rtm_plugins.base_rtm_parser import (
-    BaseRTMParser,
-    StandardMarkdownParser,
-)
+from shared.utils.rtm_plugins.base_rtm_parser import StandardMarkdownParser
 from shared.utils.rtm_plugins.base_validator import BaseValidator, StandardValidator
 
 

@@ -5,17 +5,12 @@ Tests the automatic label assignment functionality through
 behavior-driven development scenarios.
 """
 
-import json
-from pathlib import Path
-from unittest.mock import Mock, patch
-
 import pytest
 from pytest_bdd import given, parsers, scenarios, then, when
 
 from src.shared.utils.github_label_mapper import (
     GitHubIssueLabelMapper,
     IssueData,
-    TraceabilityMatrixParser,
 )
 
 # Load BDD scenarios

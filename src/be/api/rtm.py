@@ -16,11 +16,11 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import and_, func, or_
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from ..database import get_db
-from ..models.traceability import Capability, Defect, Epic, EpicDependency, GitHubSync, Test, UserStory
+from ..models.traceability import Defect, Epic, Test, UserStory
 from ..services.rtm_report_generator import RTMReportGenerator
 from ...shared.metrics.thresholds import get_threshold_service
 

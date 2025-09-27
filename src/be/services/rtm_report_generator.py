@@ -8,11 +8,10 @@ Related Issue: US-00059 - Dynamic RTM generation and reporting
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
-import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
-from sqlalchemy import and_, func
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from ..models.traceability import Defect, Epic, Test, UserStory

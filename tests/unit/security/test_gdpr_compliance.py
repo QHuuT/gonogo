@@ -3,8 +3,7 @@ Security tests for GDPR compliance and data protection.
 Focus on security aspects of data handling and privacy.
 """
 
-import re
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -102,8 +101,12 @@ class TestGDPRSecurity:
             assert len(consent_id) >= 32
 
             # Should contain sufficient entropy (mix of characters)
-            assert any(c.isalpha() for c in consent_id), f"ID {consent_id} should contain letters"
-            assert any(c.isdigit() for c in consent_id) or any(c in '-_' for c in consent_id), f"ID {consent_id} should contain digits or URL-safe chars"
+            assert any(
+                c.isalpha() for c in consent_id
+            ), f"ID {consent_id} should contain letters"
+            assert any(c.isdigit() for c in consent_id) or any(
+                c in "-_" for c in consent_id
+            ), f"ID {consent_id} should contain digits or URL-safe chars"
 
         # IDs should not follow predictable patterns
         # Check that consecutive IDs don't have predictable relationships
@@ -114,7 +117,9 @@ class TestGDPRSecurity:
             # IDs should not be identical (already checked by uniqueness)
             # IDs should not have obvious sequential patterns (Hamming distance should be substantial)
             different_chars = sum(c1 != c2 for c1, c2 in zip(current_id, next_id))
-            assert different_chars >= len(current_id) // 4, f"IDs {current_id} and {next_id} are too similar"
+            assert (
+                different_chars >= len(current_id) // 4
+            ), f"IDs {current_id} and {next_id} are too similar"
 
     @pytest.mark.component("security")
     def test_consent_id_security_properties_regression(self, db_session):
@@ -135,25 +140,33 @@ class TestGDPRSecurity:
 
         for consent_id in consent_ids:
             # Length check for sufficient entropy
-            assert len(consent_id) >= 32, f"ID {consent_id} should be at least 32 characters"
+            assert (
+                len(consent_id) >= 32
+            ), f"ID {consent_id} should be at least 32 characters"
 
             # Should only contain URL-safe base64 characters (letters, digits, -, _)
-            allowed_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_')
-            assert all(c in allowed_chars for c in consent_id), f"ID {consent_id} contains invalid characters"
+            allowed_chars = set(
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
+            )
+            assert all(
+                c in allowed_chars for c in consent_id
+            ), f"ID {consent_id} contains invalid characters"
 
             # REGRESSION: Do NOT check for absence of specific digits
             # The presence of '0', '1', '2', etc. in a cryptographically secure token
             # does NOT make it predictable - this was the original test flaw
 
         # Entropy distribution check - IDs should have good character distribution
-        all_chars = ''.join(consent_ids)
+        all_chars = "".join(consent_ids)
         char_counts = {}
         for c in all_chars:
             char_counts[c] = char_counts.get(c, 0) + 1
 
         # Should have reasonable character distribution (not all same character)
         unique_chars = len(char_counts)
-        assert unique_chars >= 10, f"Should have diverse character usage, got {unique_chars} unique chars"
+        assert (
+            unique_chars >= 10
+        ), f"Should have diverse character usage, got {unique_chars} unique chars"
 
     @pytest.mark.component("security")
     def test_sensitive_data_not_logged(self, db_session, caplog):
@@ -279,7 +292,7 @@ class TestGDPRSecurity:
             consent_type=ConsentType.FUNCTIONAL,
             consent_given=True,
             ip_address="127.0.0.1",
-            user_agent="test-agent"
+            user_agent="test-agent",
         )
 
         # Test multiple fake consent IDs to ensure consistent behavior
@@ -288,7 +301,7 @@ class TestGDPRSecurity:
             "another-nonexistent-id",
             "invalid-consent-token",
             "fake-" + "x" * 32,  # Different length
-            ""  # Empty string
+            "",  # Empty string
         ]
 
         import time
@@ -308,8 +321,7 @@ class TestGDPRSecurity:
             # Re-create consent for next iteration (only first should succeed)
             if result:  # Only re-create if withdrawal was successful
                 real_consent_id = service.record_consent(
-                    consent_type=ConsentType.FUNCTIONAL,
-                    consent_given=True
+                    consent_type=ConsentType.FUNCTIONAL, consent_given=True
                 )
 
             # Time invalid consent withdrawal
@@ -324,19 +336,24 @@ class TestGDPRSecurity:
         avg_fake_time = sum(fake_times) / len(fake_times)
 
         # The ratio should be close to 1.0 for proper timing attack resistance
-        time_ratio = max(avg_real_time, avg_fake_time) / min(avg_real_time, avg_fake_time)
+        time_ratio = max(avg_real_time, avg_fake_time) / min(
+            avg_real_time, avg_fake_time
+        )
 
         # Assert timing attack resistance
         # Note: On fast systems, timing variations may be small but still measurable
         # We allow up to 10x ratio for timing attack resistance (same as original test)
-        assert time_ratio < 10.0, f"Timing ratio {time_ratio:.2f} indicates potential timing attack vulnerability"
+        assert (
+            time_ratio < 10.0
+        ), f"Timing ratio {time_ratio:.2f} indicates potential timing attack vulnerability"
 
         # Verify that the service still correctly distinguishes valid vs invalid consent
         valid_result = service.withdraw_consent(
-            service.record_consent(ConsentType.ANALYTICS, True),
-            reason="valid test"
+            service.record_consent(ConsentType.ANALYTICS, True), reason="valid test"
         )
-        invalid_result = service.withdraw_consent("definitely-fake-id", reason="invalid test")
+        invalid_result = service.withdraw_consent(
+            "definitely-fake-id", reason="invalid test"
+        )
 
         assert valid_result is True, "Valid consent withdrawal should return True"
         assert invalid_result is False, "Invalid consent withdrawal should return False"
@@ -353,6 +370,7 @@ class TestGDPRSecurity:
 
         # Get initial database state
         from src.security.gdpr.models import ConsentRecord
+
         initial_count = db_session.query(ConsentRecord).count()
 
         # Perform multiple invalid consent withdrawals
@@ -361,7 +379,7 @@ class TestGDPRSecurity:
             "fake-id-2",
             "fake-id-3",
             "non-existent-token",
-            "invalid-consent-123"
+            "invalid-consent-123",
         ]
 
         for fake_id in fake_consent_ids:
@@ -370,7 +388,9 @@ class TestGDPRSecurity:
 
         # Verify dummy operations didn't create actual database records
         final_count = db_session.query(ConsentRecord).count()
-        assert final_count == initial_count, "Dummy operations should not create database records"
+        assert (
+            final_count == initial_count
+        ), "Dummy operations should not create database records"
 
         # Verify no side effects from dummy operations
         all_records = db_session.query(ConsentRecord).all()
@@ -383,12 +403,16 @@ class TestGDPRSecurity:
         real_consent_id = service.record_consent(
             consent_type=ConsentType.MARKETING,
             consent_given=True,
-            ip_address="192.168.1.100"
+            ip_address="192.168.1.100",
         )
 
         # This should work normally and create actual database changes
-        real_result = service.withdraw_consent(real_consent_id, reason="real withdrawal")
-        assert real_result is True, "Real consent withdrawal should succeed after dummy operations"
+        real_result = service.withdraw_consent(
+            real_consent_id, reason="real withdrawal"
+        )
+        assert (
+            real_result is True
+        ), "Real consent withdrawal should succeed after dummy operations"
 
         # Verify real withdrawal actually modified the database
         withdrawn_record = (

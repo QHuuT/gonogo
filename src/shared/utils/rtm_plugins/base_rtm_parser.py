@@ -8,8 +8,8 @@ Related Issue: US-00017 - Comprehensive testing and extensibility framework
 Epic: EP-00005 - RTM Automation
 """
 
-from abc import ABC, abstractmethod
-from typing import Any, Dict, List
+from abc import abstractmethod
+from typing import Dict, List
 
 from . import RTMPlugin
 
@@ -228,7 +228,11 @@ class StandardMarkdownParser(BaseRTMParser):
             if len(epic_words) >= 2:
                 epic_id = epic_words[-1]
                 return {
-                    "id": f"EP-{epic_id.zfill(5)}" if epic_id.isdigit() else epic_id,
+                    "id": (
+                        f"EP-{epic_id.zfill(5)}"
+                        if epic_id.isdigit()
+                        else epic_id
+                    ),
                     "title": title,
                     "number": epic_id,
                 }

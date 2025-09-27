@@ -9,13 +9,11 @@ Related to: Windows file locking issues with SQLite database cleanup
 
 import os
 import tempfile
-import warnings
 import time
-from pathlib import Path
+import warnings
 
 import pytest
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 from src.security.gdpr.models import Base
 from tests.conftest import _cleanup_temp_database
@@ -44,12 +42,16 @@ class TestDatabaseCleanupRegression:
 
                 # Check for UserWarnings about database cleanup
                 cleanup_warnings = [
-                    warning for warning in w
-                    if "Could not delete temporary test database" in str(warning.message)
+                    warning
+                    for warning in w
+                    if "Could not delete temporary test database"
+                    in str(warning.message)
                 ]
 
                 # Should have no cleanup warnings
-                assert len(cleanup_warnings) == 0, f"Found {len(cleanup_warnings)} database cleanup warnings"
+                assert (
+                    len(cleanup_warnings) == 0
+                ), f"Found {len(cleanup_warnings)} database cleanup warnings"
 
             finally:
                 # Ensure cleanup even if test fails
@@ -111,7 +113,9 @@ class TestDatabaseCleanupRegression:
             try:
                 # Create multiple temporary databases
                 for i in range(3):
-                    with tempfile.NamedTemporaryFile(suffix=f"_test_{i}.db", delete=False) as temp_file:
+                    with tempfile.NamedTemporaryFile(
+                        suffix=f"_test_{i}.db", delete=False
+                    ) as temp_file:
                         test_db_url = f"sqlite:///{temp_file.name}"
                         db_files.append(temp_file.name)
 
@@ -126,12 +130,16 @@ class TestDatabaseCleanupRegression:
 
                 # Check for UserWarnings
                 cleanup_warnings = [
-                    warning for warning in w
-                    if "Could not delete temporary test database" in str(warning.message)
+                    warning
+                    for warning in w
+                    if "Could not delete temporary test database"
+                    in str(warning.message)
                 ]
 
                 # Should have no cleanup warnings
-                assert len(cleanup_warnings) == 0, f"Found {len(cleanup_warnings)} database cleanup warnings in sequential test"
+                assert (
+                    len(cleanup_warnings) == 0
+                ), f"Found {len(cleanup_warnings)} database cleanup warnings in sequential test"
 
             finally:
                 # Final cleanup
@@ -155,9 +163,12 @@ class TestDatabaseCleanupRegression:
 
             # Check for warnings during fixture usage
             cleanup_warnings = [
-                warning for warning in w
+                warning
+                for warning in w
                 if "Could not delete temporary test database" in str(warning.message)
             ]
 
             # Should have no warnings from fixture usage
-            assert len(cleanup_warnings) == 0, f"Found {len(cleanup_warnings)} warnings from database fixture"
+            assert (
+                len(cleanup_warnings) == 0
+            ), f"Found {len(cleanup_warnings)} warnings from database fixture"

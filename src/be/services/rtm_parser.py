@@ -7,10 +7,9 @@ Related Issue: US-00054 - Database models and migration foundation
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
-import json
 import re
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 from ..database import get_db_session
 from ..models.traceability import Defect, Epic, Test, UserStory
@@ -37,11 +36,13 @@ class RTMMarkdownParser:
             content = f.read()
 
         return {
+    
             "epics": self._extract_epics(content),
             "user_stories": self._extract_user_stories(content),
             "defects": self._extract_defects(content),
             "tests": self._extract_tests(content),
-        }
+        
+}
 
     def _extract_epics(self, content: str) -> List[Dict]:
         """Extract Epic information from markdown content."""
@@ -58,8 +59,10 @@ class RTMMarkdownParser:
                     description = self._extract_description(lines, i)
 
                     epic_data = {
+    
                         "epic_id": epic_id,
-                        "title": title or f"Epic {epic_id}",
+                        "title": title or f"Epic {epic_id
+}",
                         "description": description,
                         "status": self._extract_status_from_context(lines, i),
                         "priority": self._extract_priority_from_context(lines, i),
@@ -85,8 +88,10 @@ class RTMMarkdownParser:
                     epic_id = self._find_parent_epic(lines, i)
 
                     us_data = {
+    
                         "user_story_id": us_id,
-                        "title": title or f"User Story {us_id}",
+                        "title": title or f"User Story {us_id
+}",
                         "description": self._extract_description(lines, i),
                         "github_issue_number": github_issue,
                         "epic_reference": epic_id,  # Will be resolved to DB ID later
@@ -115,8 +120,10 @@ class RTMMarkdownParser:
                     github_issue = self._extract_github_issue_from_context(lines, i)
 
                     def_data = {
+    
                         "defect_id": def_id,
-                        "title": title or f"Defect {def_id}",
+                        "title": title or f"Defect {def_id
+}",
                         "description": self._extract_description(lines, i),
                         "github_issue_number": github_issue,
                         "severity": self._extract_severity(lines, i),
@@ -152,9 +159,11 @@ class RTMMarkdownParser:
                 test_type = "bdd"
 
             test_data = {
+    
                 "test_type": test_type,
                 "test_file_path": test_path,
-                "title": f"Test: {Path(full_path).stem}",
+                "title": f"Test: {Path(full_path).stem
+}",
                 "description": f"Test file: {test_path}",
                 "test_function_name": self._extract_test_function_from_context(
                     content, test_path
@@ -331,11 +340,13 @@ class RTMDataMigrator:
             db.commit()
 
             return {
+    
                 "epics": epic_count,
                 "user_stories": us_count,
                 "tests": test_count,
                 "defects": defect_count,
-            }
+            
+}
 
         except Exception as e:
             db.rollback()
@@ -353,9 +364,10 @@ class RTMDataMigrator:
                 continue
 
             epic = Epic(
-                epic_id=data["epic_id"],
-                title=data["title"],
-                description=data.get("description"),
+    epic_id=data["epic_id"],
+    title=data["title"],
+    description=data.get("description"
+),
                 business_value=data.get("business_value"),
                 status=data.get("status", "planned"),
                 priority=data.get("priority", "medium"),
@@ -391,11 +403,12 @@ class RTMDataMigrator:
 
             if epic_db_id:  # Only create if we have a valid epic reference
                 us = UserStory(
-                    user_story_id=data["user_story_id"],
-                    epic_id=epic_db_id,
-                    github_issue_number=data["github_issue_number"],
-                    title=data["title"],
-                    description=data.get("description"),
+    user_story_id=data["user_story_id"],
+    epic_id=epic_db_id,
+    github_issue_number=data["github_issue_number"],
+    title=data["title"],
+    description=data.get("description"
+),
                     story_points=data.get("story_points", 0),
                     priority=data.get("priority", "medium"),
                     implementation_status=data.get("implementation_status", "todo"),
@@ -419,10 +432,11 @@ class RTMDataMigrator:
                 continue
 
             test = Test(
-                test_type=data["test_type"],
-                test_file_path=data["test_file_path"],
-                title=data["title"],
-                description=data.get("description"),
+    test_type=data["test_type"],
+    test_file_path=data["test_file_path"],
+    title=data["title"],
+    description=data.get("description"
+),
                 test_function_name=data.get("test_function_name"),
             )
             db.add(test)
@@ -446,10 +460,11 @@ class RTMDataMigrator:
                 continue
 
             defect = Defect(
-                defect_id=data["defect_id"],
-                github_issue_number=data["github_issue_number"],
-                title=data["title"],
-                description=data.get("description"),
+    defect_id=data["defect_id"],
+    github_issue_number=data["github_issue_number"],
+    title=data["title"],
+    description=data.get("description"
+),
                 severity=data.get("severity", "medium"),
                 priority=data.get("priority", "medium"),
                 status=data.get("status", "planned"),

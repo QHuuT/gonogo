@@ -156,7 +156,9 @@ class TestDashboardMetricsRegression:
         """Test PM persona metrics API returns 200 and valid data structure."""
         response = client.get("/api/rtm/dashboard/metrics?persona=PM")
 
-        assert response.status_code == 200, f"Expected 200 but got {response.status_code}: {response.text}"
+        assert (
+            response.status_code == 200
+        ), f"Expected 200 but got {response.status_code}: {response.text}"
 
         data = response.json()
 
@@ -180,18 +182,22 @@ class TestDashboardMetricsRegression:
             "average_velocity_per_member",
             "average_schedule_variance",
             "average_success_probability",
-            "schedule_health"
+            "schedule_health",
         ]
 
         for field in required_pm_fields:
             assert field in summary, f"Missing required PM summary field: {field}"
-            assert isinstance(summary[field], (int, float, str)), f"Field {field} has invalid type: {type(summary[field])}"
+            assert isinstance(
+                summary[field], (int, float, str)
+            ), f"Field {field} has invalid type: {type(summary[field])}"
 
     def test_po_persona_metrics_success(self, client, sample_epics_with_metrics):
         """Test PO persona metrics API returns 200 and valid data structure."""
         response = client.get("/api/rtm/dashboard/metrics?persona=PO")
 
-        assert response.status_code == 200, f"Expected 200 but got {response.status_code}: {response.text}"
+        assert (
+            response.status_code == 200
+        ), f"Expected 200 but got {response.status_code}: {response.text}"
 
         data = response.json()
 
@@ -209,7 +215,7 @@ class TestDashboardMetricsRegression:
             "average_scope_creep_percentage",
             "scope_creep_issues",
             "satisfaction_grade",
-            "business_health"
+            "business_health",
         ]
 
         for field in required_po_fields:
@@ -219,7 +225,9 @@ class TestDashboardMetricsRegression:
         """Test QA persona metrics API returns 200 and valid data structure."""
         response = client.get("/api/rtm/dashboard/metrics?persona=QA")
 
-        assert response.status_code == 200, f"Expected 200 but got {response.status_code}: {response.text}"
+        assert (
+            response.status_code == 200
+        ), f"Expected 200 but got {response.status_code}: {response.text}"
 
         data = response.json()
 
@@ -236,13 +244,15 @@ class TestDashboardMetricsRegression:
             "average_technical_debt",
             "high_defect_epics",
             "coverage_grade",
-            "quality_health"
+            "quality_health",
         ]
 
         for field in required_qa_fields:
             assert field in summary, f"Missing required QA summary field: {field}"
 
-    def test_threshold_evaluated_metrics_handling(self, client, sample_epics_with_metrics):
+    def test_threshold_evaluated_metrics_handling(
+        self, client, sample_epics_with_metrics
+    ):
         """Test that threshold-evaluated metrics are properly handled in calculations."""
         response = client.get("/api/rtm/dashboard/metrics?persona=PM")
 
@@ -259,7 +269,9 @@ class TestDashboardMetricsRegression:
         if "overall_risk_score" in risk_metrics:
             risk_score = risk_metrics["overall_risk_score"]
             # Should be a dict with 'value' and 'status' keys
-            assert isinstance(risk_score, dict), f"Risk score should be dict but got {type(risk_score)}"
+            assert isinstance(
+                risk_score, dict
+            ), f"Risk score should be dict but got {type(risk_score)}"
             assert "value" in risk_score, "Risk score should have 'value' key"
             assert "status" in risk_score, "Risk score should have 'status' key"
 
@@ -271,20 +283,26 @@ class TestDashboardMetricsRegression:
     def test_metrics_api_with_filters(self, client, sample_epics_with_metrics):
         """Test dashboard metrics API with various filters."""
         # Test epic filter
-        response = client.get("/api/rtm/dashboard/metrics?persona=PM&epic_filter=EP-TEST-001")
+        response = client.get(
+            "/api/rtm/dashboard/metrics?persona=PM&epic_filter=EP-TEST-001"
+        )
         assert response.status_code == 200
         data = response.json()
         assert len(data["epics"]) == 1
         assert data["epics"][0]["epic_id"] == "EP-TEST-001"
 
         # Test status filter
-        response = client.get("/api/rtm/dashboard/metrics?persona=QA&status_filter=active")
+        response = client.get(
+            "/api/rtm/dashboard/metrics?persona=QA&status_filter=active"
+        )
         assert response.status_code == 200
         data = response.json()
         assert len(data["epics"]) == 2  # Only active epics
 
         # Test non-existent filter
-        response = client.get("/api/rtm/dashboard/metrics?persona=PO&status_filter=nonexistent")
+        response = client.get(
+            "/api/rtm/dashboard/metrics?persona=PO&status_filter=nonexistent"
+        )
         assert response.status_code == 200
         data = response.json()
         assert len(data["epics"]) == 0
@@ -301,7 +319,9 @@ class TestDashboardMetricsRegression:
         duration = end_time - start_time
 
         assert response.status_code == 200
-        assert duration < 10.0, f"Metrics calculation took too long: {duration:.2f} seconds"
+        assert (
+            duration < 10.0
+        ), f"Metrics calculation took too long: {duration:.2f} seconds"
 
     def test_invalid_persona_parameter(self, client, sample_epics_with_metrics):
         """Test behavior with invalid persona parameter."""
@@ -348,7 +368,6 @@ class TestDashboardMetricsRegression:
     def test_all_personas_concurrent_access(self, client, sample_epics_with_metrics):
         """Test that all personas can be accessed concurrently without conflicts."""
         import concurrent.futures
-        import threading
 
         def fetch_persona_metrics(persona):
             response = client.get(f"/api/rtm/dashboard/metrics?persona={persona}")
@@ -358,7 +377,9 @@ class TestDashboardMetricsRegression:
         results = []
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-            futures = [executor.submit(fetch_persona_metrics, persona) for persona in personas]
+            futures = [
+                executor.submit(fetch_persona_metrics, persona) for persona in personas
+            ]
             for future in concurrent.futures.as_completed(futures):
                 results.append(future.result())
 
@@ -422,7 +443,9 @@ class TestMetricsAPIErrorHandling:
         assert "No epics found matching the criteria" in data["message"]
         assert data["summary"] == {}
 
-    def test_metrics_with_database_error_resilience(self, client, sample_epics_with_metrics):
+    def test_metrics_with_database_error_resilience(
+        self, client, sample_epics_with_metrics
+    ):
         """Test that metrics API is resilient to potential database issues."""
         # This test ensures that even if there are database connectivity issues,
         # the API handles them gracefully rather than timing out
@@ -432,6 +455,7 @@ class TestMetricsAPIErrorHandling:
 
         # Should complete in reasonable time even with database load
         import time
+
         start = time.time()
         for _ in range(3):
             response = client.get("/api/rtm/dashboard/metrics?persona=QA")

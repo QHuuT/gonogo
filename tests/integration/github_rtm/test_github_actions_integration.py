@@ -8,10 +8,7 @@ Related Issue: US-00056 - GitHub Actions database integration
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
-import json
-from datetime import datetime
 from typing import Any, Dict
-from unittest.mock import Mock, patch
 
 import pytest
 
@@ -102,7 +99,15 @@ class TestGitHubDatabaseSync:
         self.db.close()
 
     @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
-    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+    @pytest.mark.user_story(
+        "US-00001",
+        "US-00002",
+        "US-00003",
+        "US-00010",
+        "US-00011",
+        "US-00020",
+        "US-00056",
+    )
     def test_epic_sync_creation(self):
         """Test creating Epic from GitHub issue."""
         from tests.integration.github_sync_simulator import GitHubDatabaseSyncSimulator
@@ -124,7 +129,15 @@ class TestGitHubDatabaseSync:
         assert epic.status == "planned"
 
     @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
-    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+    @pytest.mark.user_story(
+        "US-00001",
+        "US-00002",
+        "US-00003",
+        "US-00010",
+        "US-00011",
+        "US-00020",
+        "US-00056",
+    )
     def test_epic_sync_update(self):
         """Test updating existing Epic from GitHub issue."""
         from tests.integration.github_sync_simulator import GitHubDatabaseSyncSimulator
@@ -158,7 +171,15 @@ class TestGitHubDatabaseSync:
         assert updated_epic.status == "completed"  # Closed issue → completed status
 
     @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
-    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+    @pytest.mark.user_story(
+        "US-00001",
+        "US-00002",
+        "US-00003",
+        "US-00010",
+        "US-00011",
+        "US-00020",
+        "US-00056",
+    )
     def test_user_story_sync_with_epic_reference(self):
         """Test creating User Story with Epic reference."""
         from tests.integration.github_sync_simulator import GitHubDatabaseSyncSimulator
@@ -192,7 +213,15 @@ class TestGitHubDatabaseSync:
         assert user_story.implementation_status == "todo"
 
     @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
-    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+    @pytest.mark.user_story(
+        "US-00001",
+        "US-00002",
+        "US-00003",
+        "US-00010",
+        "US-00011",
+        "US-00020",
+        "US-00056",
+    )
     def test_user_story_sync_closed_issue(self):
         """Test User Story sync when GitHub issue is closed."""
         from tests.integration.github_sync_simulator import GitHubDatabaseSyncSimulator
@@ -221,7 +250,15 @@ class TestGitHubDatabaseSync:
         assert user_story.github_issue_state == "closed"
 
     @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
-    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+    @pytest.mark.user_story(
+        "US-00001",
+        "US-00002",
+        "US-00003",
+        "US-00010",
+        "US-00011",
+        "US-00020",
+        "US-00056",
+    )
     def test_defect_sync_creation(self):
         """Test creating Defect from GitHub issue."""
         from tests.integration.github_sync_simulator import GitHubDatabaseSyncSimulator
@@ -245,7 +282,15 @@ class TestGitHubDatabaseSync:
         assert defect.defect_type == "bug"
 
     @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
-    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+    @pytest.mark.user_story(
+        "US-00001",
+        "US-00002",
+        "US-00003",
+        "US-00010",
+        "US-00011",
+        "US-00020",
+        "US-00056",
+    )
     def test_sync_status_recording(self):
         """Test that sync status is properly recorded."""
         from tests.integration.github_sync_simulator import GitHubDatabaseSyncSimulator
@@ -268,7 +313,15 @@ class TestGitHubDatabaseSync:
         assert sync_record.sync_errors is None
 
     @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
-    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+    @pytest.mark.user_story(
+        "US-00001",
+        "US-00002",
+        "US-00003",
+        "US-00010",
+        "US-00011",
+        "US-00020",
+        "US-00056",
+    )
     def test_sync_status_recording_failure(self):
         """Test that sync failures are properly recorded."""
         from tests.integration.github_sync_simulator import GitHubDatabaseSyncSimulator
@@ -291,7 +344,15 @@ class TestGitHubDatabaseSync:
         assert "Failed to sync US-00001" in sync_record.sync_errors
 
     @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
-    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+    @pytest.mark.user_story(
+        "US-00001",
+        "US-00002",
+        "US-00003",
+        "US-00010",
+        "US-00011",
+        "US-00020",
+        "US-00056",
+    )
     def test_epic_progress_calculation(self):
         """Test Epic progress calculation when User Stories are completed."""
         from tests.integration.epic_progress_simulator import (
@@ -345,7 +406,15 @@ class TestGitHubDatabaseSync:
         assert progress == 70.0
 
     @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
-    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+    @pytest.mark.user_story(
+        "US-00001",
+        "US-00002",
+        "US-00003",
+        "US-00010",
+        "US-00011",
+        "US-00020",
+        "US-00056",
+    )
     def test_epic_progress_without_story_points(self):
         """Test Epic progress calculation when User Stories have no story points."""
         from tests.integration.epic_progress_simulator import (
@@ -386,7 +455,15 @@ class TestGitHubDatabaseSync:
         assert progress == 50.0
 
     @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
-    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+    @pytest.mark.user_story(
+        "US-00001",
+        "US-00002",
+        "US-00003",
+        "US-00010",
+        "US-00011",
+        "US-00020",
+        "US-00056",
+    )
     def test_epic_status_update_on_completion(self):
         """Test that Epic status is updated when progress reaches 100%."""
         from tests.integration.epic_progress_simulator import (
@@ -421,7 +498,15 @@ class TestGitHubDatabaseSync:
         assert updated_epic.status == "completed"
 
     @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
-    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+    @pytest.mark.user_story(
+        "US-00001",
+        "US-00002",
+        "US-00003",
+        "US-00010",
+        "US-00011",
+        "US-00020",
+        "US-00056",
+    )
     def test_parsing_functions(self):
         """Test various parsing functions used in sync."""
         from tests.integration.github_sync_simulator import GitHubDatabaseSyncSimulator
@@ -449,7 +534,15 @@ class TestGitHubDatabaseSync:
         assert severity == "high"
 
     @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
-    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+    @pytest.mark.user_story(
+        "US-00001",
+        "US-00002",
+        "US-00003",
+        "US-00010",
+        "US-00011",
+        "US-00020",
+        "US-00056",
+    )
     def test_issue_type_detection(self):
         """Test issue type detection from title and labels."""
         from tests.integration.github_sync_simulator import GitHubDatabaseSyncSimulator
@@ -473,7 +566,15 @@ class TestGitHubDatabaseSync:
         assert simulator.parse_issue_type(label_epic) == "epic"
 
     @pytest.mark.epic("EP-00001", "EP-00005", "EP-00006", "EP-00007")
-    @pytest.mark.user_story("US-00001", "US-00002", "US-00003", "US-00010", "US-00011", "US-00020", "US-00056")
+    @pytest.mark.user_story(
+        "US-00001",
+        "US-00002",
+        "US-00003",
+        "US-00010",
+        "US-00011",
+        "US-00020",
+        "US-00056",
+    )
     def test_entity_id_extraction(self):
         """Test entity ID extraction from titles."""
         from tests.integration.github_sync_simulator import GitHubDatabaseSyncSimulator

@@ -8,7 +8,7 @@ personal data from log entries in compliance with GDPR requirements.
 import hashlib
 import re
 from enum import Enum
-from typing import Any, Callable, Dict, List, Pattern
+from typing import Any, Dict, Pattern
 
 
 class SanitizationLevel(Enum):
@@ -38,14 +38,20 @@ class LogSanitizer:
 
         # Email addresses
         patterns["email"] = re.compile(
-            r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", re.IGNORECASE
+            r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
+            re.IGNORECASE,
         )
 
         # IP addresses (IPv4 and IPv6)
         patterns["ipv4"] = re.compile(r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b")
-        patterns["ipv6"] = re.compile(r"\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b")
+        patterns["ipv6"] = re.compile(
+            r"\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b"
+        )
 
-        if self.level in [SanitizationLevel.STRICT, SanitizationLevel.PARANOID]:
+        if self.level in [
+            SanitizationLevel.STRICT,
+            SanitizationLevel.PARANOID,
+        ]:
             # Phone numbers (various formats)
             patterns["phone"] = re.compile(
                 r"(\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}",
@@ -56,7 +62,9 @@ class LogSanitizer:
             patterns["ssn"] = re.compile(r"\b\d{3}-?\d{2}-?\d{4}\b")
 
             # Credit card numbers (basic pattern)
-            patterns["credit_card"] = re.compile(r"\b(?:\d{4}[-\s]?){3}\d{4}\b")
+            patterns["credit_card"] = re.compile(
+                r"\b(?:\d{4}[-\s]?){3}\d{4}\b"
+            )
 
             # User paths (containing usernames)
             patterns["user_path"] = re.compile(
@@ -72,7 +80,8 @@ class LogSanitizer:
 
             # URLs with sensitive parameters
             patterns["sensitive_urls"] = re.compile(
-                r"https?://[^\s]*(?:token|key|password|auth)=[^\s&]*", re.IGNORECASE
+                r"https?://[^\s]*(?:token|key|password|auth)=[^\s&]*",
+                re.IGNORECASE,
             )
 
         return patterns
@@ -173,9 +182,15 @@ class LogSanitizer:
     def _get_level_description(self) -> str:
         """Get description of current sanitization level."""
         descriptions = {
-            SanitizationLevel.NONE: "No sanitization - full logging (development only)",
+            SanitizationLevel.NONE: (
+                "No sanitization - full logging (development only)"
+            ),
             SanitizationLevel.BASIC: "Basic PII removal (emails, IPs)",
-            SanitizationLevel.STRICT: "Comprehensive sanitization (PII, paths, tokens)",
-            SanitizationLevel.PARANOID: "Maximum sanitization (aggressive pattern matching)",
+            SanitizationLevel.STRICT: (
+                "Comprehensive sanitization (PII, paths, tokens)"
+            ),
+            SanitizationLevel.PARANOID: (
+                "Maximum sanitization (aggressive pattern matching)"
+            ),
         }
         return descriptions.get(self.level, "Unknown level")

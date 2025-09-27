@@ -35,15 +35,18 @@ class PytestLoggingPlugin:
 
         # Log test start
         self.logger.test_started(
-            test_id=test_id,
-            test_name=test_name,
-            metadata={
-                "file": str(item.fspath),
+    test_id=test_id,
+    test_name=test_name,
+    metadata={
+    
+                "file": str(item.fspath
+),
                 "function": item.function.__name__,
                 "module": item.module.__name__,
                 "markers": [marker.name for marker in item.iter_markers()],
                 "nodeid": item.nodeid,
-            },
+            
+},
         )
 
         # Store test_id in item for access during test
@@ -67,14 +70,17 @@ class PytestLoggingPlugin:
         start_time = self._test_start_times.get(item.nodeid, time.time())
         duration_ms = (time.time() - start_time) * 1000
 
-        # Log test completion (this will be updated by pytest_runtest_logreport)
+        # Log test completion (this will be updated by
+        # pytest_runtest_logreport)
         self.logger.info(
-            f"Test teardown: {test_name}",
-            test_id=test_id,
-            test_name=test_name,
-            duration_ms=duration_ms,
-            tags=["test_lifecycle", "teardown"],
-        )
+    f"Test teardown: {test_name}",
+    test_id=test_id,
+    test_name=test_name,
+    duration_ms=duration_ms,
+    tags=["test_lifecycle",
+    "teardown"],
+    
+)
 
     def pytest_runtest_logreport(self, report):
         """Called for each test phase report."""
@@ -87,39 +93,50 @@ class PytestLoggingPlugin:
 
         test_name = f"{report.fspath}::{report.location[2]}"
         start_time = self._test_start_times.get(report.nodeid, time.time())
-        duration_ms = report.duration * 1000 if hasattr(report, "duration") else 0
+        duration_ms = (
+            report.duration * 1000 if hasattr(report, "duration") else 0
+        )
 
         # Determine test outcome and log accordingly
         if report.passed:
             self.logger.test_passed(
-                test_id=test_id,
-                test_name=test_name,
-                duration_ms=duration_ms,
-                metadata={"outcome": "passed"},
-            )
+    test_id=test_id,
+    test_name=test_name,
+    duration_ms=duration_ms,
+    metadata={"outcome": "passed"},
+    
+)
         elif report.failed:
-            error_message = str(report.longrepr) if report.longrepr else "Test failed"
+            error_message = (
+                str(report.longrepr) if report.longrepr else "Test failed"
+            )
             stack_trace = self._extract_stack_trace(report)
 
             self.logger.test_failed(
-                test_id=test_id,
-                test_name=test_name,
-                duration_ms=duration_ms,
-                error_message=error_message,
-                stack_trace=stack_trace,
-                metadata={
+    test_id=test_id,
+    test_name=test_name,
+    duration_ms=duration_ms,
+    error_message=error_message,
+    stack_trace=stack_trace,
+    metadata={
+    
                     "outcome": "failed",
-                    "failure_type": self._classify_failure(report),
-                },
+    "failure_type": self._classify_failure(report
+),
+                
+},
             )
         elif report.skipped:
-            skip_reason = str(report.longrepr) if report.longrepr else "Test skipped"
-            self.logger.test_skipped(
-                test_id=test_id,
-                test_name=test_name,
-                reason=skip_reason,
-                metadata={"outcome": "skipped"},
+            skip_reason = (
+                str(report.longrepr) if report.longrepr else "Test skipped"
             )
+            self.logger.test_skipped(
+    test_id=test_id,
+    test_name=test_name,
+    reason=skip_reason,
+    metadata={"outcome": "skipped"},
+    
+)
 
         # Clean up
         self._test_start_times.pop(report.nodeid, None)
@@ -128,12 +145,16 @@ class PytestLoggingPlugin:
     def pytest_sessionstart(self, session):
         """Called at the start of the test session."""
         self.logger.info(
-            "Test session started",
-            tags=["session_lifecycle", "start"],
-            metadata={
+    "Test session started",
+    tags=["session_lifecycle",
+    "start"],
+    metadata={
+    
                 "pytest_version": pytest.__version__,
-                "session_id": str(uuid.uuid4()),
-            },
+    "session_id": str(uuid.uuid4(
+)),
+            
+},
         )
 
     def pytest_sessionfinish(self, session, exitstatus):
@@ -142,10 +163,13 @@ class PytestLoggingPlugin:
         test_summary = self._generate_session_summary()
 
         self.logger.info(
-            "Test session finished",
-            tags=["session_lifecycle", "finish"],
-            metadata={"exit_status": exitstatus, "summary": test_summary},
-        )
+    "Test session finished",
+    tags=["session_lifecycle",
+    "finish"],
+    metadata={"exit_status": exitstatus,
+    "summary": test_summary},
+    
+)
 
         # Flush all logs
         self.logger.flush()
@@ -202,14 +226,20 @@ class PytestLoggingPlugin:
                 total_duration += log.duration_ms
 
         return {
+    
             "total_tests": len(test_logs),
             "status_counts": status_counts,
             "total_duration_ms": total_duration,
-            "average_duration_ms": total_duration / len(test_logs) if test_logs else 0,
-        }
+            "average_duration_ms": (
+                total_duration / len(test_logs) if test_logs else 0
+            ),
+        
+}
 
 
-def setup_pytest_logging(config: Optional[LoggingConfig] = None) -> PytestLoggingPlugin:
+def setup_pytest_logging(
+    config: Optional[LoggingConfig] = None,
+) -> PytestLoggingPlugin:
     """Set up pytest logging integration."""
     logger = get_logger(config)
     return PytestLoggingPlugin(logger)

@@ -4,7 +4,6 @@ Tests that clicking filter buttons ACTUALLY filters without collapsing epics
 """
 
 import re
-from urllib.parse import parse_qs, urlparse
 
 import pytest
 import requests
@@ -210,7 +209,7 @@ class TestRTMActualBehavior:
 
         # Critical test: Verify epic toggle buttons are SEPARATE from filter buttons
         # Find epic header with toggle
-        epic_header_pattern = f"<header[^>]*onclick=\"toggleEpicDetails\('{epic_id}'\)\"[^>]*>(.*?)</header>"
+        epic_header_pattern = rf"<header[^>]*onclick=\"toggleEpicDetails\('{epic_id}'\)\"[^>]*>(.*?)</header>"
         epic_header_match = re.search(epic_header_pattern, html_content, re.DOTALL)
 
         if epic_header_match:

@@ -10,12 +10,9 @@ Related to: US-00025 Test failure tracking and reporting
 import importlib.util
 
 # Import the module under test
-# Use importlib to explicitly load from the correct source path
-import sys
 import tempfile
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 

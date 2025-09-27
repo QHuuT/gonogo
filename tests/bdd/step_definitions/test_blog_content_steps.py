@@ -2,8 +2,6 @@
 Step definitions for blog content BDD scenarios.
 """
 
-import pytest
-from fastapi.testclient import TestClient
 from pytest_bdd import given, parsers, scenarios, then, when
 
 # Load scenarios from feature file

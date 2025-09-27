@@ -9,8 +9,9 @@ Related Issue: Fix for 500 error in metrics API for PM persona
 Parent Epic: EP-00010 - Multi-persona traceability dashboard
 """
 
-import pytest
 from unittest.mock import Mock, patch
+
+import pytest
 
 from src.be.api.rtm import _extract_metric_value, calculate_dashboard_summary
 
@@ -128,10 +129,16 @@ class TestDashboardSummaryCalculation:
                             "success_probability": {"value": 85, "status": "ok"},
                         },
                         "velocity": {
-                            "velocity_points_per_sprint": {"value": 12.5, "status": "ok"},
+                            "velocity_points_per_sprint": {
+                                "value": 12.5,
+                                "status": "ok",
+                            },
                         },
                         "timeline": {
-                            "schedule_variance_days": {"value": 2.5, "status": "warning"},
+                            "schedule_variance_days": {
+                                "value": 2.5,
+                                "status": "warning",
+                            },
                         },
                         "team_productivity": {
                             "velocity_per_team_member": {"value": 4.2, "status": "ok"},
@@ -150,13 +157,19 @@ class TestDashboardSummaryCalculation:
                             "success_probability": {"value": 70, "status": "warning"},
                         },
                         "velocity": {
-                            "velocity_points_per_sprint": {"value": 8.0, "status": "warning"},
+                            "velocity_points_per_sprint": {
+                                "value": 8.0,
+                                "status": "warning",
+                            },
                         },
                         "timeline": {
                             "schedule_variance_days": {"value": -1.0, "status": "ok"},
                         },
                         "team_productivity": {
-                            "velocity_per_team_member": {"value": 2.7, "status": "warning"},
+                            "velocity_per_team_member": {
+                                "value": 2.7,
+                                "status": "warning",
+                            },
                         },
                     },
                 },
@@ -176,7 +189,10 @@ class TestDashboardSummaryCalculation:
                             "user_adoption_rate": {"value": 75.0, "status": "ok"},
                         },
                         "scope": {
-                            "scope_creep_percentage": {"value": 15.0, "status": "warning"},
+                            "scope_creep_percentage": {
+                                "value": 15.0,
+                                "status": "warning",
+                            },
                         },
                     },
                 },
@@ -278,7 +294,9 @@ class TestDashboardSummaryCalculation:
         assert summary["total_epics"] == 2
         assert isinstance(summary["average_velocity"], (int, float))
         assert isinstance(summary["average_success_probability"], (int, float))
-        assert summary["at_risk_epics"] == 0  # Only one epic has risk score, and it's <= 30
+        assert (
+            summary["at_risk_epics"] == 0
+        )  # Only one epic has risk score, and it's <= 30
 
     def test_invalid_persona_handling(self):
         """Test handling of invalid persona types."""
@@ -295,7 +313,10 @@ class TestDashboardSummaryCalculation:
                 "epic_id": "EP-001",
                 "metrics": {
                     "risk": {
-                        "overall_risk_score": {"value": 25, "status": "ok"},  # Threshold format
+                        "overall_risk_score": {
+                            "value": 25,
+                            "status": "ok",
+                        },  # Threshold format
                         "success_probability": 90,  # Direct value
                     },
                     "velocity": {
@@ -354,7 +375,7 @@ class TestDashboardSummaryCalculation:
 class TestThresholdMetricsIntegration:
     """Integration tests for threshold metrics with actual Epic model."""
 
-    @patch('src.be.api.rtm.get_threshold_service')
+    @patch("src.be.api.rtm.get_threshold_service")
     def test_threshold_service_integration(self, mock_threshold_service):
         """Test integration with the threshold service."""
         # Mock the threshold service

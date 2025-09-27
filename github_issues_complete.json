@@ -1,0 +1,388 @@
+{"issues":[{"number":36,"state":"CLOSED","title":"DEF-00009: Test Results Overview chart is empty in generated reports"},{"number":35,"state":"CLOSED","title":"DEF-00008: Report generator processes log entries but produces 0 test results"}],"label":"defect"}
+{"issues":[{"number":36,"state":"CLOSED","title":"DEF-00009: Test Results Overview chart is empty in generated reports"},{"number":35,"state":"CLOSED","title":"DEF-00008: Report generator processes log entries but produces 0 test results"}],"label":"epic/privacy-consent"}
+{"issues":[{"number":36,"state":"CLOSED","title":"DEF-00009: Test Results Overview chart is empty in generated reports"},{"number":35,"state":"CLOSED","title":"DEF-00008: Report generator processes log entries but produces 0 test results"}],"label":"status/backlog"}
+{"issues":[{"number":36,"state":"CLOSED","title":"DEF-00009: Test Results Overview chart is empty in generated reports"},{"number":35,"state":"CLOSED","title":"DEF-00008: Report generator processes log entries but produces 0 test results"}],"label":"component/security"}
+{"issues":[{"number":36,"state":"CLOSED","title":"DEF-00009: Test Results Overview chart is empty in generated reports"},{"number":35,"state":"CLOSED","title":"DEF-00008: Report generator processes log entries but produces 0 test results"}],"label":"release/v1.2"}
+{"issues":[{"number":4,"state":"OPEN","title":"DEF-00001: Labels are not calculated again upon issue edition"}],"label":"defect"}
+{"issues":[{"number":4,"state":"OPEN","title":"DEF-00001: Labels are not calculated again upon issue edition"}],"label":"priority/critical"}
+{"issues":[{"number":4,"state":"OPEN","title":"DEF-00001: Labels are not calculated again upon issue edition"}],"label":"epic/blog-content"}
+{"issues":[{"number":4,"state":"OPEN","title":"DEF-00001: Labels are not calculated again upon issue edition"}],"label":"epic/github-workflow"}
+{"issues":[{"number":4,"state":"OPEN","title":"DEF-00001: Labels are not calculated again upon issue edition"}],"label":"status/in-progress"}
+{"issues":[{"number":4,"state":"OPEN","title":"DEF-00001: Labels are not calculated again upon issue edition"}],"label":"component/frontend"}
+{"issues":[{"number":4,"state":"OPEN","title":"DEF-00001: Labels are not calculated again upon issue edition"}],"label":"release/mvp"}
+{"issues":[{"number":4,"state":"OPEN","title":"DEF-00001: Labels are not calculated again upon issue edition"}],"label":"release/v1.2"}
+{"issues":[{"number":12,"state":"OPEN","title":"DEF-00010: RTM GitHub issue links redirect to search filters instead of direct issues"}],"label":"defect"}
+{"issues":[{"number":12,"state":"OPEN","title":"DEF-00010: RTM GitHub issue links redirect to search filters instead of direct issues"}],"label":"priority/high"}
+{"issues":[{"number":12,"state":"OPEN","title":"DEF-00010: RTM GitHub issue links redirect to search filters instead of direct issues"}],"label":"epic/comment-system"}
+{"issues":[{"number":12,"state":"OPEN","title":"DEF-00010: RTM GitHub issue links redirect to search filters instead of direct issues"}],"label":"epic/github-workflow"}
+{"issues":[{"number":12,"state":"OPEN","title":"DEF-00010: RTM GitHub issue links redirect to search filters instead of direct issues"}],"label":"component/backend"}
+{"issues":[{"number":12,"state":"OPEN","title":"DEF-00010: RTM GitHub issue links redirect to search filters instead of direct issues"}],"label":"release/v1.2"}
+{"issues":[{"number":30,"state":"CLOSED","title":"DEF-00004: ModuleNotFoundError blocking EP-00006 testing - Missing RTM link generator module"}],"label":"defect"}
+{"issues":[{"number":30,"state":"CLOSED","title":"DEF-00004: ModuleNotFoundError blocking EP-00006 testing - Missing RTM link generator module"}],"label":"priority/high"}
+{"issues":[{"number":30,"state":"CLOSED","title":"DEF-00004: ModuleNotFoundError blocking EP-00006 testing - Missing RTM link generator module"}],"label":"epic/comment-system"}
+{"issues":[{"number":30,"state":"CLOSED","title":"DEF-00004: ModuleNotFoundError blocking EP-00006 testing - Missing RTM link generator module"}],"label":"epic/github-workflow"}
+{"issues":[{"number":30,"state":"CLOSED","title":"DEF-00004: ModuleNotFoundError blocking EP-00006 testing - Missing RTM link generator module"}],"label":"status/backlog"}
+{"issues":[{"number":30,"state":"CLOSED","title":"DEF-00004: ModuleNotFoundError blocking EP-00006 testing - Missing RTM link generator module"}],"label":"component/backend"}
+{"issues":[{"number":30,"state":"CLOSED","title":"DEF-00004: ModuleNotFoundError blocking EP-00006 testing - Missing RTM link generator module"}],"label":"release/v1.2"}
+{"issues":[{"number":5,"state":"CLOSED","title":"DEF-00002: Form template correction"}],"label":"defect"}
+{"issues":[{"number":5,"state":"CLOSED","title":"DEF-00002: Form template correction"}],"label":"priority/high"}
+{"issues":[{"number":5,"state":"CLOSED","title":"DEF-00002: Form template correction"}],"label":"epic/github-workflow"}
+{"issues":[{"number":5,"state":"CLOSED","title":"DEF-00002: Form template correction"}],"label":"status/done"}
+{"issues":[{"number":5,"state":"CLOSED","title":"DEF-00002: Form template correction"}],"label":"release/mvp"}
+{"issues":[{"number":33,"state":"CLOSED","title":"DEF-00007: RTM test regression - Namespace collision reappears in full test suite context"},{"number":32,"state":"OPEN","title":"DEF-00006: Relative import error in log_failure_correlator.py - ImportError when loaded via importlib"},{"number":31,"state":"CLOSED","title":"DEF-00005: Import error in test_failure_tracker.py - Module 'shared.testing.failure_tracker' not found"}],"label":"defect"}
+{"issues":[{"number":33,"state":"CLOSED","title":"DEF-00007: RTM test regression - Namespace collision reappears in full test suite context"},{"number":32,"state":"OPEN","title":"DEF-00006: Relative import error in log_failure_correlator.py - ImportError when loaded via importlib"},{"number":31,"state":"CLOSED","title":"DEF-00005: Import error in test_failure_tracker.py - Module 'shared.testing.failure_tracker' not found"}],"label":"priority/high"}
+{"issues":[{"number":33,"state":"CLOSED","title":"DEF-00007: RTM test regression - Namespace collision reappears in full test suite context"},{"number":32,"state":"OPEN","title":"DEF-00006: Relative import error in log_failure_correlator.py - ImportError when loaded via importlib"},{"number":31,"state":"CLOSED","title":"DEF-00005: Import error in test_failure_tracker.py - Module 'shared.testing.failure_tracker' not found"}],"label":"epic/privacy-consent"}
+{"issues":[{"number":33,"state":"CLOSED","title":"DEF-00007: RTM test regression - Namespace collision reappears in full test suite context"},{"number":32,"state":"OPEN","title":"DEF-00006: Relative import error in log_failure_correlator.py - ImportError when loaded via importlib"},{"number":31,"state":"CLOSED","title":"DEF-00005: Import error in test_failure_tracker.py - Module 'shared.testing.failure_tracker' not found"}],"label":"status/backlog"}
+{"issues":[{"number":33,"state":"CLOSED","title":"DEF-00007: RTM test regression - Namespace collision reappears in full test suite context"},{"number":32,"state":"OPEN","title":"DEF-00006: Relative import error in log_failure_correlator.py - ImportError when loaded via importlib"},{"number":31,"state":"CLOSED","title":"DEF-00005: Import error in test_failure_tracker.py - Module 'shared.testing.failure_tracker' not found"}],"label":"component/security"}
+{"issues":[{"number":33,"state":"CLOSED","title":"DEF-00007: RTM test regression - Namespace collision reappears in full test suite context"},{"number":32,"state":"OPEN","title":"DEF-00006: Relative import error in log_failure_correlator.py - ImportError when loaded via importlib"},{"number":31,"state":"CLOSED","title":"DEF-00005: Import error in test_failure_tracker.py - Module 'shared.testing.failure_tracker' not found"}],"label":"release/v1.2"}
+{"issues":[{"number":28,"state":"CLOSED","title":"DEF-00003: Missing pytest execution modes and Python path configuration"}],"label":"defect"}
+{"issues":[{"number":28,"state":"CLOSED","title":"DEF-00003: Missing pytest execution modes and Python path configuration"}],"label":"priority/high"}
+{"issues":[{"number":28,"state":"CLOSED","title":"DEF-00003: Missing pytest execution modes and Python path configuration"}],"label":"epic/privacy-consent"}
+{"issues":[{"number":28,"state":"CLOSED","title":"DEF-00003: Missing pytest execution modes and Python path configuration"}],"label":"status/backlog"}
+{"issues":[{"number":28,"state":"CLOSED","title":"DEF-00003: Missing pytest execution modes and Python path configuration"}],"label":"component/security"}
+{"issues":[{"number":28,"state":"CLOSED","title":"DEF-00003: Missing pytest execution modes and Python path configuration"}],"label":"release/v1.2"}
+{"issues":[{"number":28,"state":"CLOSED","title":"DEF-00003: Missing pytest execution modes and Python path configuration"}],"label":"component/testing"}
+{"issues":[{"number":1,"state":"OPEN","title":"EP-00004: GitHub Workflow Integration"}],"label":"epic"}
+{"issues":[{"number":1,"state":"OPEN","title":"EP-00004: GitHub Workflow Integration"}],"label":"priority/critical"}
+{"issues":[{"number":1,"state":"OPEN","title":"EP-00004: GitHub Workflow Integration"}],"label":"priority/high"}
+{"issues":[{"number":1,"state":"OPEN","title":"EP-00004: GitHub Workflow Integration"}],"label":"epic/github-workflow"}
+{"issues":[{"number":1,"state":"OPEN","title":"EP-00004: GitHub Workflow Integration"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":1,"state":"OPEN","title":"EP-00004: GitHub Workflow Integration"}],"label":"gdpr/consent-required"}
+{"issues":[{"number":1,"state":"OPEN","title":"EP-00004: GitHub Workflow Integration"}],"label":"release/mvp"}
+{"issues":[{"number":1,"state":"OPEN","title":"EP-00004: GitHub Workflow Integration"}],"label":"component/ci-cd"}
+{"issues":[{"number":1,"state":"OPEN","title":"EP-00004: GitHub Workflow Integration"}],"label":"gdpr/privacy-review"}
+{"issues":[{"number":1,"state":"OPEN","title":"EP-00004: GitHub Workflow Integration"}],"label":"capability/CAP-00001"}
+{"issues":[{"number":64,"state":"OPEN","title":"EP-00003: Privacy and Consent Management"}],"label":"epic"}
+{"issues":[{"number":64,"state":"OPEN","title":"EP-00003: Privacy and Consent Management"}],"label":"priority/critical"}
+{"issues":[{"number":64,"state":"OPEN","title":"EP-00003: Privacy and Consent Management"}],"label":"status/backlog"}
+{"issues":[{"number":64,"state":"OPEN","title":"EP-00003: Privacy and Consent Management"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":64,"state":"OPEN","title":"EP-00003: Privacy and Consent Management"}],"label":"gdpr/consent-required"}
+{"issues":[{"number":64,"state":"OPEN","title":"EP-00003: Privacy and Consent Management"}],"label":"release/mvp"}
+{"issues":[{"number":64,"state":"OPEN","title":"EP-00003: Privacy and Consent Management"}],"label":"release/v1.2"}
+{"issues":[{"number":64,"state":"OPEN","title":"EP-00003: Privacy and Consent Management"}],"label":"gdpr/data-retention"}
+{"issues":[{"number":64,"state":"OPEN","title":"EP-00003: Privacy and Consent Management"}],"label":"gdpr/privacy-review"}
+{"issues":[{"number":64,"state":"OPEN","title":"EP-00003: Privacy and Consent Management"}],"label":"capability/CAP-00004"}
+{"issues":[{"number":88,"state":"OPEN","title":"EP-00010: Dashboard de Traçabilité des Exigences Multi-Persona"}],"label":"epic"}
+{"issues":[{"number":88,"state":"OPEN","title":"EP-00010: Dashboard de Traçabilité des Exigences Multi-Persona"}],"label":"priority/high"}
+{"issues":[{"number":88,"state":"OPEN","title":"EP-00010: Dashboard de Traçabilité des Exigences Multi-Persona"}],"label":"component/frontend"}
+{"issues":[{"number":88,"state":"OPEN","title":"EP-00010: Dashboard de Traçabilité des Exigences Multi-Persona"}],"label":"component/backend"}
+{"issues":[{"number":88,"state":"OPEN","title":"EP-00010: Dashboard de Traçabilité des Exigences Multi-Persona"}],"label":"release/v1.2"}
+{"issues":[{"number":88,"state":"OPEN","title":"EP-00010: Dashboard de Traçabilité des Exigences Multi-Persona"}],"label":"capability/CAP-00002"}
+{"issues":[{"number":88,"state":"OPEN","title":"EP-00010: Dashboard de Traçabilité des Exigences Multi-Persona"}],"label":"epic/multipersona-dashboard"}
+{"issues":[{"number":13,"state":"CLOSED","title":"EP-00006: GitHub Project Management Integration"}],"label":"epic"}
+{"issues":[{"number":13,"state":"CLOSED","title":"EP-00006: GitHub Project Management Integration"}],"label":"priority/high"}
+{"issues":[{"number":13,"state":"CLOSED","title":"EP-00006: GitHub Project Management Integration"}],"label":"epic/github-workflow"}
+{"issues":[{"number":13,"state":"CLOSED","title":"EP-00006: GitHub Project Management Integration"}],"label":"status/backlog"}
+{"issues":[{"number":13,"state":"CLOSED","title":"EP-00006: GitHub Project Management Integration"}],"label":"component/backend"}
+{"issues":[{"number":13,"state":"CLOSED","title":"EP-00006: GitHub Project Management Integration"}],"label":"release/v1.2"}
+{"issues":[{"number":13,"state":"CLOSED","title":"EP-00006: GitHub Project Management Integration"}],"label":"capability/CAP-00001"}
+{"issues":[{"number":63,"state":"OPEN","title":"EP-00002: GDPR-Compliant Comment System"}],"label":"epic"}
+{"issues":[{"number":63,"state":"OPEN","title":"EP-00002: GDPR-Compliant Comment System"}],"label":"priority/high"}
+{"issues":[{"number":63,"state":"OPEN","title":"EP-00002: GDPR-Compliant Comment System"}],"label":"status/backlog"}
+{"issues":[{"number":63,"state":"OPEN","title":"EP-00002: GDPR-Compliant Comment System"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":63,"state":"OPEN","title":"EP-00002: GDPR-Compliant Comment System"}],"label":"gdpr/consent-required"}
+{"issues":[{"number":63,"state":"OPEN","title":"EP-00002: GDPR-Compliant Comment System"}],"label":"release/mvp"}
+{"issues":[{"number":63,"state":"OPEN","title":"EP-00002: GDPR-Compliant Comment System"}],"label":"release/v1.2"}
+{"issues":[{"number":63,"state":"OPEN","title":"EP-00002: GDPR-Compliant Comment System"}],"label":"gdpr/data-retention"}
+{"issues":[{"number":63,"state":"OPEN","title":"EP-00002: GDPR-Compliant Comment System"}],"label":"gdpr/privacy-review"}
+{"issues":[{"number":63,"state":"OPEN","title":"EP-00002: GDPR-Compliant Comment System"}],"label":"capability/CAP-00004"}
+{"issues":[{"number":62,"state":"OPEN","title":"EP-00001: Blog Content Management"}],"label":"epic"}
+{"issues":[{"number":62,"state":"OPEN","title":"EP-00001: Blog Content Management"}],"label":"priority/high"}
+{"issues":[{"number":62,"state":"OPEN","title":"EP-00001: Blog Content Management"}],"label":"status/backlog"}
+{"issues":[{"number":62,"state":"OPEN","title":"EP-00001: Blog Content Management"}],"label":"release/mvp"}
+{"issues":[{"number":62,"state":"OPEN","title":"EP-00001: Blog Content Management"}],"label":"release/v1.2"}
+{"issues":[{"number":62,"state":"OPEN","title":"EP-00001: Blog Content Management"}],"label":"capability/CAP-00003"}
+{"issues":[{"number":17,"state":"OPEN","title":"EP-00007 - Test logging and reporting"}],"label":"epic"}
+{"issues":[{"number":17,"state":"OPEN","title":"EP-00007 - Test logging and reporting"}],"label":"priority/high"}
+{"issues":[{"number":17,"state":"OPEN","title":"EP-00007 - Test logging and reporting"}],"label":"status/in-progress"}
+{"issues":[{"number":17,"state":"OPEN","title":"EP-00007 - Test logging and reporting"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":17,"state":"OPEN","title":"EP-00007 - Test logging and reporting"}],"label":"release/mvp"}
+{"issues":[{"number":17,"state":"OPEN","title":"EP-00007 - Test logging and reporting"}],"label":"release/v1.2"}
+{"issues":[{"number":17,"state":"OPEN","title":"EP-00007 - Test logging and reporting"}],"label":"capability/CAP-00002"}
+{"issues":[{"number":7,"state":"OPEN","title":"EP-00005: Requirements Traceability Matrix Automation"}],"label":"epic"}
+{"issues":[{"number":7,"state":"OPEN","title":"EP-00005: Requirements Traceability Matrix Automation"}],"label":"priority/medium"}
+{"issues":[{"number":7,"state":"OPEN","title":"EP-00005: Requirements Traceability Matrix Automation"}],"label":"epic/github-workflow"}
+{"issues":[{"number":7,"state":"OPEN","title":"EP-00005: Requirements Traceability Matrix Automation"}],"label":"component/backend"}
+{"issues":[{"number":7,"state":"OPEN","title":"EP-00005: Requirements Traceability Matrix Automation"}],"label":"release/v1.2"}
+{"issues":[{"number":7,"state":"OPEN","title":"EP-00005: Requirements Traceability Matrix Automation"}],"label":"capability/CAP-00002"}
+{"issues":[{"number":50,"state":"OPEN","title":"TEST: GitHub Projects dependencies (final test)"},{"number":49,"state":"OPEN","title":"TEST: GitHub issue relationships (blocking/blocked by)"},{"number":48,"state":"OPEN","title":"TEST: Enhanced epic linking with cross-references"},{"number":40,"state":"CLOSED","title":"TEST: Full GitHub App automation"},{"number":39,"state":"CLOSED","title":"TEST: Project integration test"}],"label":"priority/low"}
+{"issues":[{"number":50,"state":"OPEN","title":"TEST: GitHub Projects dependencies (final test)"},{"number":49,"state":"OPEN","title":"TEST: GitHub issue relationships (blocking/blocked by)"},{"number":48,"state":"OPEN","title":"TEST: Enhanced epic linking with cross-references"},{"number":40,"state":"CLOSED","title":"TEST: Full GitHub App automation"},{"number":39,"state":"CLOSED","title":"TEST: Project integration test"}],"label":"epic/github-workflow"}
+{"issues":[{"number":50,"state":"OPEN","title":"TEST: GitHub Projects dependencies (final test)"},{"number":49,"state":"OPEN","title":"TEST: GitHub issue relationships (blocking/blocked by)"},{"number":48,"state":"OPEN","title":"TEST: Enhanced epic linking with cross-references"},{"number":40,"state":"CLOSED","title":"TEST: Full GitHub App automation"},{"number":39,"state":"CLOSED","title":"TEST: Project integration test"}],"label":"release/v1.2"}
+{"issues":[{"number":50,"state":"OPEN","title":"TEST: GitHub Projects dependencies (final test)"},{"number":49,"state":"OPEN","title":"TEST: GitHub issue relationships (blocking/blocked by)"},{"number":48,"state":"OPEN","title":"TEST: Enhanced epic linking with cross-references"},{"number":40,"state":"CLOSED","title":"TEST: Full GitHub App automation"},{"number":39,"state":"CLOSED","title":"TEST: Project integration test"}],"label":"component/ci-cd"}
+{"issues":[{"number":46,"state":"OPEN","title":"TEST: Epic linking automation with Parent Epic"},{"number":45,"state":"CLOSED","title":"FINAL TEST: GH_TOKEN authentication"},{"number":44,"state":"OPEN","title":"PUBLIC PROJECT TEST: Final test"},{"number":43,"state":"OPEN","title":"CLI TEST: GitHub CLI project integration"},{"number":42,"state":"CLOSED","title":"PROJECT TEST: Fixed GraphQL mutation"},{"number":41,"state":"CLOSED","title":"SPEED TEST: Automation timing"},{"number":38,"state":"CLOSED","title":"TEST: GitHub Actions automation test"}],"label":"priority/low"}
+{"issues":[{"number":46,"state":"OPEN","title":"TEST: Epic linking automation with Parent Epic"},{"number":45,"state":"CLOSED","title":"FINAL TEST: GH_TOKEN authentication"},{"number":44,"state":"OPEN","title":"PUBLIC PROJECT TEST: Final test"},{"number":43,"state":"OPEN","title":"CLI TEST: GitHub CLI project integration"},{"number":42,"state":"CLOSED","title":"PROJECT TEST: Fixed GraphQL mutation"},{"number":41,"state":"CLOSED","title":"SPEED TEST: Automation timing"},{"number":38,"state":"CLOSED","title":"TEST: GitHub Actions automation test"}],"label":"epic/github-workflow"}
+{"issues":[{"number":46,"state":"OPEN","title":"TEST: Epic linking automation with Parent Epic"},{"number":45,"state":"CLOSED","title":"FINAL TEST: GH_TOKEN authentication"},{"number":44,"state":"OPEN","title":"PUBLIC PROJECT TEST: Final test"},{"number":43,"state":"OPEN","title":"CLI TEST: GitHub CLI project integration"},{"number":42,"state":"CLOSED","title":"PROJECT TEST: Fixed GraphQL mutation"},{"number":41,"state":"CLOSED","title":"SPEED TEST: Automation timing"},{"number":38,"state":"CLOSED","title":"TEST: GitHub Actions automation test"}],"label":"status/backlog"}
+{"issues":[{"number":46,"state":"OPEN","title":"TEST: Epic linking automation with Parent Epic"},{"number":45,"state":"CLOSED","title":"FINAL TEST: GH_TOKEN authentication"},{"number":44,"state":"OPEN","title":"PUBLIC PROJECT TEST: Final test"},{"number":43,"state":"OPEN","title":"CLI TEST: GitHub CLI project integration"},{"number":42,"state":"CLOSED","title":"PROJECT TEST: Fixed GraphQL mutation"},{"number":41,"state":"CLOSED","title":"SPEED TEST: Automation timing"},{"number":38,"state":"CLOSED","title":"TEST: GitHub Actions automation test"}],"label":"release/v1.2"}
+{"issues":[{"number":46,"state":"OPEN","title":"TEST: Epic linking automation with Parent Epic"},{"number":45,"state":"CLOSED","title":"FINAL TEST: GH_TOKEN authentication"},{"number":44,"state":"OPEN","title":"PUBLIC PROJECT TEST: Final test"},{"number":43,"state":"OPEN","title":"CLI TEST: GitHub CLI project integration"},{"number":42,"state":"CLOSED","title":"PROJECT TEST: Fixed GraphQL mutation"},{"number":41,"state":"CLOSED","title":"SPEED TEST: Automation timing"},{"number":38,"state":"CLOSED","title":"TEST: GitHub Actions automation test"}],"label":"component/ci-cd"}
+{"issues":[{"number":47,"state":"OPEN","title":"TEST: Cross-reference blocking relationships"}],"label":"priority/low"}
+{"issues":[{"number":47,"state":"OPEN","title":"TEST: Cross-reference blocking relationships"}],"label":"release/v1.2"}
+{"issues":[{"number":80,"state":"OPEN","title":"US-00005: Enhance RTM Dashboard Component Display and UI Layout"}],"label":"priority/medium"}
+{"issues":[{"number":80,"state":"OPEN","title":"US-00005: Enhance RTM Dashboard Component Display and UI Layout"}],"label":"status/backlog"}
+{"issues":[{"number":80,"state":"OPEN","title":"US-00005: Enhance RTM Dashboard Component Display and UI Layout"}],"label":"component/frontend"}
+{"issues":[{"number":80,"state":"OPEN","title":"US-00005: Enhance RTM Dashboard Component Display and UI Layout"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":80,"state":"OPEN","title":"US-00005: Enhance RTM Dashboard Component Display and UI Layout"}],"label":"release/v1.2"}
+{"issues":[{"number":98,"state":"OPEN","title":"US-00062: Program Areas/Capabilities - Epic Grouping and Strategic Management"}],"label":"user-story"}
+{"issues":[{"number":98,"state":"OPEN","title":"US-00062: Program Areas/Capabilities - Epic Grouping and Strategic Management"}],"label":"component/backend"}
+{"issues":[{"number":98,"state":"OPEN","title":"US-00062: Program Areas/Capabilities - Epic Grouping and Strategic Management"}],"label":"release/v1.2"}
+{"issues":[{"number":89,"state":"OPEN","title":"US-00069: Audit et déduplication des tests DB"}],"label":"user-story"}
+{"issues":[{"number":89,"state":"OPEN","title":"US-00069: Audit et déduplication des tests DB"}],"label":"priority/critical"}
+{"issues":[{"number":89,"state":"OPEN","title":"US-00069: Audit et déduplication des tests DB"}],"label":"component/backend"}
+{"issues":[{"number":89,"state":"OPEN","title":"US-00069: Audit et déduplication des tests DB"}],"label":"release/v1.2"}
+{"issues":[{"number":75,"state":"OPEN","title":"DUPLICATE"}],"label":"user-story"}
+{"issues":[{"number":75,"state":"OPEN","title":"DUPLICATE"}],"label":"priority/high"}
+{"issues":[{"number":75,"state":"OPEN","title":"DUPLICATE"}],"label":"component/database"}
+{"issues":[{"number":75,"state":"OPEN","title":"DUPLICATE"}],"label":"release/v1.2"}
+{"issues":[{"number":75,"state":"OPEN","title":"DUPLICATE"}],"label":"release/v1.1"}
+{"issues":[{"number":70,"state":"OPEN","title":"US-00005: Add Component Field to Epic Creation Template"}],"label":"user-story"}
+{"issues":[{"number":70,"state":"OPEN","title":"US-00005: Add Component Field to Epic Creation Template"}],"label":"priority/high"}
+{"issues":[{"number":70,"state":"OPEN","title":"US-00005: Add Component Field to Epic Creation Template"}],"label":"component/frontend"}
+{"issues":[{"number":70,"state":"OPEN","title":"US-00005: Add Component Field to Epic Creation Template"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":70,"state":"OPEN","title":"US-00005: Add Component Field to Epic Creation Template"}],"label":"release/v1.2"}
+{"issues":[{"number":70,"state":"OPEN","title":"US-00005: Add Component Field to Epic Creation Template"}],"label":"release/v1.1"}
+{"issues":[{"number":92,"state":"OPEN","title":"US-00072: Multi‑persona project health dashboard"}],"label":"user-story"}
+{"issues":[{"number":92,"state":"OPEN","title":"US-00072: Multi‑persona project health dashboard"}],"label":"priority/high"}
+{"issues":[{"number":92,"state":"OPEN","title":"US-00072: Multi‑persona project health dashboard"}],"label":"component/frontend"}
+{"issues":[{"number":92,"state":"OPEN","title":"US-00072: Multi‑persona project health dashboard"}],"label":"release/v1.2"}
+{"issues":[{"number":10,"state":"OPEN","title":"US-00016: GitHub Action for automated RTM validation"}],"label":"user-story"}
+{"issues":[{"number":10,"state":"OPEN","title":"US-00016: GitHub Action for automated RTM validation"}],"label":"priority/high"}
+{"issues":[{"number":10,"state":"OPEN","title":"US-00016: GitHub Action for automated RTM validation"}],"label":"epic/comment-system"}
+{"issues":[{"number":10,"state":"OPEN","title":"US-00016: GitHub Action for automated RTM validation"}],"label":"epic/github-workflow"}
+{"issues":[{"number":10,"state":"OPEN","title":"US-00016: GitHub Action for automated RTM validation"}],"label":"status/backlog"}
+{"issues":[{"number":10,"state":"OPEN","title":"US-00016: GitHub Action for automated RTM validation"}],"label":"component/backend"}
+{"issues":[{"number":10,"state":"OPEN","title":"US-00016: GitHub Action for automated RTM validation"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":10,"state":"OPEN","title":"US-00016: GitHub Action for automated RTM validation"}],"label":"release/v1.2"}
+{"issues":[{"number":9,"state":"CLOSED","title":"US-00015: Automated RTM link generation and validation"}],"label":"user-story"}
+{"issues":[{"number":9,"state":"CLOSED","title":"US-00015: Automated RTM link generation and validation"}],"label":"priority/high"}
+{"issues":[{"number":9,"state":"CLOSED","title":"US-00015: Automated RTM link generation and validation"}],"label":"epic/comment-system"}
+{"issues":[{"number":9,"state":"CLOSED","title":"US-00015: Automated RTM link generation and validation"}],"label":"epic/github-workflow"}
+{"issues":[{"number":9,"state":"CLOSED","title":"US-00015: Automated RTM link generation and validation"}],"label":"status/backlog"}
+{"issues":[{"number":9,"state":"CLOSED","title":"US-00015: Automated RTM link generation and validation"}],"label":"component/backend"}
+{"issues":[{"number":9,"state":"CLOSED","title":"US-00015: Automated RTM link generation and validation"}],"label":"release/v1.2"}
+{"issues":[{"number":20,"state":"OPEN","title":"US-00023: HTML report generation system"},{"number":19,"state":"OPEN","title":"US-00022: Structured logging system"},{"number":18,"state":"OPEN","title":"US-00021: Test runner with execution modes"}],"label":"user-story"}
+{"issues":[{"number":20,"state":"OPEN","title":"US-00023: HTML report generation system"},{"number":19,"state":"OPEN","title":"US-00022: Structured logging system"},{"number":18,"state":"OPEN","title":"US-00021: Test runner with execution modes"}],"label":"priority/high"}
+{"issues":[{"number":20,"state":"OPEN","title":"US-00023: HTML report generation system"},{"number":19,"state":"OPEN","title":"US-00022: Structured logging system"},{"number":18,"state":"OPEN","title":"US-00021: Test runner with execution modes"}],"label":"epic/github-workflow"}
+{"issues":[{"number":20,"state":"OPEN","title":"US-00023: HTML report generation system"},{"number":19,"state":"OPEN","title":"US-00022: Structured logging system"},{"number":18,"state":"OPEN","title":"US-00021: Test runner with execution modes"}],"label":"status/backlog"}
+{"issues":[{"number":20,"state":"OPEN","title":"US-00023: HTML report generation system"},{"number":19,"state":"OPEN","title":"US-00022: Structured logging system"},{"number":18,"state":"OPEN","title":"US-00021: Test runner with execution modes"}],"label":"component/backend"}
+{"issues":[{"number":20,"state":"OPEN","title":"US-00023: HTML report generation system"},{"number":19,"state":"OPEN","title":"US-00022: Structured logging system"},{"number":18,"state":"OPEN","title":"US-00021: Test runner with execution modes"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":20,"state":"OPEN","title":"US-00023: HTML report generation system"},{"number":19,"state":"OPEN","title":"US-00022: Structured logging system"},{"number":18,"state":"OPEN","title":"US-00021: Test runner with execution modes"}],"label":"release/v1.2"}
+{"issues":[{"number":20,"state":"OPEN","title":"US-00023: HTML report generation system"},{"number":19,"state":"OPEN","title":"US-00022: Structured logging system"},{"number":18,"state":"OPEN","title":"US-00021: Test runner with execution modes"}],"label":"epic/github-project"}
+{"issues":[{"number":22,"state":"CLOSED","title":"US-00025: Test failure tracking and reporting"},{"number":16,"state":"CLOSED","title":"US-00020: GitHub Project Management Automation Tool"},{"number":14,"state":"CLOSED","title":"US-00018: Enhanced CLAUDE.md GitHub-First Protocol"}],"label":"user-story"}
+{"issues":[{"number":22,"state":"CLOSED","title":"US-00025: Test failure tracking and reporting"},{"number":16,"state":"CLOSED","title":"US-00020: GitHub Project Management Automation Tool"},{"number":14,"state":"CLOSED","title":"US-00018: Enhanced CLAUDE.md GitHub-First Protocol"}],"label":"priority/high"}
+{"issues":[{"number":22,"state":"CLOSED","title":"US-00025: Test failure tracking and reporting"},{"number":16,"state":"CLOSED","title":"US-00020: GitHub Project Management Automation Tool"},{"number":14,"state":"CLOSED","title":"US-00018: Enhanced CLAUDE.md GitHub-First Protocol"}],"label":"epic/github-workflow"}
+{"issues":[{"number":22,"state":"CLOSED","title":"US-00025: Test failure tracking and reporting"},{"number":16,"state":"CLOSED","title":"US-00020: GitHub Project Management Automation Tool"},{"number":14,"state":"CLOSED","title":"US-00018: Enhanced CLAUDE.md GitHub-First Protocol"}],"label":"status/backlog"}
+{"issues":[{"number":22,"state":"CLOSED","title":"US-00025: Test failure tracking and reporting"},{"number":16,"state":"CLOSED","title":"US-00020: GitHub Project Management Automation Tool"},{"number":14,"state":"CLOSED","title":"US-00018: Enhanced CLAUDE.md GitHub-First Protocol"}],"label":"component/backend"}
+{"issues":[{"number":22,"state":"CLOSED","title":"US-00025: Test failure tracking and reporting"},{"number":16,"state":"CLOSED","title":"US-00020: GitHub Project Management Automation Tool"},{"number":14,"state":"CLOSED","title":"US-00018: Enhanced CLAUDE.md GitHub-First Protocol"}],"label":"release/v1.2"}
+{"issues":[{"number":22,"state":"CLOSED","title":"US-00025: Test failure tracking and reporting"},{"number":16,"state":"CLOSED","title":"US-00020: GitHub Project Management Automation Tool"},{"number":14,"state":"CLOSED","title":"US-00018: Enhanced CLAUDE.md GitHub-First Protocol"}],"label":"epic/github-project"}
+{"issues":[{"number":2,"state":"OPEN","title":"US-00009: GitHub Issue Template Integration"}],"label":"user-story"}
+{"issues":[{"number":2,"state":"OPEN","title":"US-00009: GitHub Issue Template Integration"}],"label":"priority/high"}
+{"issues":[{"number":2,"state":"OPEN","title":"US-00009: GitHub Issue Template Integration"}],"label":"epic/github-workflow"}
+{"issues":[{"number":2,"state":"OPEN","title":"US-00009: GitHub Issue Template Integration"}],"label":"status/backlog"}
+{"issues":[{"number":2,"state":"OPEN","title":"US-00009: GitHub Issue Template Integration"}],"label":"component/frontend"}
+{"issues":[{"number":2,"state":"OPEN","title":"US-00009: GitHub Issue Template Integration"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":2,"state":"OPEN","title":"US-00009: GitHub Issue Template Integration"}],"label":"release/mvp"}
+{"issues":[{"number":2,"state":"OPEN","title":"US-00009: GitHub Issue Template Integration"}],"label":"release/v1.2"}
+{"issues":[{"number":37,"state":"OPEN","title":"US-00033: GitHub Actions automation for issue management and epic linking"}],"label":"user-story"}
+{"issues":[{"number":37,"state":"OPEN","title":"US-00033: GitHub Actions automation for issue management and epic linking"}],"label":"priority/high"}
+{"issues":[{"number":37,"state":"OPEN","title":"US-00033: GitHub Actions automation for issue management and epic linking"}],"label":"epic/github-workflow"}
+{"issues":[{"number":37,"state":"OPEN","title":"US-00033: GitHub Actions automation for issue management and epic linking"}],"label":"status/backlog"}
+{"issues":[{"number":37,"state":"OPEN","title":"US-00033: GitHub Actions automation for issue management and epic linking"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":37,"state":"OPEN","title":"US-00033: GitHub Actions automation for issue management and epic linking"}],"label":"release/v1.2"}
+{"issues":[{"number":37,"state":"OPEN","title":"US-00033: GitHub Actions automation for issue management and epic linking"}],"label":"component/ci-cd"}
+{"issues":[{"number":34,"state":"OPEN","title":"US-00032: Enhanced archive management with current report tracking and automated cleanup"}],"label":"user-story"}
+{"issues":[{"number":34,"state":"OPEN","title":"US-00032: Enhanced archive management with current report tracking and automated cleanup"}],"label":"priority/high"}
+{"issues":[{"number":34,"state":"OPEN","title":"US-00032: Enhanced archive management with current report tracking and automated cleanup"}],"label":"epic/github-workflow"}
+{"issues":[{"number":34,"state":"OPEN","title":"US-00032: Enhanced archive management with current report tracking and automated cleanup"}],"label":"status/backlog"}
+{"issues":[{"number":34,"state":"OPEN","title":"US-00032: Enhanced archive management with current report tracking and automated cleanup"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":34,"state":"OPEN","title":"US-00032: Enhanced archive management with current report tracking and automated cleanup"}],"label":"release/v1.2"}
+{"issues":[{"number":34,"state":"OPEN","title":"US-00032: Enhanced archive management with current report tracking and automated cleanup"}],"label":"component/testing"}
+{"issues":[{"number":34,"state":"OPEN","title":"US-00032: Enhanced archive management with current report tracking and automated cleanup"}],"label":"epic/github-project"}
+{"issues":[{"number":29,"state":"CLOSED","title":"US-00031: Complete test runner plugin integration and fix Unicode encoding issues"}],"label":"user-story"}
+{"issues":[{"number":29,"state":"CLOSED","title":"US-00031: Complete test runner plugin integration and fix Unicode encoding issues"}],"label":"priority/high"}
+{"issues":[{"number":29,"state":"CLOSED","title":"US-00031: Complete test runner plugin integration and fix Unicode encoding issues"}],"label":"epic/github-workflow"}
+{"issues":[{"number":29,"state":"CLOSED","title":"US-00031: Complete test runner plugin integration and fix Unicode encoding issues"}],"label":"status/backlog"}
+{"issues":[{"number":29,"state":"CLOSED","title":"US-00031: Complete test runner plugin integration and fix Unicode encoding issues"}],"label":"release/v1.2"}
+{"issues":[{"number":29,"state":"CLOSED","title":"US-00031: Complete test runner plugin integration and fix Unicode encoding issues"}],"label":"component/testing"}
+{"issues":[{"number":29,"state":"CLOSED","title":"US-00031: Complete test runner plugin integration and fix Unicode encoding issues"}],"label":"epic/github-project"}
+{"issues":[{"number":87,"state":"OPEN","title":"US-00006: Implement Automated Epic Label Management and Inheritance System"}],"label":"user-story"}
+{"issues":[{"number":87,"state":"OPEN","title":"US-00006: Implement Automated Epic Label Management and Inheritance System"}],"label":"priority/high"}
+{"issues":[{"number":87,"state":"OPEN","title":"US-00006: Implement Automated Epic Label Management and Inheritance System"}],"label":"status/backlog"}
+{"issues":[{"number":87,"state":"OPEN","title":"US-00006: Implement Automated Epic Label Management and Inheritance System"}],"label":"component/backend"}
+{"issues":[{"number":87,"state":"OPEN","title":"US-00006: Implement Automated Epic Label Management and Inheritance System"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":87,"state":"OPEN","title":"US-00006: Implement Automated Epic Label Management and Inheritance System"}],"label":"release/v1.2"}
+{"issues":[{"number":87,"state":"OPEN","title":"US-00006: Implement Automated Epic Label Management and Inheritance System"}],"label":"epic/rtm"}
+{"issues":[{"number":74,"state":"OPEN","title":"US-00011: Fix Defect-User Story Relationship Links"}],"label":"user-story"}
+{"issues":[{"number":74,"state":"OPEN","title":"US-00011: Fix Defect-User Story Relationship Links"}],"label":"priority/high"}
+{"issues":[{"number":74,"state":"OPEN","title":"US-00011: Fix Defect-User Story Relationship Links"}],"label":"status/backlog"}
+{"issues":[{"number":74,"state":"OPEN","title":"US-00011: Fix Defect-User Story Relationship Links"}],"label":"component/backend"}
+{"issues":[{"number":74,"state":"OPEN","title":"US-00011: Fix Defect-User Story Relationship Links"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":74,"state":"OPEN","title":"US-00011: Fix Defect-User Story Relationship Links"}],"label":"release/v1.2"}
+{"issues":[{"number":74,"state":"OPEN","title":"US-00011: Fix Defect-User Story Relationship Links"}],"label":"release/v1.1"}
+{"issues":[{"number":91,"state":"OPEN","title":"US-00071: Extend Epic model for metrics"},{"number":90,"state":"OPEN","title":"US-00070: Epic functional dependencies model"}],"label":"user-story"}
+{"issues":[{"number":91,"state":"OPEN","title":"US-00071: Extend Epic model for metrics"},{"number":90,"state":"OPEN","title":"US-00070: Epic functional dependencies model"}],"label":"priority/high"}
+{"issues":[{"number":91,"state":"OPEN","title":"US-00071: Extend Epic model for metrics"},{"number":90,"state":"OPEN","title":"US-00070: Epic functional dependencies model"}],"label":"status/backlog"}
+{"issues":[{"number":91,"state":"OPEN","title":"US-00071: Extend Epic model for metrics"},{"number":90,"state":"OPEN","title":"US-00070: Epic functional dependencies model"}],"label":"component/backend"}
+{"issues":[{"number":91,"state":"OPEN","title":"US-00071: Extend Epic model for metrics"},{"number":90,"state":"OPEN","title":"US-00070: Epic functional dependencies model"}],"label":"release/v1.2"}
+{"issues":[{"number":60,"state":"CLOSED","title":"US-00060: Comprehensive documentation update for database RTM"},{"number":58,"state":"CLOSED","title":"US-00058: Legacy script migration and deprecation"},{"number":55,"state":"CLOSED","title":"US-00055: CLI tools for database RTM management"},{"number":54,"state":"CLOSED","title":"US-00054: Database models and migration foundation"},{"number":52,"state":"CLOSED","title":"US-00052: Database schema design for traceability relationships"},{"number":51,"state":"CLOSED","title":"US-00051: Requirements analysis and impact assessment for database RTM migration"}],"label":"user-story"}
+{"issues":[{"number":60,"state":"CLOSED","title":"US-00060: Comprehensive documentation update for database RTM"},{"number":58,"state":"CLOSED","title":"US-00058: Legacy script migration and deprecation"},{"number":55,"state":"CLOSED","title":"US-00055: CLI tools for database RTM management"},{"number":54,"state":"CLOSED","title":"US-00054: Database models and migration foundation"},{"number":52,"state":"CLOSED","title":"US-00052: Database schema design for traceability relationships"},{"number":51,"state":"CLOSED","title":"US-00051: Requirements analysis and impact assessment for database RTM migration"}],"label":"priority/high"}
+{"issues":[{"number":60,"state":"CLOSED","title":"US-00060: Comprehensive documentation update for database RTM"},{"number":58,"state":"CLOSED","title":"US-00058: Legacy script migration and deprecation"},{"number":55,"state":"CLOSED","title":"US-00055: CLI tools for database RTM management"},{"number":54,"state":"CLOSED","title":"US-00054: Database models and migration foundation"},{"number":52,"state":"CLOSED","title":"US-00052: Database schema design for traceability relationships"},{"number":51,"state":"CLOSED","title":"US-00051: Requirements analysis and impact assessment for database RTM migration"}],"label":"status/backlog"}
+{"issues":[{"number":60,"state":"CLOSED","title":"US-00060: Comprehensive documentation update for database RTM"},{"number":58,"state":"CLOSED","title":"US-00058: Legacy script migration and deprecation"},{"number":55,"state":"CLOSED","title":"US-00055: CLI tools for database RTM management"},{"number":54,"state":"CLOSED","title":"US-00054: Database models and migration foundation"},{"number":52,"state":"CLOSED","title":"US-00052: Database schema design for traceability relationships"},{"number":51,"state":"CLOSED","title":"US-00051: Requirements analysis and impact assessment for database RTM migration"}],"label":"component/backend"}
+{"issues":[{"number":60,"state":"CLOSED","title":"US-00060: Comprehensive documentation update for database RTM"},{"number":58,"state":"CLOSED","title":"US-00058: Legacy script migration and deprecation"},{"number":55,"state":"CLOSED","title":"US-00055: CLI tools for database RTM management"},{"number":54,"state":"CLOSED","title":"US-00054: Database models and migration foundation"},{"number":52,"state":"CLOSED","title":"US-00052: Database schema design for traceability relationships"},{"number":51,"state":"CLOSED","title":"US-00051: Requirements analysis and impact assessment for database RTM migration"}],"label":"release/v1.2"}
+{"issues":[{"number":60,"state":"CLOSED","title":"US-00060: Comprehensive documentation update for database RTM"},{"number":58,"state":"CLOSED","title":"US-00058: Legacy script migration and deprecation"},{"number":55,"state":"CLOSED","title":"US-00055: CLI tools for database RTM management"},{"number":54,"state":"CLOSED","title":"US-00054: Database models and migration foundation"},{"number":52,"state":"CLOSED","title":"US-00052: Database schema design for traceability relationships"},{"number":51,"state":"CLOSED","title":"US-00051: Requirements analysis and impact assessment for database RTM migration"}],"label":"epic/rtm"}
+{"issues":[{"number":84,"state":"CLOSED","title":"US-00007: Add Component Columns to RTM Subtables"}],"label":"user-story"}
+{"issues":[{"number":84,"state":"CLOSED","title":"US-00007: Add Component Columns to RTM Subtables"}],"label":"priority/high"}
+{"issues":[{"number":84,"state":"CLOSED","title":"US-00007: Add Component Columns to RTM Subtables"}],"label":"status/backlog"}
+{"issues":[{"number":84,"state":"CLOSED","title":"US-00007: Add Component Columns to RTM Subtables"}],"label":"component/frontend"}
+{"issues":[{"number":84,"state":"CLOSED","title":"US-00007: Add Component Columns to RTM Subtables"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":84,"state":"CLOSED","title":"US-00007: Add Component Columns to RTM Subtables"}],"label":"release/v1.2"}
+{"issues":[{"number":84,"state":"CLOSED","title":"US-00007: Add Component Columns to RTM Subtables"}],"label":"release/v1.1"}
+{"issues":[{"number":65,"state":"CLOSED","title":"US-00001: Enhanced RTM filtering system with user story status, test metrics, and defect management"},{"number":59,"state":"CLOSED","title":"US-00059: Dynamic RTM generation and reporting"}],"label":"user-story"}
+{"issues":[{"number":65,"state":"CLOSED","title":"US-00001: Enhanced RTM filtering system with user story status, test metrics, and defect management"},{"number":59,"state":"CLOSED","title":"US-00059: Dynamic RTM generation and reporting"}],"label":"priority/high"}
+{"issues":[{"number":65,"state":"CLOSED","title":"US-00001: Enhanced RTM filtering system with user story status, test metrics, and defect management"},{"number":59,"state":"CLOSED","title":"US-00059: Dynamic RTM generation and reporting"}],"label":"status/backlog"}
+{"issues":[{"number":65,"state":"CLOSED","title":"US-00001: Enhanced RTM filtering system with user story status, test metrics, and defect management"},{"number":59,"state":"CLOSED","title":"US-00059: Dynamic RTM generation and reporting"}],"label":"component/frontend"}
+{"issues":[{"number":65,"state":"CLOSED","title":"US-00001: Enhanced RTM filtering system with user story status, test metrics, and defect management"},{"number":59,"state":"CLOSED","title":"US-00059: Dynamic RTM generation and reporting"}],"label":"release/v1.2"}
+{"issues":[{"number":65,"state":"CLOSED","title":"US-00001: Enhanced RTM filtering system with user story status, test metrics, and defect management"},{"number":59,"state":"CLOSED","title":"US-00059: Dynamic RTM generation and reporting"}],"label":"epic/rtm"}
+{"issues":[{"number":56,"state":"CLOSED","title":"US-00056: GitHub Actions database integration"},{"number":53,"state":"CLOSED","title":"US-00053: GitHub integration impact analysis"}],"label":"user-story"}
+{"issues":[{"number":56,"state":"CLOSED","title":"US-00056: GitHub Actions database integration"},{"number":53,"state":"CLOSED","title":"US-00053: GitHub integration impact analysis"}],"label":"priority/high"}
+{"issues":[{"number":56,"state":"CLOSED","title":"US-00056: GitHub Actions database integration"},{"number":53,"state":"CLOSED","title":"US-00053: GitHub integration impact analysis"}],"label":"status/backlog"}
+{"issues":[{"number":56,"state":"CLOSED","title":"US-00056: GitHub Actions database integration"},{"number":53,"state":"CLOSED","title":"US-00053: GitHub integration impact analysis"}],"label":"release/v1.2"}
+{"issues":[{"number":56,"state":"CLOSED","title":"US-00056: GitHub Actions database integration"},{"number":53,"state":"CLOSED","title":"US-00053: GitHub integration impact analysis"}],"label":"component/ci-cd"}
+{"issues":[{"number":56,"state":"CLOSED","title":"US-00056: GitHub Actions database integration"},{"number":53,"state":"CLOSED","title":"US-00053: GitHub integration impact analysis"}],"label":"epic/rtm"}
+{"issues":[{"number":57,"state":"CLOSED","title":"US-00057: Test execution integration with database"}],"label":"user-story"}
+{"issues":[{"number":57,"state":"CLOSED","title":"US-00057: Test execution integration with database"}],"label":"priority/high"}
+{"issues":[{"number":57,"state":"CLOSED","title":"US-00057: Test execution integration with database"}],"label":"status/backlog"}
+{"issues":[{"number":57,"state":"CLOSED","title":"US-00057: Test execution integration with database"}],"label":"release/v1.2"}
+{"issues":[{"number":57,"state":"CLOSED","title":"US-00057: Test execution integration with database"}],"label":"component/testing"}
+{"issues":[{"number":57,"state":"CLOSED","title":"US-00057: Test execution integration with database"}],"label":"epic/rtm"}
+{"issues":[{"number":73,"state":"OPEN","title":"US-00008: Add Component Field to Epic Database Schema"}],"label":"user-story"}
+{"issues":[{"number":73,"state":"OPEN","title":"US-00008: Add Component Field to Epic Database Schema"}],"label":"priority/high"}
+{"issues":[{"number":73,"state":"OPEN","title":"US-00008: Add Component Field to Epic Database Schema"}],"label":"status/done"}
+{"issues":[{"number":73,"state":"OPEN","title":"US-00008: Add Component Field to Epic Database Schema"}],"label":"component/backend"}
+{"issues":[{"number":73,"state":"OPEN","title":"US-00008: Add Component Field to Epic Database Schema"}],"label":"release/v1.2"}
+{"issues":[{"number":73,"state":"OPEN","title":"US-00008: Add Component Field to Epic Database Schema"}],"label":"release/v1.1"}
+{"issues":[{"number":72,"state":"OPEN","title":"US-00007: Enhance Defect Template with Parent Relationships"},{"number":71,"state":"OPEN","title":"US-00006: Add Component Field to User Story Template"}],"label":"user-story"}
+{"issues":[{"number":72,"state":"OPEN","title":"US-00007: Enhance Defect Template with Parent Relationships"},{"number":71,"state":"OPEN","title":"US-00006: Add Component Field to User Story Template"}],"label":"priority/high"}
+{"issues":[{"number":72,"state":"OPEN","title":"US-00007: Enhance Defect Template with Parent Relationships"},{"number":71,"state":"OPEN","title":"US-00006: Add Component Field to User Story Template"}],"label":"status/done"}
+{"issues":[{"number":72,"state":"OPEN","title":"US-00007: Enhance Defect Template with Parent Relationships"},{"number":71,"state":"OPEN","title":"US-00006: Add Component Field to User Story Template"}],"label":"component/frontend"}
+{"issues":[{"number":72,"state":"OPEN","title":"US-00007: Enhance Defect Template with Parent Relationships"},{"number":71,"state":"OPEN","title":"US-00006: Add Component Field to User Story Template"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":72,"state":"OPEN","title":"US-00007: Enhance Defect Template with Parent Relationships"},{"number":71,"state":"OPEN","title":"US-00006: Add Component Field to User Story Template"}],"label":"release/v1.2"}
+{"issues":[{"number":72,"state":"OPEN","title":"US-00007: Enhance Defect Template with Parent Relationships"},{"number":71,"state":"OPEN","title":"US-00006: Add Component Field to User Story Template"}],"label":"release/v1.1"}
+{"issues":[{"number":96,"state":"OPEN","title":"US-00076: Refactoring \u0026 cleanup code obsolète"}],"label":"user-story"}
+{"issues":[{"number":96,"state":"OPEN","title":"US-00076: Refactoring \u0026 cleanup code obsolète"}],"label":"priority/low"}
+{"issues":[{"number":96,"state":"OPEN","title":"US-00076: Refactoring \u0026 cleanup code obsolète"}],"label":"component/backend"}
+{"issues":[{"number":96,"state":"OPEN","title":"US-00076: Refactoring \u0026 cleanup code obsolète"}],"label":"release/v1.2"}
+{"issues":[{"number":25,"state":"CLOSED","title":"US-00028: Test report archiving system"}],"label":"user-story"}
+{"issues":[{"number":25,"state":"CLOSED","title":"US-00028: Test report archiving system"}],"label":"priority/low"}
+{"issues":[{"number":25,"state":"CLOSED","title":"US-00028: Test report archiving system"}],"label":"epic/github-workflow"}
+{"issues":[{"number":25,"state":"CLOSED","title":"US-00028: Test report archiving system"}],"label":"status/backlog"}
+{"issues":[{"number":25,"state":"CLOSED","title":"US-00028: Test report archiving system"}],"label":"component/backend"}
+{"issues":[{"number":25,"state":"CLOSED","title":"US-00028: Test report archiving system"}],"label":"release/v1.2"}
+{"issues":[{"number":25,"state":"CLOSED","title":"US-00028: Test report archiving system"}],"label":"epic/github-project"}
+{"issues":[{"number":95,"state":"OPEN","title":"US-00075: Interface responsive personnalisable"}],"label":"user-story"}
+{"issues":[{"number":95,"state":"OPEN","title":"US-00075: Interface responsive personnalisable"}],"label":"priority/low"}
+{"issues":[{"number":95,"state":"OPEN","title":"US-00075: Interface responsive personnalisable"}],"label":"status/backlog"}
+{"issues":[{"number":95,"state":"OPEN","title":"US-00075: Interface responsive personnalisable"}],"label":"component/frontend"}
+{"issues":[{"number":95,"state":"OPEN","title":"US-00075: Interface responsive personnalisable"}],"label":"release/v1.2"}
+{"issues":[{"number":97,"state":"OPEN","title":"US-00077: Système de tracking vélocité historique réel"}],"label":"user-story"}
+{"issues":[{"number":97,"state":"OPEN","title":"US-00077: Système de tracking vélocité historique réel"}],"label":"priority/medium"}
+{"issues":[{"number":97,"state":"OPEN","title":"US-00077: Système de tracking vélocité historique réel"}],"label":"component/backend"}
+{"issues":[{"number":97,"state":"OPEN","title":"US-00077: Système de tracking vélocité historique réel"}],"label":"release/v1.2"}
+{"issues":[{"number":83,"state":"CLOSED","title":"US-00006: Enhance Component Badge Placement in RTM Epic Headers"}],"label":"user-story"}
+{"issues":[{"number":83,"state":"CLOSED","title":"US-00006: Enhance Component Badge Placement in RTM Epic Headers"}],"label":"priority/medium"}
+{"issues":[{"number":83,"state":"CLOSED","title":"US-00006: Enhance Component Badge Placement in RTM Epic Headers"}],"label":"component/frontend"}
+{"issues":[{"number":83,"state":"CLOSED","title":"US-00006: Enhance Component Badge Placement in RTM Epic Headers"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":83,"state":"CLOSED","title":"US-00006: Enhance Component Badge Placement in RTM Epic Headers"}],"label":"release/v1.2"}
+{"issues":[{"number":94,"state":"OPEN","title":"US-00074: Predefined views \u0026 intelligent alerts"}],"label":"user-story"}
+{"issues":[{"number":94,"state":"OPEN","title":"US-00074: Predefined views \u0026 intelligent alerts"}],"label":"priority/medium"}
+{"issues":[{"number":94,"state":"OPEN","title":"US-00074: Predefined views \u0026 intelligent alerts"}],"label":"component/frontend"}
+{"issues":[{"number":94,"state":"OPEN","title":"US-00074: Predefined views \u0026 intelligent alerts"}],"label":"release/v1.2"}
+{"issues":[{"number":66,"state":"OPEN","title":"US-00002: Enhanced RTM Report UX/UI Design"}],"label":"user-story"}
+{"issues":[{"number":66,"state":"OPEN","title":"US-00002: Enhanced RTM Report UX/UI Design"}],"label":"priority/medium"}
+{"issues":[{"number":66,"state":"OPEN","title":"US-00002: Enhanced RTM Report UX/UI Design"}],"label":"epic/blog-content"}
+{"issues":[{"number":66,"state":"OPEN","title":"US-00002: Enhanced RTM Report UX/UI Design"}],"label":"status/backlog"}
+{"issues":[{"number":66,"state":"OPEN","title":"US-00002: Enhanced RTM Report UX/UI Design"}],"label":"component/frontend"}
+{"issues":[{"number":66,"state":"OPEN","title":"US-00002: Enhanced RTM Report UX/UI Design"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":66,"state":"OPEN","title":"US-00002: Enhanced RTM Report UX/UI Design"}],"label":"release/v1.2"}
+{"issues":[{"number":11,"state":"OPEN","title":"US-00017: Comprehensive testing and extensibility framework"}],"label":"user-story"}
+{"issues":[{"number":11,"state":"OPEN","title":"US-00017: Comprehensive testing and extensibility framework"}],"label":"priority/medium"}
+{"issues":[{"number":11,"state":"OPEN","title":"US-00017: Comprehensive testing and extensibility framework"}],"label":"epic/comment-system"}
+{"issues":[{"number":11,"state":"OPEN","title":"US-00017: Comprehensive testing and extensibility framework"}],"label":"epic/github-workflow"}
+{"issues":[{"number":11,"state":"OPEN","title":"US-00017: Comprehensive testing and extensibility framework"}],"label":"status/backlog"}
+{"issues":[{"number":11,"state":"OPEN","title":"US-00017: Comprehensive testing and extensibility framework"}],"label":"component/backend"}
+{"issues":[{"number":11,"state":"OPEN","title":"US-00017: Comprehensive testing and extensibility framework"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":11,"state":"OPEN","title":"US-00017: Comprehensive testing and extensibility framework"}],"label":"release/v1.2"}
+{"issues":[{"number":8,"state":"CLOSED","title":"US-00014: Document RTM link management process"}],"label":"user-story"}
+{"issues":[{"number":8,"state":"CLOSED","title":"US-00014: Document RTM link management process"}],"label":"priority/medium"}
+{"issues":[{"number":8,"state":"CLOSED","title":"US-00014: Document RTM link management process"}],"label":"epic/comment-system"}
+{"issues":[{"number":8,"state":"CLOSED","title":"US-00014: Document RTM link management process"}],"label":"epic/github-workflow"}
+{"issues":[{"number":8,"state":"CLOSED","title":"US-00014: Document RTM link management process"}],"label":"status/backlog"}
+{"issues":[{"number":8,"state":"CLOSED","title":"US-00014: Document RTM link management process"}],"label":"component/backend"}
+{"issues":[{"number":8,"state":"CLOSED","title":"US-00014: Document RTM link management process"}],"label":"release/v1.2"}
+{"issues":[{"number":6,"state":"OPEN","title":"US-00013: Auto-detect environment information for defect reports"}],"label":"user-story"}
+{"issues":[{"number":6,"state":"OPEN","title":"US-00013: Auto-detect environment information for defect reports"}],"label":"priority/medium"}
+{"issues":[{"number":6,"state":"OPEN","title":"US-00013: Auto-detect environment information for defect reports"}],"label":"epic/comment-system"}
+{"issues":[{"number":6,"state":"OPEN","title":"US-00013: Auto-detect environment information for defect reports"}],"label":"epic/github-workflow"}
+{"issues":[{"number":6,"state":"OPEN","title":"US-00013: Auto-detect environment information for defect reports"}],"label":"status/backlog"}
+{"issues":[{"number":6,"state":"OPEN","title":"US-00013: Auto-detect environment information for defect reports"}],"label":"component/frontend"}
+{"issues":[{"number":6,"state":"OPEN","title":"US-00013: Auto-detect environment information for defect reports"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":6,"state":"OPEN","title":"US-00013: Auto-detect environment information for defect reports"}],"label":"release/v1.2"}
+{"issues":[{"number":27,"state":"OPEN","title":"US-00030: GDPR sanitization strategy"}],"label":"user-story"}
+{"issues":[{"number":27,"state":"OPEN","title":"US-00030: GDPR sanitization strategy"}],"label":"priority/medium"}
+{"issues":[{"number":27,"state":"OPEN","title":"US-00030: GDPR sanitization strategy"}],"label":"epic/github-workflow"}
+{"issues":[{"number":27,"state":"OPEN","title":"US-00030: GDPR sanitization strategy"}],"label":"component/backend"}
+{"issues":[{"number":27,"state":"OPEN","title":"US-00030: GDPR sanitization strategy"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":27,"state":"OPEN","title":"US-00030: GDPR sanitization strategy"}],"label":"release/v1.2"}
+{"issues":[{"number":27,"state":"OPEN","title":"US-00030: GDPR sanitization strategy"}],"label":"epic/github-project"}
+{"issues":[{"number":26,"state":"CLOSED","title":"US-00029: Documentation and user guides"},{"number":24,"state":"CLOSED","title":"US-00027: GitHub issue creation integration"},{"number":23,"state":"CLOSED","title":"US-00026: Log-failure association system"},{"number":21,"state":"CLOSED","title":"US-00024: Coverage statistics integration"},{"number":15,"state":"CLOSED","title":"US-00019: Comprehensive GitHub Issue Creation Guide"}],"label":"user-story"}
+{"issues":[{"number":26,"state":"CLOSED","title":"US-00029: Documentation and user guides"},{"number":24,"state":"CLOSED","title":"US-00027: GitHub issue creation integration"},{"number":23,"state":"CLOSED","title":"US-00026: Log-failure association system"},{"number":21,"state":"CLOSED","title":"US-00024: Coverage statistics integration"},{"number":15,"state":"CLOSED","title":"US-00019: Comprehensive GitHub Issue Creation Guide"}],"label":"priority/medium"}
+{"issues":[{"number":26,"state":"CLOSED","title":"US-00029: Documentation and user guides"},{"number":24,"state":"CLOSED","title":"US-00027: GitHub issue creation integration"},{"number":23,"state":"CLOSED","title":"US-00026: Log-failure association system"},{"number":21,"state":"CLOSED","title":"US-00024: Coverage statistics integration"},{"number":15,"state":"CLOSED","title":"US-00019: Comprehensive GitHub Issue Creation Guide"}],"label":"epic/github-workflow"}
+{"issues":[{"number":26,"state":"CLOSED","title":"US-00029: Documentation and user guides"},{"number":24,"state":"CLOSED","title":"US-00027: GitHub issue creation integration"},{"number":23,"state":"CLOSED","title":"US-00026: Log-failure association system"},{"number":21,"state":"CLOSED","title":"US-00024: Coverage statistics integration"},{"number":15,"state":"CLOSED","title":"US-00019: Comprehensive GitHub Issue Creation Guide"}],"label":"status/backlog"}
+{"issues":[{"number":26,"state":"CLOSED","title":"US-00029: Documentation and user guides"},{"number":24,"state":"CLOSED","title":"US-00027: GitHub issue creation integration"},{"number":23,"state":"CLOSED","title":"US-00026: Log-failure association system"},{"number":21,"state":"CLOSED","title":"US-00024: Coverage statistics integration"},{"number":15,"state":"CLOSED","title":"US-00019: Comprehensive GitHub Issue Creation Guide"}],"label":"component/backend"}
+{"issues":[{"number":26,"state":"CLOSED","title":"US-00029: Documentation and user guides"},{"number":24,"state":"CLOSED","title":"US-00027: GitHub issue creation integration"},{"number":23,"state":"CLOSED","title":"US-00026: Log-failure association system"},{"number":21,"state":"CLOSED","title":"US-00024: Coverage statistics integration"},{"number":15,"state":"CLOSED","title":"US-00019: Comprehensive GitHub Issue Creation Guide"}],"label":"release/v1.2"}
+{"issues":[{"number":26,"state":"CLOSED","title":"US-00029: Documentation and user guides"},{"number":24,"state":"CLOSED","title":"US-00027: GitHub issue creation integration"},{"number":23,"state":"CLOSED","title":"US-00026: Log-failure association system"},{"number":21,"state":"CLOSED","title":"US-00024: Coverage statistics integration"},{"number":15,"state":"CLOSED","title":"US-00019: Comprehensive GitHub Issue Creation Guide"}],"label":"epic/github-project"}
+{"issues":[{"number":69,"state":"OPEN","title":"US-00005: Complete cleanup of legacy RTM system files and infrastructure"}],"label":"user-story"}
+{"issues":[{"number":69,"state":"OPEN","title":"US-00005: Complete cleanup of legacy RTM system files and infrastructure"}],"label":"priority/medium"}
+{"issues":[{"number":69,"state":"OPEN","title":"US-00005: Complete cleanup of legacy RTM system files and infrastructure"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":69,"state":"OPEN","title":"US-00005: Complete cleanup of legacy RTM system files and infrastructure"}],"label":"release/v1.2"}
+{"issues":[{"number":82,"state":"OPEN","title":"US-00005: Implement RTM Component Data API and Filtering"},{"number":78,"state":"OPEN","title":"US-00012: Bidirectional Status Synchronization"},{"number":76,"state":"OPEN","title":"US-00035: Implement Component Inheritance System"}],"label":"user-story"}
+{"issues":[{"number":82,"state":"OPEN","title":"US-00005: Implement RTM Component Data API and Filtering"},{"number":78,"state":"OPEN","title":"US-00012: Bidirectional Status Synchronization"},{"number":76,"state":"OPEN","title":"US-00035: Implement Component Inheritance System"}],"label":"priority/medium"}
+{"issues":[{"number":82,"state":"OPEN","title":"US-00005: Implement RTM Component Data API and Filtering"},{"number":78,"state":"OPEN","title":"US-00012: Bidirectional Status Synchronization"},{"number":76,"state":"OPEN","title":"US-00035: Implement Component Inheritance System"}],"label":"status/backlog"}
+{"issues":[{"number":82,"state":"OPEN","title":"US-00005: Implement RTM Component Data API and Filtering"},{"number":78,"state":"OPEN","title":"US-00012: Bidirectional Status Synchronization"},{"number":76,"state":"OPEN","title":"US-00035: Implement Component Inheritance System"}],"label":"component/backend"}
+{"issues":[{"number":82,"state":"OPEN","title":"US-00005: Implement RTM Component Data API and Filtering"},{"number":78,"state":"OPEN","title":"US-00012: Bidirectional Status Synchronization"},{"number":76,"state":"OPEN","title":"US-00035: Implement Component Inheritance System"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":82,"state":"OPEN","title":"US-00005: Implement RTM Component Data API and Filtering"},{"number":78,"state":"OPEN","title":"US-00012: Bidirectional Status Synchronization"},{"number":76,"state":"OPEN","title":"US-00035: Implement Component Inheritance System"}],"label":"release/v1.2"}
+{"issues":[{"number":79,"state":"OPEN","title":"US-00013: Implement Blocked Flag System for All Issue Types"},{"number":67,"state":"OPEN","title":"US-00003: Implement Comprehensive RTM Search Functionality"},{"number":61,"state":"OPEN","title":"US-00061: Enhanced RTM HTML report with improved traceability"}],"label":"user-story"}
+{"issues":[{"number":79,"state":"OPEN","title":"US-00013: Implement Blocked Flag System for All Issue Types"},{"number":67,"state":"OPEN","title":"US-00003: Implement Comprehensive RTM Search Functionality"},{"number":61,"state":"OPEN","title":"US-00061: Enhanced RTM HTML report with improved traceability"}],"label":"priority/medium"}
+{"issues":[{"number":79,"state":"OPEN","title":"US-00013: Implement Blocked Flag System for All Issue Types"},{"number":67,"state":"OPEN","title":"US-00003: Implement Comprehensive RTM Search Functionality"},{"number":61,"state":"OPEN","title":"US-00061: Enhanced RTM HTML report with improved traceability"}],"label":"status/backlog"}
+{"issues":[{"number":79,"state":"OPEN","title":"US-00013: Implement Blocked Flag System for All Issue Types"},{"number":67,"state":"OPEN","title":"US-00003: Implement Comprehensive RTM Search Functionality"},{"number":61,"state":"OPEN","title":"US-00061: Enhanced RTM HTML report with improved traceability"}],"label":"component/backend"}
+{"issues":[{"number":79,"state":"OPEN","title":"US-00013: Implement Blocked Flag System for All Issue Types"},{"number":67,"state":"OPEN","title":"US-00003: Implement Comprehensive RTM Search Functionality"},{"number":61,"state":"OPEN","title":"US-00061: Enhanced RTM HTML report with improved traceability"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":79,"state":"OPEN","title":"US-00013: Implement Blocked Flag System for All Issue Types"},{"number":67,"state":"OPEN","title":"US-00003: Implement Comprehensive RTM Search Functionality"},{"number":61,"state":"OPEN","title":"US-00061: Enhanced RTM HTML report with improved traceability"}],"label":"release/v1.2"}
+{"issues":[{"number":79,"state":"OPEN","title":"US-00013: Implement Blocked Flag System for All Issue Types"},{"number":67,"state":"OPEN","title":"US-00003: Implement Comprehensive RTM Search Functionality"},{"number":61,"state":"OPEN","title":"US-00061: Enhanced RTM HTML report with improved traceability"}],"label":"epic/rtm"}
+{"issues":[{"number":86,"state":"OPEN","title":"US-00034: Enhance RTM Matrix Filters with Dropdown and Multiple Criteria Selection"},{"number":85,"state":"CLOSED","title":"US-00008: Enable Horizontal Scrolling for RTM Matrix Tables"}],"label":"user-story"}
+{"issues":[{"number":86,"state":"OPEN","title":"US-00034: Enhance RTM Matrix Filters with Dropdown and Multiple Criteria Selection"},{"number":85,"state":"CLOSED","title":"US-00008: Enable Horizontal Scrolling for RTM Matrix Tables"}],"label":"priority/medium"}
+{"issues":[{"number":86,"state":"OPEN","title":"US-00034: Enhance RTM Matrix Filters with Dropdown and Multiple Criteria Selection"},{"number":85,"state":"CLOSED","title":"US-00008: Enable Horizontal Scrolling for RTM Matrix Tables"}],"label":"status/backlog"}
+{"issues":[{"number":86,"state":"OPEN","title":"US-00034: Enhance RTM Matrix Filters with Dropdown and Multiple Criteria Selection"},{"number":85,"state":"CLOSED","title":"US-00008: Enable Horizontal Scrolling for RTM Matrix Tables"}],"label":"component/frontend"}
+{"issues":[{"number":86,"state":"OPEN","title":"US-00034: Enhance RTM Matrix Filters with Dropdown and Multiple Criteria Selection"},{"number":85,"state":"CLOSED","title":"US-00008: Enable Horizontal Scrolling for RTM Matrix Tables"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":86,"state":"OPEN","title":"US-00034: Enhance RTM Matrix Filters with Dropdown and Multiple Criteria Selection"},{"number":85,"state":"CLOSED","title":"US-00008: Enable Horizontal Scrolling for RTM Matrix Tables"}],"label":"release/v1.2"}
+{"issues":[{"number":99,"state":"OPEN","title":"US-00030: Visual Filtering Enhancement for Epic Dependencies Graph"},{"number":93,"state":"OPEN","title":"US-00073: Epic view with visual dependencies"}],"label":"user-story"}
+{"issues":[{"number":99,"state":"OPEN","title":"US-00030: Visual Filtering Enhancement for Epic Dependencies Graph"},{"number":93,"state":"OPEN","title":"US-00073: Epic view with visual dependencies"}],"label":"priority/medium"}
+{"issues":[{"number":99,"state":"OPEN","title":"US-00030: Visual Filtering Enhancement for Epic Dependencies Graph"},{"number":93,"state":"OPEN","title":"US-00073: Epic view with visual dependencies"}],"label":"status/backlog"}
+{"issues":[{"number":99,"state":"OPEN","title":"US-00030: Visual Filtering Enhancement for Epic Dependencies Graph"},{"number":93,"state":"OPEN","title":"US-00073: Epic view with visual dependencies"}],"label":"component/frontend"}
+{"issues":[{"number":99,"state":"OPEN","title":"US-00030: Visual Filtering Enhancement for Epic Dependencies Graph"},{"number":93,"state":"OPEN","title":"US-00073: Epic view with visual dependencies"}],"label":"release/v1.2"}
+{"issues":[{"number":77,"state":"OPEN","title":"US-00010: Automated Component Label Management"}],"label":"user-story"}
+{"issues":[{"number":77,"state":"OPEN","title":"US-00010: Automated Component Label Management"}],"label":"priority/medium"}
+{"issues":[{"number":77,"state":"OPEN","title":"US-00010: Automated Component Label Management"}],"label":"status/backlog"}
+{"issues":[{"number":77,"state":"OPEN","title":"US-00010: Automated Component Label Management"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":77,"state":"OPEN","title":"US-00010: Automated Component Label Management"}],"label":"release/v1.2"}
+{"issues":[{"number":77,"state":"OPEN","title":"US-00010: Automated Component Label Management"}],"label":"component/ci-cd"}
+{"issues":[{"number":68,"state":"OPEN","title":"US-00004: Enhanced CLI Test Specification Support"}],"label":"user-story"}
+{"issues":[{"number":68,"state":"OPEN","title":"US-00004: Enhanced CLI Test Specification Support"}],"label":"priority/medium"}
+{"issues":[{"number":68,"state":"OPEN","title":"US-00004: Enhanced CLI Test Specification Support"}],"label":"status/backlog"}
+{"issues":[{"number":68,"state":"OPEN","title":"US-00004: Enhanced CLI Test Specification Support"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":68,"state":"OPEN","title":"US-00004: Enhanced CLI Test Specification Support"}],"label":"release/v1.2"}
+{"issues":[{"number":68,"state":"OPEN","title":"US-00004: Enhanced CLI Test Specification Support"}],"label":"component/ci-cd"}
+{"issues":[{"number":68,"state":"OPEN","title":"US-00004: Enhanced CLI Test Specification Support"}],"label":"epic/rtm"}
+{"issues":[{"number":81,"state":"OPEN","title":"US-00005: Design RTM Component Display UI and Responsive Layout"}],"label":"user-story"}
+{"issues":[{"number":81,"state":"OPEN","title":"US-00005: Design RTM Component Display UI and Responsive Layout"}],"label":"priority/medium"}
+{"issues":[{"number":81,"state":"OPEN","title":"US-00005: Design RTM Component Display UI and Responsive Layout"}],"label":"status/done"}
+{"issues":[{"number":81,"state":"OPEN","title":"US-00005: Design RTM Component Display UI and Responsive Layout"}],"label":"component/frontend"}
+{"issues":[{"number":81,"state":"OPEN","title":"US-00005: Design RTM Component Display UI and Responsive Layout"}],"label":"gdpr/personal-data"}
+{"issues":[{"number":81,"state":"OPEN","title":"US-00005: Design RTM Component Display UI and Responsive Layout"}],"label":"release/v1.2"}

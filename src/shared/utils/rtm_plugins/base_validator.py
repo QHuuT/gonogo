@@ -8,8 +8,8 @@ Related Issue: US-00017 - Comprehensive testing and extensibility framework
 Epic: EP-00005 - RTM Automation
 """
 
-from abc import ABC, abstractmethod
-from typing import Any, Dict, List
+from abc import abstractmethod
+from typing import Dict, List
 
 from . import RTMPlugin
 
@@ -131,13 +131,16 @@ class StandardValidator(BaseValidator):
         defined_epics = set(epics.keys())
         orphaned = defined_epics - referenced_epics
         if orphaned:
-            errors.append(f"Orphaned epics (not referenced): {sorted(orphaned)}")
+            errors.append(
+                f"Orphaned epics (not referenced): {sorted(orphaned)}"
+            )
 
         # Check for undefined epics
         undefined = referenced_epics - defined_epics
         if undefined:
             errors.append(
-                f"Undefined epics (referenced but not defined): {sorted(undefined)}"
+                f"Undefined epics (referenced but not defined): "
+                f"{sorted(undefined)}"
             )
 
         return errors
@@ -189,7 +192,9 @@ class FormatValidator(BaseValidator):
                 if next_line_idx < len(lines):
                     next_line = lines[next_line_idx]
                     if not next_line.startswith("|--"):
-                        errors.append("Table header not followed by separator line")
+                        errors.append(
+                            "Table header not followed by separator line"
+                        )
                 break
 
         if not table_headers_found:

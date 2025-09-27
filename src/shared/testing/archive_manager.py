@@ -11,14 +11,13 @@ Parent Epic: EP-00006 Test Logging and Reporting
 
 import gzip
 import json
-import os
 import shutil
 import sqlite3
 import zipfile
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -81,19 +80,19 @@ class TestArchiveManager:
         """Initialize the archive metadata database."""
         with sqlite3.connect(self.metadata_db) as conn:
             conn.execute(
-                """
+    """
                 CREATE TABLE IF NOT EXISTS archived_items (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    original_path TEXT NOT NULL,
-                    archive_path TEXT NOT NULL,
-                    file_type TEXT NOT NULL,
-                    original_size INTEGER NOT NULL,
-                    compressed_size INTEGER NOT NULL,
-                    created_date TEXT NOT NULL,
-                    archived_date TEXT NOT NULL,
-                    compression_ratio REAL NOT NULL,
-                    metadata TEXT NOT NULL
-                )
+    original_path TEXT NOT NULL,
+    archive_path TEXT NOT NULL,
+    file_type TEXT NOT NULL,
+    original_size INTEGER NOT NULL,
+    compressed_size INTEGER NOT NULL,
+    created_date TEXT NOT NULL,
+    archived_date TEXT NOT NULL,
+    compression_ratio REAL NOT NULL,
+    metadata TEXT NOT NULL
+)
             """
             )
 
@@ -101,47 +100,53 @@ class TestArchiveManager:
         """Get default retention policies for different file types."""
         return [
             RetentionPolicy(
-                file_pattern="*.html",
-                retention_days=90,
-                compress_after_days=14,
-                archive_location="reports/html",
-                max_size_mb=50,
-            ),
+    file_pattern="*.html",
+    retention_days=90,
+    compress_after_days=14,
+    archive_location="reports/html",
+    max_size_mb=50,
+    
+),
             RetentionPolicy(
-                file_pattern="*.json",
-                retention_days=180,
-                compress_after_days=30,
-                archive_location="reports/json",
-                max_size_mb=100,
-            ),
+    file_pattern="*.json",
+    retention_days=180,
+    compress_after_days=30,
+    archive_location="reports/json",
+    max_size_mb=100,
+    
+),
             RetentionPolicy(
-                file_pattern="*.log",
-                retention_days=60,
-                compress_after_days=7,
-                archive_location="logs",
-                max_size_mb=200,
-            ),
+    file_pattern="*.log",
+    retention_days=60,
+    compress_after_days=7,
+    archive_location="logs",
+    max_size_mb=200,
+    
+),
             RetentionPolicy(
-                file_pattern="*.db",
-                retention_days=365,
-                compress_after_days=90,
-                archive_location="databases",
-                max_size_mb=500,
-            ),
+    file_pattern="*.db",
+    retention_days=365,
+    compress_after_days=90,
+    archive_location="databases",
+    max_size_mb=500,
+    
+),
             RetentionPolicy(
-                file_pattern="*.py",
-                retention_days=30,
-                compress_after_days=7,
-                archive_location="scripts",
-                max_size_mb=10,
-            ),
+    file_pattern="*.py",
+    retention_days=30,
+    compress_after_days=7,
+    archive_location="scripts",
+    max_size_mb=10,
+    
+),
             RetentionPolicy(
-                file_pattern="*.md",
-                retention_days=120,
-                compress_after_days=21,
-                archive_location="reports/markdown",
-                max_size_mb=20,
-            ),
+    file_pattern="*.md",
+    retention_days=120,
+    compress_after_days=21,
+    archive_location="reports/markdown",
+    max_size_mb=20,
+    
+),
         ]
 
     def apply_retention_policies(self, dry_run: bool = True) -> Dict[str, Any]:
@@ -155,6 +160,7 @@ class TestArchiveManager:
             Summary of actions taken or would be taken
         """
         results = {
+    
             "processed_files": 0,
             "compressed_files": 0,
             "archived_files": 0,
@@ -162,7 +168,8 @@ class TestArchiveManager:
             "space_saved_mb": 0,
             "actions": [],
             "errors": [],
-        }
+        
+}
 
         # Process each directory with files
         for directory in ["reports", "logs"]:
@@ -182,8 +189,9 @@ class TestArchiveManager:
                             if action["type"] == "compress":
                                 results["compressed_files"] += 1
                                 results["space_saved_mb"] += action.get(
-                                    "space_saved_mb", 0
-                                )
+    "space_saved_mb",
+    0
+)
                             elif action["type"] == "archive":
                                 results["archived_files"] += 1
                             elif action["type"] == "delete":
@@ -216,9 +224,11 @@ class TestArchiveManager:
             if not dry_run:
                 file_path.unlink()
             return {
+    
                 "type": "delete",
                 "file": str(file_path),
-                "reason": f"Exceeded retention period ({policy.retention_days} days)",
+                "reason": f"Exceeded retention period ({policy.retention_days
+} days)",
                 "age_days": file_age_days,
             }
 
@@ -238,9 +248,11 @@ class TestArchiveManager:
                 space_saved = file_size_mb * 0.7  # Estimated 70% compression
 
             return {
+    
                 "type": "compress",
                 "file": str(file_path),
-                "reason": f"File older than {policy.compress_after_days} days",
+                "reason": f"File older than {policy.compress_after_days
+} days",
                 "age_days": file_age_days,
                 "space_saved_mb": space_saved,
             }
@@ -254,20 +266,26 @@ class TestArchiveManager:
                 archive_path = self._archive_file(file_path, policy)
             else:
                 archive_path = (
-                    self.archive_base / policy.archive_location / file_path.name
+                    self.archive_base
+                    / policy.archive_location
+                    / file_path.name
                 )
 
             return {
+    
                 "type": "archive",
                 "file": str(file_path),
                 "archive_path": str(archive_path),
-                "reason": f"File older than {policy.compress_after_days * 2} days",
+                "reason": f"File older than {policy.compress_after_days * 2
+} days",
                 "age_days": file_age_days,
             }
 
         return None
 
-    def _find_matching_policy(self, file_path: Path) -> Optional[RetentionPolicy]:
+    def _find_matching_policy(
+        self, file_path: Path
+    ) -> Optional[RetentionPolicy]:
         """Find the retention policy that matches a file."""
         import fnmatch
 
@@ -312,8 +330,11 @@ class TestArchiveManager:
         return archive_path
 
     def _store_archive_metadata(
-        self, original_path: Path, archive_path: Path, policy: RetentionPolicy
-    ):
+    self,
+    original_path: Path,
+    archive_path: Path,
+    policy: RetentionPolicy
+):
         """Store metadata about an archived file."""
         original_size = 0
         try:
@@ -327,10 +348,12 @@ class TestArchiveManager:
         compressed_size = archive_stat.st_size
 
         metadata = {
+    
             "policy": policy.file_pattern,
             "retention_days": policy.retention_days,
             "archive_reason": "automatic_policy",
-        }
+        
+}
 
         archive_item = ArchiveItem(
             original_path=str(original_path),
@@ -348,10 +371,18 @@ class TestArchiveManager:
 
         with sqlite3.connect(self.metadata_db) as conn:
             conn.execute(
-                """
+    """
                 INSERT INTO archived_items
-                (original_path, archive_path, file_type, original_size, compressed_size,
-                 created_date, archived_date, compression_ratio, metadata)
+                (original_path,
+    archive_path,
+    file_type,
+    original_size,
+    compressed_size,
+    created_date,
+    archived_date,
+    compression_ratio,
+    metadata
+)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
                 (
@@ -368,13 +399,14 @@ class TestArchiveManager:
             )
 
     def search_archives(
-        self,
-        query: Optional[str] = None,
-        file_type: Optional[str] = None,
-        date_from: Optional[datetime] = None,
-        date_to: Optional[datetime] = None,
-        limit: int = 50,
-    ) -> List[ArchiveItem]:
+    self,
+    query: Optional[str] = None,
+    file_type: Optional[str] = None,
+    date_from: Optional[datetime] = None,
+    date_to: Optional[datetime] = None,
+    limit: int = 50,
+    
+) -> List[ArchiveItem]:
         """
         Search archived items with various filters.
 
@@ -415,14 +447,17 @@ class TestArchiveManager:
             conn.row_factory = sqlite3.Row
             for row in conn.execute(sql, params):
                 results.append(
-                    ArchiveItem(
+    ArchiveItem(
                         original_path=row["original_path"],
-                        archive_path=row["archive_path"],
-                        file_type=row["file_type"],
-                        original_size=row["original_size"],
-                        compressed_size=row["compressed_size"],
-                        created_date=datetime.fromisoformat(row["created_date"]),
-                        archived_date=datetime.fromisoformat(row["archived_date"]),
+    archive_path=row["archive_path"],
+    file_type=row["file_type"],
+    original_size=row["original_size"],
+    compressed_size=row["compressed_size"],
+    created_date=datetime.fromisoformat(row["created_date"]
+),
+                        archived_date=datetime.fromisoformat(
+                            row["archived_date"]
+                        ),
                         compression_ratio=row["compression_ratio"],
                         metadata=json.loads(row["metadata"]),
                     )
@@ -438,7 +473,8 @@ class TestArchiveManager:
 
         Args:
             archive_path: Path to the archived file
-            destination: Where to restore the file (defaults to original location)
+            destination: Where to restore the file (defaults to original
+                location)
 
         Returns:
             Path where the file was restored
@@ -504,7 +540,10 @@ class TestArchiveManager:
 
         if old_files_count > 10:
             recommendations.append(
-                f"Consider archiving {old_files_count} old files to save {old_files_size/(1024*1024):.1f} MB"
+                (
+    f"Consider archiving {old_files_count} old "
+    f"files to save {old_files_size/(1024*1024):.1f} MB"
+)
             )
 
         if compression_savings < total_size * 0.1:
@@ -514,17 +553,20 @@ class TestArchiveManager:
 
         if total_size > 1024 * 1024 * 1024:  # > 1GB
             recommendations.append(
-                "Large storage usage detected - consider more aggressive retention policies"
+                "Large storage usage detected - consider more aggressive "
+                "retention policies"
             )
 
         if compressed_files / total_files < 0.2 and total_files > 50:
             recommendations.append(
-                "Low compression rate - review file types and compression policies"
+                "Low compression rate - review file types and compression "
+                "policies"
             )
 
         return StorageMetrics(
-            total_files=total_files,
-            total_size_mb=total_size / (1024 * 1024),
+    total_files=total_files,
+    total_size_mb=total_size / (1024 * 1024
+),
             compressed_files=compressed_files,
             compression_savings_mb=compression_savings / (1024 * 1024),
             old_files_count=old_files_count,
@@ -532,7 +574,9 @@ class TestArchiveManager:
             recommendations=recommendations,
         )
 
-    def create_archive_bundle(self, file_patterns: List[str], bundle_name: str) -> Path:
+    def create_archive_bundle(
+        self, file_patterns: List[str], bundle_name: str
+    ) -> Path:
         """
         Create a compressed bundle of files matching patterns.
 
@@ -561,7 +605,9 @@ class TestArchiveManager:
 
         if files_added == 0:
             bundle_path.unlink()  # Remove empty archive
-            raise ValueError(f"No files found matching patterns: {file_patterns}")
+            raise ValueError(
+                f"No files found matching patterns: {file_patterns}"
+            )
 
         return bundle_path
 
@@ -576,10 +622,15 @@ class TestArchiveManager:
             Cron job configuration string
         """
         script_path = (
-            Path(__file__).parent.parent.parent.parent / "tools" / "archive_cleanup.py"
+            Path(__file__).parent.parent.parent.parent
+            / "tools"
+            / "archive_cleanup.py"
         )
 
-        cron_command = f"{cron_schedule} cd {self.base_path.parent} && python {script_path} --apply 2>&1 | logger -t archive_cleanup"
+        cron_command = (
+    f"{cron_schedule} cd {self.base_path.parent} && python {script_path} "
+    f"--apply 2>&1 | logger -t archive_cleanup"
+)
 
         return cron_command
 
@@ -589,11 +640,13 @@ class TestArchiveManager:
             output_path = self.base_path / "archive_config.json"
 
         config = {
+    
             "base_path": str(self.base_path),
             "archive_base": str(self.archive_base),
             "policies": [asdict(policy) for policy in self.policies],
             "generated_at": datetime.now().isoformat(),
-        }
+        
+}
 
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=2, ensure_ascii=False)
@@ -606,5 +659,6 @@ class TestArchiveManager:
             config = json.load(f)
 
         self.policies = [
-            RetentionPolicy(**policy_data) for policy_data in config.get("policies", [])
+            RetentionPolicy(**policy_data)
+            for policy_data in config.get("policies", [])
         ]

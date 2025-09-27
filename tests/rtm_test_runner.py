@@ -16,7 +16,6 @@ Usage:
 """
 
 import argparse
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -141,6 +140,9 @@ class RTMTestRunner:
             sys.path.insert(0, str(self.src_dir))
             from shared.utils.rtm_link_generator import RTMLinkGenerator
             from shared.utils.rtm_plugins import PluginManager
+
+            # Mark imports as used - testing import capability
+            _ = (RTMLinkGenerator, PluginManager)
 
             print("✅ RTM modules can be imported")
         except ImportError as e:

@@ -217,7 +217,9 @@ def test_function_without_marks():
             test_metadata = self.discovery._analyze_test_file(tmp_path, "unit")
 
             assert len(test_metadata) == 1
-            assert test_metadata[0]["test_function_name"] == "test_function_without_marks"
+            assert (
+                test_metadata[0]["test_function_name"] == "test_function_without_marks"
+            )
             # Should NOT find any references when there are no pytest marks
             assert test_metadata[0]["epic_references"] == []
             assert test_metadata[0]["user_story_references"] == []

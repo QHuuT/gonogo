@@ -7,7 +7,9 @@ import pytest
 
 from src.be.api.rtm import calculate_dashboard_summary
 
-DEMO_PATH = Path(__file__).resolve().parents[2] / "demo" / "multipersona_dashboard_demo.json"
+DEMO_PATH = (
+    Path(__file__).resolve().parents[2] / "demo" / "multipersona_dashboard_demo.json"
+)
 
 
 def load_demo_dataset():
@@ -38,23 +40,27 @@ class TestDashboardPersonaDemo:
         for key, expected_value in expected.items():
             actual_value = summary[key]
             if isinstance(expected_value, float):
-                assert actual_value == pytest.approx(expected_value, rel=1e-3), (
-                    f"Unexpected {key} for {persona}: got {actual_value}, expected {expected_value}"
-                )
+                assert actual_value == pytest.approx(
+                    expected_value, rel=1e-3
+                ), f"Unexpected {key} for {persona}: got {actual_value}, expected {expected_value}"
             else:
-                assert actual_value == expected_value, (
-                    f"Unexpected {key} for {persona}: got {actual_value}, expected {expected_value}"
-                )
+                assert (
+                    actual_value == expected_value
+                ), f"Unexpected {key} for {persona}: got {actual_value}, expected {expected_value}"
 
     def test_demo_dataset_covers_velocity_and_scope_dimensions(self):
         pm_summary = calculate_dashboard_summary(self.epics, "PM")
         po_summary = calculate_dashboard_summary(self.epics, "PO")
 
         assert "average_velocity_per_member" in pm_summary
-        assert pm_summary["average_velocity_per_member"] == pytest.approx(8.33, rel=1e-3)
+        assert pm_summary["average_velocity_per_member"] == pytest.approx(
+            8.33, rel=1e-3
+        )
 
         assert "average_scope_creep_percentage" in po_summary
-        assert po_summary["average_scope_creep_percentage"] == pytest.approx(17.3, rel=1e-3)
+        assert po_summary["average_scope_creep_percentage"] == pytest.approx(
+            17.3, rel=1e-3
+        )
 
     def test_demo_dataset_captures_quality_dimensions(self):
         qa_summary = calculate_dashboard_summary(self.epics, "QA")

@@ -58,9 +58,9 @@ class TestInputValidation:
                     "database error",
                     "table doesn't exist",
                     "column doesn't exist",
-                    "near \"drop\"",
-                    "near \"select\"",
-                    "near \"union\"",
+                    'near "drop"',
+                    'near "select"',
+                    'near "union"',
                     "sqlite_master",
                     "information_schema",
                     "show tables",
@@ -69,7 +69,9 @@ class TestInputValidation:
                 ]
 
                 for indicator in sql_injection_indicators:
-                    assert indicator not in response_text, f"SQL injection vulnerability detected: {indicator} in response"
+                    assert (
+                        indicator not in response_text
+                    ), f"SQL injection vulnerability detected: {indicator} in response"
 
                 # Legitimate responses from health endpoints should NOT be flagged
                 # Health endpoints can legitimately contain database status info
@@ -79,7 +81,9 @@ class TestInputValidation:
 
                 for dangerous_part in dangerous_payload_parts:
                     if dangerous_part in response_text:
-                        assert False, f"SQL injection payload reflected in response: {dangerous_part} from payload {payload}"
+                        assert (
+                            False
+                        ), f"SQL injection payload reflected in response: {dangerous_part} from payload {payload}"
 
     @pytest.mark.component("security")
     def test_sql_injection_detection_logic_regression(self, client: TestClient):
@@ -96,9 +100,9 @@ class TestInputValidation:
         # REGRESSION: Do NOT flag legitimate system responses that contain database terms
         legitimate_database_terms = [
             "database",  # Database status is legitimate in health checks
-            "sqlite",    # Database type is legitimate system info
-            "gonogo.db", # Database filename is legitimate
-            "healthy",   # Health status is legitimate
+            "sqlite",  # Database type is legitimate system info
+            "gonogo.db",  # Database filename is legitimate
+            "healthy",  # Health status is legitimate
         ]
 
         # These should NOT cause test failures in health endpoints
@@ -117,8 +121,12 @@ class TestInputValidation:
 
         # Should NOT reflect the malicious payload back
         malicious_text = str(malicious_response.json()).lower()
-        assert "drop table" not in malicious_text, "SQL injection payload should not be reflected"
-        assert "' or '1'='1" not in malicious_text, "SQL injection payload should not be reflected"
+        assert (
+            "drop table" not in malicious_text
+        ), "SQL injection payload should not be reflected"
+        assert (
+            "' or '1'='1" not in malicious_text
+        ), "SQL injection payload should not be reflected"
 
     @pytest.mark.component("security")
     def test_template_injection_prevention(self, client: TestClient):
@@ -160,7 +168,11 @@ class TestInputValidation:
                 response = client.get(f"/static/{payload}")
 
                 # Should not allow access to system files
-                assert response.status_code in [400, 403, 404], f"Path traversal payload {payload} should be blocked with error status"
+                assert response.status_code in [
+                    400,
+                    403,
+                    404,
+                ], f"Path traversal payload {payload} should be blocked with error status"
 
                 if response.status_code == 200:
                     # Should not return system file content
@@ -176,12 +188,17 @@ class TestInputValidation:
                     ]
 
                     for indicator in system_indicators:
-                        assert indicator not in content, f"System file content detected for payload: {payload}"
+                        assert (
+                            indicator not in content
+                        ), f"System file content detected for payload: {payload}"
 
             except ValueError as e:
                 # Path resolution errors (like "Paths don't have the same drive") indicate
                 # successful path traversal prevention at the OS/framework level
-                if "Paths don't have the same drive" in str(e) or "common" in str(e).lower():
+                if (
+                    "Paths don't have the same drive" in str(e)
+                    or "common" in str(e).lower()
+                ):
                     # This is expected behavior - the malformed path was caught and prevented
                     continue
                 else:
@@ -191,10 +208,14 @@ class TestInputValidation:
                 # Other exceptions could indicate successful prevention or unexpected errors
                 # For security testing, we'll treat unhandled exceptions as prevention success
                 # but log the specific error for debugging
-                assert False, f"Unexpected exception for payload {payload}: {type(e).__name__}: {e}"
+                assert (
+                    False
+                ), f"Unexpected exception for payload {payload}: {type(e).__name__}: {e}"
 
     @pytest.mark.component("security")
-    def test_path_traversal_windows_path_resolution_regression(self, client: TestClient):
+    def test_path_traversal_windows_path_resolution_regression(
+        self, client: TestClient
+    ):
         """Regression test: Ensure path traversal test handles Windows path resolution errors gracefully."""
 
         # This specific payload caused "Paths don't have the same drive" ValueError on Windows
@@ -205,34 +226,52 @@ class TestInputValidation:
         try:
             response = client.get(f"/static/{problematic_payload}")
             # If we get a response, it should be an error status (successful prevention)
-            assert response.status_code in [400, 403, 404], "Path traversal should be prevented with error status"
+            assert response.status_code in [
+                400,
+                403,
+                404,
+            ], "Path traversal should be prevented with error status"
         except ValueError as e:
             # This is the expected behavior on Windows - path resolution error indicates successful prevention
-            assert "Paths don't have the same drive" in str(e) or "common" in str(e).lower(), f"Unexpected ValueError: {e}"
+            assert (
+                "Paths don't have the same drive" in str(e)
+                or "common" in str(e).lower()
+            ), f"Unexpected ValueError: {e}"
             # This is successful prevention - the malformed path was caught
         except Exception as e:
             # Any other exception should be investigated
-            assert False, f"Unexpected exception type for Windows path resolution: {type(e).__name__}: {e}"
+            assert (
+                False
+            ), f"Unexpected exception type for Windows path resolution: {type(e).__name__}: {e}"
 
         # Additional edge cases that could cause similar path resolution issues
         edge_case_payloads = [
             "....\\\\....\\\\....\\\\",  # Windows backslashes variant
-            "..../..../..../",         # Mixed slashes variant
-            "....\\..../....\\",       # Mixed backslash/forward slash
+            "..../..../..../",  # Mixed slashes variant
+            "....\\..../....\\",  # Mixed backslash/forward slash
         ]
 
         for payload in edge_case_payloads:
             try:
                 response = client.get(f"/static/{payload}")
-                assert response.status_code in [400, 403, 404], f"Edge case payload {payload} should be blocked"
+                assert response.status_code in [
+                    400,
+                    403,
+                    404,
+                ], f"Edge case payload {payload} should be blocked"
             except ValueError as e:
                 # Path resolution errors are acceptable (successful prevention)
-                if "Paths don't have the same drive" in str(e) or "common" in str(e).lower():
+                if (
+                    "Paths don't have the same drive" in str(e)
+                    or "common" in str(e).lower()
+                ):
                     continue  # Expected behavior
                 else:
                     assert False, f"Unexpected ValueError for payload {payload}: {e}"
             except Exception as e:
-                assert False, f"Unexpected exception for edge case {payload}: {type(e).__name__}: {e}"
+                assert (
+                    False
+                ), f"Unexpected exception for edge case {payload}: {type(e).__name__}: {e}"
 
     @pytest.mark.component("security")
     def test_command_injection_prevention(self, client: TestClient):

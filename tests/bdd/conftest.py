@@ -4,7 +4,7 @@ BDD test configuration and fixtures for pytest-bdd.
 
 import pytest
 from fastapi.testclient import TestClient
-from pytest_bdd import given, parsers, then, when
+from pytest_bdd import given
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 

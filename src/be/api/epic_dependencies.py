@@ -10,7 +10,7 @@ Parent Epic: EP-00010 - Dashboard de Traçabilité Multi-Persona
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict
 from pydantic import BaseModel, Field, ConfigDict
 
 from ..database import get_db_session

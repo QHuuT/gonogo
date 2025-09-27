@@ -11,9 +11,9 @@ Related Issues:
 Parent Epic: EP-00010 - Multi-persona traceability dashboard
 """
 
-import pytest
-import requests
 import time
+
+import pytest
 from fastapi.testclient import TestClient
 
 from src.be.main import app
@@ -38,7 +38,9 @@ class TestMetricsAPIRegressionIntegration:
         response = client.get("/api/rtm/dashboard/metrics?persona=PM")
 
         # This was returning 500 before the fix
-        assert response.status_code == 200, f"Expected 200 but got {response.status_code}: {response.text}"
+        assert (
+            response.status_code == 200
+        ), f"Expected 200 but got {response.status_code}: {response.text}"
 
         data = response.json()
         assert data["persona"] == "PM"
@@ -49,7 +51,9 @@ class TestMetricsAPIRegressionIntegration:
         """Test that PO persona metrics API returns 200, not 500."""
         response = client.get("/api/rtm/dashboard/metrics?persona=PO")
 
-        assert response.status_code == 200, f"Expected 200 but got {response.status_code}: {response.text}"
+        assert (
+            response.status_code == 200
+        ), f"Expected 200 but got {response.status_code}: {response.text}"
 
         data = response.json()
         assert data["persona"] == "PO"
@@ -58,7 +62,9 @@ class TestMetricsAPIRegressionIntegration:
         """Test that QA persona metrics API returns 200, not 500."""
         response = client.get("/api/rtm/dashboard/metrics?persona=QA")
 
-        assert response.status_code == 200, f"Expected 200 but got {response.status_code}: {response.text}"
+        assert (
+            response.status_code == 200
+        ), f"Expected 200 but got {response.status_code}: {response.text}"
 
         data = response.json()
         assert data["persona"] == "QA"
@@ -122,8 +128,12 @@ class TestMetricsAPIRegressionIntegration:
         personas = ["PM", "PO", "QA"]
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-            futures = [executor.submit(get_persona_metrics, persona) for persona in personas]
-            results = [future.result() for future in concurrent.futures.as_completed(futures)]
+            futures = [
+                executor.submit(get_persona_metrics, persona) for persona in personas
+            ]
+            results = [
+                future.result() for future in concurrent.futures.as_completed(futures)
+            ]
 
         # All should succeed
         for persona, status_code in results:
@@ -246,6 +256,15 @@ class TestMultiPersonaDashboardIntegration:
             assert isinstance(metrics, dict)
 
             # Should have at least some performance indicators
-            performance_indicators = ["timeline", "velocity", "risk", "team_productivity"]
-            has_performance_data = any(indicator in metrics for indicator in performance_indicators)
-            assert has_performance_data, f"Epic {epic['epic_id']} missing performance indicators"
+            performance_indicators = [
+                "timeline",
+                "velocity",
+                "risk",
+                "team_productivity",
+            ]
+            has_performance_data = any(
+                indicator in metrics for indicator in performance_indicators
+            )
+            assert (
+                has_performance_data
+            ), f"Epic {epic['epic_id']} missing performance indicators"

@@ -95,6 +95,242 @@ Testing & Quality:
 - **Quality-First Approach**: Comprehensive testing, logging, and reporting
 - **GDPR by Design**: Privacy compliance built into every feature
 
+### 🔄 Critical Development Rules
+
+#### **📋 MANDATORY: User Story Review & Update Process**
+```bash
+# WHENEVER you complete ANY implementation work:
+
+# 1. Review the original user story acceptance criteria
+gh issue view [ISSUE-NUMBER]
+
+# 2. Update the GitHub issue with implementation status
+gh issue comment [ISSUE-NUMBER] --body "
+## Implementation Status Update
+
+**Completed Components:**
+- [x] Component 1: Description
+- [x] Component 2: Description
+- [ ] Component 3: Pending
+
+**Files Changed:**
+- src/be/services/new_service.py
+- tests/bdd/features/new_feature.feature
+- tools/new_tool.py
+
+**Acceptance Criteria Status:**
+- [x] Criterion 1: Completed
+- [x] Criterion 2: Completed
+- [ ] Criterion 3: In progress
+
+**Next Steps:** List any remaining work
+
+**Quality Gates:** All tests passing, code formatted
+"
+
+# 3. Update issue labels to reflect current status
+# IMPORTANT: Remove old status label before adding new one
+gh issue edit [ISSUE-NUMBER] --remove-label "status/backlog" --add-label "status/in-progress"
+# or (when completing work)
+gh issue edit [ISSUE-NUMBER] --remove-label "status/in-progress" --add-label "status/done"
+```
+
+#### **🧪 MANDATORY: Post-Implementation Testing Protocol**
+```bash
+# AFTER every implementation, you MUST run unit tests and fix ALL issues:
+
+# 1. Run unit tests and capture failures
+pytest tests/unit/ -v > quality/logs/post_implementation_test_$(date +%Y%m%d_%H%M%S).log 2>&1
+
+# 2. Check for test failures, errors, and warnings
+grep -E "(FAILED|ERROR|WARNING)" quality/logs/post_implementation_test_*.log
+
+# 3. If ANY failures found, you MUST fix them before proceeding:
+#    - Read the failure details
+#    - Fix the failing tests or code
+#    - Re-run tests until ALL pass
+#    - MANDATORY: Document fixes in debug reports (see template below)
+
+# 4. Run security and GDPR compliance tests
+pytest tests/security/ -v
+
+# 5. Run integration tests for affected components
+pytest tests/integration/ -v -k "component_name"
+
+# 6. Verify code quality standards (may reveal technical debt)
+black src/ tests/ && isort src/ tests/ && flake8 src/ tests/ && mypy src/
+
+# 7. Document any code quality issues in debug reports
+# - Use W- prefix for technical debt that doesn't block functionality
+# - Follow quality/debug_reports/README.md template structure
+# - Search existing reports first to avoid duplication
+
+# 8. CRITICAL: Syntax Validation Protocol (NEW - from F-20250927 debug report)
+# MANDATORY after ANY code modification, especially line length fixes:
+python -c "import ast; ast.parse(open('modified_file.py').read())"  # Immediate syntax check
+python -m pytest tests/regression/test_syntax_validation.py -v     # Comprehensive validation
+# PATTERN-SPECIFIC checks for vulnerable constructs:
+# - SQLAlchemy __table_args__: Check for extra closing parentheses
+# - F-string continuation: No literal \n in f"string"\n f"continuation"
+# - Regex patterns: Use rf"pattern" for escape sequences like \( \)
+
+# 9. CRITICAL: Safe Import Cleanup Protocol (from F-20250927 regression)
+# Before removing ANY import flagged by flake8 F401:
+flake8 src/ tests/ --select=F401  # Identify unused imports
+# For each flagged import, MANUALLY verify:
+grep -r "ImportName" path/to/file.py  # Check actual usage
+# Remove imports ONE FILE AT A TIME and test immediately:
+pytest path/to/test_file.py -v  # Prevent batch failures
+# NEVER batch-remove imports without individual verification
+
+# 10. Only proceed to commit when ALL tests pass and functional issues resolved
+# NOTE: Technical debt (W- warnings) can be documented for future resolution
+```
+
+#### **⚠️ Zero-Tolerance Policy**
+- **NO commits allowed with failing unit tests**
+- **NO commits allowed with syntax errors** (MANDATORY: ast.parse() validation)
+- **NO implementation considered complete without user story update**
+- **NO skipping of post-implementation testing protocol**
+- **NO batch refactoring without incremental syntax validation** (F-20250927 lesson)
+- **ALL functional failures must be fixed before proceeding**
+- **ALL syntax errors must be fixed immediately** (blocks all development)
+- **ALL warnings and errors must be addressed OR documented in debug reports**
+
+#### **📋 MANDATORY: Impact Analysis Before Automation**
+```bash
+# CRITICAL: Before implementing ANY automated solution, perform comprehensive impact analysis
+
+# 1. SCOPE ASSESSMENT (mandatory first step):
+# - Assess the number of files and lines affected
+# - Identify critical vs. non-critical files (e.g., rtm.py, main.py are critical)
+# - Map dependencies and potential cascade effects
+wc -l src/path/to/files  # Count lines in scope
+find src/ -name "*.py" | wc -l  # Count total files
+grep -r "pattern" src/ | wc -l  # Count occurrences to fix
+
+# 2. RISK ASSESSMENT:
+# - Test files: Lower risk, easier to fix if broken
+# - Core API files: High risk, complex syntax patterns
+# - Database models: Medium risk, ORM dependencies
+# - Service layers: High risk, business logic complexity
+echo "RISK LEVEL: [HIGH/MEDIUM/LOW] based on file criticality"
+
+# 3. CHOOSE APPROPRIATE STRATEGY:
+# LOW-MEDIUM IMPACT (< 50 violations, non-critical files):
+# - Automated script with comprehensive pattern matching
+# - Single batch execution with validation
+
+# HIGH IMPACT (> 100 violations, critical files like rtm.py):
+# - Manual fixes with targeted approach
+# - File-by-file validation
+# - Incremental verification
+
+# VERY HIGH IMPACT (core system files, complex syntax):
+# - Manual-only approach
+# - Individual line analysis
+# - Extensive testing after each change
+
+# 4. VALIDATION STRATEGY:
+# - Define rollback plan before starting
+# - Establish syntax validation checkpoints
+# - Plan incremental testing approach
+git stash  # Create rollback point
+python -c "import ast; ast.parse(open('file.py').read())"  # Syntax validation
+
+# 5. EXECUTION METHODOLOGY:
+# For HIGH IMPACT scenarios (like rtm.py with 121 violations):
+# - Process files in order of criticality (least critical first)
+# - Validate syntax after each file
+# - Keep fixes minimal and focused
+# - Document automation failures for manual resolution
+
+# LESSON LEARNED:
+# - rtm.py with 121 violations + automated script = syntax chaos
+# - Better approach: Manual fixes for critical files, automation for simple utilities
+# - ALWAYS verify syntax after automation: python -c "import ast; ast.parse(open('file.py').read())"
+
+# CRITICAL UPDATE (From F-20250927 Debug Report):
+# MANDATORY SYNTAX VALIDATION PROTOCOL for ALL refactoring:
+# 1. IMMEDIATE validation after each file modification:
+python -c "import ast; ast.parse(open('modified_file.py').read())"  # Per-file validation
+# 2. COMPREHENSIVE validation before proceeding:
+python -m pytest tests/regression/test_syntax_validation.py  # Full syntax regression test
+# 3. PATTERN-SPECIFIC vulnerabilities to check:
+# - SQLAlchemy __table_args__ tuple structure (no extra closing parentheses)
+# - F-string line continuation (no literal \n characters)
+# - Regex patterns with escapes (must use raw f-strings: rf"pattern")
+# 4. NEVER batch-modify without incremental validation - prevents systemic failures
+```
+
+#### **📋 MANDATORY: Debug Report Documentation**
+```bash
+# When ANY issues are found during testing, you MUST create debug reports:
+
+# 1. Use proper naming convention with F-/E-/W- prefixes:
+# F- (Failures): Test failures, critical errors, broken functionality
+# E- (Errors): Infrastructure errors, permission issues, system failures
+# W- (Warnings): Deprecation warnings, technical debt, future compatibility
+
+# 2. Follow the comprehensive template structure:
+# - See quality/debug_reports/README.md for complete template
+# - Include: Issue Summary, Root Cause Analysis, Solution, Prevention Measures
+# - Example: quality/debug_reports/W-20250927-post-implementation-code-quality-issues.md
+
+# 3. Search for existing reports first to avoid duplication:
+grep -r "similar issue" quality/debug_reports/
+ls quality/debug_reports/F-*  # Failure reports
+ls quality/debug_reports/E-*  # Error reports
+ls quality/debug_reports/W-*  # Warning reports
+
+# 4. Cross-reference related issues and document patterns
+
+# 5. Apply lessons learned to improve development workflow:
+# - Update prevention measures based on new patterns discovered
+# - Enhance documentation with new insights
+# - Propose process improvements for future implementations
+
+# CRITICAL: Import Cleanup Safety Protocol (From F-20250927 Debug Report)
+# NEVER trust flake8 F401 warnings blindly - always analyze first:
+
+# STEP 1: THOROUGH ANALYSIS of each import before any action
+flake8 path/to/file.py --select=F401  # Find flagged imports
+grep -r "ImportName" path/to/file.py  # Check if actually referenced in code
+# READ the full file context to understand import purpose
+
+# STEP 2: EVIDENCE-BASED DECISION
+# ONLY if import is NEVER referenced in the file: Remove the import
+# If import IS used somewhere in file: Remove noqa or mark as used
+# If import tests deprecation/behavior: Keep with noqa comment
+# If unsure: Mark as used with _ = ImportName rather than remove
+
+# STEP 3: IMMEDIATE VALIDATION after each change:
+pytest path/to/affected/test_file.py -v  # Prevent batch regression failures
+
+# CRITICAL: NEVER add noqa comments without confirming import is truly unused
+```
+
+#### **🔄 Technical Debt Management (Lessons from Debug Reports)**
+```bash
+# Key insight: Technical debt can coexist with functional correctness
+# W- (Warning) reports document issues that don't block delivery but need future attention
+
+# 1. Categorize issues appropriately:
+# F- (Failures): Must fix before proceeding - blocks functionality
+# E- (Errors): Must fix before proceeding - system errors
+# W- (Warnings): Document for future resolution - technical debt
+
+# 2. Comprehensive testing reveals broader issues:
+# - Code quality checks may expose codebase-wide technical debt
+# - Distinguish between new issues and pre-existing conditions
+# - Focus immediate fixes on functionality-blocking issues
+
+# 3. Implement prevention measures for future development:
+# - Pre-commit hooks for type checking and style validation
+# - Regular technical debt cleanup cycles
+# - Automated quality gates in CI/CD pipeline
+```
+
 ## 🚀 Complete Development Workflow
 
 ### 📋 Phase 1: Requirements & Issue Creation
@@ -171,6 +407,29 @@ pytest tests/ -v
 ```
 
 ### 🔍 Phase 3: Quality Assurance & Logging
+
+#### **Documentation Workflow After Debug Report Creation**
+```bash
+# MANDATORY: After creating any debug report, apply lessons learned to improve workflow
+
+# 1. Review debug report insights
+cat quality/debug_reports/[REPORT-NAME].md
+
+# 2. Update relevant documentation with lessons learned
+# - Update README.md with new prevention measures
+# - Enhance development workflow based on insights
+# - Document new patterns discovered
+
+# 3. Propose process improvements
+# - Add automated checks to prevent similar issues
+# - Update quality gates based on findings
+# - Enhance testing protocols if needed
+
+# 4. Cross-reference with existing documentation
+# - Link to related debug reports
+# - Update prevention frameworks
+# - Document systemic patterns
+```
 
 #### **Enhanced Test Execution with Automatic Logging & Failure Tagging**
 ```bash
@@ -294,9 +553,6 @@ Implements US-00018: User login with GDPR consent
 - Add GDPR consent handling
 - Update RTM with completion status
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 "
 
 # Push to remote
@@ -316,6 +572,7 @@ git push origin main
 - **Failure Analysis**: quality/reports/failure_analysis_report.html
 - **Coverage Reports**: quality/reports/coverage/
 - **Debug Reports**: quality/debug_reports/ (F-/E-/W- categorized: failures, errors, warnings)
+  - **Recent Critical Learning**: F-20250927-technical-debt-cleanup-test-regression.md (Import cleanup safety protocol)
 - **GitHub Issue Templates**: quality/reports/issue_template_*.md
 
 ### For Project Management
@@ -583,6 +840,7 @@ python tools/rtm-links.py validate
 - **Interactive Test Reports**: quality/reports/test_report.html
 - **Failure Analysis**: quality/reports/failure_analysis_report.html
 - **Debug Analysis Reports**: quality/debug_reports/ (F-/E-/W- categorized regression prevention & detailed debugging)
+  - **Import Cleanup Safety**: See F-20250927 debug report for critical safety protocols
 
 ### **🛠️ Common Commands**
 ```bash

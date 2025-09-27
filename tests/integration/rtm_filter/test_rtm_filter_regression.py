@@ -5,8 +5,6 @@ Ready for Robot Framework integration
 """
 
 import re
-import time
-from urllib.parse import parse_qs, urlparse
 
 import pytest
 import requests

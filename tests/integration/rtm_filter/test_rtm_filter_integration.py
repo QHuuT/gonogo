@@ -8,10 +8,7 @@ matches what the JavaScript expects.
 This ensures the fix works end-to-end.
 """
 
-import os
 import subprocess
-import tempfile
-import time
 from pathlib import Path
 
 import pytest

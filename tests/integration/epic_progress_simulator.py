@@ -8,8 +8,6 @@ Related Issue: US-00056 - GitHub Actions database integration
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
-from typing import List
-
 from src.be.models.traceability import Epic, UserStory
 
 

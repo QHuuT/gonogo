@@ -3,11 +3,11 @@ Pytest configuration and shared fixtures for GoNoGo blog tests.
 Following testing pyramid: Unit > Integration > E2E
 """
 
+import gc
 import os
 import tempfile
-import warnings
 import time
-import gc
+import warnings
 from typing import Generator
 
 import pytest
@@ -47,18 +47,22 @@ def _cleanup_temp_database(db_path: str) -> None:
         except PermissionError:
             if attempt < max_retries - 1:
                 # Calculate exponential backoff delay
-                delay = base_delay * (2 ** attempt)
+                delay = base_delay * (2**attempt)
                 time.sleep(delay)
                 continue
             else:
                 # Final attempt failed - this is expected occasionally on Windows
                 # Use a more specific and less alarming log message
                 import logging
+
                 logger = logging.getLogger(__name__)
-                logger.debug(f"Temporary database cleanup deferred (Windows file locking): {os.path.basename(db_path)}")
+                logger.debug(
+                    f"Temporary database cleanup deferred (Windows file locking): {os.path.basename(db_path)}"
+                )
 
                 # Only register for cleanup at exit if we absolutely can't delete now
                 import atexit
+
                 atexit.register(_delayed_cleanup, db_path)
                 return
         except (OSError, FileNotFoundError):
@@ -81,8 +85,14 @@ def pytest_configure(config):
     # Only apply filters if FILTER_EXTERNAL_WARNINGS environment variable is set
     if os.getenv("FILTER_EXTERNAL_WARNINGS", "false").lower() == "true":
         # Filter out external dependency warnings while keeping our code warnings
-        warnings.filterwarnings("ignore", ".*datetime.utcnow.*", DeprecationWarning, "sqlalchemy.*")
-        warnings.filterwarnings("ignore", ".*asyncio_default_fixture_loop_scope.*", module="pytest_asyncio.*")
+        warnings.filterwarnings(
+            "ignore", ".*datetime.utcnow.*", DeprecationWarning, "sqlalchemy.*"
+        )
+        warnings.filterwarnings(
+            "ignore",
+            ".*asyncio_default_fixture_loop_scope.*",
+            module="pytest_asyncio.*",
+        )
         warnings.filterwarnings("ignore", ".*", DeprecationWarning, "site-packages.*")
 
 
@@ -93,7 +103,8 @@ def pytest_configure(config):
         "user_story(id): mark test as linked to user story (US-XXXXX). Can specify multiple.",
     )
     config.addinivalue_line(
-        "markers", "epic(id): mark test as linked to epic (EP-XXXXX). Can specify multiple."
+        "markers",
+        "epic(id): mark test as linked to epic (EP-XXXXX). Can specify multiple.",
     )
     config.addinivalue_line(
         "markers",
@@ -107,7 +118,8 @@ def pytest_configure(config):
         "markers", "priority(level): mark test priority (critical, high, medium, low)"
     )
     config.addinivalue_line(
-        "markers", "test_type(type): categorizes tests by type (unit, integration, etc.)"
+        "markers",
+        "test_type(type): categorizes tests by type (unit, integration, etc.)",
     )
     config.addinivalue_line(
         "markers", "detailed: marks tests for detailed debugging mode"
@@ -115,26 +127,15 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "smoke: marks tests as smoke tests (critical functionality)"
     )
+    config.addinivalue_line("markers", "functional: marks tests as functional tests")
+    config.addinivalue_line("markers", "security: marks tests as security tests")
+    config.addinivalue_line("markers", "gdpr: marks tests as GDPR compliance tests")
+    config.addinivalue_line("markers", "performance: marks tests as performance tests")
+    config.addinivalue_line("markers", "bdd: marks tests as BDD scenarios")
+    config.addinivalue_line("markers", "integration: marks tests as integration tests")
     config.addinivalue_line(
-        "markers", "functional: marks tests as functional tests"
-    )
-    config.addinivalue_line(
-        "markers", "security: marks tests as security tests"
-    )
-    config.addinivalue_line(
-        "markers", "gdpr: marks tests as GDPR compliance tests"
-    )
-    config.addinivalue_line(
-        "markers", "performance: marks tests as performance tests"
-    )
-    config.addinivalue_line(
-        "markers", "bdd: marks tests as BDD scenarios"
-    )
-    config.addinivalue_line(
-        "markers", "integration: marks tests as integration tests"
-    )
-    config.addinivalue_line(
-        "markers", "test_category(category): categorizes tests by specific category (smoke, performance, etc.)"
+        "markers",
+        "test_category(category): categorizes tests by specific category (smoke, performance, etc.)",
     )
 
 

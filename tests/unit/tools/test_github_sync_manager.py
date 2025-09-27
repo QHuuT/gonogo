@@ -12,11 +12,11 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from tools.github_sync_manager import GitHubSyncManager
 from src.be.models.traceability.base import Base
+from src.be.models.traceability.capability import Capability
 from src.be.models.traceability.epic import Epic
 from src.be.models.traceability.user_story import UserStory
-from src.be.models.traceability.capability import Capability
+from tools.github_sync_manager import GitHubSyncManager
 
 
 @pytest.fixture
@@ -43,13 +43,19 @@ def sync_manager(db_session):
 @pytest.fixture
 def epic(db_session):
     """Provide a persisted epic for linking user stories."""
-    epic = Epic(epic_id="EP-00005", title="Requirements Traceability Matrix Automation", github_issue_number=5000)
+    epic = Epic(
+        epic_id="EP-00005",
+        title="Requirements Traceability Matrix Automation",
+        github_issue_number=5000,
+    )
     db_session.add(epic)
     db_session.commit()
     return epic
 
 
-def _make_user_story(db_session, epic, story_id, issue_number, implementation_status="planned"):
+def _make_user_story(
+    db_session, epic, story_id, issue_number, implementation_status="planned"
+):
     """Create and persist a basic UserStory record for sync tests."""
     story = UserStory(
         user_story_id=story_id,
@@ -73,7 +79,9 @@ def _make_user_story(db_session, epic, story_id, issue_number, implementation_st
 class TestGitHubSyncManagerStatus:
     """Status-alignment behaviours for GitHub sync."""
 
-    def test_sync_updates_status_from_github_labels(self, sync_manager, db_session, epic):
+    def test_sync_updates_status_from_github_labels(
+        self, sync_manager, db_session, epic
+    ):
         """status/in-progress labels must persist as in_progress implementation status."""
         story = _make_user_story(db_session, epic, "US-00059", 59)
         sync_manager.github_issues = [
@@ -100,7 +108,9 @@ class TestGitHubSyncManagerStatus:
         assert refreshed.github_issue_state == "open"
         assert "status/in-progress" in refreshed.github_labels
 
-    def test_sync_marks_completed_when_issue_closed(self, sync_manager, db_session, epic):
+    def test_sync_marks_completed_when_issue_closed(
+        self, sync_manager, db_session, epic
+    ):
         """Closed GitHub issues should flip implementation status to completed."""
         story = _make_user_story(
             db_session, epic, "US-00060", 60, implementation_status="in_progress"
@@ -128,7 +138,9 @@ class TestGitHubSyncManagerStatus:
         assert refreshed.implementation_status == "completed"
         assert refreshed.github_issue_state == "closed"
 
-    def test_sync_epics_assigns_default_capability(self, sync_manager, db_session, epic):
+    def test_sync_epics_assigns_default_capability(
+        self, sync_manager, db_session, epic
+    ):
         """Epics without capability labels should fall back to the canonical mapping."""
         sync_manager.github_issues = [
             {
@@ -145,9 +157,7 @@ class TestGitHubSyncManagerStatus:
         assert any(r.entity_id == epic.epic_id and r.updated for r in results)
 
         refreshed_epic = (
-            db_session.query(Epic)
-            .filter(Epic.epic_id == epic.epic_id)
-            .one()
+            db_session.query(Epic).filter(Epic.epic_id == epic.epic_id).one()
         )
         capability = db_session.get(Capability, refreshed_epic.capability_id)
         assert capability is not None

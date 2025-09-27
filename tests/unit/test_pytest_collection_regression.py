@@ -4,13 +4,13 @@ Regression tests for pytest collection fixes.
 Ensures that classes with __test__ = False are not collected as test classes
 and that legitimate test classes are still collected properly.
 
-Related to: PytestCollectionWarning fix - preventing false positive test collection
+Related to: PytestCollectionWarning fix - preventing false positive
+test collection
 """
 
-import pytest
-from pathlib import Path
 import sys
-import importlib.util
+from pathlib import Path
+
 
 class TestPytestCollectionRegression:
     """Regression tests for pytest collection behavior."""
@@ -22,32 +22,36 @@ class TestPytestCollectionRegression:
         from be.models.traceability.test import Test
 
         # Verify it has __test__ = False
-        assert hasattr(Test, '__test__')
+        assert hasattr(Test, "__test__")
         assert Test.__test__ is False
 
     def test_test_entity_helper_not_collected(self):
         """Test that TestEntity helper class is not collected."""
         # Read the file content instead of importing to avoid SQLAlchemy setup issues
-        test_file_path = Path(__file__).parent / "shared" / "models" / "test_traceability_base.py"
+        test_file_path = (
+            Path(__file__).parent / "shared" / "models" / "test_traceability_base.py"
+        )
 
-        with open(test_file_path, 'r', encoding='utf-8') as f:
+        with open(test_file_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Verify the file contains __test__ = False for TestEntity
-        assert '__test__ = False  # Tell pytest this is not a test class' in content
+        assert "__test__ = False  # Tell pytest this is not a test class" in content
 
         # Verify it's in the TestEntity class definition
-        lines = content.split('\n')
+        lines = content.split("\n")
         in_test_entity = False
         test_false_found = False
 
         for line in lines:
-            if 'class TestEntity(' in line:
+            if "class TestEntity(" in line:
                 in_test_entity = True
-            elif in_test_entity and 'class ' in line and not line.strip().startswith('#'):
+            elif (
+                in_test_entity and "class " in line and not line.strip().startswith("#")
+            ):
                 # Found another class, exit TestEntity
                 break
-            elif in_test_entity and '__test__ = False' in line:
+            elif in_test_entity and "__test__ = False" in line:
                 test_false_found = True
                 break
 
@@ -56,29 +60,39 @@ class TestPytestCollectionRegression:
     def test_database_integration_classes_not_collected(self):
         """Test that database integration utility classes are not collected."""
         # Read file content to avoid import issues in test environment
-        db_integration_path = Path(__file__).parent.parent.parent / "src" / "shared" / "testing" / "database_integration.py"
+        db_integration_path = (
+            Path(__file__).parent.parent.parent
+            / "src"
+            / "shared"
+            / "testing"
+            / "database_integration.py"
+        )
 
-        with open(db_integration_path, 'r', encoding='utf-8') as f:
+        with open(db_integration_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Verify the file contains __test__ = False for all three classes
-        assert '__test__ = False  # Tell pytest this is not a test class' in content
+        assert "__test__ = False  # Tell pytest this is not a test class" in content
 
         # Verify each class has the marker
-        class_names = ['TestDiscovery', 'TestDatabaseSync', 'TestExecutionTracker']
+        class_names = ["TestDiscovery", "TestDatabaseSync", "TestExecutionTracker"]
         for class_name in class_names:
             # Check that the class exists and has __test__ = False
-            lines = content.split('\n')
+            lines = content.split("\n")
             in_target_class = False
             test_false_found = False
 
             for line in lines:
-                if f'class {class_name}' in line:
+                if f"class {class_name}" in line:
                     in_target_class = True
-                elif in_target_class and 'class ' in line and not line.strip().startswith('#'):
+                elif (
+                    in_target_class
+                    and "class " in line
+                    and not line.strip().startswith("#")
+                ):
                     # Found another class, exit current class
                     break
-                elif in_target_class and '__test__ = False' in line:
+                elif in_target_class and "__test__ = False" in line:
                     test_false_found = True
                     break
 
@@ -87,26 +101,36 @@ class TestPytestCollectionRegression:
     def test_test_failure_dataclass_not_collected(self):
         """Test that TestFailure dataclass is not collected."""
         # Read file content to avoid import issues in test environment
-        failure_tracker_path = Path(__file__).parent.parent.parent / "src" / "shared" / "testing" / "failure_tracker.py"
+        failure_tracker_path = (
+            Path(__file__).parent.parent.parent
+            / "src"
+            / "shared"
+            / "testing"
+            / "failure_tracker.py"
+        )
 
-        with open(failure_tracker_path, 'r', encoding='utf-8') as f:
+        with open(failure_tracker_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Verify the file contains __test__ = False for TestFailure
-        assert '__test__ = False  # Tell pytest this is not a test class' in content
+        assert "__test__ = False  # Tell pytest this is not a test class" in content
 
         # Verify it's in the TestFailure class definition
-        lines = content.split('\n')
+        lines = content.split("\n")
         in_test_failure = False
         test_false_found = False
 
         for line in lines:
-            if 'class TestFailure' in line:
+            if "class TestFailure" in line:
                 in_test_failure = True
-            elif in_test_failure and 'class ' in line and not line.strip().startswith('#'):
+            elif (
+                in_test_failure
+                and "class " in line
+                and not line.strip().startswith("#")
+            ):
                 # Found another class, exit TestFailure
                 break
-            elif in_test_failure and '__test__ = False' in line:
+            elif in_test_failure and "__test__ = False" in line:
                 test_false_found = True
                 break
 
@@ -115,26 +139,36 @@ class TestPytestCollectionRegression:
     def test_formatter_class_not_collected(self):
         """Test that TestFormatter class is not collected."""
         # Read file content to avoid import issues
-        formatter_path = Path(__file__).parent.parent.parent / "src" / "shared" / "logging" / "formatters.py"
+        formatter_path = (
+            Path(__file__).parent.parent.parent
+            / "src"
+            / "shared"
+            / "logging"
+            / "formatters.py"
+        )
 
-        with open(formatter_path, 'r', encoding='utf-8') as f:
+        with open(formatter_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Verify the file contains __test__ = False for TestFormatter
-        assert '__test__ = False  # Tell pytest this is not a test class' in content
+        assert "__test__ = False  # Tell pytest this is not a test class" in content
 
         # Verify it's in the TestFormatter class definition
-        lines = content.split('\n')
+        lines = content.split("\n")
         in_test_formatter = False
         test_false_found = False
 
         for line in lines:
-            if 'class TestFormatter' in line:
+            if "class TestFormatter" in line:
                 in_test_formatter = True
-            elif in_test_formatter and 'class ' in line and not line.strip().startswith('#'):
+            elif (
+                in_test_formatter
+                and "class " in line
+                and not line.strip().startswith("#")
+            ):
                 # Found another class, exit TestFormatter
                 break
-            elif in_test_formatter and '__test__ = False' in line:
+            elif in_test_formatter and "__test__ = False" in line:
                 test_false_found = True
                 break
 
@@ -143,54 +177,66 @@ class TestPytestCollectionRegression:
     def test_tool_classes_not_collected(self):
         """Test that tool classes are not collected."""
         # Test TestCoverageReporter - read file content to avoid import issues
-        tool_file_path = Path(__file__).parent.parent.parent / "tools" / "test_coverage_report.py"
+        tool_file_path = (
+            Path(__file__).parent.parent.parent / "tools" / "test_coverage_report.py"
+        )
 
-        with open(tool_file_path, 'r', encoding='utf-8') as f:
+        with open(tool_file_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Verify the file contains __test__ = False for TestCoverageReporter
-        assert '__test__ = False  # Tell pytest this is not a test class' in content
+        assert "__test__ = False  # Tell pytest this is not a test class" in content
 
         # Verify it's in the TestCoverageReporter class definition
-        lines = content.split('\n')
+        lines = content.split("\n")
         in_test_coverage = False
         test_false_found = False
 
         for line in lines:
-            if 'class TestCoverageReporter' in line:
+            if "class TestCoverageReporter" in line:
                 in_test_coverage = True
-            elif in_test_coverage and 'class ' in line and not line.strip().startswith('#'):
+            elif (
+                in_test_coverage
+                and "class " in line
+                and not line.strip().startswith("#")
+            ):
                 # Found another class, exit TestCoverageReporter
                 break
-            elif in_test_coverage and '__test__ = False' in line:
+            elif in_test_coverage and "__test__ = False" in line:
                 test_false_found = True
                 break
 
-        assert test_false_found, "TestCoverageReporter class should have __test__ = False"
+        assert (
+            test_false_found
+        ), "TestCoverageReporter class should have __test__ = False"
 
     def test_diagnostic_classes_not_collected(self):
         """Test that diagnostic classes are not collected."""
         # Test TestDiagnostics - read file content to avoid import issues
         diag_file_path = Path(__file__).parent.parent.parent / "test_diagnosis.py"
 
-        with open(diag_file_path, 'r', encoding='utf-8') as f:
+        with open(diag_file_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Verify the file contains __test__ = False for TestDiagnostics
-        assert '__test__ = False  # Tell pytest this is not a test class' in content
+        assert "__test__ = False  # Tell pytest this is not a test class" in content
 
         # Verify it's in the TestDiagnostics class definition
-        lines = content.split('\n')
+        lines = content.split("\n")
         in_test_diagnostics = False
         test_false_found = False
 
         for line in lines:
-            if 'class TestDiagnostics' in line:
+            if "class TestDiagnostics" in line:
                 in_test_diagnostics = True
-            elif in_test_diagnostics and 'class ' in line and not line.strip().startswith('#'):
+            elif (
+                in_test_diagnostics
+                and "class " in line
+                and not line.strip().startswith("#")
+            ):
                 # Found another class, exit TestDiagnostics
                 break
-            elif in_test_diagnostics and '__test__ = False' in line:
+            elif in_test_diagnostics and "__test__ = False" in line:
                 test_false_found = True
                 break
 
@@ -199,12 +245,15 @@ class TestPytestCollectionRegression:
     def test_legitimate_test_classes_still_collected(self):
         """Test that real test classes are still collected properly."""
         # This test class itself should be collected
-        assert not hasattr(TestPytestCollectionRegression, '__test__') or TestPytestCollectionRegression.__test__ is not False
+        assert (
+            not hasattr(TestPytestCollectionRegression, "__test__")
+            or TestPytestCollectionRegression.__test__ is not False
+        )
 
         # Test methods should be detected
-        test_methods = [method for method in dir(self) if method.startswith('test_')]
+        test_methods = [method for method in dir(self) if method.startswith("test_")]
         assert len(test_methods) > 0
-        assert 'test_legitimate_test_classes_still_collected' in test_methods
+        assert "test_legitimate_test_classes_still_collected" in test_methods
 
     def test_no_collection_warnings_generated(self):
         """Test that no PytestCollectionWarning is generated during collection."""
@@ -219,7 +268,7 @@ class TestPytestCollectionRegression:
             "shared.testing.database_integration.TestDiscovery",
             "shared.testing.database_integration.TestDatabaseSync",
             "shared.testing.database_integration.TestExecutionTracker",
-            "shared.testing.failure_tracker.TestFailure"
+            "shared.testing.failure_tracker.TestFailure",
         ]
 
         # This test passes if no warnings are generated during collection

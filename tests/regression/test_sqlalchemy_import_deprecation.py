@@ -9,8 +9,9 @@ Bug ID: W-20250926-declarative-base-import-deprecation
 """
 
 import warnings
+
 import pytest
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base  # noqa: F401 - testing deprecation
 
 
 def test_no_declarative_base_deprecation_warnings():
@@ -30,7 +31,8 @@ def test_no_declarative_base_deprecation_warnings():
 
         # Check that no MovedIn20Warning was generated
         moved_warnings = [
-            w for w in warning_list
+            w
+            for w in warning_list
             if issubclass(w.category, DeprecationWarning)
             and "MovedIn20Warning" in str(w.message)
         ]
@@ -42,7 +44,8 @@ def test_no_declarative_base_deprecation_warnings():
 
         # Check that no declarative_base deprecation warnings were generated
         declarative_warnings = [
-            w for w in warning_list
+            w
+            for w in warning_list
             if issubclass(w.category, DeprecationWarning)
             and "declarative_base" in str(w.message)
             and "sqlalchemy.orm.declarative_base" in str(w.message)
@@ -70,10 +73,10 @@ def test_proper_declarative_base_import():
     assert GDPRBase is not None
 
     # Verify they have the expected declarative attributes
-    assert hasattr(TraceabilityBase, 'metadata')
-    assert hasattr(GDPRBase, 'metadata')
-    assert hasattr(TraceabilityBase, 'registry')
-    assert hasattr(GDPRBase, 'registry')
+    assert hasattr(TraceabilityBase, "metadata")
+    assert hasattr(GDPRBase, "metadata")
+    assert hasattr(TraceabilityBase, "registry")
+    assert hasattr(GDPRBase, "registry")
 
 
 def test_models_work_with_new_import():
@@ -89,16 +92,14 @@ def test_models_work_with_new_import():
 
     # Verify the models can be instantiated (basic functionality test)
     epic = Epic(
-        epic_id="EP-TEST-001",
-        title="Test Epic",
-        description="Test description"
+        epic_id="EP-TEST-001", title="Test Epic", description="Test description"
     )
 
     consent = ConsentRecord(
         consent_id="test-consent-id",
         consent_type="essential",
         consent_given=True,
-        consent_version="1.0"
+        consent_version="1.0",
     )
 
     # Basic attribute access to ensure the models work
@@ -122,8 +123,8 @@ def test_import_paths_are_future_proof():
     TestBase = declarative_base()
 
     # Verify it has the expected structure
-    assert hasattr(TestBase, 'metadata')
-    assert hasattr(TestBase, 'registry')
+    assert hasattr(TestBase, "metadata")
+    assert hasattr(TestBase, "registry")
 
     # Verify our models' bases are created the same way
     from src.be.models.traceability.base import Base as TraceabilityBase

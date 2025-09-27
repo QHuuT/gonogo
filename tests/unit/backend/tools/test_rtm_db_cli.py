@@ -335,9 +335,9 @@ class TestRTMDatabaseCLI:
 
         # Set up query side effects in order
         self.mock_db.query.side_effect = [
-            mock_us_query,              # UserStory query (first call)
-            mock_epic_query,            # Epic lookup by epic_id (second call)
-            mock_epic_display_query,    # Epic lookup by id for display (third call, inside loop)
+            mock_us_query,  # UserStory query (first call)
+            mock_epic_query,  # Epic lookup by epic_id (second call)
+            mock_epic_display_query,  # Epic lookup by id for display (third call, inside loop)
         ]
 
         result = self.runner.invoke(
@@ -482,9 +482,16 @@ class TestRTMDatabaseCLI:
         mock_query = Mock()
         self.mock_db.query.return_value = mock_query
         mock_query.count.side_effect = [
-            5, 10, 15, 3, 2,  # Epic, US, Test, Defect, Sync counts
+            5,
+            10,
+            15,
+            3,
+            2,  # Epic, US, Test, Defect, Sync counts
         ]
-        mock_query.filter.return_value.count.side_effect = [2, 3]  # Orphaned counts (US, Tests)
+        mock_query.filter.return_value.count.side_effect = [
+            2,
+            3,
+        ]  # Orphaned counts (US, Tests)
 
         result = self.runner.invoke(rtm_db_cli.cli, ["admin", "health-check"])
 
@@ -590,7 +597,10 @@ class TestRTMDatabaseCLI:
         mock_query = Mock()
         self.mock_db.query.return_value = mock_query
         mock_query.filter.return_value.all.return_value = []  # No orphaned records
-        mock_query.all.return_value = [self.mock_epic, self.mock_user_story]  # Valid entities
+        mock_query.all.return_value = [
+            self.mock_epic,
+            self.mock_user_story,
+        ]  # Valid entities
 
         result = self.runner.invoke(rtm_db_cli.cli, ["admin", "validate"])
 
@@ -655,7 +665,9 @@ class TestRTMDatabaseCLI:
         duplicate_epic.epic_id = "EP-00001"  # Same as self.mock_epic.epic_id
 
         duplicate_us = Mock()
-        duplicate_us.user_story_id = "US-00001"  # Same as self.mock_user_story.user_story_id
+        duplicate_us.user_story_id = (
+            "US-00001"  # Same as self.mock_user_story.user_story_id
+        )
 
         mock_query = Mock()
         self.mock_db.query.return_value = mock_query
@@ -931,7 +943,9 @@ class TestRTMDatabaseCLI:
         # Verify this is plain text, not Rich markup
         assert "[red]" not in result.output
         assert "[/red]" not in result.output
-        assert "Error:" not in result.output  # Should not include "Error:" prefix from Rich version
+        assert (
+            "Error:" not in result.output
+        )  # Should not include "Error:" prefix from Rich version
 
     @patch("rtm_db_cli.RTMDataMigrator")
     @pytest.mark.epic("EP-00005", "EP-99999")

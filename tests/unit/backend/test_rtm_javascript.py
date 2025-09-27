@@ -3,7 +3,7 @@ Unit tests for RTM JavaScript functionality
 Tests that the backend correctly handles filter parameters that JavaScript would generate
 """
 
-from urllib.parse import parse_qs, urlparse
+# Removed unused imports - tests use pytest fixtures
 
 import pytest
 

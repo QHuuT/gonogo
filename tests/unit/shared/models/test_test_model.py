@@ -8,7 +8,6 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
 import json
-from datetime import datetime
 
 import pytest
 from sqlalchemy import create_engine

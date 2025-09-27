@@ -277,7 +277,9 @@ class TestEpic:
         db_session.add(epic)
         db_session.commit()
 
-        metrics = epic.update_metrics(force_recalculate=True, session=db_session, record_history=True)
+        metrics = epic.update_metrics(
+            force_recalculate=True, session=db_session, record_history=True
+        )
         db_session.commit()
         db_session.refresh(epic)
 
@@ -305,18 +307,24 @@ class TestEpic:
         db_session.add(epic)
         db_session.commit()
 
-        epic.update_metrics(force_recalculate=True, session=db_session, record_history=True)
+        epic.update_metrics(
+            force_recalculate=True, session=db_session, record_history=True
+        )
         db_session.commit()
 
         thresholds = get_threshold_service()
 
-        pm_metrics = epic.get_persona_specific_metrics('PM', session=db_session, thresholds=thresholds)
-        assert 'timeline' in pm_metrics
-        assert 'velocity' in pm_metrics
+        pm_metrics = epic.get_persona_specific_metrics(
+            "PM", session=db_session, thresholds=thresholds
+        )
+        assert "timeline" in pm_metrics
+        assert "velocity" in pm_metrics
 
-        qa_metrics = epic.get_persona_specific_metrics('QA', session=db_session, thresholds=thresholds)
-        assert 'quality' in qa_metrics
-        assert 'testing' in qa_metrics
+        qa_metrics = epic.get_persona_specific_metrics(
+            "QA", session=db_session, thresholds=thresholds
+        )
+        assert "quality" in qa_metrics
+        assert "testing" in qa_metrics
 
     @pytest.mark.epic("EP-00001", "EP-00002", "EP-00005")
     @pytest.mark.user_story("US-00052")
@@ -363,7 +371,10 @@ class TestEpic:
         assert len(history) == 3
 
         # Verify trend data
-        velocities = [h['metrics']['velocity_metrics']['velocity_points_per_sprint'] for h in history]
+        velocities = [
+            h["metrics"]["velocity_metrics"]["velocity_points_per_sprint"]
+            for h in history
+        ]
         assert 6 in velocities  # Most recent
         assert 7 in velocities
         assert 5 in velocities
@@ -391,6 +402,3 @@ class TestEpic:
         # Clear cache
         epic.clear_metrics_cache()
         assert epic.get_cached_metrics_only() is None
-
-
-

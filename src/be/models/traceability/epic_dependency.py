@@ -21,10 +21,9 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy.orm import relationship, validates
-from sqlalchemy.sql import func
 from datetime import datetime
 from enum import Enum
-from typing import List, Set, Dict, Optional
+from typing import List, Dict
 
 from .base import TraceabilityBase
 

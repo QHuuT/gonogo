@@ -182,7 +182,9 @@ class TestUserStory:
         assert user_story.description == "Testing simple string label format"
         assert "bug" in user_story.github_labels
         assert "component/frontend" in user_story.github_labels
-        assert user_story.component == "frontend"  # Should extract component from string label
+        assert (
+            user_story.component == "frontend"
+        )  # Should extract component from string label
 
         # Test 2: GitHub API object format
         github_data_objects = {
@@ -193,7 +195,7 @@ class TestUserStory:
                 {"name": "enhancement"},
                 {"name": "priority-medium"},
                 {"name": "component/backend"},
-                {"name": "status/in-progress"}
+                {"name": "status/in-progress"},
             ],
             "assignees": [{"login": "developer2"}],
         }
@@ -205,8 +207,12 @@ class TestUserStory:
         assert user_story.description == "Testing GitHub API object label format"
         assert "enhancement" in user_story.github_labels
         assert "component/backend" in user_story.github_labels
-        assert user_story.component == "backend"  # Should extract component from object label
-        assert user_story.implementation_status == "in_progress"  # Should derive status from labels
+        assert (
+            user_story.component == "backend"
+        )  # Should extract component from object label
+        assert (
+            user_story.implementation_status == "in_progress"
+        )  # Should derive status from labels
 
         # Test 3: Mixed format edge case (shouldn't happen in practice but should be handled)
         github_data_mixed = {
@@ -215,7 +221,7 @@ class TestUserStory:
                 "simple-string",
                 {"name": "object-label"},
                 {"name": "component/api"},
-                "another-string"
+                "another-string",
             ],
         }
 
@@ -225,7 +231,9 @@ class TestUserStory:
         assert "object-label" in user_story.github_labels
         assert "component/api" in user_story.github_labels
         assert "another-string" in user_story.github_labels
-        assert user_story.component == "api"  # Should handle mixed format and extract component
+        assert (
+            user_story.component == "api"
+        )  # Should handle mixed format and extract component
 
         # Test 4: Empty and None labels (edge cases)
         github_data_empty = {

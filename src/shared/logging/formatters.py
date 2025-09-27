@@ -7,7 +7,7 @@ human-readable formats for different use cases.
 
 import json
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from .logger import LogEntry
 
@@ -69,6 +69,7 @@ class JSONFormatter:
 
 class TestFormatter:
     """Human-readable formatter optimized for test output."""
+
     __test__ = False  # Tell pytest this is not a test class
 
     def __init__(
@@ -208,7 +209,9 @@ class TableFormatter:
             elif col == "message":
                 # Truncate long messages
                 value = (
-                    (value[:47] + "...") if value and len(value) > 50 else (value or "")
+                    (value[:47] + "...")
+                    if value and len(value) > 50
+                    else (value or "")
                 )
             else:
                 value = str(value) if value is not None else ""

@@ -12,7 +12,7 @@ import hashlib
 import json
 import re
 import sqlite3
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from datetime import datetime, timedelta, UTC
 from enum import Enum
 from pathlib import Path

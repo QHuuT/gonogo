@@ -17,9 +17,11 @@ logger = logging.getLogger(__name__)
 # Import for database access
 try:
     import sys
-    sys.path.append('src')
+
+    sys.path.append("src")
     from be.database import SessionLocal
     from be.models.traceability.epic import Epic
+
     DATABASE_AVAILABLE = True
 except ImportError:
     DATABASE_AVAILABLE = False
@@ -86,12 +88,18 @@ class DatabaseEpicMapper:
                     component = component.split(",")[0].strip()
 
                 # Get epic label name
-                epic_label = epic.epic_label_name if epic.epic_label_name else epic.get_epic_label_name()
+                epic_label = (
+                    epic.epic_label_name
+                    if epic.epic_label_name
+                    else epic.get_epic_label_name()
+                )
 
                 mappings[epic.epic_id] = {
+    
                     "component": component,
-                    "epic_label": epic_label
-                }
+                    "epic_label": epic_label,
+                
+}
 
             session.close()
             logger.info(f"Loaded {len(mappings)} epic mappings from database")
@@ -203,7 +211,11 @@ class GitHubIssueLabelMapper:
     - Status management
     """
 
-    def __init__(self, matrix_path: Optional[Path] = None, use_database: bool = True) -> None:
+    def __init__(
+    self,
+    matrix_path: Optional[Path] = None,
+    use_database: bool = True
+) -> None:
         """Initialize the label mapper."""
         if use_database and DATABASE_AVAILABLE:
             self.epic_mapper = DatabaseEpicMapper()
@@ -215,11 +227,13 @@ class GitHubIssueLabelMapper:
             self.epic_mapper = TraceabilityMatrixParser(matrix_path)
             logger.info("Using file-based epic mapper (fallback)")
         self.priority_mappings = {
+    
             "Critical": "priority/critical",
             "High": "priority/high",
             "Medium": "priority/medium",
             "Low": "priority/low",
-        }
+        
+}
 
     def extract_form_value(self, issue_body: str, field_name: str) -> Optional[str]:
         """
@@ -308,6 +322,7 @@ class GitHubIssueLabelMapper:
         body_lower = issue_data.body.lower()
 
         gdpr_mappings = {
+    
             "gdpr/personal-data": [
                 "involves personal data processing",
                 "personal data processing",
@@ -322,8 +337,10 @@ class GitHubIssueLabelMapper:
                 "privacy impact assessment needed",
                 "privacy impact assessment",
             ],
-            "gdpr/data-retention": ["data retention policies apply", "data retention"],
-        }
+            "gdpr/data-retention": ["data retention policies apply",
+    "data retention"],
+        
+}
 
         for label, keywords in gdpr_mappings.items():
             for keyword in keywords:
@@ -378,8 +395,10 @@ class GitHubIssueLabelMapper:
 
         # Don't override existing status labels
         existing_status = {
+    
             label for label in issue_data.existing_labels if label.startswith("status/")
-        }
+        
+}
         if existing_status:
             return labels
 

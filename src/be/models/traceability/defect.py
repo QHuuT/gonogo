@@ -2,14 +2,24 @@
 Defect Model
 
 Database model for Defect metadata in the hybrid RTM system.
-Defects remain in GitHub Issues but metadata is cached in database for relationships and reporting.
+Defects remain in GitHub Issues but metadata is cached in database for
+relationships and reporting.
 
 Related Issue: US-00052 - Database schema design for traceability relationships
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 Architecture Decision: ADR-003 - Hybrid GitHub + Database RTM Architecture
 """
 
-from sqlalchemy import Boolean, Column, Float, ForeignKey, Index, Integer, String, Text
+from sqlalchemy import (
+    Boolean,
+    Column,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+)
 from sqlalchemy.orm import relationship
 
 from .base import TraceabilityBase
@@ -25,20 +35,26 @@ class Defect(TraceabilityBase):
     # Format: DEF-00001, DEF-00002, etc.
 
     # GitHub Issue metadata (cached for performance)
-    github_issue_number = Column(Integer, unique=True, nullable=False, index=True)
+    github_issue_number = Column(
+        Integer, unique=True, nullable=False, index=True
+    )
     github_issue_state = Column(String(20), index=True)  # open, closed
     github_labels = Column(Text)  # JSON string of labels
     github_assignees = Column(Text)  # JSON string of assignees
 
     # Traceability relationships
     # Note: Defects can relate to Epic, User Story, or Test
-    epic_id = Column(Integer, ForeignKey("epics.id"), nullable=True, index=True)
+    epic_id = Column(
+        Integer, ForeignKey("epics.id"), nullable=True, index=True
+    )
     epic = relationship("Epic")
 
     github_user_story_number = Column(Integer, nullable=True, index=True)
     # References User Story GitHub issue number
 
-    test_id = Column(Integer, ForeignKey("tests.id"), nullable=True, index=True)
+    test_id = Column(
+        Integer, ForeignKey("tests.id"), nullable=True, index=True
+    )
     test = relationship("Test")
 
     # Defect classification
@@ -90,7 +106,8 @@ class Defect(TraceabilityBase):
 
     # Component classification (inherited from User Story or manually set)
     component = Column(String(50), nullable=True, index=True)
-    # Values: frontend, backend, database, security, testing, ci-cd, documentation
+    # Values: frontend, backend, database, security, testing, ci-cd,
+    # documentation
 
     # Indexes for performance
     __table_args__ = (
@@ -163,9 +180,14 @@ class Defect(TraceabilityBase):
 
         if self.github_user_story_number:
             from .user_story import UserStory
-            user_story = session.query(UserStory).filter(
-                UserStory.github_issue_number == self.github_user_story_number
-            ).first()
+
+            user_story = (
+                session.query(UserStory)
+                .filter(
+                    UserStory.github_issue_number == self.github_user_story_number
+                )
+                .first()
+            )
 
             if user_story and user_story.component:
                 self.component = user_story.component
@@ -174,40 +196,50 @@ class Defect(TraceabilityBase):
         """Convert to dictionary with Defect specific fields."""
         base_dict = super().to_dict()
         base_dict.update(
-            {
+    {
+    
                 "defect_id": self.defect_id,
-                "github_issue_number": self.github_issue_number,
-                "github_issue_state": self.github_issue_state,
-                "epic_id": self.epic_id,
-                "github_user_story_number": self.github_user_story_number,
-                "test_id": self.test_id,
-                "defect_type": self.defect_type,
-                "severity": self.severity,
-                "priority": self.priority,
-                "environment": self.environment,
-                "browser_version": self.browser_version,
-                "os_version": self.os_version,
-                "steps_to_reproduce": self.steps_to_reproduce,
-                "expected_behavior": self.expected_behavior,
-                "actual_behavior": self.actual_behavior,
-                "resolution_details": self.resolution_details,
-                "root_cause": self.root_cause,
-                "estimated_hours": self.estimated_hours,
-                "actual_hours": self.actual_hours,
-                "found_in_phase": self.found_in_phase,
-                "escaped_to_production": self.escaped_to_production,
-                "is_security_issue": self.is_security_issue,
-                "affects_gdpr": self.affects_gdpr,
-                "gdpr_impact_details": self.gdpr_impact_details,
-                "is_regression": self.is_regression,
-                "affects_customers": self.affects_customers,
-                "customer_impact_details": self.customer_impact_details,
-                "component": self.component,
-                "impact_score": self.calculate_impact_score(),
+    "github_issue_number": self.github_issue_number,
+    "github_issue_state": self.github_issue_state,
+    "epic_id": self.epic_id,
+    "github_user_story_number": self.github_user_story_number,
+    "test_id": self.test_id,
+    "defect_type": self.defect_type,
+    "severity": self.severity,
+    "priority": self.priority,
+    "environment": self.environment,
+    "browser_version": self.browser_version,
+    "os_version": self.os_version,
+    "steps_to_reproduce": self.steps_to_reproduce,
+    "expected_behavior": self.expected_behavior,
+    "actual_behavior": self.actual_behavior,
+    "resolution_details": self.resolution_details,
+    "root_cause": self.root_cause,
+    "estimated_hours": self.estimated_hours,
+    "actual_hours": self.actual_hours,
+    "found_in_phase": self.found_in_phase,
+    "escaped_to_production": self.escaped_to_production,
+    "is_security_issue": self.is_security_issue,
+    "affects_gdpr": self.affects_gdpr,
+    "gdpr_impact_details": self.gdpr_impact_details,
+    "is_regression": self.is_regression,
+    "affects_customers": self.affects_customers,
+    "customer_impact_details": self.customer_impact_details,
+    "component": self.component,
+    "impact_score": self.calculate_impact_score(
+),
                 "is_high_priority": self.is_high_priority(),
-            }
+            
+}
         )
         return base_dict
 
     def __repr__(self):
-        return f"<Defect(defect_id='{self.defect_id}', github_issue={self.github_issue_number}, severity='{self.severity}', status='{self.status}')>"
+        return (
+            f"<Defect("
+            f"defect_id='{self.defect_id}', "
+            f"github_issue={self.github_issue_number}, "
+            f"severity='{self.severity}', "
+            f"status='{self.status}'"
+            f")>"
+        )

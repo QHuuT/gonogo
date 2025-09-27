@@ -11,7 +11,7 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 import ast
 import re
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional
 
 from be.database import get_db_session
 from be.models.traceability import Defect, Epic, Test, UserStory
@@ -24,21 +24,29 @@ class TestDiscovery:
 
     def __init__(self):
         self.test_patterns = {
+    
             "unit": ["tests/unit/**/*.py"],
             "integration": ["tests/integration/**/*.py"],
             "e2e": ["tests/e2e/**/*.py"],
             "security": ["tests/security/**/*.py"],
             "bdd": ["tests/bdd/**/*.py"],
-        }
+        
+}
 
         self.epic_pattern = re.compile(r"EP-(\d{5})")
         self.user_story_pattern = re.compile(r"US-(\d{5})")
         self.defect_pattern = re.compile(r"DEF-(\d{5})")
 
         # Pytest marker patterns
-        self.component_pattern = re.compile(r'@pytest\.mark\.component\(["\']([^"\']+)["\']\)')
-        self.priority_pattern = re.compile(r'@pytest\.mark\.priority\(["\']([^"\']+)["\']\)')
-        self.test_category_pattern = re.compile(r'@pytest\.mark\.test_category\(["\']([^"\']+)["\']\)')
+        self.component_pattern = re.compile(
+            r'@pytest\.mark\.component\(["\']([^"\']+)["\']\)'
+        )
+        self.priority_pattern = re.compile(
+            r'@pytest\.mark\.priority\(["\']([^"\']+)["\']\)'
+        )
+        self.test_category_pattern = re.compile(
+            r'@pytest\.mark\.test_category\(["\']([^"\']+)["\']\)'
+        )
 
     def discover_tests(self, root_dir: Path = None) -> List[Dict]:
         """
@@ -56,14 +64,21 @@ class TestDiscovery:
             for pattern in patterns:
                 test_files = list(root_dir.glob(pattern))
                 for test_file in test_files:
-                    if test_file.is_file() and test_file.name.startswith("test_"):
-                        test_metadata = self._analyze_test_file(test_file, test_type)
+                    if (
+                        test_file.is_file()
+                        and test_file.name.startswith("test_")
+                    ):
+                        test_metadata = self._analyze_test_file(
+                            test_file, test_type
+                        )
                         if test_metadata:
                             discovered_tests.extend(test_metadata)
 
         return discovered_tests
 
-    def _analyze_test_file(self, test_file: Path, test_type: str) -> List[Dict]:
+    def _analyze_test_file(
+        self, test_file: Path, test_type: str
+    ) -> List[Dict]:
         """Analyze a single test file and extract test functions."""
         try:
             with open(test_file, "r", encoding="utf-8") as f:
@@ -83,6 +98,7 @@ class TestDiscovery:
                         file_path = str(test_file)
 
                     test_metadata = {
+    
                         "test_file_path": file_path,
                         "test_function_name": node.name,
                         "test_type": test_type,
@@ -94,12 +110,14 @@ class TestDiscovery:
                         ),
                         "defect_references": self._extract_defect_references(content),
                         "bdd_scenario_name": self._extract_bdd_scenario_name(
-                            node, content
+                            node,
+    content
                         ),
                         "component": self._extract_component(content),
                         "priority": self._extract_priority(content),
                         "test_category": self._extract_test_category(content),
-                    }
+                    
+}
                     test_functions.append(test_metadata)
 
             return test_functions
@@ -175,12 +193,14 @@ class TestDatabaseSync:
             discovered_tests = self.discovery.discover_tests()
 
             stats = {
+    
                 "discovered": len(discovered_tests),
                 "created": 0,
                 "updated": 0,
                 "linked_to_epics": 0,
                 "errors": 0,
-            }
+            
+}
 
             for test_data in discovered_tests:
                 try:
@@ -213,9 +233,10 @@ class TestDatabaseSync:
         existing_test = (
             db.query(Test)
             .filter(
-                Test.test_file_path == test_data["test_file_path"],
-                Test.test_function_name == test_data["test_function_name"],
-            )
+    Test.test_file_path == test_data["test_file_path"],
+    Test.test_function_name == test_data["test_function_name"],
+    
+)
             .first()
         )
 
@@ -231,15 +252,19 @@ class TestDatabaseSync:
         else:
             # Create new test
             test = Test(
-                test_type=test_data["test_type"],
-                test_file_path=test_data["test_file_path"],
-                title=test_data["title"],
-                test_function_name=test_data["test_function_name"],
-                bdd_scenario_name=test_data["bdd_scenario_name"],
-                component=test_data.get("component"),
+    test_type=test_data["test_type"],
+    test_file_path=test_data["test_file_path"],
+    title=test_data["title"],
+    test_function_name=test_data["test_function_name"],
+    bdd_scenario_name=test_data["bdd_scenario_name"],
+    component=test_data.get("component"
+),
                 test_priority=test_data.get("priority") or "medium",
                 test_category=test_data.get("test_category"),
-                description=f"Auto-discovered test from {test_data['test_file_path']}:{test_data['line_number']}",
+                description=(
+    f"Auto-discovered test "
+    f"from {test_data['test_file_path']}:{test_data['line_number']}"
+),
             )
             db.add(test)
             return "created"
@@ -258,9 +283,10 @@ class TestDatabaseSync:
             test = (
                 db.query(Test)
                 .filter(
-                    Test.test_file_path == test_data["test_file_path"],
-                    Test.test_function_name == test_data["test_function_name"],
-                )
+    Test.test_file_path == test_data["test_file_path"],
+    Test.test_function_name == test_data["test_function_name"],
+    
+)
                 .first()
             )
 
@@ -296,12 +322,13 @@ class TestExecutionTracker:
                 self.db_session = None
 
     def record_test_result(
-        self,
-        test_id: str,
-        status: str,
-        duration_ms: float = None,
-        error_message: str = None,
-    ) -> bool:
+    self,
+    test_id: str,
+    status: str,
+    duration_ms: float = None,
+    error_message: str = None,
+    
+) -> bool:
         """
         Record test execution result in database.
 
@@ -330,9 +357,10 @@ class TestExecutionTracker:
             test = (
                 self.db_session.query(Test)
                 .filter(
-                    Test.test_file_path == test_file,
-                    Test.test_function_name == test_function,
-                )
+    Test.test_file_path == test_file,
+    Test.test_function_name == test_function,
+    
+)
                 .first()
             )
 
@@ -374,9 +402,10 @@ class TestExecutionTracker:
             test = (
                 self.db_session.query(Test)
                 .filter(
-                    Test.test_file_path == test_file,
-                    Test.test_function_name == test_function,
-                )
+    Test.test_file_path == test_file,
+    Test.test_function_name == test_function,
+    
+)
                 .first()
             )
 
@@ -394,11 +423,15 @@ class TestExecutionTracker:
 
             # Create defect
             defect = Defect(
-                defect_id=defect_id,
-                github_issue_number=github_issue_number,
-                title=f"Test Failure: {test_function}",
-                description=f"Test failure in {test_file}\n\nFailure Message:\n{failure_message}\n\nStack Trace:\n{stack_trace}",
-                severity=self._determine_failure_severity(failure_message),
+    defect_id=defect_id,
+    github_issue_number=github_issue_number,
+    title=f"Test Failure: {test_function}",
+    description=(
+    f"Test failure in "
+    f"{test_file}\n\nFailure Message:\n{failure_message}\n\nStack Trace:\n{stack_trace}"
+),
+    severity=self._determine_failure_severity(failure_message
+),
                 priority="medium",
                 status="open",
                 defect_type="test_failure",
@@ -422,8 +455,10 @@ class TestExecutionTracker:
         elif any(keyword in failure_lower for keyword in ["import", "module"]):
             return "high"
         elif any(
-            keyword in failure_lower for keyword in ["security", "auth", "permission"]
-        ):
+    keyword in failure_lower for keyword in ["security",
+    "auth",
+    "permission"]
+):
             return "critical"
         else:
             return "low"
@@ -481,12 +516,14 @@ class BDDScenarioParser:
                 file_path = str(feature_file)
 
             scenario_data = {
+    
                 "feature_file": file_path,
                 "scenario_name": scenario_name,
                 "line_number": scenario_line,
                 "user_story_references": user_story_refs,
                 "test_type": "bdd",
-            }
+            
+}
             scenarios.append(scenario_data)
 
         return scenarios
@@ -511,11 +548,13 @@ class BDDScenarioParser:
             scenarios = self.parse_feature_files()
 
             stats = {
+    
                 "scenarios_found": len(scenarios),
                 "scenarios_linked": 0,
                 "user_stories_updated": 0,
                 "errors": 0,
-            }
+            
+}
 
             for scenario in scenarios:
                 try:
@@ -553,21 +592,23 @@ class BDDScenarioParser:
             test = (
                 db.query(Test)
                 .filter(
-                    Test.test_file_path == scenario["feature_file"],
-                    Test.bdd_scenario_name == scenario["scenario_name"],
-                )
+    Test.test_file_path == scenario["feature_file"],
+    Test.bdd_scenario_name == scenario["scenario_name"],
+    
+)
                 .first()
             )
 
             if not test:
                 test = Test(
-                    test_type="bdd",
-                    test_file_path=scenario["feature_file"],
-                    title=f"BDD: {scenario['scenario_name']}",
-                    bdd_scenario_name=scenario["scenario_name"],
-                    epic_id=user_story.epic_id,
-                    description=f"BDD scenario from {scenario['feature_file']}:{scenario['line_number']}",
-                )
+    test_type="bdd",
+    test_file_path=scenario["feature_file"],
+    title=f"BDD: {scenario['scenario_name']}",
+    bdd_scenario_name=scenario["scenario_name"],
+    epic_id=user_story.epic_id,
+    description=f"BDD scenario from {scenario['feature_file']}:{scenario['line_number']}",
+    
+)
                 db.add(test)
             else:
                 test.epic_id = user_story.epic_id

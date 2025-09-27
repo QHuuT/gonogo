@@ -10,9 +10,9 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from .api.rtm import router as rtm_router
-from .api.epic_dependencies import router as epic_dependencies_router
 from .api.capabilities import router as capabilities_router
+from .api.epic_dependencies import router as epic_dependencies_router
+from .api.rtm import router as rtm_router
 from .database import check_database_health
 from .services.epic_metrics_refresher import (
     get_refresh_interval,
@@ -32,7 +32,9 @@ async def lifespan(app: FastAPI):
     # Startup
     if should_enable_background_refresh():
         interval = get_refresh_interval()
-        app.state.metric_refresh_task = asyncio.create_task(metrics_refresh_loop(interval))
+        app.state.metric_refresh_task = asyncio.create_task(
+            metrics_refresh_loop(interval)
+        )
 
     yield
 
@@ -47,7 +49,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="GoNoGo Blog & RTM System",
-    description="GDPR-compliant blog with Requirements Traceability Matrix database",
+    description=(
+        "GDPR-compliant blog with Requirements Traceability Matrix database"
+    ),
     version="0.1.0",
     lifespan=lifespan,
 )
@@ -65,16 +69,21 @@ templates = Jinja2Templates(directory="src/be/templates")
 
 
 @app.get("/")
-async def home():
+async def home() -> dict[str, str]:
     """Home page route."""
     return {"message": "GoNoGo Blog & RTM System - Ready"}
 
 
 @app.get("/health")
-async def health_check():
+async def health_check() -> dict[str, str | dict]:
     """Health check endpoint with database status."""
     db_health = check_database_health()
-    return {"status": "healthy", "service": "gonogo-blog-rtm", "database": db_health}
+    return {
+        "status": "healthy",
+        "service": "gonogo-blog-rtm",
+        "database": db_health,
+    }
+
 
 # Force reload 1758799468.9461117
 

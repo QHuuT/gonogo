@@ -8,9 +8,7 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 Architecture Decision: ADR-003 - Hybrid GitHub + Database RTM Architecture
 """
 
-from datetime import datetime
-
-from sqlalchemy import Column, DateTime, Index, Integer, String, Text
+from sqlalchemy import Column, DateTime, Integer, String, Text
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql import func
 
@@ -41,7 +39,9 @@ class TraceabilityBase(Base):
     # Development versions (git-based, internal development)
     introduced_in_commit = Column(String(40), index=True)  # Git commit SHA
     introduced_in_branch = Column(String(100), index=True)  # Git branch name
-    resolved_in_commit = Column(String(40), index=True)  # Resolution commit SHA
+    resolved_in_commit = Column(
+        String(40), index=True
+    )  # Resolution commit SHA
 
     # Release versions (customer-facing versions)
     target_release_version = Column(
@@ -90,7 +90,11 @@ class TraceabilityBase(Base):
 
         try:
             versions = (
-                json.loads(self.affects_versions) if self.affects_versions else []
+                (
+                    json.loads(self.affects_versions)
+                    if self.affects_versions
+                    else []
+                )
             )
         except (json.JSONDecodeError, TypeError):
             versions = []
@@ -105,7 +109,11 @@ class TraceabilityBase(Base):
 
         try:
             versions = (
-                json.loads(self.fixed_in_versions) if self.fixed_in_versions else []
+                (
+                    json.loads(self.fixed_in_versions)
+                    if self.fixed_in_versions
+                    else []
+                )
             )
         except (json.JSONDecodeError, TypeError):
             versions = []
@@ -120,18 +128,26 @@ class TraceabilityBase(Base):
 
         try:
             versions = (
-                json.loads(self.fixed_in_versions) if self.fixed_in_versions else []
+                (
+                    json.loads(self.fixed_in_versions)
+                    if self.fixed_in_versions
+                    else []
+                )
             )
             return version in versions
         except (json.JSONDecodeError, TypeError):
             return False
 
     def __repr__(self):
-        return f"<{self.__class__.__name__}(id={self.id}, title='{self.title}', status='{self.status}')>"
+        return (
+    f"<{self.__class__.__name__}(id={self.id}, "
+    f"title='{self.title}', status='{self.status}')>"
+)
 
     def to_dict(self):
         """Convert to dictionary for JSON serialization."""
         return {
+    
             "id": self.id,
             "title": self.title,
             "description": self.description,
@@ -147,6 +163,11 @@ class TraceabilityBase(Base):
             "affects_versions": self.affects_versions,
             "fixed_in_versions": self.fixed_in_versions,
             # Audit
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-        }
+            "created_at": (
+                self.created_at.isoformat() if self.created_at else None
+            ),
+            "updated_at": (
+                self.updated_at.isoformat() if self.updated_at else None
+            ),
+        
+}

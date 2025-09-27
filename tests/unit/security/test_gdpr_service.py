@@ -3,7 +3,7 @@ Unit tests for GDPR service.
 Testing pyramid: Unit tests (70% of total tests)
 """
 
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
