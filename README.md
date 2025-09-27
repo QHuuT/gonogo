@@ -341,6 +341,155 @@ git push origin main
 - **EP-003**: Privacy and Consent Management (29 pts)
 - **EP-004**: GitHub Workflow Integration (21 pts) ✅
 
+## 🛠️ Development Best Practices
+
+### **🔒 Security & GDPR Compliance**
+
+#### **Timing Attack Prevention**
+```python
+# ✅ SECURE: Constant-time operations prevent information leakage
+def secure_operation(input_id: str) -> bool:
+    record = query_database(input_id)
+
+    if record:
+        # Valid case: perform actual work
+        perform_real_operations(record)
+        return True
+    else:
+        # Invalid case: perform dummy equivalent work to maintain timing consistency
+        perform_dummy_operations()
+        return False
+
+# ❌ VULNERABLE: Timing differences leak information
+def vulnerable_operation(input_id: str) -> bool:
+    record = query_database(input_id)
+    if record:
+        perform_complex_work()  # Takes ~15ms
+        return True
+    else:
+        return False  # Takes ~1.5ms - creates timing oracle
+```
+
+#### **Security Test Design Principles**
+- **Test actual vulnerabilities**: Error message disclosure, payload reflection, schema exposure
+- **Don't flag legitimate system info**: Health endpoints legitimately contain database status
+- **Focus on attack vectors**: Malicious input handling, error response content, data validation
+- **Understand system design**: Health endpoints are supposed to show system status
+
+#### **GDPR-Compliant DateTime Handling**
+```python
+# ✅ CORRECT: Timezone-aware datetime for GDPR compliance
+from datetime import datetime, UTC
+timestamp = datetime.now(UTC)
+
+# ❌ DEPRECATED: Will be removed in future Python versions
+from datetime import datetime
+timestamp = datetime.utcnow()  # Creates naive datetime objects
+```
+
+### **🧪 Testing Excellence**
+
+#### **CLI Testing Standards**
+```python
+# ✅ TESTABLE: Use click.echo() for messages that need testing
+@click.command()
+def my_command():
+    click.echo("Operation completed successfully")  # Captured by CliRunner
+
+# ❌ NOT TESTABLE: Rich console output bypasses Click test capture
+@click.command()
+def my_command():
+    console.print("[green]Operation completed[/green]")  # Not captured in tests
+
+# 📋 OUTPUT METHOD GUIDELINES:
+# - Use click.echo() for: Simple messages, success/failure notifications, test assertions
+# - Use console.print() for: Tables, progress bars, complex formatting (non-testable)
+```
+
+#### **Database Resource Management**
+```python
+# ✅ SECURE: Proper engine disposal prevents Windows permission errors
+@pytest.fixture(scope="session")
+def test_db():
+    engine = create_engine(test_db_url)
+    Base.metadata.create_all(bind=engine)
+
+    try:
+        yield test_db_url
+    finally:
+        engine.dispose()  # Essential for Windows compatibility
+
+        try:
+            os.unlink(temp_file.name)
+        except PermissionError:
+            time.sleep(0.1)  # Windows file locking retry
+            try:
+                os.unlink(temp_file.name)
+            except PermissionError:
+                warnings.warn(f"Could not delete: {temp_file.name}")
+```
+
+#### **Regression Test Patterns**
+- **Every debug issue must have a regression test** preventing reoccurrence
+- **Test both positive and negative cases** with comprehensive edge case coverage
+- **Include educational comments** explaining why the test exists and what it prevents
+- **Validate both functionality and security** aspects of fixes
+
+### **📊 Code Quality Standards**
+
+#### **Import Management & Future-Proofing**
+```python
+# ✅ CURRENT: Use modern SQLAlchemy 2.0+ imports
+from sqlalchemy.orm import declarative_base
+
+# ❌ DEPRECATED: Old import paths (MovedIn20Warning)
+from sqlalchemy.ext.declarative import declarative_base
+
+# 📋 DEPRECATION MANAGEMENT PROCESS:
+# 1. Monitor deprecation warnings in CI/CD output
+# 2. Update imports proactively during library upgrades
+# 3. Create regression tests for import pattern changes
+# 4. Regular audits of library import patterns
+```
+
+#### **Cross-Platform Compatibility**
+- **Windows file handling**: Always include permission error handling for file operations
+- **Path handling**: Use os.path.join() or pathlib for cross-platform paths
+- **Encoding**: Specify encoding='utf-8' for subprocess calls and file operations
+- **Resource cleanup**: Dispose database engines and close file handles properly
+
+### **🔍 Quality Assurance Process**
+
+#### **Debug Report System (F-/E-/W- Categories)**
+- **F- (Failures)**: Test failures, logic flaws, functional issues
+- **E- (Errors)**: Infrastructure errors, permission issues, system failures
+- **W- (Warnings)**: Deprecation warnings, technical debt, future compatibility
+
+#### **Quality Gates (MANDATORY)**
+```bash
+# 1. Code quality and formatting
+black src/ tests/ && isort src/ tests/ && flake8 src/ tests/ && mypy src/
+
+# 2. Security and GDPR compliance validation
+pytest tests/security/ -v
+
+# 3. Deprecation warning elimination
+python -W error::DeprecationWarning -c "import warnings; warnings.simplefilter('always'); import src"
+
+# 4. Cross-platform compatibility verification
+pytest tests/ -v  # Run on both Windows and Unix systems
+
+# 5. RTM link validation
+python tools/rtm-links.py validate
+```
+
+#### **Prevention Measures Framework**
+- **Security-first approach**: Every authentication/authorization operation reviewed for timing attacks
+- **Comprehensive regression testing**: Statistical analysis for timing-sensitive operations
+- **Proactive deprecation management**: Regular library update cycles with import modernization
+- **Platform-agnostic design**: Test infrastructure works on Windows, macOS, and Linux
+- **Documentation-driven development**: Every debug issue produces educational regression tests
+
 ## 🛠️ Complete Technology Stack
 
 ### **Backend Architecture**
