@@ -1,7 +1,8 @@
 """
 Defect Validation Service
 
-Provides ongoing validation for defect-user story relationships in the RTM system.
+Provides ongoing validation for defect-user story relationships in the
+RTM system.
 Ensures relationship consistency and supports automated monitoring.
 
 Related Issue: US-00011 - Fix Defect-User Story Relationship Links

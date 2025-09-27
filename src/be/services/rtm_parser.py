@@ -1,7 +1,8 @@
 """
 RTM Markdown Parser for migrating existing RTM data to database.
 
-Parses Requirements Traceability Matrix markdown files and converts them to database entities.
+Parses Requirements Traceability Matrix markdown files and converts them
+to database entities.
 
 Related Issue: US-00054 - Database models and migration foundation
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
@@ -61,12 +62,17 @@ class RTMMarkdownParser:
                     epic_data = {
     
                         "epic_id": epic_id,
-                        "title": title or f"Epic {epic_id
-}",
+                        "title": title or f"Epic {epic_id}",
                         "description": description,
-                        "status": self._extract_status_from_context(lines, i),
-                        "priority": self._extract_priority_from_context(lines, i),
-                        "business_value": self._extract_business_value(lines, i),
+                        "status": self._extract_status_from_context(
+                            lines, i
+                        ),
+                        "priority": self._extract_priority_from_context(
+                            lines, i
+                        ),
+                        "business_value": self._extract_business_value(
+                            lines, i
+                        ),
                     }
                     epics.append(epic_data)
                     break
@@ -84,7 +90,9 @@ class RTMMarkdownParser:
             for i, line in enumerate(lines):
                 if us_id in line:
                     title = self._extract_title_from_line(line, us_id)
-                    github_issue = self._extract_github_issue_from_context(lines, i)
+                    github_issue = self._extract_github_issue_from_context(
+                        lines, i
+                    )
                     epic_id = self._find_parent_epic(lines, i)
 
                     us_data = {
