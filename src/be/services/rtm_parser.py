@@ -37,13 +37,11 @@ class RTMMarkdownParser:
             content = f.read()
 
         return {
-    
             "epics": self._extract_epics(content),
             "user_stories": self._extract_user_stories(content),
             "defects": self._extract_defects(content),
             "tests": self._extract_tests(content),
-        
-}
+        }
 
     def _extract_epics(self, content: str) -> List[Dict]:
         """Extract Epic information from markdown content."""
@@ -60,19 +58,12 @@ class RTMMarkdownParser:
                     description = self._extract_description(lines, i)
 
                     epic_data = {
-    
                         "epic_id": epic_id,
                         "title": title or f"Epic {epic_id}",
                         "description": description,
-                        "status": self._extract_status_from_context(
-                            lines, i
-                        ),
-                        "priority": self._extract_priority_from_context(
-                            lines, i
-                        ),
-                        "business_value": self._extract_business_value(
-                            lines, i
-                        ),
+                        "status": self._extract_status_from_context(lines, i),
+                        "priority": self._extract_priority_from_context(lines, i),
+                        "business_value": self._extract_business_value(lines, i),
                     }
                     epics.append(epic_data)
                     break
@@ -90,24 +81,18 @@ class RTMMarkdownParser:
             for i, line in enumerate(lines):
                 if us_id in line:
                     title = self._extract_title_from_line(line, us_id)
-                    github_issue = self._extract_github_issue_from_context(
-                        lines, i
-                    )
+                    github_issue = self._extract_github_issue_from_context(lines, i)
                     epic_id = self._find_parent_epic(lines, i)
 
                     us_data = {
-    
                         "user_story_id": us_id,
-                        "title": title or f"User Story {us_id
-}",
+                        "title": title or f"User Story {us_id}",
                         "description": self._extract_description(lines, i),
                         "github_issue_number": github_issue,
                         "epic_reference": epic_id,  # Will be resolved to DB ID later
                         "story_points": self._extract_story_points(lines, i),
                         "priority": self._extract_priority_from_context(lines, i),
-                        "implementation_status": self._extract_implementation_status(
-                            lines, i
-                        ),
+                        "implementation_status": self._extract_implementation_status(lines, i),
                     }
                     user_stories.append(us_data)
                     break
@@ -128,10 +113,8 @@ class RTMMarkdownParser:
                     github_issue = self._extract_github_issue_from_context(lines, i)
 
                     def_data = {
-    
                         "defect_id": def_id,
-                        "title": title or f"Defect {def_id
-}",
+                        "title": title or f"Defect {def_id}",
                         "description": self._extract_description(lines, i),
                         "github_issue_number": github_issue,
                         "severity": self._extract_severity(lines, i),
@@ -167,15 +150,11 @@ class RTMMarkdownParser:
                 test_type = "bdd"
 
             test_data = {
-    
                 "test_type": test_type,
                 "test_file_path": test_path,
-                "title": f"Test: {Path(full_path).stem
-}",
+                "title": f"Test: {Path(full_path).stem}",
                 "description": f"Test file: {test_path}",
-                "test_function_name": self._extract_test_function_from_context(
-                    content, test_path
-                ),
+                "test_function_name": self._extract_test_function_from_context(content, test_path),
             }
             tests.append(test_data)
 
@@ -205,9 +184,7 @@ class RTMMarkdownParser:
 
         return " ".join(description_lines) if description_lines else None
 
-    def _extract_github_issue_from_context(
-        self, lines: List[str], start_index: int
-    ) -> Optional[int]:
+    def _extract_github_issue_from_context(self, lines: List[str], start_index: int) -> Optional[int]:
         """Extract GitHub issue number from surrounding context."""
         for i in range(max(0, start_index - 2), min(start_index + 3, len(lines))):
             github_match = re.search(self.github_issue_pattern, lines[i])
@@ -255,9 +232,7 @@ class RTMMarkdownParser:
             return int(points_match.group(1))
         return 0
 
-    def _extract_business_value(
-        self, lines: List[str], start_index: int
-    ) -> Optional[str]:
+    def _extract_business_value(self, lines: List[str], start_index: int) -> Optional[str]:
         """Extract business value from context."""
         for i in range(start_index, min(start_index + 10, len(lines))):
             line = lines[i].lower()
@@ -305,9 +280,7 @@ class RTMMarkdownParser:
         else:
             return "bug"
 
-    def _extract_test_function_from_context(
-        self, content: str, test_path: str
-    ) -> Optional[str]:
+    def _extract_test_function_from_context(self, content: str, test_path: str) -> Optional[str]:
         """Extract test function name from context."""
         # Find lines near the test path
         lines = content.split("\n")
@@ -348,13 +321,11 @@ class RTMDataMigrator:
             db.commit()
 
             return {
-    
                 "epics": epic_count,
                 "user_stories": us_count,
                 "tests": test_count,
                 "defects": defect_count,
-            
-}
+            }
 
         except Exception as e:
             db.rollback()
@@ -372,10 +343,9 @@ class RTMDataMigrator:
                 continue
 
             epic = Epic(
-    epic_id=data["epic_id"],
-    title=data["title"],
-    description=data.get("description"
-),
+                epic_id=data["epic_id"],
+                title=data["title"],
+                description=data.get("description"),
                 business_value=data.get("business_value"),
                 status=data.get("status", "planned"),
                 priority=data.get("priority", "medium"),
@@ -396,11 +366,7 @@ class RTMDataMigrator:
                 continue
 
             # Check if user story already exists
-            existing = (
-                db.query(UserStory)
-                .filter(UserStory.user_story_id == data["user_story_id"])
-                .first()
-            )
+            existing = db.query(UserStory).filter(UserStory.user_story_id == data["user_story_id"]).first()
             if existing:
                 continue
 
@@ -411,12 +377,11 @@ class RTMDataMigrator:
 
             if epic_db_id:  # Only create if we have a valid epic reference
                 us = UserStory(
-    user_story_id=data["user_story_id"],
-    epic_id=epic_db_id,
-    github_issue_number=data["github_issue_number"],
-    title=data["title"],
-    description=data.get("description"
-),
+                    user_story_id=data["user_story_id"],
+                    epic_id=epic_db_id,
+                    github_issue_number=data["github_issue_number"],
+                    title=data["title"],
+                    description=data.get("description"),
                     story_points=data.get("story_points", 0),
                     priority=data.get("priority", "medium"),
                     implementation_status=data.get("implementation_status", "todo"),
@@ -431,20 +396,15 @@ class RTMDataMigrator:
         count = 0
         for data in test_data:
             # Check if test already exists
-            existing = (
-                db.query(Test)
-                .filter(Test.test_file_path == data["test_file_path"])
-                .first()
-            )
+            existing = db.query(Test).filter(Test.test_file_path == data["test_file_path"]).first()
             if existing:
                 continue
 
             test = Test(
-    test_type=data["test_type"],
-    test_file_path=data["test_file_path"],
-    title=data["title"],
-    description=data.get("description"
-),
+                test_type=data["test_type"],
+                test_file_path=data["test_file_path"],
+                title=data["title"],
+                description=data.get("description"),
                 test_function_name=data.get("test_function_name"),
             )
             db.add(test)
@@ -461,18 +421,15 @@ class RTMDataMigrator:
                 continue
 
             # Check if defect already exists
-            existing = (
-                db.query(Defect).filter(Defect.defect_id == data["defect_id"]).first()
-            )
+            existing = db.query(Defect).filter(Defect.defect_id == data["defect_id"]).first()
             if existing:
                 continue
 
             defect = Defect(
-    defect_id=data["defect_id"],
-    github_issue_number=data["github_issue_number"],
-    title=data["title"],
-    description=data.get("description"
-),
+                defect_id=data["defect_id"],
+                github_issue_number=data["github_issue_number"],
+                title=data["title"],
+                description=data.get("description"),
                 severity=data.get("severity", "medium"),
                 priority=data.get("priority", "medium"),
                 status=data.get("status", "planned"),

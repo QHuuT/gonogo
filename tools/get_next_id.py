@@ -43,7 +43,8 @@ def get_next_epic_id() -> str:
 def get_next_us_id() -> str:
     """Récupère le prochain ID User Story disponible via l'API."""
     try:
-        response = requests.get("http://localhost:8000/api/rtm/user-stories/", timeout=5)
+        response = \
+            requests.get("http://localhost:8000/api/rtm/user-stories/", timeout=5)
         response.raise_for_status()
         user_stories = response.json()
 
@@ -63,7 +64,8 @@ def get_next_us_id() -> str:
                     if start_idx >= 0:
                         id_part = source_id[start_idx:start_idx+8]  # US-00047
                         if ':' in id_part:
-                            id_part = id_part.split(':')[0]  # Enlever le titre après ':'
+                            id_part = \
+                                id_part.split(':')[0]  # Enlever le titre après ':'
                         num = int(id_part.replace('US-', '').lstrip('0') or '0')
                         us_numbers.append(num)
                 except ValueError:

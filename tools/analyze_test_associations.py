@@ -35,7 +35,10 @@ class TestAssociationAnalyzer:
         test_files += list(self.test_root.rglob("*_test.py"))
         feature_files = list(self.test_root.rglob("*.feature"))
 
-        print(f"Found {len(test_files)} test files and {len(feature_files)} feature files")
+        print(
+            f"Found {len(test_files)}"
+            f"test files and {len(feature_files)} feature files"
+        )
         print()
 
         # Analyze Python test files
@@ -249,7 +252,8 @@ class TestAssociationAnalyzer:
         total_tests = len(associations)
         tests_with_us = sum(1 for a in associations.values() if a['user_stories'])
         tests_with_epic = sum(1 for a in associations.values() if a['epics'])
-        tests_with_component = sum(1 for a in associations.values() if a['components'])
+        tests_with_component = \
+            sum(1 for a in associations.values() if a['components'])
         tests_with_defects = sum(1 for a in associations.values() if a['defects'])
 
         print(f"STATISTICS:")
@@ -258,7 +262,10 @@ class TestAssociationAnalyzer:
         print(f"   Tests with Epic associations: {tests_with_epic}")
         print(f"   Tests with Component assignments: {tests_with_component}")
         print(f"   Tests with Defect references: {tests_with_defects}")
-        print(f"   Orphaned tests: {total_tests - max(tests_with_us, tests_with_epic)}")
+        print(
+            f"   Orphaned tests:"
+            f"{total_tests - max(tests_with_us, tests_with_epic)}"
+        )
         print()
 
         # Test type breakdown
@@ -279,7 +286,8 @@ class TestAssociationAnalyzer:
         print(f"DISCOVERED USER STORIES: {len(all_us)}")
         if all_us:
             for us in sorted(all_us):
-                test_count = sum(1 for a in associations.values() if us in a['user_stories'])
+                test_count = \
+                    sum(1 for a in associations.values() if us in a['user_stories'])
                 print(f"   {us}: {test_count} test(s)")
         print()
 
@@ -290,7 +298,10 @@ class TestAssociationAnalyzer:
                 print(f"\n   File: {key}")
                 print(f"   Type: {assoc['test_type']}")
                 if assoc['user_stories']:
-                    print(f"   User Stories: {', '.join(sorted(assoc['user_stories']))}")
+                    print(
+                        f"   User Stories:"
+                        f"{', '.join(sorted(assoc['user_stories']))}"
+                    )
                 if assoc['epics']:
                     print(f"   Epics: {', '.join(sorted(assoc['epics']))}")
                 if assoc['components']:

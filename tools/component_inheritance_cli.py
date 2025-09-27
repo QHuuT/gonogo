@@ -63,12 +63,18 @@ def validate_consistency():
         print(f"Total Inconsistencies: {results['total_inconsistencies']}")
 
         if results['defect_inconsistencies']:
-            print(f"\nDefect Inconsistencies ({len(results['defect_inconsistencies'])}):")
+            print(
+                f"\nDefect Inconsistencies"
+                f"({len(results['defect_inconsistencies'])}):"
+            )
             for inconsistency in results['defect_inconsistencies']:
                 print(f"  {inconsistency['defect_id']}: {inconsistency['defect_component']} != {inconsistency['user_story_id']}: {inconsistency['user_story_component']}")
 
         if results['test_inconsistencies']:
-            print(f"\nTest Inconsistencies ({len(results['test_inconsistencies'])}):")
+            print(
+                f"\nTest Inconsistencies"
+                f"({len(results['test_inconsistencies'])}):"
+            )
             for inconsistency in results['test_inconsistencies']:
                 print(f"  Test {inconsistency['test_id']}: {inconsistency['test_component']} != {inconsistency['user_story_id']}: {inconsistency['user_story_component']}")
 
@@ -136,7 +142,8 @@ def main():
     """Main entry point for the CLI tool."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Component inheritance management CLI')
+    parser = \
+        argparse.ArgumentParser(description='Component inheritance management CLI')
 
     # Common arguments
     parser.add_argument('--dry-run', action='store_true', default=True,

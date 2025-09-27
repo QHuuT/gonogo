@@ -70,15 +70,9 @@ class GitHubSync(TraceabilityBase):
 
     # Indexes for performance
     __table_args__ = (
-        Index(
-            "idx_github_sync_issue", "github_issue_number", "github_issue_type"
-        ),
+        Index("idx_github_sync_issue", "github_issue_number", "github_issue_type"),
         Index("idx_github_sync_status", "sync_status", "has_conflicts"),
-        Index(
-            "idx_github_sync_epic",
-            "referenced_epic_id",
-            "referenced_epic_db_id"
-        ),
+        Index("idx_github_sync_epic", "referenced_epic_id", "referenced_epic_db_id"),
         Index("idx_github_sync_time", "last_sync_time"),
     )
 
@@ -139,11 +133,7 @@ class GitHubSync(TraceabilityBase):
                 "referenced_epic_id": self.referenced_epic_id,
                 "referenced_epic_db_id": self.referenced_epic_db_id,
                 "last_sync_time": (
-                    (
-                        self.last_sync_time.isoformat()
-                        if self.last_sync_time
-                        else None
-                    )
+                    self.last_sync_time.isoformat() if self.last_sync_time else None
                 ),
                 "sync_status": self.sync_status,
                 "github_updated_at": (

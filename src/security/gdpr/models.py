@@ -60,9 +60,7 @@ class ConsentRecord(Base):
     consent_version = Column(String(10), nullable=False, default="1.0")
 
     # Timestamps for GDPR compliance
-    created_at = Column(
-        DateTime, default=lambda: datetime.now(UTC), nullable=False
-    )
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
     updated_at = Column(
         DateTime,
         default=lambda: datetime.now(UTC),
@@ -75,12 +73,8 @@ class ConsentRecord(Base):
     withdrawal_reason = Column(String(100), nullable=True)
 
     # Audit trail
-    ip_address_hash = Column(
-        String(64), nullable=True
-    )  # Hashed IP for security
-    user_agent_hash = Column(
-        String(64), nullable=True
-    )  # Hashed for fingerprinting prevention
+    ip_address_hash = Column(String(64), nullable=True)  # Hashed IP for security
+    user_agent_hash = Column(String(64), nullable=True)  # Hashed for fingerprinting prevention
 
 
 class DataProcessingRecord(Base):
@@ -96,27 +90,19 @@ class DataProcessingRecord(Base):
     legal_basis = Column(String(30), nullable=False)
 
     # Data categories
-    data_categories = Column(
-        JSON, nullable=False
-    )  # List of data types processed
-    data_subjects = Column(
-        String(100), nullable=False
-    )  # Who the data is about
+    data_categories = Column(JSON, nullable=False)  # List of data types processed
+    data_subjects = Column(String(100), nullable=False)  # Who the data is about
 
     # Recipients and transfers
     recipients = Column(JSON, nullable=True)  # Who receives the data
-    third_country_transfers = Column(
-        JSON, nullable=True
-    )  # International transfers
+    third_country_transfers = Column(JSON, nullable=True)  # International transfers
 
     # Retention and security
     retention_period_days = Column(Integer, nullable=True)
     security_measures = Column(JSON, nullable=False)
 
     # Timestamps
-    created_at = Column(
-        DateTime, default=lambda: datetime.now(UTC), nullable=False
-    )
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
     updated_at = Column(
         DateTime,
         default=lambda: datetime.now(UTC),
@@ -136,9 +122,7 @@ class DataSubjectRequest(Base):
     status = Column(String(20), nullable=False, default="pending")
 
     # Contact information (encrypted)
-    contact_email_hash = Column(
-        String(64), nullable=False
-    )  # Hashed for privacy
+    contact_email_hash = Column(String(64), nullable=False)  # Hashed for privacy
 
     # Request specifics
     description = Column(Text, nullable=True)
@@ -149,9 +133,7 @@ class DataSubjectRequest(Base):
     completion_notes = Column(Text, nullable=True)
 
     # Timestamps (GDPR requires 30-day response time)
-    created_at = Column(
-        DateTime, default=lambda: datetime.now(UTC), nullable=False
-    )
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
     completed_at = Column(DateTime, nullable=True)
     due_date = Column(DateTime, nullable=False)
 
@@ -215,12 +197,7 @@ class GDPRCompliance(BaseModel):
     last_audit_date: Optional[datetime] = None
 
     @classmethod
-    def calculate_compliance_score(
-    cls,
-    consent_records: int,
-    pending_requests: int,
-    overdue_requests: int
-) -> float:
+    def calculate_compliance_score(cls, consent_records: int, pending_requests: int, overdue_requests: int) -> float:
         """Calculate a GDPR compliance score (0-100)."""
 
         score = 100.0
@@ -231,8 +208,6 @@ class GDPRCompliance(BaseModel):
 
         # Deduct points for too many pending requests
         if pending_requests > 5:
-            score -= min(
-                (pending_requests - 5) * 5, 25
-            )  # Max 25 point deduction
+            score -= min((pending_requests - 5) * 5, 25)  # Max 25 point deduction
 
         return max(score, 0.0)

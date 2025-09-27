@@ -49,36 +49,23 @@ class RTMLinkGenerator:
         self.github_repo = self.config.get("github", {}).get("repo", "gonogo")
         self.link_patterns = self.config.get("link_patterns", {})
 
-    def _load_config(
-        self, config_path: Optional[str] = None
-    ) -> Dict[str, Any]:
+    def _load_config(self, config_path: Optional[str] = None) -> Dict[str, Any]:
         """Load configuration from file or use defaults."""
         default_config = {
             "github": {"owner": "QHuuT", "repo": "gonogo"},
             "link_patterns": {
-                "epic": (
-                    "https://github.com/{owner}/{repo}/issues?"
-                    "q=is%3Aissue+{id}"
-                ),
-                "user_story": (
-                    "https://github.com/{owner}/{repo}/issues?"
-                    "q=is%3Aissue+{id}"
-                ),
-                "defect": (
-                    "https://github.com/{owner}/{repo}/issues?"
-                    "q=is%3Aissue+{id}"
-                ),
+                "epic": ("https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}"),
+                "user_story": ("https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}"),
+                "defect": ("https://github.com/{owner}/{repo}/issues?q=is%3Aissue+{id}"),
                 "gdpr": "../context/compliance/gdpr-requirements.md#{id}",
                 "bdd_scenario": "../../{path}",
                 "file": "../../{path}",
             },
             "validation": {
-    
                 "check_file_existence": True,
                 "check_github_format": True,
                 "require_https": False,
-            
-},
+            },
         }
 
         if not config_path or not os.path.exists(config_path):
@@ -96,9 +83,7 @@ class RTMLinkGenerator:
             # Return defaults if config loading fails
             return default_config
 
-    def generate_github_issue_link(
-        self, issue_id: str, bold: bool = False
-    ) -> str:
+    def generate_github_issue_link(self, issue_id: str, bold: bool = False) -> str:
         """Generate GitHub issue search link."""
         # Determine issue type from ID
         if issue_id.startswith("EP-"):
@@ -110,21 +95,12 @@ class RTMLinkGenerator:
         else:
             pattern = self.link_patterns.get("user_story")  # Default
 
-        url = pattern.format(
-    owner=self.github_owner,
-    repo=self.github_repo,
-    id=issue_id
-)
+        url = pattern.format(owner=self.github_owner, repo=self.github_repo, id=issue_id)
 
         text = f"**{issue_id}**" if bold else issue_id
         return f"[{text}]({url})"
 
-    def generate_file_link(
-    self,
-    target_path: str,
-    rtm_path: str,
-    display_text: Optional[str] = None
-) -> str:
+    def generate_file_link(self, target_path: str, rtm_path: str, display_text: Optional[str] = None) -> str:
         """Generate relative file link from RTM location."""
         # If it's an external URL, return as-is
         if target_path.startswith(("http://", "https://")):
@@ -151,17 +127,13 @@ class RTMLinkGenerator:
 
         return f"[{text}]({relative_path})"
 
-    def generate_bdd_scenario_link(
-        self, feature_file: str, scenario_name: str, rtm_path: str
-    ) -> str:
+    def generate_bdd_scenario_link(self, feature_file: str, scenario_name: str, rtm_path: str) -> str:
         """Generate BDD scenario link."""
         feature_name = Path(feature_file).stem
         display_text = f"{feature_name}.feature:{scenario_name}"
         return self.generate_file_link(feature_file, rtm_path, display_text)
 
-    def extract_references_from_rtm(
-        self, content: str
-    ) -> List[Tuple[str, str, str]]:
+    def extract_references_from_rtm(self, content: str) -> List[Tuple[str, str, str]]:
         """Extract all references from RTM content."""
         references = []
 
@@ -215,11 +187,7 @@ class RTMLinkGenerator:
             with open(rtm_file_path, "r", encoding="utf-8") as f:
                 content = f.read()
         except Exception as e:
-            return RTMValidationResult(
-    total_links=0,
-    valid_links=0,
-    errors=[f"Failed to read RTM file: {e}"]
-)
+            return RTMValidationResult(total_links=0, valid_links=0, errors=[f"Failed to read RTM file: {e}"])
 
         references = self.extract_references_from_rtm(content)
         total_links = len(references)
@@ -238,9 +206,7 @@ class RTMLinkGenerator:
                     valid_links += 1
                 else:
                     link.valid = False
-                    link.error_message = (
-                        f"Invalid GitHub issue format: {clean_text}"
-                    )
+                    link.error_message = f"Invalid GitHub issue format: {clean_text}"
                     invalid_links.append(link)
 
             elif ref_type == "file" or ref_type == "bdd_scenario":
@@ -256,16 +222,13 @@ class RTMLinkGenerator:
                 valid_links += 1
 
         return RTMValidationResult(
-    total_links=total_links,
-    valid_links=valid_links,
-    invalid_links=invalid_links,
-    warnings=warnings,
-    
-)
+            total_links=total_links,
+            valid_links=valid_links,
+            invalid_links=invalid_links,
+            warnings=warnings,
+        )
 
-    def update_rtm_links(
-        self, rtm_file_path: str, dry_run: bool = False
-    ) -> Dict[str, int]:
+    def update_rtm_links(self, rtm_file_path: str, dry_run: bool = False) -> Dict[str, int]:
         """Update RTM links to current format."""
         try:
             with open(rtm_file_path, "r", encoding="utf-8") as f:
@@ -275,13 +238,11 @@ class RTMLinkGenerator:
 
         original_content = content
         updates = {
-    
             "epic_links": 0,
             "user_story_links": 0,
             "defect_links": 0,
             "file_links": 0,
-        
-}
+        }
 
         # Update GitHub issue links to current format
         def replace_github_link(match):
@@ -292,9 +253,7 @@ class RTMLinkGenerator:
             clean_text = text.replace("*", "")
 
             if self.validate_github_link(clean_text):
-                new_link = self.generate_github_issue_link(
-                    clean_text, "**" in text
-                )
+                new_link = self.generate_github_issue_link(clean_text, "**" in text)
 
                 # Count updates
                 if clean_text.startswith("EP-"):

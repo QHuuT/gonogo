@@ -50,15 +50,20 @@ def cli(ctx, verbose: bool, backup_dir: str):
         click.echo(f"Backup manager initialized with directory: {backup_dir}")
 
 @cli.command()
-@click.option('--destinations', '-d', multiple=True, help='Specific backup destinations')
+@click.option(
+    '--destinations', '-d', multiple=True, help='Specific backup destinations'
+)
 @click.option('--encrypt', '-e', is_flag=True, help='Force GDPR encryption')
-@click.option('--dry-run', is_flag=True, help='Show what would be done without executing')
+@click.option(
+    '--dry-run', is_flag=True, help='Show what would be done without executing'
+)
 @click.pass_context
 def backup(ctx, destinations: tuple, encrypt: bool, dry_run: bool):
     """
     Create comprehensive database backup.
 
-    Creates backup with integrity validation, GDPR compliance, and multi-destination support.
+    Creates backup with integrity validation, GDPR compliance, and \
+    multi-destination support.
     Follows automated daily backup procedures with manual trigger capability.
     """
     verbose = ctx.obj['verbose']
@@ -68,7 +73,9 @@ def backup(ctx, destinations: tuple, encrypt: bool, dry_run: bool):
         click.echo("DRY RUN: Backup operations that would be performed:")
         click.echo(f"  - Backup directory: {backup_dir}")
         click.echo(f"  - GDPR encryption: {'Enabled' if encrypt else 'Auto-detect'}")
-        click.echo(f"  - Destinations: {len(destinations) if destinations else 'All configured'}")
+        click.echo(
+            f"  - Destinations: {len(destinations) if destinations else 'All configured'}"
+        )
         return
 
     try:
@@ -83,7 +90,9 @@ def backup(ctx, destinations: tuple, encrypt: bool, dry_run: bool):
 
         health = check_database_health()
         if health["status"] != "healthy":
-            click.echo(f"Database health check failed: {health.get('error', 'Unknown error')}")
+            click.echo(
+                f"Database health check failed: {health.get('error', 'Unknown error')}"
+            )
             sys.exit(1)
 
         if verbose:

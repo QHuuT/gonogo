@@ -428,7 +428,10 @@ def main():
         # Display key achievements
         print(f"\n*** Key Achievements:")
         print(f"[DONE] Log-failure correlation with {len(failure_ids)} scenarios")
-        print(f"[DONE] Context preservation (environment, test data, execution state)")
+        print(
+            f"[DONE] Context"
+            f"preservation (environment, test data, execution state)"
+        )
         print(f"[DONE] Debugging assistance with categorized hints")
         print(f"[DONE] Reproduction guide generation")
         print(f"[DONE] Pattern analysis and insights")

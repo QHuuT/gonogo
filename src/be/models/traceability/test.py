@@ -43,9 +43,7 @@ class Test(TraceabilityBase):
     bdd_scenario_name = Column(String(255), index=True)
 
     # Relationships (Hybrid Architecture)
-    epic_id = Column(
-        Integer, ForeignKey("epics.id"), nullable=True, index=True
-    )
+    epic_id = Column(Integer, ForeignKey("epics.id"), nullable=True, index=True)
     epic = relationship("Epic", back_populates="tests")
 
     # GitHub issue references (US/DEF remain in GitHub)
@@ -62,27 +60,19 @@ class Test(TraceabilityBase):
     failure_count = Column(Integer, default=0, nullable=False)
 
     # Test metadata
-    test_priority = Column(
-        String(20), default="medium", index=True, nullable=False
-    )
+    test_priority = Column(String(20), default="medium", index=True, nullable=False)
     # Values: critical, high, medium, low
 
     is_automated = Column(Boolean, default=True, index=True, nullable=False)
-    requires_manual_verification = Column(
-        Boolean, default=False, nullable=False
-    )
+    requires_manual_verification = Column(Boolean, default=False, nullable=False)
 
     # Coverage information
     code_coverage_percentage = Column(Float, nullable=True)
     covered_files = Column(Text)  # JSON array of covered file paths
 
     # GDPR and security
-    tests_gdpr_compliance = Column(
-        Boolean, default=False, index=True, nullable=False
-    )
-    tests_security_aspects = Column(
-        Boolean, default=False, index=True, nullable=False
-    )
+    tests_gdpr_compliance = Column(Boolean, default=False, index=True, nullable=False)
+    tests_security_aspects = Column(Boolean, default=False, index=True, nullable=False)
 
     # Error tracking
     last_error_message = Column(Text)
@@ -114,9 +104,7 @@ class Test(TraceabilityBase):
             "github_user_story_number",
             "github_defect_number",
         ),
-        Index(
-            "idx_test_bdd_scenario", "bdd_feature_file", "bdd_scenario_name"
-        ),
+        Index("idx_test_bdd_scenario", "bdd_feature_file", "bdd_scenario_name"),
         Index("idx_test_file_path", "test_file_path"),
     )
 
@@ -181,9 +169,12 @@ class Test(TraceabilityBase):
 
         if self.github_user_story_number:
             from .user_story import UserStory
-            user_story = session.query(UserStory).filter(
-                UserStory.github_issue_number == self.github_user_story_number
-            ).first()
+
+            user_story = (
+                session.query(UserStory)
+                .filter(UserStory.github_issue_number == self.github_user_story_number)
+                .first()
+            )
 
             if user_story and user_story.component:
                 self.component = user_story.component
@@ -213,9 +204,7 @@ class Test(TraceabilityBase):
                 "success_rate": self.get_success_rate(),
                 "test_priority": self.test_priority,
                 "is_automated": self.is_automated,
-                "requires_manual_verification": (
-                    self.requires_manual_verification
-                ),
+                "requires_manual_verification": (self.requires_manual_verification),
                 "code_coverage_percentage": self.code_coverage_percentage,
                 "tests_gdpr_compliance": self.tests_gdpr_compliance,
                 "tests_security_aspects": self.tests_security_aspects,

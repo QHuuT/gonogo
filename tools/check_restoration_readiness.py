@@ -22,11 +22,13 @@ def check_github_cli() -> Tuple[bool, str]:
     """Check if GitHub CLI is installed and authenticated."""
     try:
         # Check if gh is installed
-        result = subprocess.run(["gh", "--version"], capture_output=True, text=True, check=True)
+        result = \
+            subprocess.run(["gh", "--version"], capture_output=True, text=True, check=True)
         version = result.stdout.strip().split('\n')[0]
 
         # Check if authenticated
-        result = subprocess.run(["gh", "auth", "status"], capture_output=True, text=True, check=True)
+        result = \
+            subprocess.run(["gh", "auth", "status"], capture_output=True, text=True, check=True)
         auth_info = result.stderr.strip()  # gh auth status outputs to stderr
 
         return True, f"✅ GitHub CLI ready: {version}"
@@ -146,7 +148,10 @@ def run_readiness_check(repo: str) -> bool:
     else:
         print("⚠️  Some checks failed. Please address the issues above.")
         print("\nFor a dry run to see what would happen:")
-        print(f"python tools/restore_github_issues_comprehensive.py --repo {repo} --dry-run")
+        print(
+            f"python tools/restore_github_issues_comprehensive.py"
+            f"--repo {repo} --dry-run"
+        )
 
     return all_passed
 

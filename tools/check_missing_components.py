@@ -24,7 +24,8 @@ def check_missing_components():
     ).all()
 
     for us in us_missing:
-        epic_info = f"Epic: {us.epic.epic_id} (component: {us.epic.component})" if us.epic else "No Epic"
+        epic_info = \
+            f"Epic: {us.epic.epic_id} (component: {us.epic.component})" if us.epic else "No Epic"
         print(f"  {us.user_story_id} (#{us.github_issue_number}): {epic_info}")
     print(f"Total: {len(us_missing)}/37 user stories missing components\n")
 
@@ -35,7 +36,8 @@ def check_missing_components():
     ).all()
 
     for defect in def_missing:
-        epic_info = f"Epic: {defect.epic.epic_id} (component: {defect.epic.component})" if defect.epic else "No Epic"
+        epic_info = \
+            f"Epic: {defect.epic.epic_id} (component: {defect.epic.component})" if defect.epic else "No Epic"
         print(f"  {defect.defect_id} (#{defect.github_issue_number}): {epic_info}")
     print(f"Total: {len(def_missing)}/9 defects missing components\n")
 
@@ -47,7 +49,8 @@ def check_missing_components():
 
     # Sample first 10
     for test in test_missing[:10]:
-        epic_info = f"Epic: {test.epic.epic_id} (component: {test.epic.component})" if test.epic else "No Epic"
+        epic_info = \
+            f"Epic: {test.epic.epic_id} (component: {test.epic.component})" if test.epic else "No Epic"
         print(f"  {test.test_file_path}: {epic_info}")
 
     if len(test_missing) > 10:

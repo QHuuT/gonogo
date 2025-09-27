@@ -1,30 +1,48 @@
 # Quality Assurance Guidelines
 
-**Last Updated**: 2025-09-20
+**Last Updated**: 2025-09-27
 
 ## 🎯 Overview
 
 This document defines the quality assurance practices, code standards, and testing strategies for the GoNoGo project, ensuring consistent, secure, and maintainable code.
 
+📋 **See [ADR-004: Context-Aware Code Standards](../context/decisions/adr-004-context-aware-code-standards.md)** for detailed rationale behind our context-aware approach.
+
 ## 🐍 Python Code Style
 
-### **Formatting Standards**
-- **Formatting**: Black (line length 88)
-- **Import sorting**: isort
-- **Linting**: flake8
+### **Context-Aware Formatting Standards**
+Our project uses **different standards for different code contexts** to balance maintainability with developer productivity:
+
+#### **Production Code (src/)**
+- **Formatting**: Ruff (line length 120 characters)
+- **Import sorting**: Ruff
+- **Linting**: flake8 with context-aware rules
 - **Type hints**: mypy (strict mode)
 - **Naming**: snake_case for functions/variables, PascalCase for classes
 
+#### **Test Code (tests/)**
+- **Line Length**: No limit (E501 disabled for test clarity)
+- **Formatting**: Minimal - focus on readability over line length
+- **Rationale**: Test assertions and mock data clarity takes priority
+
+#### **Migration Code (migrations/)**
+- **Line Length**: No limit (E501 disabled)
+- **Rationale**: Database schema definitions require descriptive names
+
+#### **Utility Code (tools/)**
+- **Line Length**: No limit (E501 disabled)
+- **Rationale**: Temporary scripts don't warrant strict formatting overhead
+
 ### **Code Quality Commands**
 ```bash
-# Format code
-black src/ tests/
+# Format production code only (120-char limit)
+ruff format src/ --line-length 120
 
-# Sort imports
-isort src/ tests/
+# Check production code compliance
+flake8 src/ --select=E501
 
-# Lint code
-flake8 src/ tests/
+# Check all code (with context-aware rules)
+flake8
 
 # Type checking
 mypy src/

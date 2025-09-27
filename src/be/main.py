@@ -32,9 +32,7 @@ async def lifespan(app: FastAPI):
     # Startup
     if should_enable_background_refresh():
         interval = get_refresh_interval()
-        app.state.metric_refresh_task = asyncio.create_task(
-            metrics_refresh_loop(interval)
-        )
+        app.state.metric_refresh_task = asyncio.create_task(metrics_refresh_loop(interval))
 
     yield
 
@@ -49,9 +47,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="GoNoGo Blog & RTM System",
-    description=(
-        "GDPR-compliant blog with Requirements Traceability Matrix database"
-    ),
+    description=("GDPR-compliant blog with Requirements Traceability Matrix database"),
     version="0.1.0",
     lifespan=lifespan,
 )

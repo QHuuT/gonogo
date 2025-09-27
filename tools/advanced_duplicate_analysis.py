@@ -43,13 +43,16 @@ def analyze_remaining_excess():
         file_counts = session.query(
             Test.test_file_path,
             func.count(Test.id).label('count')
-        ).group_by(Test.test_file_path).order_by(func.count(Test.id).desc()).limit(20).all()
+        ).group_by(Test.test_file_path).order_by(
+            func.count(Test.id).desc()
+        ).limit(20).all()
 
         for file_path, count in file_counts:
             print(f"   {file_path or 'NULL'}: {count} entries")
 
         # 3. Look for NULL function names (these might be BDD scenarios)
-        null_function_names = session.query(Test).filter(Test.test_function_name.is_(None)).count()
+        null_function_names = \
+            session.query(Test).filter(Test.test_function_name.is_(None)).count()
         print(f"\n3. Tests with NULL function names: {null_function_names}")
 
         if null_function_names > 0:
@@ -57,16 +60,24 @@ def analyze_remaining_excess():
             bdd_scenarios = session.query(
                 Test.bdd_scenario_name,
                 func.count(Test.id).label('count')
-            ).filter(Test.test_function_name.is_(None)).group_by(Test.bdd_scenario_name).limit(10).all()
+            ).filter(Test.test_function_name.is_(None)).group_by(\
+                Test.bdd_scenario_name\
+            ).limit(10).all()
 
             for scenario, count in bdd_scenarios:
                 print(f"   Scenario '{scenario}': {count} entries")
 
         # 4. Check for tests with both function name and scenario name
         dual_name_tests = session.query(Test).filter(
-            and_(Test.test_function_name.isnot(None), Test.bdd_scenario_name.isnot(None))
+            and_(
+                Test.test_function_name.isnot(None),
+                Test.bdd_scenario_name.isnot(None)
+            )
         ).count()
-        print(f"\n4. Tests with both function_name and scenario_name: {dual_name_tests}")
+        print(
+            f"\n4. Tests with"
+            f"both function_name and scenario_name: {dual_name_tests}"
+        )
 
         # 5. Analyze Epic assignment patterns
         print(f"\n5. Epic assignment patterns:")
@@ -120,7 +131,10 @@ def analyze_remaining_excess():
 
         print("   Functions appearing in 4+ different files:")
         for func_name, file_count, total_count in suspicious_names:
-            print(f"   '{func_name}' in {file_count} files, {total_count} total entries")
+            print(
+                f"   '{func_name}'"
+                f"in {file_count} files, {total_count} total entries"
+            )
 
         return {
             'total': total_tests,
@@ -145,15 +159,21 @@ def suggest_cleanup_strategies(analysis):
     strategies = []
 
     if analysis['bdd_steps'] > 100:
-        strategies.append(f"1. Remove BDD step definition artifacts ({analysis['bdd_steps']} entries)")
+        strategies.append(
+            f"1. Remove BDD step definition artifacts ({analysis['bdd_steps']} entries)"
+        )
         strategies.append("   - These appear to be import artifacts from step files")
 
     if analysis['null_functions'] > 50:
-        strategies.append(f"2. Analyze NULL function name entries ({analysis['null_functions']} entries)")
+        strategies.append(
+            f"2. Analyze NULL function name entries ({analysis['null_functions']} entries)"
+        )
         strategies.append("   - May be duplicate BDD scenarios or malformed imports")
 
     if analysis['dual_names'] > 0:
-        strategies.append(f"3. Resolve dual-name tests ({analysis['dual_names']} entries)")
+        strategies.append(
+            f"3. Resolve dual-name tests ({analysis['dual_names']} entries)"
+        )
         strategies.append("   - Tests with both function_name and scenario_name")
 
     strategies.append("4. Deep file-by-file verification:")

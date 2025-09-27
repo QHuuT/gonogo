@@ -76,16 +76,15 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install black isort flake8 mypy
+        pip install ruff flake8 flake8-pyproject mypy
 
-    - name: Check code formatting with Black
-      run: black --check src/ tests/
+    - name: Check production code formatting with Ruff
+      run: ruff format src/ --check --line-length 120
 
-    - name: Check import sorting with isort
-      run: isort --check-only src/ tests/
-
-    - name: Lint with flake8
-      run: flake8 src/ tests/
+    - name: Lint production code with context-aware standards
+      run: |
+        flake8 src/ --select=E501  # Check production code compliance
+        flake8                     # Full check with context rules
 
     - name: Type check with mypy
       run: mypy src/

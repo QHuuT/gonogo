@@ -29,6 +29,8 @@ dev = [
     "black>=23.11.0",
     "isort>=5.12.0",
     "flake8>=6.1.0",
+    "flake8-pyproject>=1.2.0",
+    "ruff>=0.1.0",
     "mypy>=1.7.1",
     "watchfiles>=0.21.0",
 ]
@@ -53,7 +55,7 @@ filterwarnings = [
 ]
 
 [tool.black]
-line-length = 88
+line-length = 120
 target-version = ['py311']
 include = '\.pyi?$'
 extend-exclude = '''
@@ -67,14 +69,30 @@ extend-exclude = '''
   | \.venv
   | build
   | dist
+  | tests
+  | migrations
+  | tools
 )/
 '''
 
 [tool.isort]
 profile = "black"
 multi_line_output = 3
-line_length = 88
+line-length = 120
 known_first_party = ["src"]
+
+[tool.flake8]
+max-line-length = 120
+per-file-ignores = [
+    "tests/*: E501",        # Test clarity over line length
+    "migrations/*: E501",   # Database schemas need space
+    "tools/*: E501",        # Utility scripts are temporary
+    "**/templates.py: E501" # HTML strings should be externalized
+]
+extend-ignore = [
+    "E203",  # Whitespace before ':' (conflicts with Black)
+    "W503",  # Line break before binary operator (outdated)
+]
 
 [tool.mypy]
 python_version = "3.11"

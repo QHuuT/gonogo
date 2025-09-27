@@ -48,7 +48,6 @@ class DefectValidationService:
         logger.info("Starting comprehensive defect relationship validation")
 
         results = {
-    
             "validation_status": "success",
             "total_defects": 0,
             "linked_defects": 0,
@@ -58,60 +57,42 @@ class DefectValidationService:
             "broken_link_details": [],
             "orphaned_defect_details": [],
             "validation_errors": [],
-        
-}
+        }
 
         try:
             # Get total defect count
             results["total_defects"] = self.session.query(Defect).count()
 
             # Validate linked defects
-            linked_defects = (
-                self.session.query(Defect)
-                .filter(Defect.github_user_story_number.isnot(None))
-                .all()
-            )
+            linked_defects = self.session.query(Defect).filter(Defect.github_user_story_number.isnot(None)).all()
             results["linked_defects"] = len(linked_defects)
 
             # Check each linked defect
             for defect in linked_defects:
                 user_story = (
                     self.session.query(UserStory)
-                    .filter(
-                        UserStory.github_issue_number == defect.github_user_story_number
-                    )
+                    .filter(UserStory.github_issue_number == defect.github_user_story_number)
                     .first()
                 )
 
                 if user_story:
                     results["valid_links"] += 1
-                    logger.debug(
-                        f"Valid link: {defect.defect_id} -> {user_story.user_story_id}"
-                    )
+                    logger.debug(f"Valid link: {defect.defect_id} -> {user_story.user_story_id}")
                 else:
                     results["broken_links"] += 1
                     broken_detail = {
-    
                         "defect_id": defect.defect_id,
                         "defect_title": defect.title,
                         "broken_reference": defect.github_user_story_number,
                         "github_issue_number": defect.github_issue_number,
-                    
-}
+                    }
                     results["broken_link_details"].append(broken_detail)
                     logger.warning(
-                        (
-    f"Broken link: {defect.defect_id} -> "
-    f"US #{defect.github_user_story_number} (NOT FOUND)"
-)
+                        (f"Broken link: {defect.defect_id} -> US #{defect.github_user_story_number} (NOT FOUND)")
                     )
 
             # Check orphaned defects
-            orphaned_defects = (
-                self.session.query(Defect)
-                .filter(Defect.github_user_story_number.is_(None))
-                .all()
-            )
+            orphaned_defects = self.session.query(Defect).filter(Defect.github_user_story_number.is_(None)).all()
             results["orphaned_defects"] = len(orphaned_defects)
 
             # Analyze orphaned defects for potential references
@@ -119,13 +100,11 @@ class DefectValidationService:
                 potential_refs = self._find_potential_user_story_references(defect)
                 if potential_refs:
                     orphaned_detail = {
-    
                         "defect_id": defect.defect_id,
                         "defect_title": defect.title,
                         "potential_references": potential_refs,
                         "github_issue_number": defect.github_issue_number,
-                    
-}
+                    }
                     results["orphaned_defect_details"].append(orphaned_detail)
 
             # Log summary
@@ -155,7 +134,6 @@ class DefectValidationService:
         logger.debug(f"Validating relationship for defect: {defect_id}")
 
         result = {
-    
             "defect_id": defect_id,
             "validation_status": "success",
             "has_user_story_link": False,
@@ -163,13 +141,10 @@ class DefectValidationService:
             "user_story_id": None,
             "potential_references": [],
             "validation_errors": [],
-        
-}
+        }
 
         try:
-            defect = (
-                self.session.query(Defect).filter(Defect.defect_id == defect_id).first()
-            )
+            defect = self.session.query(Defect).filter(Defect.defect_id == defect_id).first()
 
             if not defect:
                 result["validation_status"] = "error"
@@ -183,30 +158,22 @@ class DefectValidationService:
                 # Validate the link
                 user_story = (
                     self.session.query(UserStory)
-                    .filter(
-                        UserStory.github_issue_number == defect.github_user_story_number
-                    )
+                    .filter(UserStory.github_issue_number == defect.github_user_story_number)
                     .first()
                 )
 
                 if user_story:
                     result["link_is_valid"] = True
                     result["user_story_id"] = user_story.user_story_id
-                    logger.debug(
-                        f"Valid link: {defect_id} -> {user_story.user_story_id}"
-                    )
+                    logger.debug(f"Valid link: {defect_id} -> {user_story.user_story_id}")
                 else:
                     result["validation_errors"].append(
                         f"Broken link: references non-existent US #{defect.github_user_story_number}"
                     )
-                    logger.warning(
-                        f"Broken link: {defect_id} -> US #{defect.github_user_story_number}"
-                    )
+                    logger.warning(f"Broken link: {defect_id} -> US #{defect.github_user_story_number}")
             else:
                 # Look for potential references
-                result["potential_references"] = (
-                    self._find_potential_user_story_references(defect)
-                )
+                result["potential_references"] = self._find_potential_user_story_references(defect)
 
         except Exception as e:
             result["validation_status"] = "error"
@@ -229,36 +196,24 @@ class DefectValidationService:
 
             if total_defects == 0:
                 return {
-    
                     "total_defects": 0,
                     "relationship_health_score": 100.0,
                     "linked_percentage": 0.0,
                     "valid_link_percentage": 0.0,
                     "broken_link_percentage": 0.0,
                     "orphaned_percentage": 0.0,
-                
-}
+                }
 
-            linked_defects = (
-                self.session.query(Defect)
-                .filter(Defect.github_user_story_number.isnot(None))
-                .count()
-            )
+            linked_defects = self.session.query(Defect).filter(Defect.github_user_story_number.isnot(None)).count()
 
             # Count valid links
             valid_links = 0
             broken_links = 0
 
-            for defect in (
-                self.session.query(Defect)
-                .filter(Defect.github_user_story_number.isnot(None))
-                .all()
-            ):
+            for defect in self.session.query(Defect).filter(Defect.github_user_story_number.isnot(None)).all():
                 user_story = (
                     self.session.query(UserStory)
-                    .filter(
-                        UserStory.github_issue_number == defect.github_user_story_number
-                    )
+                    .filter(UserStory.github_issue_number == defect.github_user_story_number)
                     .first()
                 )
 
@@ -276,30 +231,21 @@ class DefectValidationService:
             orphaned_percentage = (orphaned_defects / total_defects) * 100
 
             # Calculate health score (valid links are good, broken links are bad)
-            health_score = valid_link_percentage - (
-                broken_link_percentage * 2
-            )  # Broken links penalized more
+            health_score = valid_link_percentage - (broken_link_percentage * 2)  # Broken links penalized more
             health_score = max(0.0, min(100.0, health_score))  # Clamp to 0-100
 
             return {
-    
                 "total_defects": total_defects,
                 "linked_defects": linked_defects,
                 "valid_links": valid_links,
                 "broken_links": broken_links,
                 "orphaned_defects": orphaned_defects,
-                "relationship_health_score": round(health_score,
-    2),
-                "linked_percentage": round(linked_percentage,
-    2),
-                "valid_link_percentage": round(valid_link_percentage,
-    2),
-                "broken_link_percentage": round(broken_link_percentage,
-    2),
-                "orphaned_percentage": round(orphaned_percentage,
-    2),
-            
-}
+                "relationship_health_score": round(health_score, 2),
+                "linked_percentage": round(linked_percentage, 2),
+                "valid_link_percentage": round(valid_link_percentage, 2),
+                "broken_link_percentage": round(broken_link_percentage, 2),
+                "orphaned_percentage": round(orphaned_percentage, 2),
+            }
 
         except Exception as e:
             logger.error(f"Error calculating health metrics: {e}")
@@ -328,9 +274,7 @@ class DefectValidationService:
 
         # Find #issue-number format references
         issue_matches = re.findall(r"(?<!v)(?<!V)#(\d{1,5})(?!\.\d)", combined_text)
-        references.extend(
-            [f"#{match}" for match in issue_matches if 1 <= int(match) <= 99999]
-        )
+        references.extend([f"#{match}" for match in issue_matches if 1 <= int(match) <= 99999])
 
         return references
 
@@ -350,23 +294,10 @@ class DefectValidationService:
 
         # Health metrics
         report.append("Overall Health Metrics:")
-        report.append(
-    (
-    f"  Relationship Health Score: "
-    f"{health_metrics.get('relationship_health_score',
-    0
-):.1f}%"
-)
-        )
-        report.append(
-            f"  Valid Links: {health_metrics.get('valid_link_percentage', 0):.1f}%"
-        )
-        report.append(
-            f"  Broken Links: {health_metrics.get('broken_link_percentage', 0):.1f}%"
-        )
-        report.append(
-            f"  Orphaned Defects: {health_metrics.get('orphaned_percentage', 0):.1f}%"
-        )
+        report.append((f"  Relationship Health Score: {health_metrics.get('relationship_health_score', 0):.1f}%"))
+        report.append(f"  Valid Links: {health_metrics.get('valid_link_percentage', 0):.1f}%")
+        report.append(f"  Broken Links: {health_metrics.get('broken_link_percentage', 0):.1f}%")
+        report.append(f"  Orphaned Defects: {health_metrics.get('orphaned_percentage', 0):.1f}%")
         report.append("")
 
         # Detailed statistics
@@ -382,31 +313,17 @@ class DefectValidationService:
         if validation_results["broken_link_details"]:
             report.append("Broken Links (Require Attention):")
             for broken in validation_results["broken_link_details"]:
-                report.append(
-                    f"  {broken['defect_id']}: {broken['defect_title'][:50]}..."
-                )
-                report.append(
-                    f"    -> Broken reference to US #{broken['broken_reference']}"
-                )
+                report.append(f"  {broken['defect_id']}: {broken['defect_title'][:50]}...")
+                report.append(f"    -> Broken reference to US #{broken['broken_reference']}")
             report.append("")
 
         # Orphaned defects with potential references
-        orphaned_with_refs = [
-            d
-            for d in validation_results["orphaned_defect_details"]
-            if d["potential_references"]
-        ]
+        orphaned_with_refs = [d for d in validation_results["orphaned_defect_details"] if d["potential_references"]]
         if orphaned_with_refs:
-            report.append(
-                "Orphaned Defects with Potential References (Could be linked):"
-            )
+            report.append("Orphaned Defects with Potential References (Could be linked):")
             for orphaned in orphaned_with_refs:
-                report.append(
-                    f"  {orphaned['defect_id']}: {orphaned['defect_title'][:50]}..."
-                )
-                report.append(
-                    f"    -> Potential references: {', '.join(orphaned['potential_references'])}"
-                )
+                report.append(f"  {orphaned['defect_id']}: {orphaned['defect_title'][:50]}...")
+                report.append(f"    -> Potential references: {', '.join(orphaned['potential_references'])}")
             report.append("")
 
         # Validation status

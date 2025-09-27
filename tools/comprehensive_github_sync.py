@@ -150,7 +150,8 @@ def sync_user_stories_comprehensive(session, issues, epic_mapping, dry_run=True)
             UserStory.user_story_id == us_id
         ).first()
 
-        epic_name = next((k for k, v in epic_mapping.items() if v == epic_id), 'Unknown')
+        epic_name = \
+            next((k for k, v in epic_mapping.items() if v == epic_id), 'Unknown')
         component_info = f", component: {parsed_labels['component']}" if parsed_labels['component'] else ""
 
         if existing:
@@ -164,20 +165,29 @@ def sync_user_stories_comprehensive(session, issues, epic_mapping, dry_run=True)
                 if not dry_run:
                     existing.epic_id = epic_id
 
-            if parsed_labels['component'] and existing.component != parsed_labels['component']:
-                updates.append(f"component: {existing.component} -> {parsed_labels['component']}")
+            if parsed_labels['component'] and \
+               existing.component != parsed_labels['component']:
+                updates.append(
+                    f"component: {existing.component} -> {parsed_labels['component']}"
+                )
                 needs_update = True
                 if not dry_run:
                     existing.component = parsed_labels['component']
 
-            if parsed_labels['priority'] and existing.priority != parsed_labels['priority']:
-                updates.append(f"priority: {existing.priority} -> {parsed_labels['priority']}")
+            if parsed_labels['priority'] and \
+               existing.priority != parsed_labels['priority']:
+                updates.append(
+                    f"priority: {existing.priority} -> {parsed_labels['priority']}"
+                )
                 needs_update = True
                 if not dry_run:
                     existing.priority = parsed_labels['priority']
 
             if needs_update:
-                print(f"  {us_id}: UPDATE -> {epic_name}{component_info} ({', '.join(updates)})")
+                print(
+                    f"  {us_id}: UPDATE"
+                    f"-> {epic_name}{component_info} ({', '.join(updates)})"
+                )
                 updated_count += 1
             else:
                 print(f"  {us_id}: No changes needed -> {epic_name}{component_info}")
@@ -248,7 +258,8 @@ def sync_defects_comprehensive(session, issues, epic_mapping, dry_run=True):
             Defect.defect_id == def_id
         ).first()
 
-        epic_name = next((k for k, v in epic_mapping.items() if v == epic_id), 'Unknown')
+        epic_name = \
+            next((k for k, v in epic_mapping.items() if v == epic_id), 'Unknown')
         component_info = f", component: {parsed_labels['component']}" if parsed_labels['component'] else ""
 
         if existing:
@@ -262,17 +273,26 @@ def sync_defects_comprehensive(session, issues, epic_mapping, dry_run=True):
                 if not dry_run:
                     existing.epic_id = epic_id
 
-            if parsed_labels['component'] and existing.component != parsed_labels['component']:
-                updates.append(f"component: {existing.component} -> {parsed_labels['component']}")
+            if parsed_labels['component'] and \
+               existing.component != parsed_labels['component']:
+                updates.append(
+                    f"component: {existing.component} -> {parsed_labels['component']}"
+                )
                 needs_update = True
                 if not dry_run:
                     existing.component = parsed_labels['component']
 
             if needs_update:
-                print(f"  {def_id}: UPDATE -> {epic_name}{component_info} ({', '.join(updates)})")
+                print(
+                    f"  {def_id}: UPDATE"
+                    f"-> {epic_name}{component_info} ({', '.join(updates)})"
+                )
                 updated_count += 1
             else:
-                print(f"  {def_id}: No changes needed -> {epic_name}{component_info}")
+                print(
+                    f"  {def_id}:"
+                    f"No changes needed -> {epic_name}{component_info}"
+                )
         else:
             # Create new defect
             print(f"  {def_id}: CREATE -> {epic_name}{component_info}")
@@ -320,12 +340,14 @@ def comprehensive_github_sync(dry_run=True, entity_types=['all']):
 
         # Sync user stories
         if 'all' in entity_types or 'user-stories' in entity_types:
-            changes = sync_user_stories_comprehensive(session, issues, epic_mapping, dry_run)
+            changes = \
+                sync_user_stories_comprehensive(session, issues, epic_mapping, dry_run)
             total_changes += changes
 
         # Sync defects
         if 'all' in entity_types or 'defects' in entity_types:
-            changes = sync_defects_comprehensive(session, issues, epic_mapping, dry_run)
+            changes = \
+                sync_defects_comprehensive(session, issues, epic_mapping, dry_run)
             total_changes += changes
 
         # Commit changes

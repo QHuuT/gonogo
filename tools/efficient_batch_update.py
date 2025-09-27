@@ -30,14 +30,16 @@ def run_gh_command(cmd):
 
 def get_all_issues():
     """Get all GitHub issues efficiently."""
-    output = run_gh_command(['gh', 'issue', 'list', '--limit', '200', '--json', 'number,title'])
+    output = \
+        run_gh_command(['gh', 'issue', 'list', '--limit', '200', '--json', 'number,title'])
     if output:
         return json.loads(output)
     return []
 
 def get_issue_body(issue_number):
     """Get issue body efficiently."""
-    output = run_gh_command(['gh', 'issue', 'view', str(issue_number), '--json', 'body'])
+    output = \
+        run_gh_command(['gh', 'issue', 'view', str(issue_number), '--json', 'body'])
     if output:
         data = json.loads(output)
         return data.get('body', '')
@@ -57,31 +59,36 @@ def extract_user_story_content(body):
     }
 
     # Extract user story format
-    us_match = re.search(r'\*\*As a\*\* (.+?)\n\*\*I want\*\* (.+?)\n\*\*So that\*\* (.+?)(?:\n|$)', body, re.DOTALL)
+    us_match = \
+        re.search(r'\*\*As a\*\* (.+?)\n\*\*I want\*\* (.+?)\n\*\*So that\*\* (.+?)(?:\n|$)', body, re.DOTALL)
     if us_match:
         content['as_a'] = us_match.group(1).strip()
         content['i_want'] = us_match.group(2).strip()
         content['so_that'] = us_match.group(3).strip()
 
     # Extract business value
-    bv_match = re.search(r'## Business Value[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
+    bv_match = \
+        re.search(r'## Business Value[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
     if bv_match:
         bv = bv_match.group(1).strip()
         if bv and bv not in ['TBD', '[Business value to be defined]']:
             content['business_value'] = bv
 
     # Extract story points
-    sp_match = re.search(r'(?:Story Points?|Points?|Estimate)[:\s]*(\d+)', body, re.IGNORECASE)
+    sp_match = \
+        re.search(r'(?:Story Points?|Points?|Estimate)[:\s]*(\d+)', body, re.IGNORECASE)
     if sp_match:
         content['story_points'] = sp_match.group(1)
 
     # Extract priority
-    priority_match = re.search(r'Priority.*?([Hh]igh|[Mm]edium|[Ll]ow|[Cc]ritical)', body, re.IGNORECASE)
+    priority_match = \
+        re.search(r'Priority.*?([Hh]igh|[Mm]edium|[Ll]ow|[Cc]ritical)', body, re.IGNORECASE)
     if priority_match:
         content['priority'] = priority_match.group(1).lower()
 
     # Extract component
-    component_match = re.search(r'Component.*?([Ff]rontend|[Bb]ackend|[Dd]atabase|[Ss]ecurity|[Tt]esting|CI.?CD|[Dd]ocumentation)', body, re.IGNORECASE)
+    component_match = \
+        re.search(r'Component.*?([Ff]rontend|[Bb]ackend|[Dd]atabase|[Ss]ecurity|[Tt]esting|CI.?CD|[Dd]ocumentation)', body, re.IGNORECASE)
     if component_match:
         comp = component_match.group(1).lower()
         component_map = {
@@ -98,7 +105,8 @@ def extract_user_story_content(body):
             content['component'] = component_map.get(comp, 'Backend/API')
 
     # Extract acceptance criteria
-    ac_match = re.search(r'## Acceptance Criteria[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
+    ac_match = \
+        re.search(r'## Acceptance Criteria[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
     if ac_match:
         ac = ac_match.group(1).strip()
         if ac:
@@ -116,28 +124,32 @@ def extract_defect_content(body):
     }
 
     # Extract steps to reproduce
-    steps_match = re.search(r'## Steps to Reproduce[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
+    steps_match = \
+        re.search(r'## Steps to Reproduce[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
     if steps_match:
         steps = steps_match.group(1).strip()
         if steps:
             content['steps'] = steps
 
     # Extract expected behavior
-    expected_match = re.search(r'## Expected Behavior[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
+    expected_match = \
+        re.search(r'## Expected Behavior[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
     if expected_match:
         expected = expected_match.group(1).strip()
         if expected:
             content['expected'] = expected
 
     # Extract actual behavior
-    actual_match = re.search(r'## Actual Behavior[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
+    actual_match = \
+        re.search(r'## Actual Behavior[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
     if actual_match:
         actual = actual_match.group(1).strip()
         if actual:
             content['actual'] = actual
 
     # Extract business impact
-    impact_match = re.search(r'## Business Impact[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
+    impact_match = \
+        re.search(r'## Business Impact[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
     if impact_match:
         impact = impact_match.group(1).strip()
         if impact:
@@ -228,7 +240,8 @@ def update_issue(issue_number, new_body):
         with open(temp_file, 'w', encoding='utf-8') as f:
             f.write(new_body)
 
-        result = run_gh_command(['gh', 'issue', 'edit', str(issue_number), '--body-file', temp_file])
+        result = \
+            run_gh_command(['gh', 'issue', 'edit', str(issue_number), '--body-file', temp_file])
         return result is not None
     except Exception as e:
         print(f"Error updating issue {issue_number}: {e}")
@@ -247,7 +260,8 @@ def main():
     print(f"Found {len(issues)} total issues")
 
     # Filter for US/DEF issues only
-    us_def_issues = [issue for issue in issues if re.search(r'(US-\d{5}|DEF-\d{5})', issue['title'])]
+    us_def_issues = \
+        [issue for issue in issues if re.search(r'(US-\d{5}|DEF-\d{5})', issue['title'])]
     print(f"Found {len(us_def_issues)} US/DEF issues to update")
 
     updated_count = 0
@@ -257,7 +271,10 @@ def main():
         issue_number = issue['number']
         title = issue['title']
 
-        print(f"\n[{i}/{len(us_def_issues)}] Processing #{issue_number}: {title[:60]}...")
+        print(
+            f"\n[{i}/{len(us_def_issues)}]"
+            f"Processing #{issue_number}: {title[:60]}..."
+        )
 
         # Get issue body
         body = get_issue_body(issue_number)

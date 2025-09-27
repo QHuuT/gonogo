@@ -251,7 +251,8 @@ def main():
     """Main entry point for the repair script."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Repair defect-user story relationship links')
+    parser = \
+        argparse.ArgumentParser(description='Repair defect-user story relationship links')
     parser.add_argument('--dry-run', action='store_true', default=True,
                        help='Only analyze and log what would be changed (default: True)')
     parser.add_argument('--execute', action='store_true', default=False,

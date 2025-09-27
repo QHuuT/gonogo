@@ -69,9 +69,7 @@ class LogFailureCorrelator:
         self.failure_tracker = failure_tracker or FailureTracker()
         self.logger = logger or get_logger()
 
-    def correlate_failure_with_logs(
-        self, failure_id: int, time_window_minutes: int = 10
-    ) -> Optional[FailureContext]:
+    def correlate_failure_with_logs(self, failure_id: int, time_window_minutes: int = 10) -> Optional[FailureContext]:
         """
         Correlate a specific failure with its related logs.
 
@@ -91,9 +89,7 @@ class LogFailureCorrelator:
         logs = self._get_logs_for_failure(failure, time_window_minutes)
 
         # Organize logs by phase
-        setup_logs, execution_logs, teardown_logs = self._organize_logs_by_phase(
-            logs
-        )
+        setup_logs, execution_logs, teardown_logs = self._organize_logs_by_phase(logs)
 
         # Extract context information
         environment_info = self._extract_environment_context(logs)
@@ -101,9 +97,7 @@ class LogFailureCorrelator:
         execution_state = self._extract_execution_state(logs)
 
         # Generate debugging assistance
-        reproduction_guide = self._generate_reproduction_guide(
-            failure, logs, environment_info
-        )
+        reproduction_guide = self._generate_reproduction_guide(failure, logs, environment_info)
         debugging_hints = self._generate_debugging_hints(failure, logs)
         related_failures = self._find_related_failures(failure)
 
@@ -124,9 +118,7 @@ class LogFailureCorrelator:
             related_failures=related_failures,
         )
 
-    def correlate_all_recent_failures(
-        self, days: int = 7
-    ) -> LogCorrelationSummary:
+    def correlate_all_recent_failures(self, days: int = 7) -> LogCorrelationSummary:
         """
         Correlate all recent failures with their logs.
 
@@ -146,18 +138,11 @@ class LogFailureCorrelator:
 
         for failure in recent_failures:
             context = self.correlate_failure_with_logs(failure["id"])
-            if context and (
-                context.setup_logs
-                or context.execution_logs
-                or context.teardown_logs
-            ):
+            if context and (context.setup_logs or context.execution_logs or context.teardown_logs):
                 failures_with_logs += 1
 
                 # Analyze patterns
-                pattern_key = (
-                    f"{failure['category']}:"
-                    f"{failure.get('test_file', '').split('/')[-1]}"
-                )
+                pattern_key = f"{failure['category']}:{failure.get('test_file', '').split('/')[-1]}"
                 if pattern_key not in failure_patterns:
                     failure_patterns[pattern_key] = {
                         "category": failure["category"],
@@ -172,11 +157,7 @@ class LogFailureCorrelator:
                     debugging_insights.extend(context.debugging_hints)
 
         # Calculate success rate
-        correlation_success_rate = (
-            (failures_with_logs / total_failures * 100)
-            if total_failures > 0
-            else 0
-        )
+        correlation_success_rate = (failures_with_logs / total_failures * 100) if total_failures > 0 else 0
 
         # Convert patterns to list and sort by frequency
         common_patterns = list(failure_patterns.values())
@@ -193,9 +174,7 @@ class LogFailureCorrelator:
             debugging_insights=unique_insights[:20],  # Top 20
         )
 
-    def generate_failure_reproduction_script(
-        self, failure_id: int
-    ) -> Optional[str]:
+    def generate_failure_reproduction_script(self, failure_id: int) -> Optional[str]:
         """
         Generate a script to reproduce a specific failure.
 
@@ -238,7 +217,7 @@ class LogFailureCorrelator:
                 "test_data = " + json.dumps(context.test_data, indent=2),
                 "",
                 "# Reproduction command",
-                f'# Run: pytest {context.test_name.split("::")[0]} -v',
+                f"# Run: pytest {context.test_name.split('::')[0]} -v",
                 f"# Expected failure: {context.failure_message}",
                 "",
                 "if __name__ == '__main__':",
@@ -250,9 +229,7 @@ class LogFailureCorrelator:
 
         return "\n".join(script_lines)
 
-    def export_correlation_report(
-        self, output_path: Optional[Path] = None
-    ) -> str:
+    def export_correlation_report(self, output_path: Optional[Path] = None) -> str:
         """
         Export comprehensive correlation report.
 
@@ -263,9 +240,7 @@ class LogFailureCorrelator:
             Path to the generated report
         """
         if output_path is None:
-            output_path = Path(
-                "quality/reports/log_correlation_report.json"
-            )
+            output_path = Path("quality/reports/log_correlation_report.json")
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -282,15 +257,9 @@ class LogFailureCorrelator:
                 # Convert to serializable format
                 context_dict = asdict(context)
                 # Convert LogEntry objects to dicts
-                context_dict["setup_logs"] = [
-                    asdict(log) for log in context.setup_logs
-                ]
-                context_dict["execution_logs"] = [
-                    asdict(log) for log in context.execution_logs
-                ]
-                context_dict["teardown_logs"] = [
-                    asdict(log) for log in context.teardown_logs
-                ]
+                context_dict["setup_logs"] = [asdict(log) for log in context.setup_logs]
+                context_dict["execution_logs"] = [asdict(log) for log in context.execution_logs]
+                context_dict["teardown_logs"] = [asdict(log) for log in context.teardown_logs]
                 failure_contexts.append(context_dict)
 
         report = {
@@ -321,27 +290,19 @@ class LogFailureCorrelator:
         """Get failure details by ID from the failure tracker database."""
         with sqlite3.connect(self.failure_tracker.db_path) as conn:
             conn.row_factory = sqlite3.Row
-            result = conn.execute(
-                "SELECT * FROM test_failures WHERE id = ?", (failure_id,)
-            ).fetchone()
+            result = conn.execute("SELECT * FROM test_failures WHERE id = ?", (failure_id,)).fetchone()
 
         return dict(result) if result else None
 
-    def _get_logs_for_failure(
-        self, failure: Dict[str, Any], time_window_minutes: int
-    ) -> List[LogEntry]:
+    def _get_logs_for_failure(self, failure: Dict[str, Any], time_window_minutes: int) -> List[LogEntry]:
         """Get logs related to a specific failure."""
         # Get logs around the failure time
         failure_time = datetime.fromisoformat(failure["last_seen"])
         start_time = failure_time - timedelta(minutes=time_window_minutes)
-        end_time = failure_time + timedelta(
-            minutes=5
-        )  # Small buffer after failure
+        end_time = failure_time + timedelta(minutes=5)  # Small buffer after failure
 
         # Get logs from the structured logger
-        all_logs = self.logger.get_recent_logs(
-            10000
-        )  # Large number to get enough context
+        all_logs = self.logger.get_recent_logs(10000)  # Large number to get enough context
 
         # Filter by time and test correlation
         related_logs = []
@@ -350,25 +311,15 @@ class LogFailureCorrelator:
             if start_time <= log_time <= end_time:
                 # Check if log is related to this test
                 if (
-                    (
-                        hasattr(log, "test_id")
-                        and log.test_id
-                        and log.test_id == failure.get("test_id")
-                    )
-                    or (
-                        hasattr(log, "test_name")
-                        and log.test_name
-                        and log.test_name == failure["test_name"]
-                    )
+                    (hasattr(log, "test_id") and log.test_id and log.test_id == failure.get("test_id"))
+                    or (hasattr(log, "test_name") and log.test_name and log.test_name == failure["test_name"])
                     or (failure["test_name"] in str(log.message))
                 ):
                     related_logs.append(log)
 
         return related_logs
 
-    def _organize_logs_by_phase(
-        self, logs: List[LogEntry]
-    ) -> Tuple[List[LogEntry], List[LogEntry], List[LogEntry]]:
+    def _organize_logs_by_phase(self, logs: List[LogEntry]) -> Tuple[List[LogEntry], List[LogEntry], List[LogEntry]]:
         """Organize logs into setup, execution, and teardown phases."""
         setup_logs = []
         execution_logs = []
@@ -376,17 +327,9 @@ class LogFailureCorrelator:
 
         for log in logs:
             if hasattr(log, "tags") and log.tags:
-                if (
-                    "setup" in log.tags
-                    or "test_lifecycle" in log.tags
-                    and "start" in log.message.lower()
-                ):
+                if "setup" in log.tags or "test_lifecycle" in log.tags and "start" in log.message.lower():
                     setup_logs.append(log)
-                elif (
-                    "teardown" in log.tags
-                    or "test_lifecycle" in log.tags
-                    and "teardown" in log.message.lower()
-                ):
+                elif "teardown" in log.tags or "test_lifecycle" in log.tags and "teardown" in log.message.lower():
                     teardown_logs.append(log)
                 else:
                     execution_logs.append(log)
@@ -395,9 +338,7 @@ class LogFailureCorrelator:
 
         return setup_logs, execution_logs, teardown_logs
 
-    def _extract_environment_context(
-        self, logs: List[LogEntry]
-    ) -> Dict[str, Any]:
+    def _extract_environment_context(self, logs: List[LogEntry]) -> Dict[str, Any]:
         """Extract environment information from logs."""
         environment = {}
 
@@ -415,9 +356,7 @@ class LogFailureCorrelator:
 
         return environment
 
-    def _extract_test_data_context(
-        self, logs: List[LogEntry]
-    ) -> Dict[str, Any]:
+    def _extract_test_data_context(self, logs: List[LogEntry]) -> Dict[str, Any]:
         """Extract test data and parameters from logs."""
         test_data = {}
 
@@ -466,10 +405,7 @@ class LogFailureCorrelator:
             [
                 "",
                 "### Steps to Reproduce:",
-                (
-                    f"1. Run test: `pytest "
-                    f"{failure.get('test_file', 'unknown')} -v`"
-                ),
+                (f"1. Run test: `pytest {failure.get('test_file', 'unknown')} -v`"),
                 f"2. Expected failure: {failure['failure_message']}",
                 "",
                 "### Log Analysis:",
@@ -484,9 +420,7 @@ class LogFailureCorrelator:
 
         return "\n".join(guide_lines)
 
-    def _generate_debugging_hints(
-        self, failure: Dict[str, Any], logs: List[LogEntry]
-    ) -> List[str]:
+    def _generate_debugging_hints(self, failure: Dict[str, Any], logs: List[LogEntry]) -> List[str]:
         """Generate debugging hints based on failure and log analysis."""
         hints = []
 
@@ -509,16 +443,11 @@ class LogFailureCorrelator:
         if logs:
             error_logs = [log for log in logs if log.level == "ERROR"]
             if error_logs:
-                hints.append(
-                    f"Found {len(error_logs)} error log entries - "
-                    "review for additional context"
-                )
+                hints.append(f"Found {len(error_logs)} error log entries - review for additional context")
 
         return hints
 
-    def _find_related_failures(
-        self, failure: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+    def _find_related_failures(self, failure: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Find failures related to the current one."""
         with sqlite3.connect(self.failure_tracker.db_path) as conn:
             conn.row_factory = sqlite3.Row

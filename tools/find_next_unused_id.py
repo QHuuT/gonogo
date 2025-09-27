@@ -73,7 +73,8 @@ def find_next_unused_id(entity_type: str) -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Find next unused ID for RTM entities")
+    parser = \
+        argparse.ArgumentParser(description="Find next unused ID for RTM entities")
     parser.add_argument(
         "--type",
         choices=["epic", "user-story", "defect"],

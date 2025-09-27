@@ -73,7 +73,10 @@ def update_user_story_epic(user_story_id: str, dry_run: bool = True):
         for label in labels:
             if label in epic_label_mapping:
                 new_epic_id = epic_mapping.get(epic_label_mapping[label])
-                print(f"Found epic label: {label} -> {epic_label_mapping[label]} -> Epic ID: {new_epic_id}")
+                print(
+                    f"Found epic label: {label} -> {epic_label_mapping[label]} -> "
+                    f"Epic ID: {new_epic_id}"
+                )
                 break
 
         if new_epic_id and new_epic_id != user_story.epic_id:

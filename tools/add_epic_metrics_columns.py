@@ -35,10 +35,14 @@ def add_epic_metrics_columns():
         # Colonnes de métriques attendues
         expected_metrics_columns = [
             'estimated_duration_days', 'actual_duration_days',
-            'planned_start_date', 'actual_start_date', 'planned_end_date', 'actual_end_date',
-            'initial_scope_estimate', 'scope_creep_percentage', 'velocity_points_per_sprint', 'team_size',
-            'defect_density', 'test_coverage_percentage', 'code_review_score', 'technical_debt_hours',
-            'stakeholder_satisfaction_score', 'business_impact_score', 'roi_percentage', 'user_adoption_rate',
+            'planned_start_date', 'actual_start_date', \
+            'planned_end_date', 'actual_end_date',
+            'initial_scope_estimate', 'scope_creep_percentage', \
+            'velocity_points_per_sprint', 'team_size',
+            'defect_density', 'test_coverage_percentage', \
+            'code_review_score', 'technical_debt_hours',
+            'stakeholder_satisfaction_score', 'business_impact_score', \
+            'roi_percentage', 'user_adoption_rate',
             'last_metrics_update', 'metrics_calculation_frequency'
         ]
 
@@ -90,13 +94,19 @@ def add_epic_metrics_columns():
         updated_columns = inspector.get_columns('epics')
         updated_column_names = [col['name'] for col in updated_columns]
 
-        still_missing = [col for col in expected_metrics_columns if col not in updated_column_names]
+        still_missing = [
+            col for col in expected_metrics_columns
+            if col not in updated_column_names
+        ]
 
         if not still_missing:
             print(f"[OK] Successfully added {len(missing_columns)} metrics columns")
 
             # Afficher les colonnes métriques
-            metrics_columns = [col for col in updated_columns if col['name'] in expected_metrics_columns]
+            metrics_columns = [
+                col for col in updated_columns
+                if col['name'] in expected_metrics_columns
+            ]
             print(f"\nMetrics columns ({len(metrics_columns)}):")
             for col in metrics_columns:
                 print(f"  - {col['name']}: {col['type']}")
@@ -110,7 +120,10 @@ def add_epic_metrics_columns():
                     WHERE initial_scope_estimate = 0 OR initial_scope_estimate IS NULL
                 """))
                 conn.commit()
-                print(f"[OK] Updated {result.rowcount} epics with initial scope estimates")
+                print(
+                    f"[OK] Updated"
+                    f"{result.rowcount} epics with initial scope estimates"
+                )
 
         else:
             print(f"[ERROR] Still missing columns: {still_missing}")
@@ -146,7 +159,10 @@ def test_epic_metrics():
         # Test persona-specific metrics
         for persona in ['PM', 'PO', 'QA']:
             persona_metrics = epic.get_persona_specific_metrics(persona)
-            print(f"[OK] {persona} persona metrics: {len(persona_metrics)} categories")
+            print(
+                f"[OK] {persona}"
+                f"persona metrics: {len(persona_metrics)} categories"
+            )
 
         # Test metrics update
         epic.update_metrics(force_recalculate=True, session=session)

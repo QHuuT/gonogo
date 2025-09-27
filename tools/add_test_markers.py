@@ -40,7 +40,10 @@ class TestMarkerAdder:
                 continue
 
             if file_path.suffix == '.feature':
-                print(f"SKIP: BDD feature file (markers not applicable) - {file_path}")
+                print(
+                    f"SKIP: BDD feature"
+                    f"file (markers not applicable) - {file_path}"
+                )
                 self.skipped_files.append(str(file_path))
                 continue
 
@@ -53,7 +56,8 @@ class TestMarkerAdder:
         try:
             content = file_path.read_text(encoding='utf-8')
 
-            if not associations['user_stories'] and not associations['epics'] and not associations['components']:
+            if not associations['user_stories'] and \
+               not associations['epics'] and not associations['components']:
                 print(f"SKIP: No associations to add - {file_path}")
                 self.skipped_files.append(str(file_path))
                 return
@@ -86,20 +90,25 @@ class TestMarkerAdder:
         markers = []
 
         if associations['epics']:
-            epic_values = ', '.join(f'"{epic}"' for epic in sorted(associations['epics']))
+            epic_values = \
+                ', '.join(f'"{epic}"' for epic in sorted(associations['epics']))
             markers.append(f"@pytest.mark.epic({epic_values})")
 
         if associations['user_stories']:
-            us_values = ', '.join(f'"{us}"' for us in sorted(associations['user_stories']))
+            us_values = \
+                ', '.join(f'"{us}"' for us in sorted(associations['user_stories']))
             markers.append(f"@pytest.mark.user_story({us_values})")
 
         if associations['components']:
-            comp_values = ', '.join(f'"{comp}"' for comp in sorted(associations['components']))
+            comp_values = \
+                ', '.join(f'"{comp}"' for comp in sorted(associations['components']))
             markers.append(f"@pytest.mark.component({comp_values})")
 
         return markers
 
-    def _insert_markers(self, content: str, marker_lines: List[str], file_path: Path) -> str:
+    def _insert_markers(
+        self, content: str, marker_lines: List[str], file_path: Path
+    ) -> str:
         """Insert markers before test functions/classes."""
         lines = content.split('\n')
         new_lines = []
@@ -133,7 +142,8 @@ class TestMarkerAdder:
         while i < len(lines):
             line = lines[i]
 
-            if self._is_test_definition(line) and not self._already_has_markers(lines, i):
+            if self._is_test_definition(line) and \
+               not self._already_has_markers(lines, i):
                 indent = self._get_indent(line)
                 for marker in marker_lines:
                     new_lines.append(f"{indent}{marker}")

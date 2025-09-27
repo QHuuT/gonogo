@@ -27,7 +27,8 @@ def fix_us_004():
         print(f"Epic EP-00005 has database id = {correct_epic_id}")
 
         # Update the foreign key
-        cursor.execute("UPDATE user_stories SET epic_id = ? WHERE user_story_id = 'US-00004'", (correct_epic_id,))
+        cursor.execute("UPDATE user_stories SET epic_id = \
+            ? WHERE user_story_id = 'US-00004'", (correct_epic_id,))
 
         # Verify the change
         cursor.execute("SELECT user_story_id, epic_id FROM user_stories WHERE user_story_id = 'US-00004'")

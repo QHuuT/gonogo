@@ -220,9 +220,7 @@ class TestTraceabilityBase:
     def test_github_integration_fields(self, test_entity):
         """Test GitHub integration fields."""
         test_entity.github_issue_number = 123
-        test_entity.github_issue_url = (
-            "https://github.com/owner/repo/issues/123"
-        )
+        test_entity.github_issue_url = "https://github.com/owner/repo/issues/123"
 
         assert test_entity.github_issue_number == 123
         assert "github.com" in test_entity.github_issue_url

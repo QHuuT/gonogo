@@ -35,7 +35,10 @@ def check_empty_fields():
 
             print(f"  Total User Stories: {len(user_stories)}")
             for field, count in sorted(empty_counts.items()):
-                print(f"  {field}: {count}/{len(user_stories)} empty ({count/len(user_stories)*100:.1f}%)")
+                print(
+                    f"  {field}: {count}/{len(user_stories)}"
+                    f"empty ({count/len(user_stories)*100:.1f}%)"
+                )
         else:
             print("  No user stories found")
 
@@ -56,7 +59,10 @@ def check_empty_fields():
 
             print(f"  Total Defects: {len(defects)}")
             for field, count in sorted(empty_counts.items()):
-                print(f"  {field}: {count}/{len(defects)} empty ({count/len(defects)*100:.1f}%)")
+                print(
+                    f"  {field}: {count}/{len(defects)}"
+                    f"empty ({count/len(defects)*100:.1f}%)"
+                )
         else:
             print("  No defects found")
 
@@ -75,7 +81,10 @@ def check_empty_fields():
 
             print(f"  Total Epics: {len(epics)}")
             for field, count in sorted(empty_counts.items()):
-                print(f"  {field}: {count}/{len(epics)} empty ({count/len(epics)*100:.1f}%)")
+                print(
+                    f"  {field}: {count}/{len(epics)}"
+                    f"empty ({count/len(epics)*100:.1f}%)"
+                )
         else:
             print("  No epics found")
 

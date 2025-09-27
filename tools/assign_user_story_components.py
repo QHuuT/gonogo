@@ -85,7 +85,8 @@ def interactive_assignment():
         print("  0. Exit")
 
         # Get user story
-        us_id = input("\nEnter User Story ID (e.g., US-00003) or '0' to exit: ").strip()
+        us_id = \
+            input("\nEnter User Story ID (e.g., US-00003) or '0' to exit: ").strip()
         if us_id == '0':
             break
 
@@ -98,7 +99,8 @@ def interactive_assignment():
                 component = components[comp_choice - 1]
 
                 # Confirm
-                confirm = input(f"Assign '{component}' to {us_id}? (y/n): ").strip().lower()
+                confirm = \
+                    input(f"Assign '{component}' to {us_id}? (y/n): ").strip().lower()
                 if confirm == 'y':
                     assign_component(us_id, component, dry_run=False)
                     print()

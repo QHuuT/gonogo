@@ -106,10 +106,7 @@ class StandardMarkdownParser(BaseRTMParser):
 
     def can_parse(self, content: str) -> bool:
         """Check for standard RTM markers."""
-        return (
-            "Requirements Traceability Matrix" in content
-            and "| Epic | User Story |" in content
-        )
+        return "Requirements Traceability Matrix" in content and "| Epic | User Story |" in content
 
     def parse_requirements(self, content: str) -> List[Dict]:
         """Parse requirements from markdown table."""
@@ -228,11 +225,7 @@ class StandardMarkdownParser(BaseRTMParser):
             if len(epic_words) >= 2:
                 epic_id = epic_words[-1]
                 return {
-                    "id": (
-                        f"EP-{epic_id.zfill(5)}"
-                        if epic_id.isdigit()
-                        else epic_id
-                    ),
+                    "id": (f"EP-{epic_id.zfill(5)}" if epic_id.isdigit() else epic_id),
                     "title": title,
                     "number": epic_id,
                 }

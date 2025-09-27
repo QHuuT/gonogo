@@ -82,7 +82,8 @@ class DynamicRTMDemo:
                 epics = self.db_session.query(Epic).all()
                 status_counts = {}
                 for epic in epics:
-                    status_counts[epic.status] = status_counts.get(epic.status, 0) + 1
+                    status_counts[epic.status] = \
+                        status_counts.get(epic.status, 0) + 1
 
                 for status, count in status_counts.items():
                     print(f"  {status}: {count}")
@@ -199,7 +200,10 @@ class DynamicRTMDemo:
                 )
                 print(f"User Stories: {first_epic['metrics']['user_stories_count']}")
                 print(f"Tests: {first_epic['metrics']['tests_count']}")
-                print(f"Test Pass Rate: {first_epic['metrics']['test_pass_rate']:.1f}%")
+                print(
+                    f"Test Pass Rate:"
+                    f"{first_epic['metrics']['test_pass_rate']:.1f}%"
+                )
 
             print(f"\nOverall Summary:")
             print(

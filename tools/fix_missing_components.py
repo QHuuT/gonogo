@@ -57,7 +57,8 @@ def inherit_defect_components_from_epics(session, dry_run: bool = True) -> dict:
             stats['defects_processed'] += 1
 
             # Get first component from epic's comma-separated components
-            epic_components = [c.strip() for c in defect.epic.component.split(',') if c.strip()]
+            epic_components = \
+                [c.strip() for c in defect.epic.component.split(',') if c.strip()]
             if epic_components:
                 component_to_inherit = epic_components[0]  # Take first component
 
@@ -106,7 +107,8 @@ def inherit_test_components_from_epics(session, dry_run: bool = True) -> dict:
             stats['tests_processed'] += 1
 
             # Get first component from epic's comma-separated components
-            epic_components = [c.strip() for c in test.epic.component.split(',') if c.strip()]
+            epic_components = \
+                [c.strip() for c in test.epic.component.split(',') if c.strip()]
             if epic_components:
                 component_to_inherit = epic_components[0]  # Take first component
 
@@ -144,7 +146,8 @@ def fix_all_missing_components(dry_run: bool = True) -> dict:
     session = SessionLocal()
     try:
         # Fix defects
-        results['defect_stats'] = inherit_defect_components_from_epics(session, dry_run)
+        results['defect_stats'] = \
+            inherit_defect_components_from_epics(session, dry_run)
 
         # Fix tests
         results['test_stats'] = inherit_test_components_from_epics(session, dry_run)

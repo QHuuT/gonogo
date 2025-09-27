@@ -29,36 +29,19 @@ def upgrade():
 
         # Colonnes héritées de TraceabilityBase
         sa.Column('id', sa.Integer, primary_key=True, autoincrement=True),
-        sa.Column(
-            'title', sa.String(255), nullable=True
-        ),  # Peut être NULL pour les dépendances
+        sa.Column('title', sa.String(255), nullable=True),  # Peut être NULL pour les dépendances
         sa.Column('description', sa.Text, nullable=True),
         sa.Column('status', sa.String(20), nullable=False, default='active'),
         sa.Column('target_release_version', sa.String(50), nullable=True),
-        sa.Column(
-            'created_at', sa.DateTime, nullable=False,
-            server_default=sa.text('CURRENT_TIMESTAMP')
-        ),
-        sa.Column(
-            'updated_at', sa.DateTime, nullable=False,
-            server_default=sa.text('CURRENT_TIMESTAMP')
-        ),
+        sa.Column('created_at', sa.DateTime, nullable=False, server_default=sa.text('CURRENT_TIMESTAMP')),
+        sa.Column('updated_at', sa.DateTime, nullable=False, server_default=sa.text('CURRENT_TIMESTAMP')),
 
         # Colonnes spécifiques aux dépendances Epic
-        sa.Column(
-            'parent_epic_id', sa.Integer,
-            sa.ForeignKey('epics.id'), nullable=False
-        ),
-        sa.Column(
-            'dependent_epic_id', sa.Integer,
-            sa.ForeignKey('epics.id'), nullable=False
-        ),
+        sa.Column('parent_epic_id', sa.Integer, sa.ForeignKey('epics.id'), nullable=False),
+        sa.Column('dependent_epic_id', sa.Integer, sa.ForeignKey('epics.id'), nullable=False),
 
         # Type et priorité
-        sa.Column(
-            'dependency_type', sa.String(20),
-            nullable=False, default='prerequisite'
-        ),
+        sa.Column('dependency_type', sa.String(20), nullable=False, default='prerequisite'),
         sa.Column('priority', sa.String(10), nullable=False, default='medium'),
 
         # Métadonnées
@@ -72,46 +55,21 @@ def upgrade():
         sa.Column('resolution_notes', sa.Text, nullable=True),
 
         # Tracking
-        sa.Column(
-            'created_by_system', sa.Boolean,
-            nullable=False, default=False
-        ),
+        sa.Column('created_by_system', sa.Boolean, nullable=False, default=False),
         sa.Column('last_validation_date', sa.DateTime, nullable=True),
-        sa.Column(
-            'validation_status', sa.String(20),
-            nullable=False, default='pending'
-        ),
+        sa.Column('validation_status', sa.String(20), nullable=False, default='pending'),
 
         # Contraintes
-        sa.UniqueConstraint(
-            'parent_epic_id', 'dependent_epic_id', 'dependency_type',
-            name='uq_epic_dependency'
-        ),
-        sa.CheckConstraint(
-            'parent_epic_id != dependent_epic_id',
-            name='no_self_dependency'
-        ),
+        sa.UniqueConstraint('parent_epic_id', 'dependent_epic_id', 'dependency_type', name='uq_epic_dependency'),
+        sa.CheckConstraint('parent_epic_id != dependent_epic_id', name='no_self_dependency'),
     )
 
     # Créer les index pour la performance
-    op.create_index(
-        'idx_epic_dep_parent', 'epic_dependencies', ['parent_epic_id']
-    )
-    op.create_index(
-        'idx_epic_dep_dependent', 'epic_dependencies', ['dependent_epic_id']
-    )
-    op.create_index(
-        'idx_epic_dep_type_priority', 'epic_dependencies',
-        ['dependency_type', 'priority']
-    )
-    op.create_index(
-        'idx_epic_dep_active', 'epic_dependencies',
-        ['is_active', 'is_resolved']
-    )
-    op.create_index(
-        'idx_epic_dep_validation', 'epic_dependencies',
-        ['validation_status', 'last_validation_date']
-    )
+    op.create_index('idx_epic_dep_parent', 'epic_dependencies', ['parent_epic_id'])
+    op.create_index('idx_epic_dep_dependent', 'epic_dependencies', ['dependent_epic_id'])
+    op.create_index('idx_epic_dep_type_priority', 'epic_dependencies', ['dependency_type', 'priority'])
+    op.create_index('idx_epic_dep_active', 'epic_dependencies', ['is_active', 'is_resolved'])
+    op.create_index('idx_epic_dep_validation', 'epic_dependencies', ['validation_status', 'last_validation_date'])
 
     # Insérer quelques exemples de dépendances pour démonstration
     # (Optionnel - peut être retiré en production)
@@ -139,9 +97,7 @@ def insert_sample_dependencies():
     connection = op.get_bind()
 
     # Vérifier s'il y a des Epics dans la base
-    epics_result = connection.execute(
-        text("SELECT id, epic_id FROM epics ORDER BY id LIMIT 5")
-    )
+    epics_result = connection.execute(text("SELECT id, epic_id FROM epics ORDER BY id LIMIT 5"))
     epics = epics_result.fetchall()
 
     if len(epics) >= 2:
@@ -153,10 +109,7 @@ def insert_sample_dependencies():
                 'dependent_epic_id': epics[1][0],
                 'dependency_type': 'prerequisite',
                 'priority': 'high',
-                'reason': (
-                    f'Epic {epics[1][1]} requires infrastructure '
-                    f'from Epic {epics[0][1]}'
-                ),
+                'reason': f'Epic {epics[1][1]} requires infrastructure from Epic {epics[0][1]}',
                 'estimated_impact_days': 3,
                 'title': f'Dependency: {epics[0][1]} -> {epics[1][1]}',
                 'description': 'Sample dependency created by migration'
@@ -170,10 +123,7 @@ def insert_sample_dependencies():
                 'dependent_epic_id': epics[2][0],
                 'dependency_type': 'blocking',
                 'priority': 'critical',
-                'reason': (
-                    f'Epic {epics[2][1]} cannot start until '
-                    f'Epic {epics[1][1]} is completed'
-                ),
+                'reason': f'Epic {epics[2][1]} cannot start until Epic {epics[1][1]} is completed',
                 'estimated_impact_days': 5,
                 'title': f'Dependency: {epics[1][1]} -> {epics[2][1]}',
                 'description': 'Critical blocking dependency'
@@ -185,14 +135,9 @@ def insert_sample_dependencies():
                 'dependent_epic_id': epics[3][0],
                 'dependency_type': 'technical',
                 'priority': 'medium',
-                'reason': (
-                    f'Epic {epics[3][1]} shares technical components '
-                    f'with Epic {epics[0][1]}'
-                ),
+                'reason': f'Epic {epics[3][1]} shares technical components with Epic {epics[0][1]}',
                 'estimated_impact_days': 2,
-                'title': (
-                    f'Technical Dependency: {epics[0][1]} -> {epics[3][1]}'
-                ),
+                'title': f'Technical Dependency: {epics[0][1]} -> {epics[3][1]}',
                 'description': 'Technical infrastructure dependency'
             })
 
@@ -200,11 +145,9 @@ def insert_sample_dependencies():
         for dep in sample_dependencies:
             insert_query = text("""
                 INSERT INTO epic_dependencies
-                (title, description, parent_epic_id, dependent_epic_id,
-                 dependency_type, priority, reason, estimated_impact_days)
+                (title, description, parent_epic_id, dependent_epic_id, dependency_type, priority, reason, estimated_impact_days)
                 VALUES
-                (:title, :description, :parent_epic_id, :dependent_epic_id,
-                 :dependency_type, :priority, :reason, :estimated_impact_days)
+                (:title, :description, :parent_epic_id, :dependent_epic_id, :dependency_type, :priority, :reason, :estimated_impact_days)
             """)
             connection.execute(insert_query, dep)
 

@@ -28,7 +28,8 @@ class ComponentMarkerCollector(ast.NodeVisitor):
 
     def visit_ClassDef(self, node):
         """Visit class definitions to collect class-level markers."""
-        self.class_markers = self._extract_markers_from_decorators(node.decorator_list)
+        self.class_markers = \
+            self._extract_markers_from_decorators(node.decorator_list)
         self.generic_visit(node)
         # Clear class markers after processing class
         self.class_markers = {}
@@ -36,7 +37,8 @@ class ComponentMarkerCollector(ast.NodeVisitor):
     def visit_FunctionDef(self, node):
         """Visit function definitions to collect test markers."""
         if node.name.startswith('test_'):
-            function_markers = self._extract_markers_from_decorators(node.decorator_list)
+            function_markers = \
+                self._extract_markers_from_decorators(node.decorator_list)
             # Combine class markers with function markers (function takes precedence)
             all_markers = {**self.class_markers, **function_markers}
             if all_markers:
@@ -57,7 +59,8 @@ class ComponentMarkerCollector(ast.NodeVisitor):
                     marker_name = decorator.func.attr
 
                     # Extract marker value if present
-                    if decorator.args and isinstance(decorator.args[0], ast.Constant):
+                    if decorator.args and \
+                       isinstance(decorator.args[0], ast.Constant):
                         marker_value = decorator.args[0].value
                         markers[marker_name] = marker_value
                     else:
@@ -142,7 +145,10 @@ def update_test_components():
                         test.component = markers['component']
                         if old_component != test.component:
                             print(f"  {test.test_file_path}::{test.test_function_name}")
-                            print(f"    Component: {old_component or 'None'} -> {test.component}")
+                            print(
+                                f"    Component:"
+                                f"{old_component or 'None'} -> {test.component}"
+                            )
                             updated_count += 1
 
                     # Update test category from various marker types (always check)
@@ -178,7 +184,10 @@ def update_test_components():
                         if category and category != test.test_category:
                             old_category = test.test_category
                             test.test_category = category
-                            print(f"    Category: {old_category or 'None'} -> {test.test_category}")
+                            print(
+                                f"    Category:"
+                                f"{old_category or 'None'} -> {test.test_category}"
+                            )
                             updated_count += 1
 
                     # Update test priority
@@ -186,7 +195,10 @@ def update_test_components():
                         old_priority = test.test_priority
                         test.test_priority = markers['priority']
                         if old_priority != test.test_priority:
-                            print(f"    Priority: {old_priority} -> {test.test_priority}")
+                            print(
+                                f"    Priority:"
+                                f"{old_priority} -> {test.test_priority}"
+                            )
                             updated_count += 1
 
         session.commit()

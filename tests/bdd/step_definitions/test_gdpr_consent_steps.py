@@ -42,11 +42,7 @@ def see_consent_banner(bdd_test_client, bdd_context):
 def previously_gave_analytics_consent(bdd_context):
     """Set up previous consent for analytics."""
     bdd_context["consent_history"] = [
-        {
-            "type": "analytics",
-            "given": True,
-            "timestamp": "2023-01-01T00:00:00Z"
-        }
+        {"type": "analytics", "given": True, "timestamp": "2023-01-01T00:00:00Z"}
     ]
 
 

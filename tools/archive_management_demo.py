@@ -265,7 +265,10 @@ def demonstrate_search_capabilities(manager: TestArchiveManager):
         print(f"  Found {len(html_results)} HTML reports in archive:")
         for result in html_results[:3]:  # Show first 3
             print(f"    - {Path(result.original_path).name}")
-            print(f"      Archived: {result.archived_date.strftime('%Y-%m-%d %H:%M')}")
+            print(
+                f"      Archived:"
+                f"{result.archived_date.strftime('%Y-%m-%d %H:%M')}"
+            )
             print(f"      Compression: {(1-result.compression_ratio)*100:.1f}%")
     else:
         print(f"  No HTML reports found in archive yet.")
@@ -401,7 +404,10 @@ def main():
 
             # Display key achievements
             print(f"\n*** Key Achievements:")
-            print(f"[DONE] Configurable retention policies with automatic application")
+            print(
+                f"[DONE] Configurable"
+                f"retention policies with automatic application"
+            )
             print(f"[DONE] File compression with space optimization")
             print(f"[DONE] Archive search and retrieval capabilities")
             print(f"[DONE] Automated cleanup with scheduling support")

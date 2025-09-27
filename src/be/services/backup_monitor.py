@@ -82,12 +82,11 @@ class BackupMonitor:
     """
 
     def __init__(
-    self,
-    alert_email: Optional[str] = None,
-    smtp_config: Optional[Dict] = None,
-    sla_recovery_time_minutes: int = 5,
-    
-):
+        self,
+        alert_email: Optional[str] = None,
+        smtp_config: Optional[Dict] = None,
+        sla_recovery_time_minutes: int = 5,
+    ):
         """
         Initialize backup monitoring service.
 
@@ -101,9 +100,7 @@ class BackupMonitor:
         self.sla_recovery_time_minutes = sla_recovery_time_minutes
 
         # Monitoring configuration
-        self.max_backup_age_hours = (
-            25  # Alert if no backup in 25 hours (daily + buffer)
-        )
+        self.max_backup_age_hours = 25  # Alert if no backup in 25 hours (daily + buffer)
         self.max_backup_duration_minutes = 30  # Alert if backup takes > 30min
         self.min_success_rate = 0.8  # Alert if success rate < 80%
 
@@ -118,22 +115,14 @@ class BackupMonitor:
         import os
 
         return {
-    
-            "smtp_server": os.getenv("SMTP_SERVER",
-    "localhost"),
-            "smtp_port": int(os.getenv("SMTP_PORT",
-    "587")),
-            "smtp_username": os.getenv("SMTP_USERNAME",
-    ""),
-            "smtp_password": os.getenv("SMTP_PASSWORD",
-    ""),
-            "smtp_use_tls": os.getenv("SMTP_USE_TLS",
-    "true").lower() == "true",
-        
-}
+            "smtp_server": os.getenv("SMTP_SERVER", "localhost"),
+            "smtp_port": int(os.getenv("SMTP_PORT", "587")),
+            "smtp_username": os.getenv("SMTP_USERNAME", ""),
+            "smtp_password": os.getenv("SMTP_PASSWORD", ""),
+            "smtp_use_tls": os.getenv("SMTP_USE_TLS", "true").lower() == "true",
+        }
 
-    def monitor_backup_operation(
-            self, backup_service: BackupService) -> Dict[str, any]:
+    def monitor_backup_operation(self, backup_service: BackupService) -> Dict[str, any]:
         """
         Monitor a backup operation in real-time.
 
@@ -157,8 +146,7 @@ class BackupMonitor:
             duration = backup_result["duration_seconds"]
 
             # Determine success based on backup results
-            successful_destinations = backup_result.get(
-                "successful_destinations", 0)
+            successful_destinations = backup_result.get("successful_destinations", 0)
             total_destinations = backup_result.get("total_destinations", 1)
             success = successful_destinations > 0
 
@@ -171,16 +159,15 @@ class BackupMonitor:
 
             # Create metrics record
             metrics = BackupMetrics(
-    backup_id=backup_id,
-    start_time=start_time,
-    end_time=end_time,
-    duration_seconds=duration,
-    success=success,
-    file_size_mb=file_size_mb,
-    destinations_success=successful_destinations,
-    destinations_total=total_destinations,
-    
-)
+                backup_id=backup_id,
+                start_time=start_time,
+                end_time=end_time,
+                duration_seconds=duration,
+                success=success,
+                file_size_mb=file_size_mb,
+                destinations_success=successful_destinations,
+                destinations_total=total_destinations,
+            )
 
             self.backup_history.append(metrics)
 
@@ -197,7 +184,6 @@ class BackupMonitor:
                 self._send_alert(alert)
 
             monitoring_result = {
-    
                 "backup_id": backup_id,
                 "monitoring_success": True,
                 "metrics": {
@@ -206,15 +192,10 @@ class BackupMonitor:
                     "file_size_mb": file_size_mb,
                     "destinations_success": successful_destinations,
                     "destinations_total": total_destinations,
-                    "sla_met": (
-                        duration <= (self.sla_recovery_time_minutes * 60)
-                    ),
-                
-},
+                    "sla_met": (duration <= (self.sla_recovery_time_minutes * 60)),
+                },
                 "alerts_generated": len(alerts),
-                "alerts": [
-                    {"level": a.level.value, "title": a.title} for a in alerts
-                ],
+                "alerts": [{"level": a.level.value, "title": a.title} for a in alerts],
             }
 
             logger.info("Backup monitoring completed successfully: %s", backup_id)
@@ -226,30 +207,27 @@ class BackupMonitor:
             duration = (end_time - start_time).total_seconds()
 
             failed_metrics = BackupMetrics(
-    backup_id=backup_id,
-    start_time=start_time,
-    end_time=end_time,
-    duration_seconds=duration,
-    success=False,
-    file_size_mb=0,
-    destinations_success=0,
-    destinations_total=1,
-    error_message=str(e
-),
+                backup_id=backup_id,
+                start_time=start_time,
+                end_time=end_time,
+                duration_seconds=duration,
+                success=False,
+                file_size_mb=0,
+                destinations_success=0,
+                destinations_total=1,
+                error_message=str(e),
             )
 
             self.backup_history.append(failed_metrics)
 
             # Generate critical alert for failed backup
             alert = Alert(
-    level=AlertLevel.CRITICAL,
-    title="Backup Operation Failed",
-    message=f"Backup operation {backup_id} failed with error: {e}",
-    timestamp=end_time,
-    component="backup_service",
-    details={"backup_id": backup_id,
-    "error": str(e
-)},
+                level=AlertLevel.CRITICAL,
+                title="Backup Operation Failed",
+                message=f"Backup operation {backup_id} failed with error: {e}",
+                timestamp=end_time,
+                component="backup_service",
+                details={"backup_id": backup_id, "error": str(e)},
             )
 
             self._send_alert(alert)
@@ -257,88 +235,80 @@ class BackupMonitor:
             logger.error("Backup monitoring failed: %s", e)
             raise BackupError(f"Backup monitoring failed: {e}")
 
-    def _analyze_backup_metrics(
-        self, metrics: BackupMetrics, backup_result: Dict
-    ) -> List[Alert]:
+    def _analyze_backup_metrics(self, metrics: BackupMetrics, backup_result: Dict) -> List[Alert]:
         """Analyze backup metrics and generate alerts."""
         alerts = []
 
         # Check backup duration
-        if metrics.duration_seconds > (
-                self.max_backup_duration_minutes * 60):
+        if metrics.duration_seconds > (self.max_backup_duration_minutes * 60):
             alerts.append(
-    Alert(
+                Alert(
                     level=AlertLevel.WARNING,
-    title="Backup Duration Exceeded",
-    message=f"Backup {metrics.backup_id} took {metrics.duration_seconds:.1f} seconds "
-                    f"(>{self.max_backup_duration_minutes} minutes)",
+                    title="Backup Duration Exceeded",
+                    message=(
+                        f"Backup {metrics.backup_id} took "
+                        f"{metrics.duration_seconds:.1f} seconds "
+                        f"(>{self.max_backup_duration_minutes} minutes)"
+                    ),
                     timestamp=metrics.end_time,
                     component="backup_performance",
                     details={
-    
                         "backup_id": metrics.backup_id,
                         "duration": metrics.duration_seconds,
-                    
-},
+                    },
                 )
             )
 
         # Check destination success rate
-        success_rate = (
-            metrics.destinations_success / metrics.destinations_total)
+        success_rate = metrics.destinations_success / metrics.destinations_total
         if success_rate < self.min_success_rate:
             alerts.append(
-    Alert(
+                Alert(
                     level=AlertLevel.ERROR,
-    title="Backup Destination Failures",
-    message=f"Only {metrics.destinations_success}/{metrics.destinations_total} "
-                    f"destinations succeeded "
-                    f"(success rate: {success_rate:.1%})",
+                    title="Backup Destination Failures",
+                    message=(
+                        f"Only {metrics.destinations_success}/"
+                        f"{metrics.destinations_total} destinations succeeded "
+                        f"(success rate: {success_rate:.1%})"
+                    ),
                     timestamp=metrics.end_time,
                     component="backup_destinations",
                     details={
-    
                         "backup_id": metrics.backup_id,
                         "success_rate": success_rate,
-                        "failed_destinations": metrics.destinations_total
-                        - metrics.destinations_success,
-                    
-},
+                        "failed_destinations": metrics.destinations_total - metrics.destinations_success,
+                    },
                 )
             )
 
         # Check for complete backup failure
         if not metrics.success:
             alerts.append(
-    Alert(
+                Alert(
                     level=AlertLevel.CRITICAL,
-    title="Complete Backup Failure",
-    message=f"Backup {metrics.backup_id} failed completely. "
+                    title="Complete Backup Failure",
+                    message=f"Backup {metrics.backup_id} failed completely. "
                     f"Error: {metrics.error_message or 'Unknown error'}",
-    timestamp=metrics.end_time,
-    component="backup_service",
-    details={
-    
+                    timestamp=metrics.end_time,
+                    component="backup_service",
+                    details={
                         "backup_id": metrics.backup_id,
-    "error": metrics.error_message,
-    
-},
-    
-)
+                        "error": metrics.error_message,
+                    },
+                )
             )
 
         # Check backup integrity
         if not backup_result.get("integrity_validated", False):
             alerts.append(
-    Alert(
+                Alert(
                     level=AlertLevel.ERROR,
-    title="Backup Integrity Validation Failed",
-    message=f"Backup {metrics.backup_id} failed integrity validation",
-    timestamp=metrics.end_time,
-    component="backup_integrity",
-    details={"backup_id": metrics.backup_id},
-    
-)
+                    title="Backup Integrity Validation Failed",
+                    message=f"Backup {metrics.backup_id} failed integrity validation",
+                    timestamp=metrics.end_time,
+                    component="backup_integrity",
+                    details={"backup_id": metrics.backup_id},
+                )
             )
 
         return alerts
@@ -355,11 +325,10 @@ class BackupMonitor:
 
             if hours_since_backup > self.max_backup_age_hours:
                 alerts.append(
-    Alert(
+                    Alert(
                         level=AlertLevel.WARNING,
-    title="Backup Schedule Alert",
-    message=f"No backup completed in {hours_since_backup:.1f} hours "
-                        f"(expected every 24 hours)",
+                        title="Backup Schedule Alert",
+                        message=f"No backup completed in {hours_since_backup:.1f} hours (expected every 24 hours)",
                         timestamp=now,
                         component="backup_schedule",
                         details={"hours_since_backup": hours_since_backup},
@@ -368,9 +337,7 @@ class BackupMonitor:
 
             # Check recent success rate
             recent_backups = [
-                b
-                for b in self.backup_history
-                if (now - b.end_time).total_seconds() < (7 * 24 * 3600)
+                b for b in self.backup_history if (now - b.end_time).total_seconds() < (7 * 24 * 3600)
             ]  # Last 7 days
 
             if recent_backups:
@@ -379,29 +346,24 @@ class BackupMonitor:
 
                 if success_rate < self.min_success_rate:
                     alerts.append(
-    Alert(
+                        Alert(
                             level=AlertLevel.ERROR,
-    title="Low Backup Success Rate",
-    message=f"Recent backup success rate: {success_rate:.1%} "
-                            f"({success_count}/{len(recent_backups
-)} in last 7 days)",
+                            title="Low Backup Success Rate",
+                            message=f"Recent backup success rate: {success_rate:.1%} "
+                            f"({success_count}/{len(recent_backups)} in last 7 days)",
                             timestamp=now,
                             component="backup_reliability",
                             details={
-    
                                 "success_rate": success_rate,
                                 "successful_backups": success_count,
                                 "total_backups": len(recent_backups),
-                            
-},
+                            },
                         )
                     )
 
         return alerts
 
-    def detect_backup_corruption(
-        self, backup_service: BackupService, backup_paths: List[str]
-    ) -> List[Alert]:
+    def detect_backup_corruption(self, backup_service: BackupService, backup_paths: List[str]) -> List[Alert]:
         """
         Detect corruption in existing backup files.
 
@@ -415,11 +377,7 @@ class BackupMonitor:
         alerts = []
         now = datetime.now(UTC)
 
-        logger.info(
-    "Starting corruption detection for %d backup files",
-    len(backup_paths
-)
-        )
+        logger.info("Starting corruption detection for %d backup files", len(backup_paths))
 
         for backup_path in backup_paths:
             try:
@@ -429,15 +387,13 @@ class BackupMonitor:
 
             except BackupError as e:
                 alerts.append(
-    Alert(
+                    Alert(
                         level=AlertLevel.CRITICAL,
-    title="Backup Corruption Detected",
-    message=f"Corrupted backup file: {backup_path}. Error: {e}",
-    timestamp=now,
-    component="backup_integrity",
-    details={"backup_path": backup_path,
-    "error": str(e
-)},
+                        title="Backup Corruption Detected",
+                        message=f"Corrupted backup file: {backup_path}. Error: {e}",
+                        timestamp=now,
+                        component="backup_integrity",
+                        details={"backup_path": backup_path, "error": str(e)},
                     )
                 )
 
@@ -445,15 +401,13 @@ class BackupMonitor:
 
             except Exception as e:
                 alerts.append(
-    Alert(
+                    Alert(
                         level=AlertLevel.WARNING,
-    title="Backup Validation Error",
-    message=f"Could not validate backup: {backup_path}. Error: {e}",
-    timestamp=now,
-    component="backup_validation",
-    details={"backup_path": backup_path,
-    "error": str(e
-)},
+                        title="Backup Validation Error",
+                        message=f"Could not validate backup: {backup_path}. Error: {e}",
+                        timestamp=now,
+                        component="backup_validation",
+                        details={"backup_path": backup_path, "error": str(e)},
                     )
                 )
 
@@ -472,28 +426,22 @@ class BackupMonitor:
 
         # Always log the alert
         log_level = {
-    
             AlertLevel.INFO: logging.INFO,
             AlertLevel.WARNING: logging.WARNING,
             AlertLevel.ERROR: logging.ERROR,
             AlertLevel.CRITICAL: logging.CRITICAL,
-        
-}[alert.level]
+        }[alert.level]
 
         logger.log(
-    log_level,
-    "ALERT [%s] %s: %s",
-    alert.level.value.upper(
-),
+            log_level,
+            "ALERT [%s] %s: %s",
+            alert.level.value.upper(),
             alert.title,
             alert.message,
         )
 
         # Send email alert for warning level and above
-        if (
-            alert.level in [AlertLevel.WARNING, AlertLevel.ERROR, AlertLevel.CRITICAL]
-            and self.alert_email
-        ):
+        if alert.level in [AlertLevel.WARNING, AlertLevel.ERROR, AlertLevel.CRITICAL] and self.alert_email:
             self._send_email_alert(alert)
 
     def _send_email_alert(self, alert: Alert):
@@ -501,9 +449,7 @@ class BackupMonitor:
         try:
             # Create email message
             msg = MimeMultipart()
-            msg["From"] = self.smtp_config.get(
-                "smtp_username", "backup-monitor@gonogo.local"
-            )
+            msg["From"] = self.smtp_config.get("smtp_username", "backup-monitor@gonogo.local")
             msg["To"] = self.alert_email
             msg["Subject"] = f"[GoNoGo Backup Alert] {alert.title}"
 
@@ -539,19 +485,13 @@ US-00036: Comprehensive Database Backup Strategy
             msg.attach(MimeText(body, "plain"))
 
             # Send email
-            server = smtplib.SMTP(
-    self.smtp_config["smtp_server"],
-    self.smtp_config["smtp_port"]
-)
+            server = smtplib.SMTP(self.smtp_config["smtp_server"], self.smtp_config["smtp_port"])
 
             if self.smtp_config["smtp_use_tls"]:
                 server.starttls()
 
             if self.smtp_config["smtp_username"]:
-                server.login(
-    self.smtp_config["smtp_username"],
-    self.smtp_config["smtp_password"]
-)
+                server.login(self.smtp_config["smtp_username"], self.smtp_config["smtp_password"])
 
             server.send_message(msg)
             server.quit()
@@ -581,35 +521,24 @@ US-00036: Comprehensive Database Backup Strategy
         # SLA compliance
         sla_target_seconds = self.sla_recovery_time_minutes * 60
         sla_compliant_backups = sum(
-            1
-            for b in self.backup_history
-            if b.success and b.duration_seconds <= sla_target_seconds
+            1 for b in self.backup_history if b.success and b.duration_seconds <= sla_target_seconds
         )
-        sla_compliance_rate = (
-            sla_compliant_backups / total_backups if total_backups > 0 else 0
-        )
+        sla_compliance_rate = sla_compliant_backups / total_backups if total_backups > 0 else 0
 
         dashboard = {
-    
             "system_status": "operational" if success_rate > 0.8 else "degraded",
             "monitoring_summary": {
                 "total_backups": total_backups,
                 "successful_backups": successful_backups,
-                "success_rate": round(success_rate,
-    3),
-                "sla_compliance_rate": round(sla_compliance_rate,
-    3),
+                "success_rate": round(success_rate, 3),
+                "sla_compliance_rate": round(sla_compliance_rate, 3),
                 "recent_backups_24h": len(recent_backups),
                 "recent_alerts_7d": len(recent_alerts),
-            
-},
+            },
             "recent_performance": {
-    
                 "avg_duration_minutes": (
                     round(
-                        sum(b.duration_seconds for b in recent_backups)
-                        / len(recent_backups)
-                        / 60,
+                        sum(b.duration_seconds for b in recent_backups) / len(recent_backups) / 60,
                         2,
                     )
                     if recent_backups
@@ -617,8 +546,7 @@ US-00036: Comprehensive Database Backup Strategy
                 ),
                 "avg_file_size_mb": (
                     round(
-                        sum(b.file_size_mb for b in recent_backups)
-                        / len(recent_backups),
+                        sum(b.file_size_mb for b in recent_backups) / len(recent_backups),
                         2,
                     )
                     if recent_backups
@@ -626,58 +554,32 @@ US-00036: Comprehensive Database Backup Strategy
                 ),
                 "destination_reliability": (
                     round(
-                        sum(
-                            b.destinations_success / b.destinations_total
-                            for b in recent_backups
-                        )
+                        sum(b.destinations_success / b.destinations_total for b in recent_backups)
                         / len(recent_backups),
                         3,
                     )
                     if recent_backups
                     else 0
                 ),
-            
-},
+            },
             "alert_summary": {
-    
-                "critical": sum(
-                    1 for a in recent_alerts if a.level == AlertLevel.CRITICAL
-                ),
+                "critical": sum(1 for a in recent_alerts if a.level == AlertLevel.CRITICAL),
                 "error": sum(1 for a in recent_alerts if a.level == AlertLevel.ERROR),
-                "warning": sum(
-                    1 for a in recent_alerts if a.level == AlertLevel.WARNING
-                ),
+                "warning": sum(1 for a in recent_alerts if a.level == AlertLevel.WARNING),
                 "info": sum(1 for a in recent_alerts if a.level == AlertLevel.INFO),
-            
-},
+            },
             "latest_backup": {
-    
-                "backup_id": (
-                    self.backup_history[-1].backup_id if self.backup_history else None
-                ),
-                "timestamp": (
-                    self.backup_history[-1].end_time.isoformat()
-                    if self.backup_history
-                    else None
-                ),
-                "success": (
-                    self.backup_history[-1].success if self.backup_history else None
-                ),
-                "duration_seconds": (
-                    self.backup_history[-1].duration_seconds
-                    if self.backup_history
-                    else None
-                ),
-            
-},
+                "backup_id": (self.backup_history[-1].backup_id if self.backup_history else None),
+                "timestamp": (self.backup_history[-1].end_time.isoformat() if self.backup_history else None),
+                "success": (self.backup_history[-1].success if self.backup_history else None),
+                "duration_seconds": (self.backup_history[-1].duration_seconds if self.backup_history else None),
+            },
             "configuration": {
-    
                 "sla_recovery_time_minutes": self.sla_recovery_time_minutes,
                 "max_backup_age_hours": self.max_backup_age_hours,
                 "min_success_rate": self.min_success_rate,
                 "alert_email_configured": bool(self.alert_email),
-            
-},
+            },
         }
 
         return dashboard
@@ -686,106 +588,87 @@ US-00036: Comprehensive Database Backup Strategy
         """Run comprehensive backup system health check."""
         start_time = datetime.now(UTC)
         health_results = {
-    
             "timestamp": start_time.isoformat(),
             "overall_health": "healthy",
             "checks": [],
-        
-}
+        }
 
         # Check 1: Backup service status
         try:
             status = backup_service.get_backup_status()
             health_results["checks"].append(
-    {
-    
+                {
                     "name": "backup_service_status",
-    "status": "pass",
-    "message": f"Service operational with {len(status['backup_destinations']
-)
-} destinations",
+                    "status": "pass",
+                    "message": f"Service operational with {len(status['backup_destinations'])} destinations",
                 }
             )
         except Exception as e:
             health_results["checks"].append(
-    {
-    
+                {
                     "name": "backup_service_status",
-    "status": "fail",
-    "message": f"Backup service error: {e
-}",
-    }
-)
+                    "status": "fail",
+                    "message": f"Backup service error: {e}",
+                }
+            )
             health_results["overall_health"] = "unhealthy"
 
         # Check 2: Recent backup availability
         if self.backup_history:
             latest_backup = max(self.backup_history, key=lambda x: x.end_time)
-            hours_since_backup = (
-                start_time - latest_backup.end_time
-            ).total_seconds() / 3600
+            hours_since_backup = (start_time - latest_backup.end_time).total_seconds() / 3600
 
             if hours_since_backup <= self.max_backup_age_hours:
                 health_results["checks"].append(
-    {
-    
+                    {
                         "name": "recent_backup_availability",
-    "status": "pass",
+                        "status": "pass",
                         "message": f"Latest backup {hours_since_backup:.1f} hours ago",
-    }
-)
+                    }
+                )
             else:
                 health_results["checks"].append(
-    {
-    
+                    {
                         "name": "recent_backup_availability",
-    "status": "fail",
+                        "status": "fail",
                         "message": f"No recent backup ({hours_since_backup:.1f} hours ago)",
                     }
                 )
                 health_results["overall_health"] = "degraded"
         else:
             health_results["checks"].append(
-    {
-    
+                {
                     "name": "recent_backup_availability",
-    "status": "fail",
-    "message": "No backup history available",
-    
-}
-)
+                    "status": "fail",
+                    "message": "No backup history available",
+                }
+            )
             health_results["overall_health"] = "unhealthy"
 
         # Check 3: Alert system functionality
         try:
             test_alert = Alert(
-    level=AlertLevel.INFO,
-    title="Health Check Test Alert",
-    message="Testing alert system functionality",
-    timestamp=start_time,
-    component="health_check",
-    
-)
+                level=AlertLevel.INFO,
+                title="Health Check Test Alert",
+                message="Testing alert system functionality",
+                timestamp=start_time,
+                component="health_check",
+            )
             # Don't actually send the test alert, just validate the mechanism
             health_results["checks"].append(
-    {
-    
+                {
                     "name": "alert_system",
-    "status": "pass",
-    "message": f"Alert system configured with email: {bool(self.alert_email
-)
-}",
+                    "status": "pass",
+                    "message": f"Alert system configured with email: {bool(self.alert_email)}",
                 }
             )
         except Exception as e:
             health_results["checks"].append(
-    {
-    
+                {
                     "name": "alert_system",
-    "status": "fail",
-    "message": f"Alert system error: {e
-}",
-    }
-)
+                    "status": "fail",
+                    "message": f"Alert system error: {e}",
+                }
+            )
 
         return health_results

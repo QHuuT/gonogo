@@ -74,21 +74,14 @@ class PluginManager:
             module_name = item[:-3]  # Remove .py extension
 
             try:
-                spec = importlib.util.spec_from_file_location(
-                    module_name, module_path
-                )
+                spec = importlib.util.spec_from_file_location(module_name, module_path)
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
                 # Find plugin classes in the module
                 for attr_name in dir(module):
                     attr = getattr(module, attr_name)
-                    if (
-                        isinstance(attr, type)
-                        and issubclass(attr, RTMPlugin)
-                        and attr != RTMPlugin
-                    ):
-
+                    if isinstance(attr, type) and issubclass(attr, RTMPlugin) and attr != RTMPlugin:
                         plugin_instance = attr()
                         self.register_plugin(plugin_instance, plugin_type)
 
@@ -117,13 +110,11 @@ class PluginManager:
         for plugin_type, plugins in self.plugin_types.items():
             result[plugin_type] = [
                 {
-    
                     "name": p.name,
                     "version": p.version,
                     "description": p.description,
                     "enabled": p.enabled,
-                
-}
+                }
                 for p in plugins
             ]
         return result

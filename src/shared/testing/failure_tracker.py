@@ -48,6 +48,7 @@ class FailureSeverity(Enum):
 @dataclass
 class TestFailure:
     """Represents a single test failure with full context."""
+
     __test__ = False  # Tell pytest this is not a test class
 
     id: Optional[int] = None
@@ -246,9 +247,7 @@ class FailureTracker:
                 )
                 return result.lastrowid
 
-    def categorize_failure(
-        self, error_message: str, stack_trace: str
-    ) -> FailureCategory:
+    def categorize_failure(self, error_message: str, stack_trace: str) -> FailureCategory:
         """Automatically categorize failure based on error patterns."""
         error_text = f"{error_message} {stack_trace}".lower()
 
@@ -409,9 +408,7 @@ class FailureTracker:
                 or 1
             )
 
-            failure_rate = (
-                (unique_failures / total_tests) * 100 if total_tests > 0 else 0
-            )
+            failure_rate = (unique_failures / total_tests) * 100 if total_tests > 0 else 0
 
         return FailureStatistics(
             total_failures=total_failures,
@@ -437,9 +434,7 @@ class FailureTracker:
                 WHERE last_seen >= date('now', '-{} days')
                 GROUP BY week_start
                 ORDER BY week_start
-            """.format(
-                    days
-                )
+            """.format(days)
             ).fetchall()
 
         return {
@@ -454,9 +449,7 @@ class FailureTracker:
 
         recent_avg = sum(w[1] for w in weekly_data[-2:]) / 2
         earlier_avg = (
-            sum(w[1] for w in weekly_data[:-2]) / len(weekly_data[:-2])
-            if len(weekly_data) > 2
-            else weekly_data[0][1]
+            sum(w[1] for w in weekly_data[:-2]) / len(weekly_data[:-2]) if len(weekly_data) > 2 else weekly_data[0][1]
         )
 
         if recent_avg > earlier_avg * 1.2:
@@ -518,9 +511,7 @@ class FailureTracker:
                     pattern_id=f"CAT_{category.value.upper()}",
                     description=f"Multiple {category.value.replace('_', ' ')} failures",
                     occurrences=pattern_data[1],
-                    affected_tests=(
-                        pattern_data[2].split(",") if pattern_data[2] else []
-                    ),
+                    affected_tests=(pattern_data[2].split(",") if pattern_data[2] else []),
                     category=category,
                     severity=FailureSeverity.MEDIUM,
                     first_occurrence=datetime.fromisoformat(pattern_data[3]),
@@ -537,11 +528,7 @@ class FailureTracker:
         cutoff_date = (datetime.now(UTC) - timedelta(days=days)).isoformat()
 
         with sqlite3.connect(self.db_path) as conn:
-            deleted_count = conn.execute(
-                "DELETE FROM test_failures WHERE last_seen < ?", (cutoff_date,)
-            ).rowcount
-            conn.execute(
-                "DELETE FROM failure_patterns WHERE last_occurrence < ?", (cutoff_date,)
-            )
+            deleted_count = conn.execute("DELETE FROM test_failures WHERE last_seen < ?", (cutoff_date,)).rowcount
+            conn.execute("DELETE FROM failure_patterns WHERE last_occurrence < ?", (cutoff_date,))
 
         return deleted_count

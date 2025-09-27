@@ -28,109 +28,74 @@ from ...shared.metrics.thresholds import get_threshold_service
 router = APIRouter(prefix="/api/rtm", tags=["RTM"])
 templates = Jinja2Templates(directory="src/be/templates")
 
-DEMO_DATASET_PATH = (
-    Path(__file__).resolve().parents[3] / "tests" / "demo" /
-    "multipersona_dashboard_demo.json"
-)
+DEMO_DATASET_PATH = Path(__file__).resolve().parents[3] / "tests" / "demo" / "multipersona_dashboard_demo.json"
 
 
 def load_demo_dataset() -> dict:
     """Load curated demo dashboard data."""
     if not DEMO_DATASET_PATH.exists():
-        raise HTTPException(
-            status_code=500, detail="Demo dataset not available"
-        )
-    with DEMO_DATASET_PATH.open('r', encoding='utf-8') as handle:
+        raise HTTPException(status_code=500, detail="Demo dataset not available")
+    with DEMO_DATASET_PATH.open("r", encoding="utf-8") as handle:
         return json.load(handle)
 
 
 def filter_demo_epics(
-    epics: List[dict],
-    epic_filter: Optional[str],
-    status_filter: Optional[str],
-    component_filter: Optional[str]
+    epics: List[dict], epic_filter: Optional[str], status_filter: Optional[str], component_filter: Optional[str]
 ) -> List[dict]:
     """Apply basic filtering logic to the demo epics collection."""
     filtered = epics
 
     if epic_filter:
-        filtered = [
-            epic for epic in filtered if epic.get('epic_id') == epic_filter
-        ]
+        filtered = [epic for epic in filtered if epic.get("epic_id") == epic_filter]
 
     if status_filter:
         status_lower = status_filter.lower()
-        filtered = [
-            epic for epic in filtered
-            if str(epic.get('status', '')).lower() == status_lower
-        ]
+        filtered = [epic for epic in filtered if str(epic.get("status", "")).lower() == status_lower]
 
     if component_filter:
-        components = [
-            component.strip().lower()
-            for component in component_filter.split(',')
-            if component.strip()
-        ]
+        components = [component.strip().lower() for component in component_filter.split(",") if component.strip()]
         if components:
-            filtered = [
-                epic
-                for epic in filtered
-                if str(epic.get('component', '')).lower() in components
-            ]
+            filtered = [epic for epic in filtered if str(epic.get("component", "")).lower() in components]
 
     return filtered
-
 
 
 # Dashboard and Web Interface
 @router.get("/dashboard", response_class=HTMLResponse)
 def rtm_dashboard(request: Request):
     """Serve the RTM Dashboard web interface."""
-    return templates.TemplateResponse(
-        "rtm_dashboard.html", {"request": request}
-    )
+    return templates.TemplateResponse("rtm_dashboard.html", {"request": request})
 
 
 @router.get("/", response_class=HTMLResponse)
 def dashboard_home(request: Request):
     """Dashboard home page with navigation to different dashboards."""
-    return templates.TemplateResponse(
-        "multipersona_dashboard.html", {"request": request}
-    )
+    return templates.TemplateResponse("multipersona_dashboard.html", {"request": request})
 
 
 @router.get("/dashboard/multipersona", response_class=HTMLResponse)
 def multipersona_dashboard(request: Request):
     """Serve the Multi-Persona Dashboard web interface (US-00072)."""
-    return templates.TemplateResponse(
-        "multipersona_dashboard.html", {"request": request}
-    )
+    return templates.TemplateResponse("multipersona_dashboard.html", {"request": request})
 
 
 @router.get("/dashboard/multipersona/demo", response_class=HTMLResponse)
 def multipersona_dashboard_demo(request: Request):
     """Serve the Multi-Persona Dashboard in demo mode (uses curated data)."""
-    return templates.TemplateResponse(
-        "multipersona_dashboard.html", {"request": request}
-    )
+    return templates.TemplateResponse("multipersona_dashboard.html", {"request": request})
 
 
 @router.get("/dashboard/dependencies", response_class=HTMLResponse)
 def dependency_visualizer(request: Request):
     """Serve the Epic Dependencies Visualizer web interface with D3.js
     (US-00030)."""
-    return templates.TemplateResponse(
-        "dependency_visualizer.html", {"request": request}
-    )
-
+    return templates.TemplateResponse("dependency_visualizer.html", {"request": request})
 
 
 @router.get("/dashboard/capabilities", response_class=HTMLResponse)
 def capability_portfolio_dashboard(request: Request):
     """Serve the Capability Portfolio Dashboard web interface (US-00063)."""
-    return templates.TemplateResponse(
-        "capability_portfolio.html", {"request": request}
-    )
+    return templates.TemplateResponse("capability_portfolio.html", {"request": request})
 
 
 # Epic CRUD Operations
@@ -161,14 +126,8 @@ def create_epic(
 def list_epics(
     status: Optional[str] = Query(None, description="Filter by status"),
     priority: Optional[str] = Query(None, description="Filter by priority"),
-    component: Optional[str] = Query(
-        None,
-        description="Filter by component (supports comma-separated values)"
-    ),
-    exclude_component: Optional[str] = Query(
-        None,
-        description="Exclude components (supports comma-separated values)"
-    ),
+    component: Optional[str] = Query(None, description="Filter by component (supports comma-separated values)"),
+    exclude_component: Optional[str] = Query(None, description="Exclude components (supports comma-separated values)"),
     limit: int = Query(50, le=100, description="Limit results"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
     db: Session = Depends(get_db),
@@ -183,19 +142,19 @@ def list_epics(
 
     # Component filtering
     if component:
-        components = [c.strip() for c in component.split(',')]
+        components = [c.strip() for c in component.split(",")]
         # For epics, component can contain multiple values separated by comma
         # So we need to check if ANY of the requested components are in the
         # epic's component field
         component_filters = []
         for comp in components:
-            component_filters.append(Epic.component.like(f'%{comp}%'))
+            component_filters.append(Epic.component.like(f"%{comp}%"))
         query = query.filter(or_(*component_filters))
 
     if exclude_component:
-        exclude_components = [c.strip() for c in exclude_component.split(',')]
+        exclude_components = [c.strip() for c in exclude_component.split(",")]
         for comp in exclude_components:
-            query = query.filter(~Epic.component.like(f'%{comp}%'))
+            query = query.filter(~Epic.component.like(f"%{comp}%"))
 
     epics = query.offset(offset).limit(limit).all()
     return [epic.to_dict() for epic in epics]
@@ -206,9 +165,7 @@ def get_epic(epic_id: str, db: Session = Depends(get_db)):
     """Get an Epic by epic_id."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(
-            status_code=404, detail=f"Epic {epic_id} not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
     return epic.to_dict()
 
 
@@ -225,9 +182,7 @@ def update_epic(
     """Update an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(
-            status_code=404, detail=f"Epic {epic_id} not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
 
     if title is not None:
         epic.title = title
@@ -250,9 +205,7 @@ def delete_epic(epic_id: str, db: Session = Depends(get_db)):
     """Delete an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(
-            status_code=404, detail=f"Epic {epic_id} not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
 
     db.delete(epic)
     db.commit()
@@ -290,17 +243,9 @@ def create_user_story(
 @router.get("/user-stories/", response_model=List[dict])
 def list_user_stories(
     epic_id: Optional[int] = Query(None, description="Filter by Epic ID"),
-    status: Optional[str] = Query(
-        None, description="Filter by implementation status"
-    ),
-    component: Optional[str] = Query(
-        None,
-        description="Filter by component (supports comma-separated values)"
-    ),
-    exclude_component: Optional[str] = Query(
-        None,
-        description="Exclude components (supports comma-separated values)"
-    ),
+    status: Optional[str] = Query(None, description="Filter by implementation status"),
+    component: Optional[str] = Query(None, description="Filter by component (supports comma-separated values)"),
+    exclude_component: Optional[str] = Query(None, description="Exclude components (supports comma-separated values)"),
     limit: int = Query(50, le=100, description="Limit results"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
     db: Session = Depends(get_db),
@@ -315,12 +260,12 @@ def list_user_stories(
 
     # Component filtering
     if component:
-        components = [c.strip() for c in component.split(',')]
+        components = [c.strip() for c in component.split(",")]
         # For user stories, component is a single value field
         query = query.filter(UserStory.component.in_(components))
 
     if exclude_component:
-        exclude_components = [c.strip() for c in exclude_component.split(',')]
+        exclude_components = [c.strip() for c in exclude_component.split(",")]
         query = query.filter(~UserStory.component.in_(exclude_components))
 
     user_stories = query.offset(offset).limit(limit).all()
@@ -330,16 +275,9 @@ def list_user_stories(
 @router.get("/user-stories/{user_story_id}", response_model=dict)
 def get_user_story(user_story_id: str, db: Session = Depends(get_db)):
     """Get a User Story by user_story_id."""
-    user_story = (
-        db.query(UserStory)
-        .filter(UserStory.user_story_id == user_story_id)
-        .first()
-    )
+    user_story = db.query(UserStory).filter(UserStory.user_story_id == user_story_id).first()
     if not user_story:
-        raise HTTPException(
-            status_code=404,
-            detail=f"User Story {user_story_id} not found"
-        )
+        raise HTTPException(status_code=404, detail=f"User Story {user_story_id} not found")
     return user_story.to_dict()
 
 
@@ -373,17 +311,9 @@ def create_test(
 def list_tests(
     test_type: Optional[str] = Query(None, description="Filter by test type"),
     epic_id: Optional[int] = Query(None, description="Filter by Epic ID"),
-    execution_status: Optional[str] = Query(
-        None, description="Filter by execution status"
-    ),
-    component: Optional[str] = Query(
-        None,
-        description="Filter by component (supports comma-separated values)"
-    ),
-    exclude_component: Optional[str] = Query(
-        None,
-        description="Exclude components (supports comma-separated values)"
-    ),
+    execution_status: Optional[str] = Query(None, description="Filter by execution status"),
+    component: Optional[str] = Query(None, description="Filter by component (supports comma-separated values)"),
+    exclude_component: Optional[str] = Query(None, description="Exclude components (supports comma-separated values)"),
     limit: int = Query(50, le=100, description="Limit results"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
     db: Session = Depends(get_db),
@@ -400,11 +330,11 @@ def list_tests(
 
     # Component filtering
     if component:
-        components = [c.strip() for c in component.split(',')]
+        components = [c.strip() for c in component.split(",")]
         query = query.filter(Test.component.in_(components))
 
     if exclude_component:
-        exclude_components = [c.strip() for c in exclude_component.split(',')]
+        exclude_components = [c.strip() for c in exclude_component.split(",")]
         query = query.filter(~Test.component.in_(exclude_components))
 
     tests = query.offset(offset).limit(limit).all()
@@ -422,9 +352,7 @@ def update_test_execution(
     """Update test execution results."""
     test = db.query(Test).filter(Test.id == test_id).first()
     if not test:
-        raise HTTPException(
-            status_code=404, detail=f"Test {test_id} not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Test {test_id} not found")
 
     test.update_execution_result(status, duration_ms, error_message)
     db.commit()
@@ -464,17 +392,9 @@ def create_defect(
 def list_defects(
     severity: Optional[str] = Query(None, description="Filter by severity"),
     status: Optional[str] = Query(None, description="Filter by status"),
-    is_security_issue: Optional[bool] = Query(
-        None, description="Filter by security issues"
-    ),
-    component: Optional[str] = Query(
-        None,
-        description="Filter by component (supports comma-separated values)"
-    ),
-    exclude_component: Optional[str] = Query(
-        None,
-        description="Exclude components (supports comma-separated values)"
-    ),
+    is_security_issue: Optional[bool] = Query(None, description="Filter by security issues"),
+    component: Optional[str] = Query(None, description="Filter by component (supports comma-separated values)"),
+    exclude_component: Optional[str] = Query(None, description="Exclude components (supports comma-separated values)"),
     limit: int = Query(50, le=100, description="Limit results"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
     db: Session = Depends(get_db),
@@ -491,11 +411,11 @@ def list_defects(
 
     # Component filtering
     if component:
-        components = [c.strip() for c in component.split(',')]
+        components = [c.strip() for c in component.split(",")]
         query = query.filter(Defect.component.in_(components))
 
     if exclude_component:
-        exclude_components = [c.strip() for c in exclude_component.split(',')]
+        exclude_components = [c.strip() for c in exclude_component.split(",")]
         query = query.filter(~Defect.component.in_(exclude_components))
 
     defects = query.offset(offset).limit(limit).all()
@@ -506,36 +426,16 @@ def list_defects(
 @router.get("/components/", response_model=List[str])
 def list_components(db: Session = Depends(get_db)):
     """Get list of all unique components across all entities."""
-    epic_components = (
-        db.query(Epic.component)
-        .filter(Epic.component.isnot(None))
-        .distinct()
-        .all()
-    )
-    us_components = (
-        db.query(UserStory.component)
-        .filter(UserStory.component.isnot(None))
-        .distinct()
-        .all()
-    )
-    test_components = (
-        db.query(Test.component)
-        .filter(Test.component.isnot(None))
-        .distinct()
-        .all()
-    )
-    defect_components = (
-        db.query(Defect.component)
-        .filter(Defect.component.isnot(None))
-        .distinct()
-        .all()
-    )
+    epic_components = db.query(Epic.component).filter(Epic.component.isnot(None)).distinct().all()
+    us_components = db.query(UserStory.component).filter(UserStory.component.isnot(None)).distinct().all()
+    test_components = db.query(Test.component).filter(Test.component.isnot(None)).distinct().all()
+    defect_components = db.query(Defect.component).filter(Defect.component.isnot(None)).distinct().all()
 
     # Flatten epic components (they can be comma-separated)
     all_components = set()
     for (comp,) in epic_components:
         if comp:
-            all_components.update([c.strip() for c in comp.split(',')])
+            all_components.update([c.strip() for c in comp.split(",")])
 
     # Add single-value components
     for (comp,) in us_components + test_components + defect_components:
@@ -553,158 +453,78 @@ def get_component_statistics(db: Session = Depends(get_db)):
     stats = {}
     for component in components:
         # Epic count (need to check for component in comma-separated values)
-        epic_count = (
-            db.query(Epic)
-            .filter(Epic.component.like(f'%{component}%'))
-            .count()
-        )
+        epic_count = db.query(Epic).filter(Epic.component.like(f"%{component}%")).count()
 
         # User story count
-        us_count = (
-            db.query(UserStory)
-            .filter(UserStory.component == component)
-            .count()
-        )
+        us_count = db.query(UserStory).filter(UserStory.component == component).count()
 
         # Test count
-        test_count = (
-            db.query(Test)
-            .filter(Test.component == component)
-            .count()
-        )
+        test_count = db.query(Test).filter(Test.component == component).count()
 
         # Defect count
-        defect_count = (
-            db.query(Defect)
-            .filter(Defect.component == component)
-            .count()
-        )
+        defect_count = db.query(Defect).filter(Defect.component == component).count()
 
         # Test pass rate for this component
-        total_tests = (
-            db.query(Test)
-            .filter(Test.component == component)
-            .count()
-        )
+        total_tests = db.query(Test).filter(Test.component == component).count()
         passed_tests = (
-            db.query(Test)
-            .filter(
-                Test.component == component,
-                Test.last_execution_status == 'passed'
-            )
-            .count()
+            db.query(Test).filter(Test.component == component, Test.last_execution_status == "passed").count()
         )
-        pass_rate = (
-            (passed_tests / total_tests * 100) if total_tests > 0 else 0
-        )
+        pass_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
 
         # Critical defects for this component
-        critical_defects = (
-            db.query(Defect)
-            .filter(
-                Defect.component == component,
-                Defect.severity == 'critical'
-            )
-            .count()
-        )
+        critical_defects = db.query(Defect).filter(Defect.component == component, Defect.severity == "critical").count()
 
         stats[component] = {
-            'epic_count': epic_count,
-            'user_story_count': us_count,
-            'test_count': test_count,
-            'defect_count': defect_count,
-            'test_pass_rate': round(pass_rate, 2),
-            'critical_defects': critical_defects,
-            'total_items': (
-                epic_count + us_count + test_count + defect_count
-            )
+            "epic_count": epic_count,
+            "user_story_count": us_count,
+            "test_count": test_count,
+            "defect_count": defect_count,
+            "test_pass_rate": round(pass_rate, 2),
+            "critical_defects": critical_defects,
+            "total_items": (epic_count + us_count + test_count + defect_count),
         }
 
     return {
-        'components': stats,
-        'summary': {
-            'total_components': len(components),
-            'total_epics': sum(
-                stat['epic_count'] for stat in stats.values()
-            ),
-            'total_user_stories': sum(
-                stat['user_story_count'] for stat in stats.values()
-            ),
-            'total_tests': sum(
-                stat['test_count'] for stat in stats.values()
-            ),
-            'total_defects': sum(
-                stat['defect_count'] for stat in stats.values()
-            )
-        }
+        "components": stats,
+        "summary": {
+            "total_components": len(components),
+            "total_epics": sum(stat["epic_count"] for stat in stats.values()),
+            "total_user_stories": sum(stat["user_story_count"] for stat in stats.values()),
+            "total_tests": sum(stat["test_count"] for stat in stats.values()),
+            "total_defects": sum(stat["defect_count"] for stat in stats.values()),
+        },
     }
 
 
 @router.get("/components/{component_name}/items", response_model=dict)
 def get_component_items(
     component_name: str,
-    include_epics: bool = Query(
-        True, description="Include epics with this component"
-    ),
-    include_user_stories: bool = Query(
-        True, description="Include user stories with this component"
-    ),
-    include_tests: bool = Query(
-        True, description="Include tests with this component"
-    ),
-    include_defects: bool = Query(
-        True, description="Include defects with this component"
-    ),
-    limit: int = Query(
-        50, le=100, description="Limit results per entity type"
-    ),
-    db: Session = Depends(get_db)
+    include_epics: bool = Query(True, description="Include epics with this component"),
+    include_user_stories: bool = Query(True, description="Include user stories with this component"),
+    include_tests: bool = Query(True, description="Include tests with this component"),
+    include_defects: bool = Query(True, description="Include defects with this component"),
+    limit: int = Query(50, le=100, description="Limit results per entity type"),
+    db: Session = Depends(get_db),
 ):
     """Get all items (epics, user stories, tests, defects) for a
     specific component."""
-    result = {
-        'component': component_name,
-        'epics': [],
-        'user_stories': [],
-        'tests': [],
-        'defects': []
-    }
+    result = {"component": component_name, "epics": [], "user_stories": [], "tests": [], "defects": []}
 
     if include_epics:
-        epics = (
-            db.query(Epic)
-            .filter(Epic.component.like(f'%{component_name}%'))
-            .limit(limit)
-            .all()
-        )
-        result['epics'] = [epic.to_dict() for epic in epics]
+        epics = db.query(Epic).filter(Epic.component.like(f"%{component_name}%")).limit(limit).all()
+        result["epics"] = [epic.to_dict() for epic in epics]
 
     if include_user_stories:
-        user_stories = (
-            db.query(UserStory)
-            .filter(UserStory.component == component_name)
-            .limit(limit)
-            .all()
-        )
-        result['user_stories'] = [us.to_dict() for us in user_stories]
+        user_stories = db.query(UserStory).filter(UserStory.component == component_name).limit(limit).all()
+        result["user_stories"] = [us.to_dict() for us in user_stories]
 
     if include_tests:
-        tests = (
-            db.query(Test)
-            .filter(Test.component == component_name)
-            .limit(limit)
-            .all()
-        )
-        result['tests'] = [test.to_dict() for test in tests]
+        tests = db.query(Test).filter(Test.component == component_name).limit(limit).all()
+        result["tests"] = [test.to_dict() for test in tests]
 
     if include_defects:
-        defects = (
-            db.query(Defect)
-            .filter(Defect.component == component_name)
-            .limit(limit)
-            .all()
-        )
-        result['defects'] = [defect.to_dict() for defect in defects]
+        defects = db.query(Defect).filter(Defect.component == component_name).limit(limit).all()
+        result["defects"] = [defect.to_dict() for defect in defects]
 
     return result
 
@@ -713,96 +533,59 @@ def get_component_items(
 def get_component_distribution(db: Session = Depends(get_db)):
     """Get component distribution analytics."""
     stats = get_component_statistics(db)
-    components_data = stats['components']
+    components_data = stats["components"]
 
     # Sort components by total items
-    sorted_components = sorted(
-        components_data.items(),
-        key=lambda x: x[1]['total_items'],
-        reverse=True
-    )
+    sorted_components = sorted(components_data.items(), key=lambda x: x[1]["total_items"], reverse=True)
 
     # Calculate percentages
-    total_items = sum(
-        data['total_items'] for data in components_data.values()
-    )
+    total_items = sum(data["total_items"] for data in components_data.values())
 
     distribution = []
     for component, data in sorted_components:
-        percentage = (
-            (data['total_items'] / total_items * 100)
-            if total_items > 0
-            else 0
-        )
-        distribution.append({
-            'component': component,
-            'count': data['total_items'],
-            'percentage': round(percentage, 2),
-            'breakdown': {
-                'epics': data['epic_count'],
-                'user_stories': data['user_story_count'],
-                'tests': data['test_count'],
-                'defects': data['defect_count']
+        percentage = (data["total_items"] / total_items * 100) if total_items > 0 else 0
+        distribution.append(
+            {
+                "component": component,
+                "count": data["total_items"],
+                "percentage": round(percentage, 2),
+                "breakdown": {
+                    "epics": data["epic_count"],
+                    "user_stories": data["user_story_count"],
+                    "tests": data["test_count"],
+                    "defects": data["defect_count"],
+                },
             }
-        })
+        )
 
-    return {
-        'distribution': distribution,
-        'total_items': total_items,
-        'total_components': len(components_data)
-    }
+    return {"distribution": distribution, "total_items": total_items, "total_components": len(components_data)}
 
 
 # Analytics and Reporting Endpoints
 @router.get("/analytics/epic/{epic_id}/progress", response_model=dict)
-def get_epic_progress(
-    epic_id: str, db: Session = Depends(get_db)
-):
+def get_epic_progress(epic_id: str, db: Session = Depends(get_db)):
     """Get detailed progress analytics for an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(
-            status_code=404, detail=f"Epic {epic_id} not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
 
-    user_stories = (
-        db.query(UserStory)
-        .filter(UserStory.epic_id == epic.id)
-        .all()
-    )
-    tests = (
-        db.query(Test)
-        .filter(Test.epic_id == epic.id)
-        .all()
-    )
-    defects = (
-        db.query(Defect)
-        .filter(Defect.epic_id == epic.id)
-        .all()
-    )
+    user_stories = db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
+    tests = db.query(Test).filter(Test.epic_id == epic.id).all()
+    defects = db.query(Defect).filter(Defect.epic_id == epic.id).all()
 
     # Calculate progress metrics
     total_story_points = sum(us.story_points for us in user_stories)
     completed_story_points = sum(
-        us.story_points
-        for us in user_stories
-        if us.implementation_status in ["done", "completed"]
+        us.story_points for us in user_stories if us.implementation_status in ["done", "completed"]
     )
 
     test_pass_rate = 0.0
     if tests:
-        passed_tests = sum(
-            1 for test in tests
-            if test.last_execution_status == "passed"
-        )
+        passed_tests = sum(1 for test in tests if test.last_execution_status == "passed")
         test_pass_rate = (passed_tests / len(tests)) * 100
 
-    critical_defects = sum(
-        1 for defect in defects if defect.severity == "critical"
-    )
-    open_defects = sum(
-        1 for defect in defects if defect.status in ["open", "in_progress"]
-    )
+    critical_defects = sum(1 for defect in defects if defect.severity == "critical")
+    open_defects = sum(1 for defect in defects if defect.status in ["open", "in_progress"])
 
     return {
         "epic": epic.to_dict(),
@@ -810,9 +593,7 @@ def get_epic_progress(
             "total_story_points": total_story_points,
             "completed_story_points": completed_story_points,
             "completion_percentage": (
-                (completed_story_points / total_story_points * 100)
-                if total_story_points > 0
-                else 0
+                (completed_story_points / total_story_points * 100) if total_story_points > 0 else 0
             ),
             "user_stories_count": len(user_stories),
             "tests_count": len(tests),
@@ -838,34 +619,21 @@ def get_rtm_overview(db: Session = Depends(get_db)):
 
     total_story_points = sum(us.story_points for us in user_stories)
     completed_story_points = sum(
-        us.story_points
-        for us in user_stories
-        if us.implementation_status in ["done", "completed"]
+        us.story_points for us in user_stories if us.implementation_status in ["done", "completed"]
     )
 
     total_tests = len(tests)
-    passed_tests = sum(
-        1 for test in tests
-        if test.last_execution_status == "passed"
-    )
+    passed_tests = sum(1 for test in tests if test.last_execution_status == "passed")
 
-    critical_defects = sum(
-        1 for defect in defects if defect.severity == "critical"
-    )
-    security_issues = sum(
-        1 for defect in defects if defect.is_security_issue
-    )
+    critical_defects = sum(1 for defect in defects if defect.severity == "critical")
+    security_issues = sum(1 for defect in defects if defect.is_security_issue)
 
     return {
         "summary": {
             "epics": {
                 "total": total_epics,
                 "completed": completed_epics,
-                "completion_rate": (
-                    (completed_epics / total_epics * 100)
-                    if total_epics > 0
-                    else 0
-                ),
+                "completion_rate": ((completed_epics / total_epics * 100) if total_epics > 0 else 0),
             },
             "user_stories": {
                 "total": len(user_stories),
@@ -873,20 +641,14 @@ def get_rtm_overview(db: Session = Depends(get_db)):
                     "total": total_story_points,
                     "completed": completed_story_points,
                     "completion_rate": (
-                        (completed_story_points / total_story_points * 100)
-                        if total_story_points > 0
-                        else 0
+                        (completed_story_points / total_story_points * 100) if total_story_points > 0 else 0
                     ),
                 },
             },
             "tests": {
                 "total": total_tests,
                 "passed": passed_tests,
-                "pass_rate": (
-                    (passed_tests / total_tests * 100)
-                    if total_tests > 0
-                    else 0
-                ),
+                "pass_rate": ((passed_tests / total_tests * 100) if total_tests > 0 else 0),
             },
             "defects": {
                 "total": len(defects),
@@ -900,37 +662,24 @@ def get_rtm_overview(db: Session = Depends(get_db)):
 # Dynamic Report Generation Endpoints
 @router.get("/reports/matrix", response_model=dict)
 def generate_dynamic_rtm_matrix(
-    format: str = Query(
-        "json", description="Output format: json, markdown, html"
-    ),
-    epic_filter: Optional[str] = Query(
-        None, description="Filter by epic ID"
-    ),
-    status_filter: Optional[str] = Query(
-        None, description="Filter by status"
-    ),
-    priority_filter: Optional[str] = Query(
-        None, description="Filter by priority"
-    ),
+    format: str = Query("json", description="Output format: json, markdown, html"),
+    epic_filter: Optional[str] = Query(None, description="Filter by epic ID"),
+    status_filter: Optional[str] = Query(None, description="Filter by status"),
+    priority_filter: Optional[str] = Query(None, description="Filter by priority"),
     us_status_filter: Optional[str] = Query(
         "all",
-        description=("Filter user stories by status: all, planned, "
-                     "in_progress, completed, blocked"),
+        description=("Filter user stories by status: all, planned, in_progress, completed, blocked"),
     ),
     test_type_filter: Optional[str] = Query(
-        "all",
-        description=("Filter tests by type: all, unit, integration, "
-                     "e2e, security")
+        "all", description=("Filter tests by type: all, unit, integration, e2e, security")
     ),
     defect_priority_filter: Optional[str] = Query(
         "all",
-        description=("Filter defects by priority: all, critical, "
-                     "high, medium, low"),
+        description=("Filter defects by priority: all, critical, high, medium, low"),
     ),
     defect_status_filter: Optional[str] = Query(
         "all",
-        description=("Filter defects by status: all, open, "
-                     "in_progress, resolved, closed"),
+        description=("Filter defects by status: all, open, in_progress, resolved, closed"),
     ),
     include_tests: bool = Query(True, description="Include test coverage"),
     include_defects: bool = Query(True, description="Include defect tracking"),
@@ -1026,19 +775,13 @@ def generate_defect_analysis_report(
 def get_dashboard_data(db: Session = Depends(get_db)):
     """Get real-time data for RTM dashboard widgets."""
     # Epic status distribution
-    epic_status_query = (
-        db.query(Epic.status, func.count(Epic.id).label("count"))
-        .group_by(Epic.status)
-        .all()
-    )
+    epic_status_query = db.query(Epic.status, func.count(Epic.id).label("count")).group_by(Epic.status).all()
 
     epic_status = {status: count for status, count in epic_status_query}
 
     # User story progress
     us_status_query = (
-        db.query(
-            UserStory.implementation_status, func.count(UserStory.id).label("count")
-        )
+        db.query(UserStory.implementation_status, func.count(UserStory.id).label("count"))
         .group_by(UserStory.implementation_status)
         .all()
     )
@@ -1056,9 +799,7 @@ def get_dashboard_data(db: Session = Depends(get_db)):
 
     # Defect severity distribution
     defect_severity_query = (
-        db.query(Defect.severity, func.count(Defect.id).label("count"))
-        .group_by(Defect.severity)
-        .all()
+        db.query(Defect.severity, func.count(Defect.id).label("count")).group_by(Defect.severity).all()
     )
 
     defect_severity = {severity: count for severity, count in defect_severity_query}
@@ -1068,9 +809,7 @@ def get_dashboard_data(db: Session = Depends(get_db)):
 
     recent_date = datetime.now(datetime.UTC) - timedelta(days=7)
 
-    recent_tests = (
-        db.query(Test).filter(Test.last_execution_time >= recent_date).count()
-    )
+    recent_tests = db.query(Test).filter(Test.last_execution_time >= recent_date).count()
 
     recent_defects = db.query(Defect).filter(Defect.created_at >= recent_date).count()
 
@@ -1109,9 +848,7 @@ def export_report(
     elif report_type == "test-summary":
         content, media_type, filename = generator.export_test_summary(format)
     else:
-        raise HTTPException(
-            status_code=400, detail=f"Unknown report type: {report_type}"
-        )
+        raise HTTPException(status_code=400, detail=f"Unknown report type: {report_type}")
 
     return Response(
         content=content,
@@ -1122,19 +859,18 @@ def export_report(
 
 # Epic Advanced Metrics Endpoints (US-00071) - Multi-persona dashboard
 
+
 @router.get("/epics/{epic_id}/metrics")
 def get_epic_metrics(
     epic_id: str,
     persona: Optional[str] = Query(None, description="Dashboard persona: PM, PO, QA"),
     force_refresh: bool = Query(False, description="Force metrics recalculation"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Get comprehensive metrics for an Epic, optionally filtered by persona."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(
-            status_code=404, detail=f"Epic {epic_id} not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
 
     if persona:
         metrics = epic.get_persona_specific_metrics(persona)
@@ -1142,14 +878,14 @@ def get_epic_metrics(
             "epic_id": epic_id,
             "persona": persona.upper(),
             "metrics": metrics,
-            "last_updated": epic.last_metrics_update.isoformat() if epic.last_metrics_update else None
+            "last_updated": epic.last_metrics_update.isoformat() if epic.last_metrics_update else None,
         }
     else:
         metrics = epic.update_metrics(force_recalculate=force_refresh)
         return {
             "epic_id": epic_id,
             "metrics": metrics,
-            "last_updated": epic.last_metrics_update.isoformat() if epic.last_metrics_update else None
+            "last_updated": epic.last_metrics_update.isoformat() if epic.last_metrics_update else None,
         }
 
 
@@ -1170,14 +906,12 @@ def update_epic_metrics(
     actual_start_date: Optional[str] = None,
     actual_end_date: Optional[str] = None,
     estimated_duration_days: Optional[int] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Update Epic metrics values and recalculate derived metrics."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(
-            status_code=404, detail=f"Epic {epic_id} not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
 
     # Update provided metrics
     if velocity_points_per_sprint is not None:
@@ -1234,7 +968,7 @@ def update_epic_metrics(
         "epic_id": epic_id,
         "message": "Epic metrics updated successfully",
         "updated_metrics": metrics,
-        "last_updated": epic.last_metrics_update.isoformat()
+        "last_updated": epic.last_metrics_update.isoformat(),
     }
 
 
@@ -1243,15 +977,10 @@ def get_epic_timeline_metrics(epic_id: str, db: Session = Depends(get_db)):
     """Get timeline and schedule metrics for an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(
-            status_code=404, detail=f"Epic {epic_id} not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
 
     timeline_metrics = epic.calculate_timeline_metrics()
-    return {
-        "epic_id": epic_id,
-        "timeline_metrics": timeline_metrics
-    }
+    return {"epic_id": epic_id, "timeline_metrics": timeline_metrics}
 
 
 @router.get("/epics/{epic_id}/metrics/velocity")
@@ -1259,15 +988,10 @@ def get_epic_velocity_metrics(epic_id: str, db: Session = Depends(get_db)):
     """Get velocity and productivity metrics for an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(
-            status_code=404, detail=f"Epic {epic_id} not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
 
     velocity_metrics = epic.calculate_velocity_metrics()
-    return {
-        "epic_id": epic_id,
-        "velocity_metrics": velocity_metrics
-    }
+    return {"epic_id": epic_id, "velocity_metrics": velocity_metrics}
 
 
 @router.get("/epics/{epic_id}/metrics/quality")
@@ -1275,15 +999,10 @@ def get_epic_quality_metrics(epic_id: str, db: Session = Depends(get_db)):
     """Get quality and technical debt metrics for an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(
-            status_code=404, detail=f"Epic {epic_id} not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
 
     quality_metrics = epic.calculate_quality_metrics()
-    return {
-        "epic_id": epic_id,
-        "quality_metrics": quality_metrics
-    }
+    return {"epic_id": epic_id, "quality_metrics": quality_metrics}
 
 
 @router.get("/epics/{epic_id}/metrics/business")
@@ -1291,15 +1010,10 @@ def get_epic_business_metrics(epic_id: str, db: Session = Depends(get_db)):
     """Get business value and stakeholder metrics for an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(
-            status_code=404, detail=f"Epic {epic_id} not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
 
     business_metrics = epic.calculate_business_metrics()
-    return {
-        "epic_id": epic_id,
-        "business_metrics": business_metrics
-    }
+    return {"epic_id": epic_id, "business_metrics": business_metrics}
 
 
 @router.get("/epics/{epic_id}/metrics/predictions")
@@ -1307,15 +1021,10 @@ def get_epic_predictive_metrics(epic_id: str, db: Session = Depends(get_db)):
     """Get predictive analytics and risk assessment for an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(
-            status_code=404, detail=f"Epic {epic_id} not found"
-        )
+        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
 
     predictive_metrics = epic.calculate_predictive_metrics()
-    return {
-        "epic_id": epic_id,
-        "predictive_metrics": predictive_metrics
-    }
+    return {"epic_id": epic_id, "predictive_metrics": predictive_metrics}
 
 
 @router.get("/dashboard/metrics")
@@ -1324,7 +1033,7 @@ def get_dashboard_metrics(
     epic_filter: Optional[str] = Query(None, description="Filter by epic_id"),
     status_filter: Optional[str] = Query(None, description="Filter by status"),
     component_filter: Optional[str] = Query(None, description="Filter by component"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Get aggregated metrics for the multi-persona dashboard."""
 
@@ -1345,7 +1054,7 @@ def get_dashboard_metrics(
             "persona": persona.upper(),
             "message": "No epics found matching the criteria",
             "epics": [],
-            "summary": {}
+            "summary": {},
         }
 
     thresholds = get_threshold_service()
@@ -1354,14 +1063,16 @@ def get_dashboard_metrics(
     epic_metrics = []
     for epic in epics:
         metrics = epic.get_persona_specific_metrics(persona, session=db, thresholds=thresholds)
-        epic_metrics.append({
-            "epic_id": epic.epic_id,
-            "title": epic.title,
-            "status": epic.status,
-            "completion_percentage": epic.completion_percentage,
-            "priority": epic.priority,
-            "metrics": metrics
-        })
+        epic_metrics.append(
+            {
+                "epic_id": epic.epic_id,
+                "title": epic.title,
+                "status": epic.status,
+                "completion_percentage": epic.completion_percentage,
+                "priority": epic.priority,
+                "metrics": metrics,
+            }
+        )
 
     # Calculate aggregated summary based on persona
     summary = calculate_dashboard_summary(epic_metrics, persona)
@@ -1373,8 +1084,8 @@ def get_dashboard_metrics(
         "filters_applied": {
             "epic_filter": epic_filter,
             "status_filter": status_filter,
-            "component_filter": component_filter
-        }
+            "component_filter": component_filter,
+        },
     }
 
 
@@ -1395,19 +1106,21 @@ def get_dashboard_metrics_demo(
             "persona": persona.upper(),
             "message": "No epics found matching the criteria (demo)",
             "epics": [],
-            "summary": {}
+            "summary": {},
         }
 
     epic_metrics = []
     for epic in epics:
-        epic_metrics.append({
-            "epic_id": epic.get("epic_id"),
-            "title": epic.get("title", ""),
-            "status": epic.get("status", ""),
-            "completion_percentage": epic.get("completion_percentage", 0),
-            "priority": epic.get("priority", ""),
-            "metrics": epic.get("metrics", {}),
-        })
+        epic_metrics.append(
+            {
+                "epic_id": epic.get("epic_id"),
+                "title": epic.get("title", ""),
+                "status": epic.get("status", ""),
+                "completion_percentage": epic.get("completion_percentage", 0),
+                "priority": epic.get("priority", ""),
+                "metrics": epic.get("metrics", {}),
+            }
+        )
 
     summary = calculate_dashboard_summary(epic_metrics, persona)
 
@@ -1418,7 +1131,7 @@ def get_dashboard_metrics_demo(
         "filters_applied": {
             "epic_filter": epic_filter,
             "status_filter": status_filter,
-            "component_filter": component_filter
+            "component_filter": component_filter,
         },
         "mode": "demo",
     }
@@ -1446,22 +1159,34 @@ def calculate_dashboard_summary(epic_metrics: List[dict], persona: str) -> dict:
             for epic in epic_metrics
             if _extract_metric_value(epic["metrics"].get("risk", {}).get("overall_risk_score", 0)) > 30
         )
-        avg_velocity = sum(
-            _extract_metric_value(epic["metrics"].get("velocity", {}).get("velocity_points_per_sprint", 0))
-            for epic in epic_metrics
-        ) / total_epics
-        avg_schedule_variance = sum(
-            _extract_metric_value(epic["metrics"].get("timeline", {}).get("schedule_variance_days", 0))
-            for epic in epic_metrics
-        ) / total_epics
-        avg_velocity_per_member = sum(
-            _extract_metric_value(epic["metrics"].get("team_productivity", {}).get("velocity_per_team_member", 0))
-            for epic in epic_metrics
-        ) / total_epics
-        avg_success_probability = sum(
-            _extract_metric_value(epic["metrics"].get("risk", {}).get("success_probability", 0))
-            for epic in epic_metrics
-        ) / total_epics
+        avg_velocity = (
+            sum(
+                _extract_metric_value(epic["metrics"].get("velocity", {}).get("velocity_points_per_sprint", 0))
+                for epic in epic_metrics
+            )
+            / total_epics
+        )
+        avg_schedule_variance = (
+            sum(
+                _extract_metric_value(epic["metrics"].get("timeline", {}).get("schedule_variance_days", 0))
+                for epic in epic_metrics
+            )
+            / total_epics
+        )
+        avg_velocity_per_member = (
+            sum(
+                _extract_metric_value(epic["metrics"].get("team_productivity", {}).get("velocity_per_team_member", 0))
+                for epic in epic_metrics
+            )
+            / total_epics
+        )
+        avg_success_probability = (
+            sum(
+                _extract_metric_value(epic["metrics"].get("risk", {}).get("success_probability", 0))
+                for epic in epic_metrics
+            )
+            / total_epics
+        )
 
         return {
             "total_epics": total_epics,
@@ -1471,31 +1196,43 @@ def calculate_dashboard_summary(epic_metrics: List[dict], persona: str) -> dict:
             "average_velocity_per_member": round(avg_velocity_per_member, 2),
             "average_schedule_variance": round(avg_schedule_variance, 1),
             "average_success_probability": round(avg_success_probability, 1),
-            "schedule_health": "Good" if at_risk_count < total_epics * 0.3 else "Needs Attention"
+            "schedule_health": "Good" if at_risk_count < total_epics * 0.3 else "Needs Attention",
         }
 
     elif persona_key == "po":
-        avg_satisfaction = sum(
-            _extract_metric_value(epic["metrics"].get("stakeholder", {}).get("satisfaction_score", 0))
-            for epic in epic_metrics
-        ) / total_epics
+        avg_satisfaction = (
+            sum(
+                _extract_metric_value(epic["metrics"].get("stakeholder", {}).get("satisfaction_score", 0))
+                for epic in epic_metrics
+            )
+            / total_epics
+        )
         high_scope_creep = sum(
             1
             for epic in epic_metrics
             if _extract_metric_value(epic["metrics"].get("scope", {}).get("scope_creep_percentage", 0)) > 20
         )
-        avg_roi = sum(
-            _extract_metric_value(epic["metrics"].get("business_value", {}).get("roi_percentage", 0))
-            for epic in epic_metrics
-        ) / total_epics
-        avg_adoption = sum(
-            _extract_metric_value(epic["metrics"].get("adoption", {}).get("user_adoption_rate", 0))
-            for epic in epic_metrics
-        ) / total_epics
-        avg_scope_creep_percentage = sum(
-            _extract_metric_value(epic["metrics"].get("scope", {}).get("scope_creep_percentage", 0))
-            for epic in epic_metrics
-        ) / total_epics
+        avg_roi = (
+            sum(
+                _extract_metric_value(epic["metrics"].get("business_value", {}).get("roi_percentage", 0))
+                for epic in epic_metrics
+            )
+            / total_epics
+        )
+        avg_adoption = (
+            sum(
+                _extract_metric_value(epic["metrics"].get("adoption", {}).get("user_adoption_rate", 0))
+                for epic in epic_metrics
+            )
+            / total_epics
+        )
+        avg_scope_creep_percentage = (
+            sum(
+                _extract_metric_value(epic["metrics"].get("scope", {}).get("scope_creep_percentage", 0))
+                for epic in epic_metrics
+            )
+            / total_epics
+        )
 
         return {
             "total_epics": total_epics,
@@ -1505,26 +1242,36 @@ def calculate_dashboard_summary(epic_metrics: List[dict], persona: str) -> dict:
             "average_scope_creep_percentage": round(avg_scope_creep_percentage, 1),
             "scope_creep_issues": high_scope_creep,
             "satisfaction_grade": "Good" if avg_satisfaction >= 7 else "Needs Improvement",
-            "business_health": "Healthy" if high_scope_creep < total_epics * 0.3 else "Monitor"
+            "business_health": "Healthy" if high_scope_creep < total_epics * 0.3 else "Monitor",
         }
 
     elif persona_key == "qa":
-        avg_coverage = sum(
-            _extract_metric_value(epic["metrics"].get("testing", {}).get("test_coverage", 0))
-            for epic in epic_metrics
-        ) / total_epics
+        avg_coverage = (
+            sum(
+                _extract_metric_value(epic["metrics"].get("testing", {}).get("test_coverage", 0))
+                for epic in epic_metrics
+            )
+            / total_epics
+        )
         high_defect_density = sum(
-            1 for epic in epic_metrics
+            1
+            for epic in epic_metrics
             if _extract_metric_value(epic["metrics"].get("defects", {}).get("defect_density", 0)) > 0.5
         )
-        avg_defect_density = sum(
-            _extract_metric_value(epic["metrics"].get("defects", {}).get("defect_density", 0))
-            for epic in epic_metrics
-        ) / total_epics
-        avg_technical_debt = sum(
-            _extract_metric_value(epic["metrics"].get("technical_debt", {}).get("debt_hours", 0))
-            for epic in epic_metrics
-        ) / total_epics
+        avg_defect_density = (
+            sum(
+                _extract_metric_value(epic["metrics"].get("defects", {}).get("defect_density", 0))
+                for epic in epic_metrics
+            )
+            / total_epics
+        )
+        avg_technical_debt = (
+            sum(
+                _extract_metric_value(epic["metrics"].get("technical_debt", {}).get("debt_hours", 0))
+                for epic in epic_metrics
+            )
+            / total_epics
+        )
 
         return {
             "total_epics": total_epics,
@@ -1533,7 +1280,7 @@ def calculate_dashboard_summary(epic_metrics: List[dict], persona: str) -> dict:
             "average_technical_debt": round(avg_technical_debt, 1),
             "high_defect_epics": high_defect_density,
             "coverage_grade": "Good" if avg_coverage >= 80 else "Needs Improvement",
-            "quality_health": "Good" if high_defect_density < total_epics * 0.2 else "Attention Required"
+            "quality_health": "Good" if high_defect_density < total_epics * 0.2 else "Attention Required",
         }
 
     else:
@@ -1543,26 +1290,30 @@ def calculate_dashboard_summary(epic_metrics: List[dict], persona: str) -> dict:
 # Temporary dependency endpoints for visualizer (US-00073)
 # TODO: Move to epic_dependencies.py when server import issues resolved
 
+
 @router.get("/dependencies")
 def get_dependencies(db: Session = Depends(get_db)):
     """Temporary endpoint for dependency visualization."""
     try:
         from ..models.traceability.epic_dependency import EpicDependency
+
         dependencies = db.query(EpicDependency).filter(EpicDependency.is_active == True).all()
 
         result = []
         for dep in dependencies:
-            result.append({
-                "id": dep.id,
-                "parent_epic_id": dep.parent_epic_id,
-                "dependent_epic_id": dep.dependent_epic_id,
-                "dependency_type": dep.dependency_type,
-                "priority": dep.priority,
-                "reason": dep.reason,
-                "estimated_impact_days": dep.estimated_impact_days,
-                "is_active": dep.is_active,
-                "created_at": dep.created_at.isoformat() if dep.created_at else None
-            })
+            result.append(
+                {
+                    "id": dep.id,
+                    "parent_epic_id": dep.parent_epic_id,
+                    "dependent_epic_id": dep.dependent_epic_id,
+                    "dependency_type": dep.dependency_type,
+                    "priority": dep.priority,
+                    "reason": dep.reason,
+                    "estimated_impact_days": dep.estimated_impact_days,
+                    "is_active": dep.is_active,
+                    "created_at": dep.created_at.isoformat() if dep.created_at else None,
+                }
+            )
 
         return result
     except Exception as e:
@@ -1575,6 +1326,7 @@ def get_critical_path(db: Session = Depends(get_db)):
     """Get critical path analysis for dependencies."""
     try:
         from ..models.traceability.epic_dependency import DependencyGraph
+
         epics = db.query(Epic).all()
         graph = DependencyGraph()
 
@@ -1584,6 +1336,7 @@ def get_critical_path(db: Session = Depends(get_db)):
 
         # Add dependencies
         from ..models.traceability.epic_dependency import EpicDependency
+
         dependencies = db.query(EpicDependency).filter(EpicDependency.is_active == True).all()
         for dep in dependencies:
             graph.add_dependency(dep.parent_epic_id, dep.dependent_epic_id, dep.dependency_type, dep.priority)
@@ -1593,7 +1346,7 @@ def get_critical_path(db: Session = Depends(get_db)):
         return {
             "critical_path": critical_path,
             "path_length": len(critical_path),
-            "total_impact": sum(dep.get("impact_days", 0) for dep in critical_path)
+            "total_impact": sum(dep.get("impact_days", 0) for dep in critical_path),
         }
     except Exception:
         return {"critical_path": [], "path_length": 0, "total_impact": 0}
@@ -1604,6 +1357,7 @@ def detect_cycles(db: Session = Depends(get_db)):
     """Detect circular dependencies."""
     try:
         from ..models.traceability.epic_dependency import DependencyGraph
+
         epics = db.query(Epic).all()
         graph = DependencyGraph()
 
@@ -1613,18 +1367,13 @@ def detect_cycles(db: Session = Depends(get_db)):
 
         # Add dependencies
         from ..models.traceability.epic_dependency import EpicDependency
+
         dependencies = db.query(EpicDependency).filter(EpicDependency.is_active == True).all()
         for dep in dependencies:
             graph.add_dependency(dep.parent_epic_id, dep.dependent_epic_id, dep.dependency_type, dep.priority)
 
         cycles = graph.detect_cycles()
 
-        return {
-            "has_cycles": len(cycles) > 0,
-            "cycles": cycles,
-            "cycle_count": len(cycles)
-        }
+        return {"has_cycles": len(cycles) > 0, "cycles": cycles, "cycle_count": len(cycles)}
     except Exception:
         return {"has_cycles": False, "cycles": [], "cycle_count": 0}
-
-

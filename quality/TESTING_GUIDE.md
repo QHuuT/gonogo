@@ -296,10 +296,10 @@ python tools/rtm-db.py query defects --format table
 # 1. Full test suite with RTM integration
 pytest --sync-tests --link-scenarios --auto-defects tests/ -v
 
-# 2. Code quality checks
-black src/ tests/
-isort src/ tests/
-flake8 src/ tests/
+# 2. Code quality checks (context-aware standards)
+ruff format src/ --line-length 120  # Production code only
+flake8 src/ --select=E501         # Check production compliance
+flake8                           # Full check with context rules
 mypy src/
 
 # 3. Generate test report
@@ -1099,8 +1099,8 @@ start quality/reports/dynamic_rtm/rtm_matrix_complete.html
 # 1. Complete test suite with full integration
 pytest --sync-tests --link-scenarios --auto-defects tests/ -v
 
-# 2. Code quality gates
-black src/ tests/ && isort src/ tests/ && flake8 src/ tests/ && mypy src/
+# 2. Code quality gates (context-aware standards)
+ruff format src/ --line-length 120 && flake8 src/ --select=E501 && mypy src/
 
 # 3. Generate all reports
 python tools/report_generator.py --input quality/logs/test_execution.log

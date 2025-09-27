@@ -211,7 +211,8 @@ def generate_bdd_link(
     """Generate a BDD scenario link."""
     generator = ctx.obj["generator"]
 
-    link = generator.generate_bdd_scenario_link(feature_file, scenario_name, rtm_path)
+    link = \
+        generator.generate_bdd_scenario_link(feature_file, scenario_name, rtm_path)
 
     click.echo(link)
 

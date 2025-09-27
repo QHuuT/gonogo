@@ -31,13 +31,14 @@ from .base import TraceabilityBase
 
 class DependencyType(Enum):
     """Types de dépendances entre Epics."""
-    BLOCKING = "blocking"          # Epic A bloque Epic B - B ne peut pas
-                                   # commencer sans A
+
+    BLOCKING = "blocking"  # Epic A bloque Epic B - B ne peut pas
+    # commencer sans A
     PREREQUISITE = "prerequisite"  # Epic A est prérequis pour B - B peut
-                                    # commencer mais bénéficie de A
+    # commencer mais bénéficie de A
     INFORMATIONAL = "informational"  # Epic A informe Epic B - pas de blocage
-    TECHNICAL = "technical"        # Dépendance technique (infrastructure)
-    BUSINESS = "business"          # Dépendance business (processus)
+    TECHNICAL = "technical"  # Dépendance technique (infrastructure)
+    BUSINESS = "business"  # Dépendance business (processus)
 
 
 class EpicDependency(TraceabilityBase):
@@ -46,9 +47,7 @@ class EpicDependency(TraceabilityBase):
     __tablename__ = "epic_dependencies"
 
     # Référence vers les Epics
-    parent_epic_id = Column(
-        Integer, ForeignKey("epics.id"), nullable=False, index=True
-    )
+    parent_epic_id = Column(Integer, ForeignKey("epics.id"), nullable=False, index=True)
     dependent_epic_id = Column(
         Integer, ForeignKey("epics.id"), nullable=False, index=True
     )
@@ -58,7 +57,7 @@ class EpicDependency(TraceabilityBase):
         String(20),
         nullable=False,
         default=DependencyType.PREREQUISITE.value,
-        index=True
+        index=True,
     )
     priority = Column(
         String(10), nullable=False, default="medium", index=True
@@ -69,12 +68,8 @@ class EpicDependency(TraceabilityBase):
     estimated_impact_days = Column(Integer, nullable=True)  # Impact estimé
 
     # État de la dépendance
-    is_active = Column(
-        Boolean, default=True, nullable=False, index=True
-    )
-    is_resolved = Column(
-        Boolean, default=False, nullable=False, index=True
-    )
+    is_active = Column(Boolean, default=True, nullable=False, index=True)
+    is_resolved = Column(Boolean, default=False, nullable=False, index=True)
     resolution_date = Column(DateTime, nullable=True)
     resolution_notes = Column(Text, nullable=True)
 
@@ -89,75 +84,60 @@ class EpicDependency(TraceabilityBase):
 
     # Relations
     parent_epic = relationship(
-        "Epic",
-        foreign_keys=[parent_epic_id],
-        back_populates="dependencies_as_parent"
+        "Epic", foreign_keys=[parent_epic_id], back_populates="dependencies_as_parent"
     )
     dependent_epic = relationship(
         "Epic",
         foreign_keys=[dependent_epic_id],
-        back_populates="dependencies_as_dependent"
+        back_populates="dependencies_as_dependent",
     )
 
     # Contraintes
     __table_args__ = (
         # Éviter les doublons
         UniqueConstraint(
-            'parent_epic_id',
-            'dependent_epic_id',
-            'dependency_type',
-            name='uq_epic_dependency'
+            "parent_epic_id",
+            "dependent_epic_id",
+            "dependency_type",
+            name="uq_epic_dependency",
         ),
-
         # Éviter les auto-dépendances
         CheckConstraint(
-            'parent_epic_id != dependent_epic_id',
-            name='no_self_dependency'
+            "parent_epic_id != dependent_epic_id", name="no_self_dependency"
         ),
-
         # Index pour performance
-        Index(
-            'idx_dependency_type_priority',
-            'dependency_type',
-            'priority'
-        ),
-        Index('idx_dependency_active', 'is_active', 'is_resolved'),
-        Index(
-            'idx_dependency_validation',
-            'validation_status',
-            'last_validation_date'
-        ),
+        Index("idx_dependency_type_priority", "dependency_type", "priority"),
+        Index("idx_dependency_active", "is_active", "is_resolved"),
+        Index("idx_dependency_validation", "validation_status", "last_validation_date"),
     )
 
-    @validates('dependency_type')
+    @validates("dependency_type")
     def validate_dependency_type(self, key, value):
         """Valide le type de dépendance."""
         valid_types = [dt.value for dt in DependencyType]
         if value not in valid_types:
             raise ValueError(
-                f"Invalid dependency type: {value}. "
-                f"Must be one of {valid_types}"
+                f"Invalid dependency type: {value}. Must be one of {valid_types}"
             )
         return value
 
-    @validates('priority')
+    @validates("priority")
     def validate_priority(self, key, value):
         """Valide la priorité."""
-        valid_priorities = ['critical', 'high', 'medium', 'low']
+        valid_priorities = ["critical", "high", "medium", "low"]
         if value not in valid_priorities:
             raise ValueError(
                 f"Invalid priority: {value}. Must be one of {valid_priorities}"
             )
         return value
 
-    @validates('validation_status')
+    @validates("validation_status")
     def validate_validation_status(self, key, value):
         """Valide le statut de validation."""
-        valid_statuses = ['pending', 'valid', 'invalid', 'warning']
+        valid_statuses = ["pending", "valid", "invalid", "warning"]
         if value not in valid_statuses:
             raise ValueError(
-                f"Invalid validation status: {value}. "
-                f"Must be one of {valid_statuses}"
+                f"Invalid validation status: {value}. Must be one of {valid_statuses}"
             )
         return value
 
@@ -179,12 +159,12 @@ class EpicDependency(TraceabilityBase):
             DependencyType.PREREQUISITE.value: 7,
             DependencyType.TECHNICAL.value: 6,
             DependencyType.BUSINESS.value: 5,
-            DependencyType.INFORMATIONAL.value: 2
+            DependencyType.INFORMATIONAL.value: 2,
         }
         score += type_scores.get(self.dependency_type, 0)
 
         # Points par priorité
-        priority_scores = {'critical': 8, 'high': 6, 'medium': 3, 'low': 1}
+        priority_scores = {"critical": 8, "high": 6, "medium": 3, "low": 1}
         score += priority_scores.get(self.priority, 0)
 
         # Pénalité si pas résolue et active
@@ -225,37 +205,38 @@ class EpicDependency(TraceabilityBase):
     def to_dict(self):
         """Convert to dictionary avec champs spécifiques."""
         base_dict = super().to_dict()
-        base_dict.update({
-            "parent_epic_id": self.parent_epic_id,
-            "dependent_epic_id": self.dependent_epic_id,
-            "dependency_type": self.dependency_type,
-            "priority": self.priority,
-            "reason": self.reason,
-            "estimated_impact_days": self.estimated_impact_days,
-            "is_active": self.is_active,
-            "is_resolved": self.is_resolved,
-            "resolution_date": (
-                self.resolution_date.isoformat()
-                if self.resolution_date else None
-            ),
-            "resolution_notes": self.resolution_notes,
-            "created_by_system": self.created_by_system,
-            "last_validation_date": (
-                self.last_validation_date.isoformat()
-                if self.last_validation_date else None
-            ),
-            "validation_status": self.validation_status,
-            "criticality_score": self.get_criticality_score(),
-            "is_blocking": self.is_blocking(),
-
-            # Relations si chargées
-            "parent_epic": (
-                self.parent_epic.to_dict() if self.parent_epic else None
-            ),
-            "dependent_epic": (
-                self.dependent_epic.to_dict() if self.dependent_epic else None
-            ),
-        })
+        base_dict.update(
+            {
+                "parent_epic_id": self.parent_epic_id,
+                "dependent_epic_id": self.dependent_epic_id,
+                "dependency_type": self.dependency_type,
+                "priority": self.priority,
+                "reason": self.reason,
+                "estimated_impact_days": self.estimated_impact_days,
+                "is_active": self.is_active,
+                "is_resolved": self.is_resolved,
+                "resolution_date": (
+                    self.resolution_date.isoformat() if self.resolution_date else None
+                ),
+                "resolution_notes": self.resolution_notes,
+                "created_by_system": self.created_by_system,
+                "last_validation_date": (
+                    self.last_validation_date.isoformat()
+                    if self.last_validation_date
+                    else None
+                ),
+                "validation_status": self.validation_status,
+                "criticality_score": self.get_criticality_score(),
+                "is_blocking": self.is_blocking(),
+                # Relations si chargées
+                "parent_epic": (
+                    self.parent_epic.to_dict() if self.parent_epic else None
+                ),
+                "dependent_epic": (
+                    self.dependent_epic.to_dict() if self.dependent_epic else None
+                ),
+            }
+        )
         return base_dict
 
     def __repr__(self):
@@ -277,9 +258,11 @@ class DependencyGraph:
     ) -> List[List[int]]:
         """Détecte les cycles dans le graphe de dépendances."""
         if dependencies is None:
-            dependencies = self.session.query(EpicDependency).filter(
-                EpicDependency.is_active == True
-            ).all()
+            dependencies = (
+                self.session.query(EpicDependency)
+                .filter(EpicDependency.is_active == True)
+                .all()
+            )
 
         # Construire le graphe
         graph = {}
@@ -322,22 +305,24 @@ class DependencyGraph:
 
         return cycles
 
-    def calculate_critical_path(
-        self, epic_ids: List[int] = None
-    ) -> Dict[str, any]:
+    def calculate_critical_path(self, epic_ids: List[int] = None) -> Dict[str, any]:
         """Calcule le chemin critique pour les Epics donnés."""
         if epic_ids is None:
             from .epic import Epic
+
             epics = self.session.query(Epic).all()
             epic_ids = [e.id for e in epics]
 
-        dependencies = self.session.query(EpicDependency).filter(
-            EpicDependency.is_active == True,
-            EpicDependency.dependency_type.in_([
-                DependencyType.BLOCKING.value,
-                DependencyType.PREREQUISITE.value
-            ])
-        ).all()
+        dependencies = (
+            self.session.query(EpicDependency)
+            .filter(
+                EpicDependency.is_active == True,
+                EpicDependency.dependency_type.in_(
+                    [DependencyType.BLOCKING.value, DependencyType.PREREQUISITE.value]
+                ),
+            )
+            .all()
+        )
 
         # Construire le graphe avec poids
         graph = {}
@@ -409,24 +394,31 @@ class DependencyGraph:
             "total_duration": max_distance,
             "distances": distances,
             "bottlenecks": [
-                epic_id for epic_id, dist in distances.items()
-                if dist == max_distance
-            ]
+                epic_id for epic_id, dist in distances.items() if dist == max_distance
+            ],
         }
 
     def get_dependency_impact(self, epic_id: int) -> Dict[str, any]:
         """Analyse l'impact des dépendances pour un Epic donné."""
         # Dépendances où l'Epic est parent (bloque d'autres)
-        blocking = self.session.query(EpicDependency).filter(
-            EpicDependency.parent_epic_id == epic_id,
-            EpicDependency.is_active == True
-        ).all()
+        blocking = (
+            self.session.query(EpicDependency)
+            .filter(
+                EpicDependency.parent_epic_id == epic_id,
+                EpicDependency.is_active == True,
+            )
+            .all()
+        )
 
         # Dépendances où l'Epic est dépendant (bloqué par d'autres)
-        blocked_by = self.session.query(EpicDependency).filter(
-            EpicDependency.dependent_epic_id == epic_id,
-            EpicDependency.is_active == True
-        ).all()
+        blocked_by = (
+            self.session.query(EpicDependency)
+            .filter(
+                EpicDependency.dependent_epic_id == epic_id,
+                EpicDependency.is_active == True,
+            )
+            .all()
+        )
 
         return {
             "epic_id": epic_id,
@@ -439,11 +431,12 @@ class DependencyGraph:
                 dep.parent_epic_id for dep in blocked_by if dep.is_blocking()
             ],
             "critical_dependencies": [
-                dep.to_dict() for dep in blocked_by
-                if dep.priority in ['critical', 'high'] and not dep.is_resolved
+                dep.to_dict()
+                for dep in blocked_by
+                if dep.priority in ["critical", "high"] and not dep.is_resolved
             ],
             "risk_score": (
-                len([dep for dep in blocked_by if dep.is_blocking()]) * 2 +
-                len([dep for dep in blocked_by if dep.priority == 'critical'])
-            )
+                len([dep for dep in blocked_by if dep.is_blocking()]) * 2
+                + len([dep for dep in blocked_by if dep.priority == "critical"])
+            ),
         }

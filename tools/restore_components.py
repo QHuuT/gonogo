@@ -54,12 +54,16 @@ def main():
         failed_count = 0
 
         for i, us in enumerate(user_stories, 1):
-            print(f"Processing {i}/{len(user_stories)}: {us.user_story_id} (Issue #{us.github_issue_number})")
+            print(
+                f"Processing {i}/{len(user_stories)}:"
+                f"{us.user_story_id} (Issue #{us.github_issue_number})"
+            )
 
             github_data = get_github_issue_data(us.github_issue_number)
             if github_data:
                 old_component = us.component
-                component = extract_component_from_labels(github_data.get('labels', []))
+                component = \
+                    extract_component_from_labels(github_data.get('labels', []))
 
                 if component:
                     us.component = component

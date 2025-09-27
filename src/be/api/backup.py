@@ -32,15 +32,9 @@ router = APIRouter(prefix="/api/backup", tags=["backup"])
 class BackupRequest(BaseModel):
     """Request model for backup creation."""
 
-    destinations: Optional[List[str]] = Field(
-        None, description="Specific backup destinations"
-    )
-    encrypt_gdpr: Optional[bool] = Field(
-        True, description="Force GDPR encryption"
-    )
-    validate_integrity: Optional[bool] = Field(
-        True, description="Validate backup integrity"
-    )
+    destinations: Optional[List[str]] = Field(None, description="Specific backup destinations")
+    encrypt_gdpr: Optional[bool] = Field(True, description="Force GDPR encryption")
+    validate_integrity: Optional[bool] = Field(True, description="Validate backup integrity")
 
 
 class BackupResponse(BaseModel):
@@ -63,15 +57,9 @@ class RestoreRequest(BaseModel):
     """Request model for database restoration."""
 
     backup_file: str = Field(..., description="Path to backup file")
-    target_database: Optional[str] = Field(
-        None, description="Target database path"
-    )
-    verify_only: Optional[bool] = Field(
-        False, description="Only verify backup without restoring"
-    )
-    force: Optional[bool] = Field(
-        False, description="Force restoration without confirmation"
-    )
+    target_database: Optional[str] = Field(None, description="Target database path")
+    verify_only: Optional[bool] = Field(False, description="Only verify backup without restoring")
+    force: Optional[bool] = Field(False, description="Force restoration without confirmation")
 
 
 class RestoreResponse(BaseModel):
@@ -144,9 +132,7 @@ async def create_backup(
         logger.info("API backup request received")
 
         # Start monitoring
-        background_tasks.add_task(
-            monitor.monitor_backup_operation, backup_service
-        )
+        background_tasks.add_task(monitor.monitor_backup_operation, backup_service)
 
         # Create backup
         result = backup_service.create_daily_backup()
@@ -159,11 +145,7 @@ async def create_backup(
 
         response = BackupResponse(
             backup_id=result["backup_id"],
-            status=(
-                "success"
-                if result["successful_destinations"] > 0
-                else "failed"
-            ),
+            status=("success" if result["successful_destinations"] > 0 else "failed"),
             start_time=result["start_time"],
             end_time=result["end_time"],
             duration_seconds=result["duration_seconds"],
@@ -178,22 +160,16 @@ async def create_backup(
             ),
         )
 
-        logger.info(
-            "API backup completed successfully: %s", result["backup_id"]
-        )
+        logger.info("API backup completed successfully: %s", result["backup_id"])
         return response
 
     except BackupError as e:
         logger.error("API backup failed: %s", e)
-        raise HTTPException(
-            status_code=500, detail=f"Backup operation failed: {e}"
-        )
+        raise HTTPException(status_code=500, detail=f"Backup operation failed: {e}")
 
     except Exception as e:
         logger.error("API backup unexpected error: %s", e)
-        raise HTTPException(
-            status_code=500, detail=f"Unexpected error during backup: {e}"
-        )
+        raise HTTPException(status_code=500, detail=f"Unexpected error during backup: {e}")
 
 
 @router.post("/restore", response_model=RestoreResponse)
@@ -209,9 +185,7 @@ async def restore_database(
     GDPR compliance during recovery.
     """
     try:
-        logger.info(
-            "API restore request received for backup: %s", request.backup_file
-        )
+        logger.info("API restore request received for backup: %s", request.backup_file)
 
         # Verify backup file exists
         backup_path = Path(request.backup_file)
@@ -236,9 +210,7 @@ async def restore_database(
                     message="Backup verification completed successfully",
                 )
             except BackupError as e:
-                raise HTTPException(
-                    status_code=400, detail=f"Backup verification failed: {e}"
-                )
+                raise HTTPException(status_code=400, detail=f"Backup verification failed: {e}")
 
         # Perform restoration
         result = backup_service.restore_from_backup(
@@ -254,10 +226,7 @@ async def restore_database(
             integrity_verified=result["integrity_verified"],
             recovery_time_target_met=result["recovery_time_target_met"],
             restored_entities=result["restoration_metadata"],
-            message=(
-                f"Database restored successfully in "
-                f"{result['duration_seconds']:.2f} seconds"
-            ),
+            message=(f"Database restored successfully in {result['duration_seconds']:.2f} seconds"),
         )
 
         logger.info("API restore completed successfully")
@@ -265,22 +234,16 @@ async def restore_database(
 
     except BackupError as e:
         logger.error("API restore failed: %s", e)
-        raise HTTPException(
-            status_code=500, detail=f"Restore operation failed: {e}"
-        )
+        raise HTTPException(status_code=500, detail=f"Restore operation failed: {e}")
 
     except Exception as e:
         logger.error("API restore unexpected error: %s", e)
-        raise HTTPException(
-            status_code=500, detail=f"Unexpected error during restore: {e}"
-        )
+        raise HTTPException(status_code=500, detail=f"Unexpected error during restore: {e}")
 
 
 @router.get("/status", response_model=BackupStatusResponse)
 async def get_backup_status(
-    include_health: bool = Query(
-        False, description="Include database health check"
-    ),
+    include_health: bool = Query(False, description="Include database health check"),
     backup_service: BackupService = Depends(get_backup_service),
 ):
     """
@@ -328,9 +291,7 @@ async def get_backup_status(
 
     except Exception as e:
         logger.error("API status request failed: %s", e)
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get backup status: {e}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get backup status: {e}")
 
 
 @router.get("/monitor/dashboard", response_model=MonitoringDashboardResponse)
@@ -351,9 +312,7 @@ async def get_monitoring_dashboard(
 
     except Exception as e:
         logger.error("API monitoring dashboard failed: %s", e)
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get monitoring dashboard: {e}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get monitoring dashboard: {e}")
 
 
 @router.get("/monitor/health")
@@ -376,17 +335,13 @@ async def get_health_check(
 
     except Exception as e:
         logger.error("API health check failed: %s", e)
-        raise HTTPException(
-            status_code=500, detail=f"Health check failed: {e}"
-        )
+        raise HTTPException(status_code=500, detail=f"Health check failed: {e}")
 
 
 @router.post("/validate/{backup_id}")
 async def validate_backup(
     backup_id: str,
-    deep_check: bool = Query(
-        False, description="Perform deep integrity validation"
-    ),
+    deep_check: bool = Query(False, description="Perform deep integrity validation"),
     backup_service: BackupService = Depends(get_backup_service),
 ):
     """
@@ -425,9 +380,7 @@ async def validate_backup(
 
                     # Deep validation if requested
                     if deep_check:
-                        metadata = backup_service._verify_restored_data(
-                            str(backup_file)
-                        )
+                        metadata = backup_service._verify_restored_data(str(backup_file))
                         result["entity_counts"] = metadata
 
                     validation_results.append(result)
@@ -453,11 +406,7 @@ async def validate_backup(
             "backup_id": backup_id,
             "validation_time": datetime.now(UTC).isoformat(),
             "destinations_checked": len(validation_results),
-            "valid_backups": sum(
-                1
-                for r in validation_results
-                if r.get("integrity_valid", False)
-            ),
+            "valid_backups": sum(1 for r in validation_results if r.get("integrity_valid", False)),
             "validation_results": validation_results,
         }
 
@@ -471,9 +420,7 @@ async def validate_backup(
 @router.delete("/cleanup")
 async def cleanup_old_backups(
     days: int = Query(30, description="Retention period in days"),
-    dry_run: bool = Query(
-        True, description="Show what would be cleaned without deleting"
-    ),
+    dry_run: bool = Query(True, description="Show what would be cleaned without deleting"),
     backup_service: BackupService = Depends(get_backup_service),
 ):
     """
@@ -512,9 +459,7 @@ async def cleanup_old_backups(
             }
 
             for backup_file in destination.glob("gonogo_backup_*.db"):
-                file_time = datetime.fromtimestamp(
-                    backup_file.stat().st_mtime, UTC
-                )
+                file_time = datetime.fromtimestamp(backup_file.stat().st_mtime, UTC)
                 if file_time < cutoff_date:
                     age_days = (datetime.now(UTC) - file_time).days
                     size_mb = backup_file.stat().st_size / (1024 * 1024)
@@ -539,15 +484,11 @@ async def cleanup_old_backups(
                             backup_file.unlink()
 
                             # Remove associated files
-                            metadata_file = backup_file.with_suffix(
-                                ".metadata.json"
-                            )
+                            metadata_file = backup_file.with_suffix(".metadata.json")
                             if metadata_file.exists():
                                 metadata_file.unlink()
 
-                            encrypted_file = backup_file.with_suffix(
-                                ".encrypted"
-                            )
+                            encrypted_file = backup_file.with_suffix(".encrypted")
                             if encrypted_file.exists():
                                 encrypted_file.unlink()
 
@@ -565,9 +506,7 @@ async def cleanup_old_backups(
                 "total_size_mb": round(total_size_mb, 2),
                 "cleanup_time": datetime.now(UTC).isoformat(),
                 "message": (
-                    f"{'Would delete' if dry_run else 'Deleted'} "
-                    f"{total_files} "
-                    f"backup files ({total_size_mb:.1f} MB)"
+                    f"{'Would delete' if dry_run else 'Deleted'} {total_files} backup files ({total_size_mb:.1f} MB)"
                 ),
             }
         )
@@ -581,9 +520,7 @@ async def cleanup_old_backups(
 
     except Exception as e:
         logger.error("API cleanup failed: %s", e)
-        raise HTTPException(
-            status_code=500, detail=f"Cleanup operation failed: {e}"
-        )
+        raise HTTPException(status_code=500, detail=f"Cleanup operation failed: {e}")
 
 
 @router.get("/destinations")
@@ -609,17 +546,11 @@ async def list_backup_destinations(
             # Find latest backup
             latest_backup = None
             if backup_files:
-                latest_file = max(
-                    backup_files, key=lambda x: x.stat().st_mtime
-                )
+                latest_file = max(backup_files, key=lambda x: x.stat().st_mtime)
                 latest_backup = {
                     "file": latest_file.name,
-                    "created": datetime.fromtimestamp(
-                        latest_file.stat().st_mtime, UTC
-                    ).isoformat(),
-                    "size_mb": round(
-                        latest_file.stat().st_size / (1024 * 1024), 2
-                    ),
+                    "created": datetime.fromtimestamp(latest_file.stat().st_mtime, UTC).isoformat(),
+                    "size_mb": round(latest_file.stat().st_size / (1024 * 1024), 2),
                 }
 
             dest_info = {
@@ -645,17 +576,13 @@ async def list_backup_destinations(
         return {
             "destinations": destinations_info,
             "total_destinations": len(destinations_info),
-            "accessible_destinations": sum(
-                1 for d in destinations_info if d["accessible"]
-            ),
+            "accessible_destinations": sum(1 for d in destinations_info if d["accessible"]),
             "total_backups": sum(d["backup_count"] for d in destinations_info),
         }
 
     except Exception as e:
         logger.error("API destinations list failed: %s", e)
-        raise HTTPException(
-            status_code=500, detail=f"Failed to list destinations: {e}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to list destinations: {e}")
 
 
 # Error handlers

@@ -102,8 +102,7 @@ class TestBlogE2E:
 
                 # In production, these would be enforced:
                 # for header_name, expected_value in security_headers.items():
-                #     assert response.headers.get(header_name) == \\
-                #         expected_value
+                #     assert response.headers.get(header_name) == expected_value
 
     @pytest.mark.component("backend")
     def test_gdpr_data_lifecycle_complete_flow(self, db_session):

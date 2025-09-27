@@ -143,7 +143,10 @@ def main():
                 fixed = fix_file(str(file_path))
                 if fixed > 0:
                     total_fixed += fixed
-                    print(f"FIXED {file_path.relative_to(src_dir)}: {fixed} violations")
+                    print(
+                        f"FIXED {file_path.relative_to(src_dir)}:"
+                        f"{fixed} violations"
+                    )
         except Exception as e:
             print(f"ERROR processing {file_path}: {e}")
 
@@ -157,7 +160,8 @@ def main():
             text=True,
             cwd=Path(__file__).parent.parent,
         )
-        remaining = result.stdout.strip().split('\n')[-1] if result.stdout.strip() else "0"
+        remaining = \
+            result.stdout.strip().split('\n')[-1] if result.stdout.strip() else "0"
         print(f"Remaining E501 violations in src/: {remaining}")
     except Exception:
         print("Could not determine remaining violation count")

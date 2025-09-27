@@ -15,12 +15,8 @@ from pathlib import Path
 from typing import Any, Dict
 
 DEFAULT_THRESHOLDS: Dict[str, Dict[str, Dict[str, Any]]] = {
-    
     "epic": {
-        "schedule_variance_days": {"warning": 2,
-    "danger": 7,
-    "direction": "high"
-},
+        "schedule_variance_days": {"warning": 2, "danger": 7, "direction": "high"},
         "success_probability": {
             "warning": 70,
             "danger": 50,
@@ -34,11 +30,7 @@ DEFAULT_THRESHOLDS: Dict[str, Dict[str, Dict[str, Any]]] = {
         "defect_density": {"warning": 0.4, "danger": 0.7, "direction": "high"},
     },
     "pm": {
-    
-        "scope_creep_percentage": {"warning": 15,
-    "danger": 25,
-    "direction": "high"
-},
+        "scope_creep_percentage": {"warning": 15, "danger": 25, "direction": "high"},
         "average_velocity_per_member": {
             "warning": 6,
             "danger": 4,
@@ -56,21 +48,17 @@ DEFAULT_THRESHOLDS: Dict[str, Dict[str, Dict[str, Any]]] = {
         },
         "risk_percentage": {"warning": 25, "danger": 50, "direction": "high"},
         "average_success_probability": {
-    
             "warning": 70,
             "danger": 50,
             "direction": "low",
-        
-},
+        },
     },
     "po": {
-    
         "average_scope_creep_percentage": {
             "warning": 15,
             "danger": 25,
             "direction": "high",
-        
-},
+        },
         "average_adoption": {"warning": 60, "danger": 40, "direction": "low"},
         "average_satisfaction": {
             "warning": 7,
@@ -79,11 +67,7 @@ DEFAULT_THRESHOLDS: Dict[str, Dict[str, Dict[str, Any]]] = {
         },
     },
     "qa": {
-    
-        "average_test_coverage": {"warning": 75,
-    "danger": 60,
-    "direction": "low"
-},
+        "average_test_coverage": {"warning": 75, "danger": 60, "direction": "low"},
         "average_defect_density": {
             "warning": 0.4,
             "danger": 0.7,
@@ -97,9 +81,7 @@ DEFAULT_THRESHOLDS: Dict[str, Dict[str, Dict[str, Any]]] = {
     },
 }
 
-CONFIG_PATH = Path(
-    os.getenv("METRIC_THRESHOLDS_PATH", "config/metrics_thresholds.json")
-)
+CONFIG_PATH = Path(os.getenv("METRIC_THRESHOLDS_PATH", "config/metrics_thresholds.json"))
 
 
 class MetricThresholdService:

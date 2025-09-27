@@ -40,7 +40,8 @@ def analyze_test_duplications():
         )
 
         duplicates = duplicates_query.all()
-        total_duplicate_entries = sum(dup.count - 1 for dup in duplicates)  # -1 car on garde 1 copie
+        total_duplicate_entries = \
+            sum(dup.count - 1 for dup in duplicates)  # -1 car on garde 1 copie
 
         print(f"Unique test+file combinations with duplicates: {len(duplicates)}")
         print(f"Excess entries to remove: {total_duplicate_entries}")
@@ -49,7 +50,10 @@ def analyze_test_duplications():
         # 3. Top 10 most duplicated
         print(f"\nTop 10 most duplicated tests:")
         for dup in duplicates[:10]:
-            print(f"   * {dup.test_function_name} ({dup.test_file_path}): {dup.count} copies")
+            print(
+                f"   * {dup.test_function_name}"
+                f"({dup.test_file_path}): {dup.count} copies"
+            )
 
         # 4. Duplications by file
         file_duplications = defaultdict(int)
@@ -57,14 +61,17 @@ def analyze_test_duplications():
             file_duplications[dup.test_file_path] += dup.count - 1
 
         print(f"\nFiles with most duplicate entries:")
-        sorted_files = sorted(file_duplications.items(), key=lambda x: x[1], reverse=True)
+        sorted_files = \
+            sorted(file_duplications.items(), key=lambda x: x[1], reverse=True)
         for file_path, excess_count in sorted_files[:10]:
             print(f"   * {file_path}: {excess_count} excess entries")
 
         # 5. Analysis by Epic assignment
         print(f"\nEpic assignment analysis:")
-        tests_with_epic = session.query(Test).filter(Test.epic_id.isnot(None)).count()
-        tests_without_epic = session.query(Test).filter(Test.epic_id.is_(None)).count()
+        tests_with_epic = \
+            session.query(Test).filter(Test.epic_id.isnot(None)).count()
+        tests_without_epic = \
+            session.query(Test).filter(Test.epic_id.is_(None)).count()
         print(f"   * Tests with Epic: {tests_with_epic}")
         print(f"   * Tests without Epic: {tests_without_epic}")
 
@@ -119,10 +126,14 @@ def count_actual_test_functions():
             for py_file in py_files:
                 try:
                     content = py_file.read_text(encoding='utf-8', errors='ignore')
-                    functions = [line for line in content.split('\n') if line.strip().startswith('def test_')]
+                    functions = \
+                        [line for line in content.split('\n') if line.strip().startswith('def test_')]
                     total_functions += len(functions)
                     if len(functions) > 0:
-                        print(f"      * {py_file.name}: {len(functions)} test functions")
+                        print(
+                            f"      *"
+                            f"{py_file.name}: {len(functions)} test functions"
+                        )
                 except Exception as e:
                     print(f"      ERROR reading {py_file}: {e}")
 

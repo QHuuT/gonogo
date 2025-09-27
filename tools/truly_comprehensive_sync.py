@@ -599,7 +599,9 @@ def truly_comprehensive_sync(dry_run=True, entity_types=['all']):
 
                 if changed:
                     total_changes += 1
-                    print(f"  {def_id}: {', '.join(updates[:3])}{'...' if len(updates) > 3 else ''}")
+                    updates_str = ', '.join(updates[:3])
+                    ellipsis = '...' if len(updates) > 3 else ''
+                    print(f"  {def_id}: {updates_str}{ellipsis}")
                 else:
                     print(f"  {def_id}: No changes needed (already synced)")
 

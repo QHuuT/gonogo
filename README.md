@@ -48,6 +48,58 @@ Testing & Quality:
 │   ├── security/                           # GDPR & security compliance tests
 │   └── e2e/                                # End-to-end testing
 ├── quality/                                # Quality assurance system
+
+## 🛠️ Code Standards & Technical Debt Management
+
+### Context-Aware Code Standards
+**Important**: We use **different line length standards for different code contexts** to balance maintainability with practicality.
+
+📋 **See [ADR-004: Context-Aware Code Standards](docs/context/decisions/adr-004-context-aware-code-standards.md)** for full rationale and decision context.
+
+#### Production Code (src/)
+- **Line Length**: 120 characters (modern pragmatic standard)
+- **Enforcement**: Strict via pre-commit hooks and CI
+- **Tools**: Ruff formatter for automated fixes
+
+#### Test Code (tests/)
+- **Line Length**: No limit (E501 disabled)
+- **Rationale**: Test clarity and verbose assertions take priority
+
+#### Migrations & Tools (migrations/, tools/)
+- **Line Length**: No limit (E501 disabled)
+- **Rationale**: Database schemas and utility scripts need descriptive names
+
+#### Templates & HTML
+- **Approach**: Extract to external Jinja2 templates instead of inline strings
+- **Rationale**: Architectural improvement over artificial line breaks
+
+### Implementation
+```toml
+# pyproject.toml configuration
+[tool.flake8]
+max-line-length = 120
+per-file-ignores = [
+    "tests/*: E501",        # Test clarity over line length
+    "migrations/*: E501",   # Database schemas need space
+    "tools/*: E501",        # Utility scripts are temporary
+    "**/templates.py: E501" # HTML strings should be externalized
+]
+```
+
+### Modern Tooling for Code Formatting
+```bash
+# Install Ruff (fast, modern Python formatter)
+pip install ruff
+
+# Format production code with 120-char limit
+ruff format src/ --line-length 120
+
+# Check only production code for E501 violations
+python -m flake8 --select=E501 src/
+```
+
+### Lessons Learned
+⚠️ **Initial Mistake**: We originally applied uniform 79-character limits across all code types, leading to 2,424 violations and 80+ hours of wasted effort. Context-aware standards prevent similar mistakes and focus developer energy on meaningful quality improvements.
 │   ├── logs/                               # Structured test execution logs
 │   ├── reports/                            # Interactive HTML reports & analysis
 │   ├── debug_reports/                      # Detailed debug analysis & regression tests (F-/E-/W- prefixed)
@@ -227,6 +279,28 @@ echo "RISK LEVEL: [HIGH/MEDIUM/LOW] based on file criticality"
 # - Incremental verification
 
 # VERY HIGH IMPACT (core system files, complex syntax):
+# - Individual manual fixes with immediate syntax validation
+# - MANDATORY: ast.parse() after every docstring modification
+# - CRITICAL: Avoid escaped quotes in string replacements
+
+# 4. ESCAPE SEQUENCE PREVENTION (mandatory for E501 fixes):
+# LEARNED FROM: E-20250927-escape-sequence-syntax-error.md
+# - NEVER use escaped quotes (\") in docstring replacements
+# - USE: Multi-line docstrings instead of line continuation
+# - VALIDATE: Python AST parsing after every string modification
+python -c "import ast; ast.parse(open('file.py').read())"  # Mandatory validation
+
+# 5. AUTOMATED SAFEGUARDS (implemented after syntax error incident):
+# - Pre-commit hook for Python syntax validation
+# - Regression test coverage for escape sequence detection
+# - Enhanced edit tool protocols with quote handling safety
+
+# 6. REGRESSION TEST VALIDATION (mandatory for all error prevention tests):
+# LEARNED FROM: E-20250927-regression-test-incorrect-pattern.md
+# - VERIFY: Test patterns independently before deployment
+# - PATTERN: Use correct escape sequences (\\\"\\\"\\\" for line continuation errors)
+# - VALIDATE: Ensure negative test cases actually reproduce the error condition
+
 # - Manual-only approach
 # - Individual line analysis
 # - Extensive testing after each change
@@ -467,6 +541,9 @@ head -50 quality/logs/processed_*.log               # View failure summary
 ```bash
 # 1. Code quality checks
 black src/ tests/ && isort src/ tests/ && flake8 src/ tests/ && mypy src/
+
+# 1a. Enhanced syntax validation (catches escape sequence warnings)
+python -c "import ast, sys; [ast.parse(open(f).read()) for f in sys.argv[1:]]" src/be/services/*.py
 
 # 2. Security & GDPR compliance
 pytest tests/security/ -v
@@ -746,6 +823,7 @@ python tools/rtm-links.py validate
 - **Proactive deprecation management**: Regular library update cycles with import modernization
 - **Platform-agnostic design**: Test infrastructure works on Windows, macOS, and Linux
 - **Documentation-driven development**: Every debug issue produces educational regression tests
+- **Mixed-language code validation**: JavaScript in Python strings requires proper escaping (`\s` → `\\s`) or raw strings
 
 ## 🛠️ Complete Technology Stack
 
@@ -841,6 +919,7 @@ python tools/rtm-links.py validate
 - **Failure Analysis**: quality/reports/failure_analysis_report.html
 - **Debug Analysis Reports**: quality/debug_reports/ (F-/E-/W- categorized regression prevention & detailed debugging)
   - **Import Cleanup Safety**: See F-20250927 debug report for critical safety protocols
+  - **Mixed-Language Code Escaping**: See W-20250927-rtm-report-generator-syntax-warning.md for JavaScript in Python strings
 
 ### **🛠️ Common Commands**
 ```bash

@@ -49,14 +49,13 @@ class GDPRService:
         return secrets.token_urlsafe(32)
 
     def record_consent(
-    self,
-    consent_type: ConsentType,
-    consent_given: bool,
-    ip_address: Optional[str] = None,
-    user_agent: Optional[str] = None,
-    consent_version: str = "1.0",
-    
-) -> str:
+        self,
+        consent_type: ConsentType,
+        consent_given: bool,
+        ip_address: Optional[str] = None,
+        user_agent: Optional[str] = None,
+        consent_version: str = "1.0",
+    ) -> str:
         """
         Record user consent with GDPR compliance.
 
@@ -83,24 +82,21 @@ class GDPRService:
             expires_at = datetime.now(UTC) + timedelta(days=365)  # 1 year
 
         consent_record = ConsentRecord(
-    consent_id=consent_id,
-    consent_type=consent_type.value,
-    consent_given=consent_given,
-    consent_version=consent_version,
-    expires_at=expires_at,
-    ip_address_hash=ip_hash,
-    user_agent_hash=ua_hash,
-    
-)
+            consent_id=consent_id,
+            consent_type=consent_type.value,
+            consent_given=consent_given,
+            consent_version=consent_version,
+            expires_at=expires_at,
+            ip_address_hash=ip_hash,
+            user_agent_hash=ua_hash,
+        )
 
         self.db.add(consent_record)
         self.db.commit()
 
         return consent_id
 
-    def withdraw_consent(
-        self, consent_id: str, reason: Optional[str] = None
-    ) -> bool:
+    def withdraw_consent(self, consent_id: str, reason: Optional[str] = None) -> bool:
         """
         Withdraw consent and update record.
 
@@ -116,11 +112,7 @@ class GDPRService:
             True if withdrawal was successful, False if consent not found
         """
 
-        consent = (
-            self.db.query(ConsentRecord)
-            .filter(ConsentRecord.consent_id == consent_id)
-            .first()
-        )
+        consent = self.db.query(ConsentRecord).filter(ConsentRecord.consent_id == consent_id).first()
 
         # Timing attack resistance: Always perform similar operations
         # regardless of whether consent exists
@@ -139,12 +131,11 @@ class GDPRService:
             # Create a dummy consent object (not persisted) and perform similar
             # operations
             dummy_consent = ConsentRecord(
-    consent_id="dummy",
-    consent_type=ConsentType.FUNCTIONAL,
-    consent_given=True,
-    created_at=withdrawal_time,
-    
-)
+                consent_id="dummy",
+                consent_type=ConsentType.FUNCTIONAL,
+                consent_given=True,
+                created_at=withdrawal_time,
+            )
             dummy_consent.consent_given = False
             dummy_consent.withdrawn_at = withdrawal_time
             dummy_consent.withdrawal_reason = reason
@@ -170,11 +161,10 @@ class GDPRService:
         consents = (
             self.db.query(ConsentRecord)
             .filter(
-    and_(
+                and_(
                     ConsentRecord.consent_id == consent_id,
-    ConsentRecord.consent_given == True,
-    ConsentRecord.withdrawn_at.is_(None
-),
+                    ConsentRecord.consent_given == True,
+                    ConsentRecord.withdrawn_at.is_(None),
                 )
             )
             .all()
@@ -202,12 +192,11 @@ class GDPRService:
         return active_consents
 
     def create_data_subject_request(
-    self,
-    request_type: DataSubjectRights,
-    contact_email: str,
-    description: Optional[str] = None,
-    
-) -> int:
+        self,
+        request_type: DataSubjectRights,
+        contact_email: str,
+        description: Optional[str] = None,
+    ) -> int:
         """
         Create a data subject rights request.
 
@@ -223,11 +212,10 @@ class GDPRService:
         email_hash = self._hash_data(contact_email)
 
         request = DataSubjectRequest(
-    request_type=request_type.value,
-    contact_email_hash=email_hash,
-    description=description,
-    due_date=datetime.now(UTC
-) + timedelta(days=30),
+            request_type=request_type.value,
+            contact_email_hash=email_hash,
+            description=description,
+            due_date=datetime.now(UTC) + timedelta(days=30),
         )
 
         self.db.add(request)
@@ -236,12 +224,11 @@ class GDPRService:
         return request.id
 
     def process_data_subject_request(
-    self,
-    request_id: int,
-    response_data: Optional[Dict] = None,
-    notes: Optional[str] = None,
-    
-) -> bool:
+        self,
+        request_id: int,
+        response_data: Optional[Dict] = None,
+        notes: Optional[str] = None,
+    ) -> bool:
         """
         Mark a data subject request as completed.
 
@@ -254,11 +241,7 @@ class GDPRService:
             True if successful, False if request not found
         """
 
-        request = (
-            self.db.query(DataSubjectRequest)
-            .filter(DataSubjectRequest.id == request_id)
-            .first()
-        )
+        request = self.db.query(DataSubjectRequest).filter(DataSubjectRequest.id == request_id).first()
 
         if not request:
             return False
@@ -277,27 +260,25 @@ class GDPRService:
         return (
             self.db.query(DataSubjectRequest)
             .filter(
-    and_(
+                and_(
                     DataSubjectRequest.status == "pending",
-    DataSubjectRequest.due_date < datetime.now(UTC
-),
+                    DataSubjectRequest.due_date < datetime.now(UTC),
                 )
             )
             .all()
         )
 
     def record_data_processing_activity(
-    self,
-    activity_name: str,
-    purpose: str,
-    legal_basis: LegalBasis,
-    data_categories: List[str],
-    data_subjects: str,
-    retention_period_days: Optional[int] = None,
-    recipients: Optional[List[str]] = None,
-    security_measures: Optional[List[str]] = None,
-    
-) -> int:
+        self,
+        activity_name: str,
+        purpose: str,
+        legal_basis: LegalBasis,
+        data_categories: List[str],
+        data_subjects: str,
+        retention_period_days: Optional[int] = None,
+        recipients: Optional[List[str]] = None,
+        security_measures: Optional[List[str]] = None,
+    ) -> int:
         """
         Record a data processing activity for GDPR Article 30 compliance.
 
@@ -326,16 +307,15 @@ class GDPRService:
             recipients = []
 
         record = DataProcessingRecord(
-    activity_name=activity_name,
-    purpose=purpose,
-    legal_basis=legal_basis.value,
-    data_categories=data_categories,
-    data_subjects=data_subjects,
-    retention_period_days=retention_period_days,
-    recipients=recipients,
-    security_measures=security_measures,
-    
-)
+            activity_name=activity_name,
+            purpose=purpose,
+            legal_basis=legal_basis.value,
+            data_categories=data_categories,
+            data_subjects=data_subjects,
+            retention_period_days=retention_period_days,
+            recipients=recipients,
+            security_measures=security_measures,
+        )
 
         self.db.add(record)
         self.db.commit()
@@ -374,10 +354,9 @@ class GDPRService:
         old_records = (
             self.db.query(ConsentRecord)
             .filter(
-    and_(
+                and_(
                     ConsentRecord.created_at < thirty_days_ago,
-    ConsentRecord.ip_address_hash.isnot(None
-),
+                    ConsentRecord.ip_address_hash.isnot(None),
                 )
             )
             .all()
@@ -403,44 +382,28 @@ class GDPRService:
         active_consents = (
             self.db.query(ConsentRecord)
             .filter(
-    and_(
+                and_(
                     ConsentRecord.consent_given == True,
-    ConsentRecord.withdrawn_at.is_(None
-),
+                    ConsentRecord.withdrawn_at.is_(None),
                 )
             )
             .count()
         )
 
-        pending_requests = (
-            self.db.query(DataSubjectRequest)
-            .filter(DataSubjectRequest.status == "pending")
-            .count()
-        )
+        pending_requests = self.db.query(DataSubjectRequest).filter(DataSubjectRequest.status == "pending").count()
 
         overdue_requests = len(self.get_overdue_requests())
 
         return {
-    
             "total_consent_records": total_consents,
             "active_consents": active_consents,
             "pending_data_subject_requests": pending_requests,
             "overdue_requests": overdue_requests,
-            "compliance_score": self._calculate_compliance_score(
-    total_consents,
-    pending_requests,
-    overdue_requests
-),
+            "compliance_score": self._calculate_compliance_score(total_consents, pending_requests, overdue_requests),
             "last_anonymization_run": datetime.now(UTC).isoformat(),
-        
-}
+        }
 
-    def _calculate_compliance_score(
-    self,
-    total_consents: int,
-    pending_requests: int,
-    overdue_requests: int
-) -> float:
+    def _calculate_compliance_score(self, total_consents: int, pending_requests: int, overdue_requests: int) -> float:
         """Calculate compliance score (0-100)."""
 
         score = 100.0

@@ -113,7 +113,8 @@ class DependencyUpdateDetector:
                 for line in lines:
                     if 'Available versions:' in line:
                         # Extract first version (latest)
-                        versions_part = line.split('Available versions:', 1)[1].strip()
+                        versions_part = \
+                            line.split('Available versions:', 1)[1].strip()
                         if versions_part:
                             # Take first version (they're sorted newest first)
                             latest = versions_part.split(',')[0].strip()
@@ -219,7 +220,8 @@ class DependencyUpdateDetector:
     def generate_update_report(self, updates: Dict[str, Dict[str, str]]) -> str:
         """Generate a dependency update report."""
         timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
-        report_file = Path(f"quality/monitoring/reports/dependency_updates_{timestamp}.md")
+        report_file = \
+            Path(f"quality/monitoring/reports/dependency_updates_{timestamp}.md")
         report_file.parent.mkdir(parents=True, exist_ok=True)
 
         report = [
@@ -314,7 +316,8 @@ class DependencyUpdateDetector:
         return str(report_file)
 
 def main():
-    parser = argparse.ArgumentParser(description="Check for dependency updates and monitor warnings")
+    parser = \
+        argparse.ArgumentParser(description="Check for dependency updates and monitor warnings")
     parser.add_argument("--check", action="store_true", help="Check for dependency updates")
     parser.add_argument("--auto-monitor", action="store_true", help="Check updates and auto-monitor warnings")
     parser.add_argument("--report", action="store_true", help="Generate update report")
@@ -333,7 +336,10 @@ def main():
     elif args.auto_monitor:
         results = detector.auto_monitor_on_updates()
         if results["updates_found"]:
-            print(f"\nCompleted automatic monitoring for {len(results['updates_found'])} updated dependencies.")
+            print(
+                f"\nCompleted automatic monitoring"
+                f"for {len(results['updates_found'])} updated dependencies."
+            )
         else:
             print("\nNo updates found, monitoring skipped.")
     elif args.report:

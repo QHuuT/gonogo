@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "mcp__ide__getDiagnostics"
+      "Bash(python:*)",
+      "Bash(cat:*)",
+      "Bash(sort:*)",
+      "Bash(awk:*)",
+      "Bash(pip install:*)",
+      "Bash(autopep8:*)",
+      "WebSearch",
+      "Bash(git checkout:*)",
+      "Bash(ruff format:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

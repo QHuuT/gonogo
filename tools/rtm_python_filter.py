@@ -174,7 +174,10 @@ Python-based filtering advantages:
 
         # Generate report
         if args.verbose:
-            print(f"Generating {args.format.upper()} report with Python filtering...")
+            print(
+                f"Generating {args.format.upper()}"
+                f"report with Python filtering..."
+            )
 
         if args.format == "html":
             content = generator.generate_html_matrix(filters)

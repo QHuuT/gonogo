@@ -2,9 +2,11 @@
 Pure Python SVG Graph Generator for Epic Dependencies Visualization.
 
 Generates dependency graphs as pure SVG with zero JavaScript dependencies.
-Implements force-directed layout algorithm and interactive features server-side.
+Implements force-directed layout algorithm and interactive features
+server-side.
 
-Related Issue: US-00030 - Visual Filtering Enhancement for Epic Dependencies Graph
+Related Issue: US-00030 - Visual Filtering Enhancement for Epic
+Dependencies Graph
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
@@ -187,47 +189,40 @@ class SVGGraphGenerator:
     def __init__(self):
         self.layout = GraphLayout()
         self.colors = {
-    
             "planned": "#3498db",
             "active": "#f39c12",
             "in-progress": "#f39c12",
             "completed": "#27ae60",
             "on-hold": "#95a5a6",
             "default": "#3498db",
-        
-}
+        }
         self.capability_colors = {
-    
             "CAP-00001": "#8e44ad",
-     # GitHub Integration - Purple
+            # GitHub Integration - Purple
             "CAP-00002": "#16a085",
-     # Requirements Traceability - Teal
+            # Requirements Traceability - Teal
             "CAP-00003": "#e67e22",
-     # Blog Platform - Orange
+            # Blog Platform - Orange
             "CAP-00004": "#c0392b",
-     # GDPR Compliance - Red
+            # GDPR Compliance - Red
             "unassigned": "#95a5a6",
-     # No capability - Gray
-        
-}
+            # No capability - Gray
+        }
         self.dependency_colors = {
-    
             "blocking": "#e74c3c",
             "prerequisite": "#3498db",
             "technical": "#9b59b6",
             "business": "#27ae60",
             "informational": "#95a5a6",
-        
-}
+        }
 
     def generate_svg(
-    self,
-    epics: List[dict],
-    dependencies: List[dict],
-    capabilities: List[dict] = None,
-    filters: dict = None,
-    
-) -> str:
+        self,
+        epics: List[dict],
+        dependencies: List[dict],
+        capabilities: List[dict] = None,
+        filters: dict = None,
+    ) -> str:
         """Generate complete SVG visualization."""
         # Convert data to internal format
         nodes = self._create_nodes(epics, capabilities)
@@ -247,9 +242,7 @@ class SVGGraphGenerator:
         # Generate SVG
         return self._render_svg(nodes, links, capabilities or [])
 
-    def _create_nodes(
-        self, epics: List[dict], capabilities: List[dict] = None
-    ) -> Dict[str, Node]:
+    def _create_nodes(self, epics: List[dict], capabilities: List[dict] = None) -> Dict[str, Node]:
         """Convert epic data to Node objects."""
         capability_map = {}
         if capabilities:
@@ -259,16 +252,12 @@ class SVGGraphGenerator:
         for epic in epics:
             capability_id = epic.get("capability_capability_id")
             nodes[str(epic["id"])] = Node(
-    id=epic["id"],
-    epic_id=epic.get("epic_id",
-    f"EP-{epic['id']}"
-),
+                id=epic["id"],
+                epic_id=epic.get("epic_id", f"EP-{epic['id']}"),
                 title=epic.get("title", "Untitled Epic"),
                 status=epic.get("status", "planned"),
                 capability_id=capability_id,
-                capability_name=(
-                    capability_map.get(capability_id) if capability_id else None
-                ),
+                capability_name=(capability_map.get(capability_id) if capability_id else None),
                 component=epic.get("component", "backend"),
                 completion_percentage=epic.get("completion_percentage", 0),
                 priority=epic.get("priority", "medium"),
@@ -308,10 +297,7 @@ class SVGGraphGenerator:
                 keep_node = False
 
             # Capability filter
-            if (
-                filters.get("capability")
-                and node.capability_id != filters["capability"]
-            ):
+            if filters.get("capability") and node.capability_id != filters["capability"]:
                 keep_node = False
 
             if keep_node:
@@ -343,13 +329,7 @@ class SVGGraphGenerator:
             node.x += random.uniform(-50, 50)
             node.y += random.uniform(-50, 50)
 
-    def _render_svg(
-    self,
-    nodes: Dict[str,
-    Node],
-    links: List[Link],
-    capabilities: List[dict]
-) -> str:
+    def _render_svg(self, nodes: Dict[str, Node], links: List[Link], capabilities: List[dict]) -> str:
         """Generate the complete SVG markup."""
         svg_parts = []
 
@@ -410,21 +390,19 @@ class SVGGraphGenerator:
         for dep_type, color in self.dependency_colors.items():
             size = 12 if dep_type == "blocking" else 10
             markers.append(
-    f"""
-            <marker id="arrow-{dep_type}" markerWidth="{size}" markerHeight="{size//2*3}"
-                    refX="{size-1}" refY="{size//2}" orient="auto" markerUnits="strokeWidth">
+                f"""
+            <marker id="arrow-{dep_type}" markerWidth="{size}" markerHeight="{size // 2 * 3}"
+                    refX="{size - 1}" refY="{size // 2}" orient="auto" markerUnits="strokeWidth">
                 <polygon points="0 0,
-    {size} {size//2},
+    {size} {size // 2},
     0 {size}" fill="{color}" />
             </marker>"""
-)
+            )
 
         markers.append("</defs>")
         return "\n".join(markers)
 
-    def _render_capability_clusters(
-        self, nodes: Dict[str, Node], capabilities: List[dict]
-    ) -> str:
+    def _render_capability_clusters(self, nodes: Dict[str, Node], capabilities: List[dict]) -> str:
         """Render capability cluster backgrounds."""
         if not capabilities:
             return ""
@@ -452,9 +430,7 @@ class SVGGraphGenerator:
             # Calculate radius to encompass all nodes with padding
             max_distance = 0
             for node in cap_nodes:
-                distance = math.sqrt(
-                    (node.x - center_x) ** 2 + (node.y - center_y) ** 2
-                )
+                distance = math.sqrt((node.x - center_x) ** 2 + (node.y - center_y) ** 2)
                 max_distance = max(max_distance, distance)
 
             radius = max_distance + 50  # Add padding
@@ -528,9 +504,7 @@ class SVGGraphGenerator:
         for node in nodes.values():
             # Node colors
             status_color = self.colors.get(node.status, self.colors["default"])
-            capability_color = self.capability_colors.get(
-                node.capability_id or "unassigned", "#95a5a6"
-            )
+            capability_color = self.capability_colors.get(node.capability_id or "unassigned", "#95a5a6")
 
             # Calculate radius based on completion
             base_radius = self.layout.node_radius
@@ -548,9 +522,7 @@ class SVGGraphGenerator:
             ]
 
             if node.capability_name:
-                tooltip_parts.append(
-                    f"Capability: {node.capability_id} - {node.capability_name}"
-                )
+                tooltip_parts.append(f"Capability: {node.capability_id} - {node.capability_name}")
             else:
                 tooltip_parts.append("⚠️ No capability assigned")
 
@@ -558,7 +530,7 @@ class SVGGraphGenerator:
 
             # Render node group
             node_parts.append(
-    f"""
+                f"""
             <g class="node" transform="translate({node.x},
     {node.y}
 )">

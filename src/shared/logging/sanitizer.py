@@ -44,9 +44,7 @@ class LogSanitizer:
 
         # IP addresses (IPv4 and IPv6)
         patterns["ipv4"] = re.compile(r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b")
-        patterns["ipv6"] = re.compile(
-            r"\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b"
-        )
+        patterns["ipv6"] = re.compile(r"\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b")
 
         if self.level in [
             SanitizationLevel.STRICT,
@@ -62,14 +60,10 @@ class LogSanitizer:
             patterns["ssn"] = re.compile(r"\b\d{3}-?\d{2}-?\d{4}\b")
 
             # Credit card numbers (basic pattern)
-            patterns["credit_card"] = re.compile(
-                r"\b(?:\d{4}[-\s]?){3}\d{4}\b"
-            )
+            patterns["credit_card"] = re.compile(r"\b(?:\d{4}[-\s]?){3}\d{4}\b")
 
             # User paths (containing usernames)
-            patterns["user_path"] = re.compile(
-                r"/(?:home|users?)/[^/\s]+", re.IGNORECASE
-            )
+            patterns["user_path"] = re.compile(r"/(?:home|users?)/[^/\s]+", re.IGNORECASE)
 
         if self.level == SanitizationLevel.PARANOID:
             # Names (common patterns - be careful with false positives)
@@ -129,10 +123,7 @@ class LogSanitizer:
             elif isinstance(value, dict):
                 sanitized_entry[key] = self.sanitize_log_entry(value)
             elif isinstance(value, list):
-                sanitized_entry[key] = [
-                    self.sanitize_text(item) if isinstance(item, str) else item
-                    for item in value
-                ]
+                sanitized_entry[key] = [self.sanitize_text(item) if isinstance(item, str) else item for item in value]
             else:
                 sanitized_entry[key] = value
 
@@ -164,9 +155,7 @@ class LogSanitizer:
         }
 
         if self.level == SanitizationLevel.PARANOID:
-            sensitive_fields.update(
-                {"user_agent", "referer", "remote_addr", "client_ip"}
-            )
+            sensitive_fields.update({"user_agent", "referer", "remote_addr", "client_ip"})
 
         return field_name.lower() in sensitive_fields
 
@@ -182,15 +171,9 @@ class LogSanitizer:
     def _get_level_description(self) -> str:
         """Get description of current sanitization level."""
         descriptions = {
-            SanitizationLevel.NONE: (
-                "No sanitization - full logging (development only)"
-            ),
+            SanitizationLevel.NONE: ("No sanitization - full logging (development only)"),
             SanitizationLevel.BASIC: "Basic PII removal (emails, IPs)",
-            SanitizationLevel.STRICT: (
-                "Comprehensive sanitization (PII, paths, tokens)"
-            ),
-            SanitizationLevel.PARANOID: (
-                "Maximum sanitization (aggressive pattern matching)"
-            ),
+            SanitizationLevel.STRICT: ("Comprehensive sanitization (PII, paths, tokens)"),
+            SanitizationLevel.PARANOID: ("Maximum sanitization (aggressive pattern matching)"),
         }
         return descriptions.get(self.level, "Unknown level")

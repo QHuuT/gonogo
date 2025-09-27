@@ -10,9 +10,7 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 Architecture Decision: ADR-003 - Hybrid GitHub + Database RTM Architecture
 """
 
-from sqlalchemy import (
-    Boolean, Column, ForeignKey, Index, Integer, String, Text
-)
+from sqlalchemy import Boolean, Column, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 from .base import TraceabilityBase
@@ -24,21 +22,15 @@ class UserStory(TraceabilityBase):
     __tablename__ = "user_stories"
 
     # User Story identification
-    user_story_id = Column(
-        String(20), unique=True, nullable=False, index=True
-    )
+    user_story_id = Column(String(20), unique=True, nullable=False, index=True)
     # Format: US-00001, US-00002, etc.
 
     # Epic relationship (database foreign key)
-    epic_id = Column(
-        Integer, ForeignKey("epics.id"), nullable=False, index=True
-    )
+    epic_id = Column(Integer, ForeignKey("epics.id"), nullable=False, index=True)
     epic = relationship("Epic")
 
     # GitHub Issue metadata (cached for performance)
-    github_issue_number = Column(
-        Integer, unique=True, nullable=False, index=True
-    )
+    github_issue_number = Column(Integer, unique=True, nullable=False, index=True)
     github_issue_state = Column(String(20), index=True)  # open, closed
     github_labels = Column(Text)  # JSON string of labels
     github_assignees = Column(Text)  # JSON string of assignees
@@ -49,9 +41,7 @@ class UserStory(TraceabilityBase):
     business_value = Column(Text)
 
     # Priority and planning
-    priority = Column(
-        String(20), default="medium", index=True, nullable=False
-    )
+    priority = Column(String(20), default="medium", index=True, nullable=False)
     # Values: critical, high, medium, low
 
     sprint = Column(String(50), index=True)
@@ -63,15 +53,11 @@ class UserStory(TraceabilityBase):
     # Values: todo, in_progress, in_review, done, blocked
 
     # BDD Integration
-    has_bdd_scenarios = Column(
-        Boolean, default=False, index=True, nullable=False
-    )
+    has_bdd_scenarios = Column(Boolean, default=False, index=True, nullable=False)
     bdd_feature_files = Column(Text)  # JSON array of feature file paths
 
     # GDPR implications
-    affects_gdpr = Column(
-        Boolean, default=False, index=True, nullable=False
-    )
+    affects_gdpr = Column(Boolean, default=False, index=True, nullable=False)
     gdpr_considerations = Column(Text)
 
     # Component classification
@@ -85,9 +71,7 @@ class UserStory(TraceabilityBase):
     # Relationships
     tests = relationship(
         "Test",
-        primaryjoin=(
-            "UserStory.github_issue_number == Test.github_user_story_number"
-        ),
+        primaryjoin=("UserStory.github_issue_number == Test.github_user_story_number"),
         foreign_keys="Test.github_user_story_number",
         viewonly=True,
     )
@@ -105,20 +89,12 @@ class UserStory(TraceabilityBase):
     __table_args__ = (
         Index("idx_us_epic_status", "epic_id", "implementation_status"),
         Index("idx_us_priority_points", "priority", "story_points"),
-        Index(
-            "idx_us_release_sprint", "target_release_version", "sprint"
-        ),
-        Index(
-            "idx_us_github_state", "github_issue_state", "github_issue_number"
-        ),
+        Index("idx_us_release_sprint", "target_release_version", "sprint"),
+        Index("idx_us_github_state", "github_issue_state", "github_issue_number"),
     )
 
     def __init__(
-        self,
-        user_story_id: str,
-        epic_id: int,
-        github_issue_number: int,
-        **kwargs
+        self, user_story_id: str, epic_id: int, github_issue_number: int, **kwargs
     ):
         """Initialize User Story with required fields."""
         super().__init__(**kwargs)
@@ -173,8 +149,7 @@ class UserStory(TraceabilityBase):
         """Calculate implementation status from GitHub issue state and
         labels."""
         # If issue is closed, it's completed
-        if (self.github_issue_state and
-            self.github_issue_state.lower() == "closed"):
+        if self.github_issue_state and self.github_issue_state.lower() == "closed":
             return "completed"
 
         # If issue is open, check for status/x labels
@@ -198,8 +173,7 @@ class UserStory(TraceabilityBase):
                 return "planned"  # ready = planned
             elif "status/backlog" in labels_str:
                 return "planned"  # backlog = planned
-            elif ("status/done" in labels_str or
-                  "status/completed" in labels_str):
+            elif "status/done" in labels_str or "status/completed" in labels_str:
                 return "completed"
 
         # Default for open issues without status/ labels
@@ -208,11 +182,7 @@ class UserStory(TraceabilityBase):
     def calculate_test_coverage(self) -> dict:
         """Calculate test coverage metrics."""
         if not self.tests:
-            return {
-                "total_tests": 0,
-                "passed_tests": 0,
-                "coverage_percentage": 0.0
-            }
+            return {"total_tests": 0, "passed_tests": 0, "coverage_percentage": 0.0}
 
         total_tests = len(self.tests)
         passed_tests = sum(
@@ -262,4 +232,3 @@ class UserStory(TraceabilityBase):
             f"github_issue={self.github_issue_number}, "
             f"status='{self.implementation_status}')>"
         )
-

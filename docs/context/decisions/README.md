@@ -1,6 +1,6 @@
 # Architectural Decision Records (ADRs)
 
-**Last Updated**: 2025-09-20
+**Last Updated**: 2025-09-27
 
 ## 📋 Purpose
 
@@ -29,11 +29,21 @@ Each ADR follows a standard format:
   - Status: ✅ Accepted
   - Impact: All features must implement privacy controls
 
+- [**ADR-003: Hybrid GitHub + Database RTM Architecture**](adr-003-hybrid-github-database-rtm-architecture.md)
+  - Database-driven RTM with GitHub integration
+  - Status: ✅ Accepted
+  - Impact: RTM data management and reporting
+
+- [**ADR-004: Context-Aware Code Standards**](adr-004-context-aware-code-standards.md)
+  - Graduated line length standards by code context
+  - Status: ✅ Accepted
+  - Impact: Different formatting rules for production vs test vs utility code
+
 ### Future ADRs (As Needed)
-- **ADR-003**: Data Anonymization Techniques
-- **ADR-004**: International Data Transfer Policies
-- **ADR-005**: Performance Monitoring Strategy
-- **ADR-006**: Content Moderation Approach
+- **ADR-005**: Data Anonymization Techniques
+- **ADR-006**: International Data Transfer Policies
+- **ADR-007**: Performance Monitoring Strategy
+- **ADR-008**: Content Moderation Approach
 
 ## 🔗 Relationship to GitHub Issues
 

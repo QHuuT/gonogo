@@ -55,14 +55,18 @@ def analyze_github_duplicates():
     print(f"\n=== User Story ID Analysis ===")
     print(f"Total unique user story IDs found: {len(user_story_counts)}")
 
-    duplicates = {us_id: issues for us_id, issues in user_story_counts.items() if len(issues) > 1}
+    duplicates = \
+        {us_id: issues for us_id, issues in user_story_counts.items() if len(issues) > 1}
 
     if duplicates:
         print(f"\nFound {len(duplicates)} duplicate user story IDs:")
         for us_id, issue_list in duplicates.items():
             print(f"\n{us_id}:")
             for issue_info in issue_list:
-                print(f"  #{issue_info['issue_number']}: {issue_info['title']} ({issue_info['state']})")
+                print(
+                    f"  #{issue_info['issue_number']}:"
+                    f"{issue_info['title']} ({issue_info['state']})"
+                )
     else:
         print("No duplicate user story IDs found")
 

@@ -26,8 +26,10 @@ def fix_rtm_comprehensive():
     )
 
     # Fix broken if/for statements that got concatenated
-    content = re.sub(r'(\w+)\s*:\s*(\w+.*?)\s+(for\s+\w+\s+in)', r'\1:\n        \2\n        \3', content)
-    content = re.sub(r'(\w+)\s*:\s*(\w+.*?)\s+(if\s+\w+)', r'\1:\n        \2\n        \3', content)
+    content = \
+        re.sub(r'(\w+)\s*:\s*(\w+.*?)\s+(for\s+\w+\s+in)', r'\1:\n        \2\n        \3', content)
+    content = \
+        re.sub(r'(\w+)\s*:\s*(\w+.*?)\s+(if\s+\w+)', r'\1:\n        \2\n        \3', content)
 
     # Fix component filtering sections that got mangled
     fixes = [
@@ -42,7 +44,8 @@ def fix_rtm_comprehensive():
 
         # Fix elif statements
         ('return HTMLResponse(content=content) elif format', 'return HTMLResponse(content=content)\n    elif format'),
-        ('content = generator.generate_markdown_matrix(filters) return Response', 'content = generator.generate_markdown_matrix(filters)\n        return Response'),
+        ('content = \
+            generator.generate_markdown_matrix(filters) return Response', 'content = generator.generate_markdown_matrix(filters)\n        return Response'),
 
         # Fix broken dictionary definitions
         ('{ "epic_id": epic_id,', '{\n        "epic_id": epic_id,'),

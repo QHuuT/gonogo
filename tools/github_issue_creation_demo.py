@@ -237,7 +237,10 @@ def demonstrate_label_intelligence(
 
             # Show label reasoning
             if "priority/high" in template.labels:
-                print(f"     [HIGH] High priority detected (critical/security issue)")
+                print(
+                    f"     [HIGH]"
+                    f"High priority detected (critical/security issue)"
+                )
             elif "flaky-test" in template.template_type:
                 print(f"     [FLAKY] Flaky test detected (multiple occurrences)")
             elif "infrastructure" in template.template_type:
@@ -323,7 +326,10 @@ def main():
         # Display key achievements
         print(f"\n*** Key Achievements:")
         print(f"[DONE] Automated issue template generation with failure context")
-        print(f"[DONE] Intelligent label assignment based on failure characteristics")
+        print(
+            f"[DONE] Intelligent"
+            f"label assignment based on failure characteristics"
+        )
         print(f"[DONE] Pre-filled environment info and reproduction guides")
         print(f"[DONE] Batch processing for multiple failures")
         print(f"[DONE] Integration with failure correlation and log analysis")

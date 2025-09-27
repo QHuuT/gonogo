@@ -353,7 +353,8 @@ def epic_progress(ctx, epic_id, format):
             )
             test_pass_rate = (passed_tests / len(tests)) * 100
 
-        critical_defects = sum(1 for defect in defects if defect.severity == "critical")
+        critical_defects = \
+            sum(1 for defect in defects if defect.severity == "critical")
         open_defects = sum(
             1 for defect in defects if defect.status in ["open", "in_progress"]
         )

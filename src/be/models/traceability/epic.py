@@ -13,7 +13,15 @@ Architecture Decision: ADR-003 - Hybrid GitHub + Database RTM Architecture
 import json
 
 from sqlalchemy import (
-    Boolean, Column, DateTime, Float, Index, Integer, String, Text, ForeignKey
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    Index,
+    Integer,
+    String,
+    Text,
+    ForeignKey,
 )
 from sqlalchemy.orm import relationship
 from datetime import datetime, timedelta
@@ -45,45 +53,31 @@ class Epic(TraceabilityBase):
     # Values: critical, high, medium, low
 
     # Risk assessment
-    risk_level = Column(
-        String(20), default="medium", nullable=False
-    )
+    risk_level = Column(String(20), default="medium", nullable=False)
     # Values: low, medium, high, critical
 
     # GDPR implications
-    gdpr_applicable = Column(
-        Boolean, default=False, index=True, nullable=False
-    )
+    gdpr_applicable = Column(Boolean, default=False, index=True, nullable=False)
     gdpr_considerations = Column(Text)
 
     # Component classification
-    component = Column(
-        String(50), nullable=False, index=True, default='backend'
-    )
+    component = Column(String(50), nullable=False, index=True, default="backend")
 
     # Advanced Metrics (US-00071) - Multi-persona dashboard metrics
     # Planning and timeline metrics
-    estimated_duration_days = Column(
-        Integer, nullable=True
-    )  # Estimated duration
+    estimated_duration_days = Column(Integer, nullable=True)  # Estimated duration
     actual_duration_days = Column(Integer, nullable=True)  # Actual duration
     planned_start_date = Column(DateTime, nullable=True)  # Planned start date
     actual_start_date = Column(DateTime, nullable=True)  # When work started
-    planned_end_date = Column(
-        DateTime, nullable=True
-    )  # Planned completion date
+    planned_end_date = Column(DateTime, nullable=True)  # Planned completion date
     actual_end_date = Column(DateTime, nullable=True)  # When completed
 
     # Velocity and productivity metrics
     initial_scope_estimate = Column(
         Integer, default=0, nullable=False
     )  # Original estimate
-    scope_creep_percentage = Column(
-        Float, default=0.0, nullable=False
-    )  # % increase
-    velocity_points_per_sprint = Column(
-        Float, default=0.0, nullable=False
-    )  # Velocity
+    scope_creep_percentage = Column(Float, default=0.0, nullable=False)  # % increase
+    velocity_points_per_sprint = Column(Float, default=0.0, nullable=False)  # Velocity
     team_size = Column(Integer, default=1, nullable=False)  # Team members
 
     # Quality metrics
@@ -93,9 +87,7 @@ class Epic(TraceabilityBase):
     test_coverage_percentage = Column(
         Float, default=0.0, nullable=False
     )  # Test coverage %
-    code_review_score = Column(
-        Float, default=0.0, nullable=False
-    )  # Code quality score
+    code_review_score = Column(Float, default=0.0, nullable=False)  # Code quality score
     technical_debt_hours = Column(
         Integer, default=0, nullable=False
     )  # Estimated tech debt
@@ -107,9 +99,7 @@ class Epic(TraceabilityBase):
     business_impact_score = Column(
         Float, default=0.0, nullable=False
     )  # Estimated business impact
-    roi_percentage = Column(
-        Float, default=0.0, nullable=False
-    )  # Return on investment
+    roi_percentage = Column(Float, default=0.0, nullable=False)  # Return on investment
     user_adoption_rate = Column(
         Float, default=0.0, nullable=False
     )  # % user adoption (post-release)
@@ -118,9 +108,7 @@ class Epic(TraceabilityBase):
     last_metrics_update = Column(
         DateTime, nullable=True
     )  # When metrics were last calculated
-    metrics_calculation_frequency = Column(
-        String(20), default="daily", nullable=False
-    )
+    metrics_calculation_frequency = Column(String(20), default="daily", nullable=False)
 
     metrics_cache = Column(Text, nullable=True)
     metrics_cache_updated_at = Column(
@@ -128,15 +116,11 @@ class Epic(TraceabilityBase):
     )  # daily, weekly, etc.
 
     # Epic Label Management (US-00006)
-    epic_label_name = Column(
-        String(50), nullable=True, index=True
-    )
+    epic_label_name = Column(String(50), nullable=True, index=True)
     # Format: "rtm-automation", "github-project", etc.
     # (used in epic/x GitHub labels)
 
-    github_epic_label = Column(
-        String(100), nullable=True, index=True
-    )
+    github_epic_label = Column(String(100), nullable=True, index=True)
     # Format: "epic/rtm-automation" (full GitHub label name)
 
     last_github_sync = Column(String(50), nullable=True)
@@ -156,9 +140,7 @@ class Epic(TraceabilityBase):
     )
 
     # Tests - direct database relationship
-    tests = relationship(
-        "Test", back_populates="epic", cascade="all, delete-orphan"
-    )
+    tests = relationship("Test", back_populates="epic", cascade="all, delete-orphan")
 
     # Defects - indirect relationship through user stories and tests
     defects = relationship("Defect", back_populates="epic")
@@ -175,14 +157,14 @@ class Epic(TraceabilityBase):
         "EpicDependency",
         foreign_keys="[EpicDependency.parent_epic_id]",
         back_populates="parent_epic",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
     )
 
     dependencies_as_dependent = relationship(
         "EpicDependency",
         foreign_keys="[EpicDependency.dependent_epic_id]",
         back_populates="dependent_epic",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
     )
 
     # Program Areas/Capabilities (US-00062) - Strategic grouping relationship
@@ -192,33 +174,18 @@ class Epic(TraceabilityBase):
     __table_args__ = (
         Index("idx_epic_status_priority", "status", "priority"),
         Index("idx_epic_completion", "completion_percentage"),
-        Index(
-            "idx_epic_release", "target_release_version", "priority"
-        ),
+        Index("idx_epic_release", "target_release_version", "priority"),
         Index("idx_epic_component", "component"),
-        Index(
-            "idx_epic_label", "epic_label_name", "github_epic_label"
-        ),
+        Index("idx_epic_label", "epic_label_name", "github_epic_label"),
         Index("idx_epic_capability", "capability_id"),
         # Program Areas/Capabilities index
-
         # Advanced metrics indexes (US-00071)
+        Index("idx_epic_timeline", "planned_start_date", "planned_end_date"),
         Index(
-            "idx_epic_timeline", "planned_start_date", "planned_end_date"
+            "idx_epic_velocity", "velocity_points_per_sprint", "completion_percentage"
         ),
-        Index(
-            "idx_epic_velocity",
-            "velocity_points_per_sprint",
-            "completion_percentage"
-        ),
-        Index(
-            "idx_epic_quality", "defect_density", "test_coverage_percentage"
-        ),
-        Index(
-            "idx_epic_business_impact",
-            "business_impact_score",
-            "roi_percentage"
-        ),
+        Index("idx_epic_quality", "defect_density", "test_coverage_percentage"),
+        Index("idx_epic_business_impact", "business_impact_score", "roi_percentage"),
         Index("idx_epic_metrics_update", "last_metrics_update"),
     )
 
@@ -286,36 +253,44 @@ class Epic(TraceabilityBase):
     def get_component_label(self) -> str:
         """Convert component to GitHub label format."""
         mapping = {
-            'frontend/ui': 'component/frontend',
-            'frontend': 'component/frontend',
-            'backend/api': 'component/backend',
-            'backend': 'component/backend',
-            'database': 'component/database',
-            'security/gdpr': 'component/security',
-            'security': 'component/security',
-            'testing': 'component/testing',
-            'ci/cd': 'component/ci-cd',
-            'ci-cd': 'component/ci-cd',
-            'documentation': 'component/documentation'
+            "frontend/ui": "component/frontend",
+            "frontend": "component/frontend",
+            "backend/api": "component/backend",
+            "backend": "component/backend",
+            "database": "component/database",
+            "security/gdpr": "component/security",
+            "security": "component/security",
+            "testing": "component/testing",
+            "ci/cd": "component/ci-cd",
+            "ci-cd": "component/ci-cd",
+            "documentation": "component/documentation",
         }
-        component_key = (
-            self.component.lower().replace(' ', '/').replace('-', '/')
-        )
+        component_key = self.component.lower().replace(" ", "/").replace("-", "/")
         default_key = (
-            f'component/{self.component.lower().replace("/", "-").replace(" ", "-")}'
+            f'component/{self.component.lower().replace("/", "-")}.replace(" ", "-")'
         )
         return mapping.get(
-            component_key,
-            mapping.get(self.component.lower(), default_key)
+            component_key, mapping.get(self.component.lower(), default_key)
         )
 
     def validate_component(self) -> bool:
         """Validate component value against allowed options."""
         allowed = [
-            'frontend/ui', 'frontend', 'backend/api', 'backend', 'database',
-            'security/gdpr', 'security', 'testing', 'ci/cd', 'ci-cd', 'documentation'
+            "frontend/ui",
+            "frontend",
+            "backend/api",
+            "backend",
+            "database",
+            "security/gdpr",
+            "security",
+            "testing",
+            "ci/cd",
+            "ci-cd",
+            "documentation",
         ]
-        component_normalized = self.component.lower().replace(' ', '/').replace('-', '/')
+        component_normalized = (
+            self.component.lower().replace(" ", "/").replace("-", "/")
+        )
         return component_normalized in allowed or self.component.lower() in allowed
 
     def get_inherited_components(self) -> list:
@@ -335,10 +310,10 @@ class Epic(TraceabilityBase):
         inherited_components = self.get_inherited_components()
         if inherited_components:
             # If Epic has multiple components, join them with comma
-            self.component = ','.join(inherited_components)
+            self.component = ",".join(inherited_components)
         elif not self.component:
             # Default if no components found
-            self.component = 'backend'
+            self.component = "backend"
 
     def get_epic_label_name(self) -> str:
         """Get or generate epic label name for GitHub labels."""
@@ -347,6 +322,7 @@ class Epic(TraceabilityBase):
 
         # Generate from title if not set
         from tools.sync_epic_labels import generate_epic_label_name
+
         return generate_epic_label_name(self.title, self.epic_id)
 
     def get_github_epic_label(self) -> str:
@@ -366,20 +342,23 @@ class Epic(TraceabilityBase):
             self.last_github_sync = sync_timestamp
         else:
             from datetime import datetime
+
             self.last_github_sync = datetime.now().isoformat()
 
     # Dependency management methods (US-00070)
     def get_blocking_dependencies(self):
         """Retourne les dépendances qui bloquent cet Epic."""
         return [
-            dep for dep in self.dependencies_as_dependent
+            dep
+            for dep in self.dependencies_as_dependent
             if dep.is_active and dep.is_blocking() and not dep.is_resolved
         ]
 
     def get_blocked_epics(self):
         """Retourne les Epics bloqués par cet Epic."""
         return [
-            dep.dependent_epic for dep in self.dependencies_as_parent
+            dep.dependent_epic
+            for dep in self.dependencies_as_parent
             if dep.is_active and dep.is_blocking() and not dep.is_resolved
         ]
 
@@ -401,9 +380,9 @@ class Epic(TraceabilityBase):
 
         # Pénalité supplémentaire pour dépendances critiques
         for dep in blocking_deps:
-            if dep.priority == 'critical':
+            if dep.priority == "critical":
                 score += 10
-            elif dep.priority == 'high':
+            elif dep.priority == "high":
                 score += 5
 
         # Pénalité pour impact estimé élevé
@@ -419,9 +398,13 @@ class Epic(TraceabilityBase):
         """Return True if the cached metrics are older than allowed."""
         if not self.metrics_cache_updated_at:
             return True
-        return datetime.now() - self.metrics_cache_updated_at > timedelta(minutes=max_age_minutes)
+        return datetime.now() - self.metrics_cache_updated_at > timedelta(
+            minutes=max_age_minutes
+        )
 
-    def cache_metrics(self, metrics: Dict, session=None, record_history: bool = True) -> None:
+    def cache_metrics(
+        self, metrics: Dict, session=None, record_history: bool = True
+    ) -> None:
         """Persist the latest metrics snapshot and optionally record history."""
         metrics_json = json.dumps(metrics)
         self.metrics_cache = metrics_json
@@ -443,7 +426,11 @@ class Epic(TraceabilityBase):
         max_age_minutes: int = 15,
     ) -> Dict:
         """Return cached metrics, refreshing if the cache is stale."""
-        if refresh or not self.metrics_cache or self.is_metrics_cache_stale(max_age_minutes):
+        if (
+            refresh
+            or not self.metrics_cache
+            or self.is_metrics_cache_stale(max_age_minutes)
+        ):
             metrics = self.update_metrics(
                 force_recalculate=True,
                 session=session,
@@ -460,7 +447,7 @@ class Epic(TraceabilityBase):
             "velocity_metrics": self.calculate_velocity_metrics(),
             "quality_metrics": self.calculate_quality_metrics(),
             "business_metrics": self.calculate_business_metrics(),
-            "predictive_metrics": self.calculate_predictive_metrics()
+            "predictive_metrics": self.calculate_predictive_metrics(),
         }
 
     def calculate_timeline_metrics(self) -> Dict:
@@ -469,21 +456,39 @@ class Epic(TraceabilityBase):
 
         # Timeline deviation
         if self.planned_end_date and self.actual_end_date:
-            planned_duration = (self.planned_end_date - self.planned_start_date).days if self.planned_start_date else 0
-            actual_duration = (self.actual_end_date - self.actual_start_date).days if self.actual_start_date else 0
+            planned_duration = (
+                (self.planned_end_date - self.planned_start_date).days
+                if self.planned_start_date
+                else 0
+            )
+            actual_duration = (
+                (self.actual_end_date - self.actual_start_date).days
+                if self.actual_start_date
+                else 0
+            )
             metrics["schedule_variance_days"] = actual_duration - planned_duration
-            metrics["schedule_variance_percentage"] = (metrics["schedule_variance_days"] / planned_duration * 100) if planned_duration > 0 else 0
+            metrics["schedule_variance_percentage"] = (
+                (metrics["schedule_variance_days"] / planned_duration * 100)
+                if planned_duration > 0
+                else 0
+            )
 
         # Current timeline status
         if self.status != "completed" and self.planned_end_date:
             days_until_deadline = (self.planned_end_date - datetime.now()).days
             metrics["days_until_deadline"] = days_until_deadline
-            metrics["is_at_risk"] = days_until_deadline < 7 and self.completion_percentage < 80
+            metrics["is_at_risk"] = (
+                days_until_deadline < 7 and self.completion_percentage < 80
+            )
 
         # Duration estimates
         metrics["estimated_duration_days"] = self.estimated_duration_days
         metrics["actual_duration_days"] = self.actual_duration_days
-        metrics["is_overdue"] = bool(self.planned_end_date and datetime.now() > self.planned_end_date) if self.planned_end_date else False
+        metrics["is_overdue"] = (
+            bool(self.planned_end_date and datetime.now() > self.planned_end_date)
+            if self.planned_end_date
+            else False
+        )
 
         return metrics
 
@@ -495,19 +500,28 @@ class Epic(TraceabilityBase):
         if self.initial_scope_estimate > 0:
             current_scope = self.total_story_points
             metrics["scope_creep_points"] = current_scope - self.initial_scope_estimate
-            metrics["scope_creep_percentage"] = ((current_scope - self.initial_scope_estimate) / self.initial_scope_estimate) * 100
+            metrics["scope_creep_percentage"] = (
+                (current_scope - self.initial_scope_estimate)
+                / self.initial_scope_estimate
+            ) * 100
 
         # Velocity calculations
         metrics["velocity_points_per_sprint"] = self.velocity_points_per_sprint
         if self.team_size > 0:
-            metrics["velocity_per_team_member"] = self.velocity_points_per_sprint / self.team_size
+            metrics["velocity_per_team_member"] = (
+                self.velocity_points_per_sprint / self.team_size
+            )
 
         # Completion rate
         if self.actual_start_date:
             days_in_progress = (datetime.now() - self.actual_start_date).days
             if days_in_progress > 0:
-                metrics["points_completed_per_day"] = self.completed_story_points / days_in_progress
-                metrics["estimated_completion_date"] = self.calculate_estimated_completion_date()
+                metrics["points_completed_per_day"] = (
+                    self.completed_story_points / days_in_progress
+                )
+                metrics["estimated_completion_date"] = (
+                    self.calculate_estimated_completion_date()
+                )
 
         return metrics
 
@@ -524,7 +538,9 @@ class Epic(TraceabilityBase):
         # Quality assessment
         defect_count = len(self.defects) if self.defects else 0
         if self.completed_story_points > 0:
-            metrics["actual_defect_density"] = defect_count / self.completed_story_points
+            metrics["actual_defect_density"] = (
+                defect_count / self.completed_story_points
+            )
 
         # Quality trend
         metrics["quality_score"] = self.calculate_overall_quality_score()
@@ -545,10 +561,14 @@ class Epic(TraceabilityBase):
         # Business value calculations
         if self.completed_story_points > 0 and self.total_story_points > 0:
             completion_ratio = self.completed_story_points / self.total_story_points
-            metrics["realized_business_value"] = self.business_impact_score * completion_ratio
+            metrics["realized_business_value"] = (
+                self.business_impact_score * completion_ratio
+            )
 
         # Stakeholder metrics
-        metrics["stakeholder_satisfaction_grade"] = self.get_satisfaction_grade(self.stakeholder_satisfaction_score)
+        metrics["stakeholder_satisfaction_grade"] = self.get_satisfaction_grade(
+            self.stakeholder_satisfaction_score
+        )
 
         return metrics
 
@@ -561,7 +581,9 @@ class Epic(TraceabilityBase):
             remaining_points = self.total_story_points - self.completed_story_points
             sprints_remaining = remaining_points / self.velocity_points_per_sprint
             metrics["estimated_sprints_remaining"] = sprints_remaining
-            metrics["estimated_completion_date"] = self.calculate_estimated_completion_date()
+            metrics["estimated_completion_date"] = (
+                self.calculate_estimated_completion_date()
+            )
 
         # Risk predictions
         risk_factors = []
@@ -573,8 +595,12 @@ class Epic(TraceabilityBase):
             risk_factors.append("quality_issues")
 
         metrics["risk_factors"] = risk_factors
-        metrics["overall_risk_score"] = len(risk_factors) * 10 + self.get_dependency_risk_score()
-        metrics["success_probability"] = max(0, min(100, 100 - metrics["overall_risk_score"]))
+        metrics["overall_risk_score"] = (
+            len(risk_factors) * 10 + self.get_dependency_risk_score()
+        )
+        metrics["success_probability"] = max(
+            0, min(100, 100 - metrics["overall_risk_score"])
+        )
 
         return metrics
 
@@ -597,7 +623,8 @@ class Epic(TraceabilityBase):
     def calculate_overall_quality_score(self) -> float:
         """Calculate overall quality score (0-10)."""
         # Weight different quality factors
-        coverage_score = min(10, self.test_coverage_percentage / 10)  # Max 10 for 100% coverage
+        # Max 10 for 100% coverage
+        coverage_score = min(10, self.test_coverage_percentage / 10)
         review_score = self.code_review_score  # Assuming 0-10 scale
         defect_penalty = min(5, self.defect_density * 2)  # Penalty for defects
 
@@ -606,40 +633,76 @@ class Epic(TraceabilityBase):
 
     def get_quality_grade(self, score: float) -> str:
         """Convert quality score to letter grade."""
-        if score >= 9: return "A+"
-        elif score >= 8: return "A"
-        elif score >= 7: return "B+"
-        elif score >= 6: return "B"
-        elif score >= 5: return "C+"
-        elif score >= 4: return "C"
-        elif score >= 3: return "D"
-        else: return "F"
+        if score >= 9:
+            return "A+"
+        elif score >= 8:
+            return "A"
+        elif score >= 7:
+            return "B+"
+        elif score >= 6:
+            return "B"
+        elif score >= 5:
+            return "C+"
+        elif score >= 4:
+            return "C"
+        elif score >= 3:
+            return "D"
+        else:
+            return "F"
 
     def get_satisfaction_grade(self, score: float) -> str:
         """Convert stakeholder satisfaction to grade."""
-        if score >= 9: return "Excellent"
-        elif score >= 7: return "Good"
-        elif score >= 5: return "Average"
-        elif score >= 3: return "Below Average"
-        else: return "Poor"
+        if score >= 9:
+            return "Excellent"
+        elif score >= 7:
+            return "Good"
+        elif score >= 5:
+            return "Average"
+        elif score >= 3:
+            return "Below Average"
+        else:
+            return "Poor"
 
-    def update_metrics(self, force_recalculate: bool = False, session=None, record_history: bool = False) -> Dict:
+    def update_metrics(
+        self,
+        force_recalculate: bool = False,
+        session=None,
+        record_history: bool = False,
+    ) -> Dict:
         """Update all metrics and return calculated values."""
         now = datetime.now()
 
         # Check if update is needed
         if not force_recalculate and self.last_metrics_update:
-            if self.metrics_calculation_frequency == "daily" and (now - self.last_metrics_update).days < 1:
+            if (
+                self.metrics_calculation_frequency == "daily"
+                and (now - self.last_metrics_update).days < 1
+            ):
                 return self.calculate_all_metrics()
-            elif self.metrics_calculation_frequency == "weekly" and (now - self.last_metrics_update).days < 7:
+            elif (
+                self.metrics_calculation_frequency == "weekly"
+                and (now - self.last_metrics_update).days < 7
+            ):
                 return self.calculate_all_metrics()
 
         # Update calculated fields
-        self.scope_creep_percentage = ((self.total_story_points - self.initial_scope_estimate) / self.initial_scope_estimate * 100) if self.initial_scope_estimate > 0 else 0
+        self.scope_creep_percentage = (
+            (
+                (self.total_story_points - self.initial_scope_estimate)
+                / self.initial_scope_estimate
+                * 100
+            )
+            if self.initial_scope_estimate > 0
+            else 0
+        )
 
         # Calculate defect density
         defect_count = len(self.defects) if self.defects else 0
-        self.defect_density = defect_count / self.completed_story_points if self.completed_story_points > 0 else 0
+        self.defect_density = (
+            defect_count / self.completed_story_points
+            if self.completed_story_points > 0
+            else 0
+        )
 
         # Update last calculation time
         self.last_metrics_update = now
@@ -650,10 +713,14 @@ class Epic(TraceabilityBase):
 
         return metrics
 
-    def get_persona_specific_metrics(self, persona: str, session=None, thresholds=None) -> Dict:
+    def get_persona_specific_metrics(
+        self, persona: str, session=None, thresholds=None
+    ) -> Dict:
         """Get metrics tailored for specific dashboard personas."""
         # Use cached metrics if available, otherwise calculate fresh
-        all_metrics = self.get_cached_metrics(session=session, refresh=False, record_history=False)
+        all_metrics = self.get_cached_metrics(
+            session=session, refresh=False, record_history=False
+        )
 
         timeline_metrics = all_metrics.get("timeline_metrics", {})
         velocity_metrics = all_metrics.get("velocity_metrics", {})
@@ -668,12 +735,18 @@ class Epic(TraceabilityBase):
                 "timeline": timeline_metrics,
                 "velocity": velocity_metrics,
                 "risk": {
-                    "overall_risk_score": predictive_metrics.get("overall_risk_score", 0),
-                    "success_probability": predictive_metrics.get("success_probability", 0),
+                    "overall_risk_score": predictive_metrics.get(
+                        "overall_risk_score", 0
+                    ),
+                    "success_probability": predictive_metrics.get(
+                        "success_probability", 0
+                    ),
                     "risk_factors": predictive_metrics.get("risk_factors", []),
                 },
                 "team_productivity": {
-                    "velocity_per_team_member": velocity_metrics.get("velocity_per_team_member", 0),
+                    "velocity_per_team_member": velocity_metrics.get(
+                        "velocity_per_team_member", 0
+                    ),
                     "team_size": self.team_size,
                 },
             }
@@ -681,12 +754,16 @@ class Epic(TraceabilityBase):
             metrics = {
                 "business_value": business_metrics,
                 "scope": {
-                    "scope_creep_percentage": velocity_metrics.get("scope_creep_percentage", 0),
+                    "scope_creep_percentage": velocity_metrics.get(
+                        "scope_creep_percentage", 0
+                    ),
                     "scope_creep_points": velocity_metrics.get("scope_creep_points", 0),
                 },
                 "stakeholder": {
                     "satisfaction_score": self.stakeholder_satisfaction_score or 0,
-                    "satisfaction_grade": business_metrics.get("stakeholder_satisfaction_grade", "Unknown"),
+                    "satisfaction_grade": business_metrics.get(
+                        "stakeholder_satisfaction_grade", "Unknown"
+                    ),
                 },
                 "adoption": {
                     "user_adoption_rate": self.user_adoption_rate or 0,
@@ -718,8 +795,11 @@ class Epic(TraceabilityBase):
 
         return metrics
 
-    def _apply_threshold_evaluation(self, metrics: Dict, persona: str, thresholds) -> Dict:
+    def _apply_threshold_evaluation(
+        self, metrics: Dict, persona: str, thresholds
+    ) -> Dict:
         """Apply threshold evaluation to metrics."""
+
         def evaluate_recursive(data: Dict, scope: str) -> Dict:
             result = {}
             for key, value in data.items():
@@ -728,7 +808,7 @@ class Epic(TraceabilityBase):
                 elif isinstance(value, (int, float)):
                     result[key] = {
                         "value": value,
-                        "status": thresholds.evaluate(scope, key, value)
+                        "status": thresholds.evaluate(scope, key, value),
                     }
                 else:
                     result[key] = value
@@ -747,7 +827,9 @@ class Epic(TraceabilityBase):
 
     def force_refresh_metrics(self, session=None, record_history: bool = True) -> Dict:
         """Force recalculation and caching of all metrics."""
-        return self.update_metrics(force_recalculate=True, session=session, record_history=record_history)
+        return self.update_metrics(
+            force_recalculate=True, session=session, record_history=record_history
+        )
 
     def get_metric_history(self, session=None, limit: int = 10) -> List[Dict]:
         """Get historical metric snapshots for trend analysis."""
@@ -766,10 +848,12 @@ class Epic(TraceabilityBase):
         for entry in history_entries:
             try:
                 metrics_data = json.loads(entry.metrics)
-                result.append({
-                    "captured_at": entry.captured_at.isoformat(),
-                    "metrics": metrics_data
-                })
+                result.append(
+                    {
+                        "captured_at": entry.captured_at.isoformat(),
+                        "metrics": metrics_data,
+                    }
+                )
             except json.JSONDecodeError:
                 continue
 
@@ -779,7 +863,6 @@ class Epic(TraceabilityBase):
         """Clear the cached metrics and force recalculation on next access."""
         self.metrics_cache = None
         self.metrics_cache_updated_at = None
-
 
     def to_dict(self):
         """Convert to dictionary with Epic-specific fields."""
@@ -805,54 +888,69 @@ class Epic(TraceabilityBase):
                 "test_count": len(self.tests) if self.tests else 0,
                 "user_story_count": len(self.user_stories) if self.user_stories else 0,
                 "defect_count": len(self.defects) if self.defects else 0,
-
                 # Dependency information (US-00070)
                 "is_blocked": self.is_blocked(),
                 "can_start": self.can_start(),
                 "dependency_risk_score": self.get_dependency_risk_score(),
                 "blocking_dependencies_count": len(self.get_blocking_dependencies()),
                 "blocked_epics_count": len(self.get_blocked_epics()),
-
                 # Advanced metrics (US-00071) - Timeline metrics
                 "estimated_duration_days": self.estimated_duration_days,
                 "actual_duration_days": self.actual_duration_days,
-                "planned_start_date": self.planned_start_date.isoformat() if self.planned_start_date else None,
-                "actual_start_date": self.actual_start_date.isoformat() if self.actual_start_date else None,
-                "planned_end_date": self.planned_end_date.isoformat() if self.planned_end_date else None,
-                "actual_end_date": self.actual_end_date.isoformat() if self.actual_end_date else None,
-
+                "planned_start_date": (
+                    self.planned_start_date.isoformat()
+                    if self.planned_start_date
+                    else None
+                ),
+                "actual_start_date": (
+                    self.actual_start_date.isoformat()
+                    if self.actual_start_date
+                    else None
+                ),
+                "planned_end_date": (
+                    self.planned_end_date.isoformat() if self.planned_end_date else None
+                ),
+                "actual_end_date": (
+                    self.actual_end_date.isoformat() if self.actual_end_date else None
+                ),
                 # Velocity and productivity metrics
                 "initial_scope_estimate": self.initial_scope_estimate,
                 "scope_creep_percentage": self.scope_creep_percentage,
                 "velocity_points_per_sprint": self.velocity_points_per_sprint,
                 "team_size": self.team_size,
-
                 # Quality metrics
                 "defect_density": self.defect_density,
                 "test_coverage_percentage": self.test_coverage_percentage,
                 "code_review_score": self.code_review_score,
                 "technical_debt_hours": self.technical_debt_hours,
-
                 # Business metrics
                 "stakeholder_satisfaction_score": self.stakeholder_satisfaction_score,
                 "business_impact_score": self.business_impact_score,
                 "roi_percentage": self.roi_percentage,
                 "user_adoption_rate": self.user_adoption_rate,
-
                 # Metrics tracking
-                "last_metrics_update": self.last_metrics_update.isoformat() if self.last_metrics_update else None,
+                "last_metrics_update": (
+                    self.last_metrics_update.isoformat()
+                    if self.last_metrics_update
+                    else None
+                ),
                 "metrics_calculation_frequency": self.metrics_calculation_frequency,
-
                 # Program Areas/Capabilities (US-00062)
                 "capability_id": self.capability_id,
                 "capability_name": self.capability.name if self.capability else None,
-                "capability_capability_id": self.capability.capability_id if self.capability else None,
-                "capability_strategic_priority": self.capability.strategic_priority if self.capability else None,
+                "capability_capability_id": (
+                    self.capability.capability_id if self.capability else None
+                ),
+                "capability_strategic_priority": (
+                    self.capability.strategic_priority if self.capability else None
+                ),
             }
         )
         return base_dict
 
     def __repr__(self):
-        return f"<Epic(epic_id='{self.epic_id}', title='{self.title}', status='{self.status}', completion={self.completion_percentage:.1f}%)>"
-
-
+        return (
+            f"<Epic(epic_id='{self.epic_id}', title='{self.title}', "
+            f"status='{self.status}', "
+            f"completion={self.completion_percentage:.1f}%)>"
+        )

@@ -32,9 +32,7 @@ class RTMReportGenerator:
             "metadata": {
                 "generated_at": datetime.utcnow().isoformat(),
                 "total_epics": len(epics),
-                "filters_applied": {
-                    k: v for k, v in filters.items() if v is not None
-                },
+                "filters_applied": {k: v for k, v in filters.items() if v is not None},
             },
             "epics": [],
         }
@@ -49,19 +47,15 @@ class RTMReportGenerator:
         """Generate RTM matrix in Markdown format."""
         epics = self._get_filtered_epics(filters)
 
-        markdown = (
-            "# Dynamic Requirements Traceability Matrix\n\n")
+        markdown = "# Dynamic Requirements Traceability Matrix\n\n"
         markdown += (
             f"**Generated**: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n"
         )
         markdown += f"**Total Epics**: {len(epics)}\n\n"
 
         # Epic to User Story mapping table
-        markdown += (
-            "## Epic to User Story Mapping\n\n")
-        markdown += (
-            "| Epic ID | Epic Name | User Stories | "
-            "Story Points | Status | Progress |\n")
+        markdown += "## Epic to User Story Mapping\n\n"
+        markdown += "| Epic ID | Epic Name | User Stories | Story Points | Status | Progress |\n"
         markdown += "|---------|-----------|--------------|--------------|--------|----------|\n"
 
         for epic in epics:
@@ -78,7 +72,7 @@ class RTMReportGenerator:
                 if us.implementation_status in ["done", "completed"]
             )
             progress = (
-                f"{(completed_points/total_points*100):.1f}%"
+                f"{(completed_points / total_points * 100):.1f}%"
                 if total_points > 0
                 else "0%"
             )
@@ -100,7 +94,12 @@ class RTMReportGenerator:
                 test_counts = self._get_test_counts(tests)
                 pass_rate = self._calculate_pass_rate(tests)
 
-                markdown += f"| {epic.epic_id} | {len(tests)} | {test_counts['unit']} | {test_counts['integration']} | {test_counts['bdd']} | {pass_rate:.1f}% |\n"
+                markdown += (
+                    f"| {epic.epic_id} | {len(tests)} | "
+                    f"{test_counts['unit']} | "
+                    f"{test_counts['integration']} | {test_counts['bdd']} | "
+                    f"{pass_rate:.1f}% |\n"
+                )
 
         # Defect tracking section if requested
         if filters.get("include_defects", True):
@@ -116,7 +115,13 @@ class RTMReportGenerator:
                 defects = self.db.query(Defect).filter(Defect.epic_id == epic.id).all()
                 defect_summary = self._get_defect_summary(defects)
 
-                markdown += f"| {epic.epic_id} | {len(defects)} | {defect_summary['critical']} | {defect_summary['high']} | {defect_summary['open']} | {defect_summary['security']} |\n"
+                markdown += (
+                    f"| {epic.epic_id} | {len(defects)} | "
+                    f"{defect_summary['critical']} | "
+                    f"{defect_summary['high']} | "
+                    f"{defect_summary['open']} | "
+                    f"{defect_summary['security']} |\n"
+                )
 
         return markdown
 
@@ -138,7 +143,8 @@ class RTMReportGenerator:
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, \
+initial-scale=1.0">
     <title>Dynamic RTM Matrix - GoNoGo</title>
 
     <!-- Design System and Component Styles -->
@@ -147,14 +153,18 @@ class RTMReportGenerator:
     <link rel="stylesheet" href="/static/css/rtm-components.css">
 
     <!-- Accessibility and SEO Meta Tags -->
-    <meta name="description" content="Requirements Traceability Matrix for GoNoGo project - Interactive dashboard showing epic progress, user stories, tests, and defects">
-    <meta name="keywords" content="RTM, requirements, traceability, matrix, GoNoGo, project management">
+    <meta name="description" content="Requirements Traceability Matrix for \
+GoNoGo project - Interactive dashboard showing epic progress, user stories, \
+tests, and defects">
+    <meta name="keywords" content="RTM, requirements, traceability, matrix, \
+GoNoGo, project management">
     <meta name="author" content="GoNoGo Project Team">
     <link rel="canonical" href="/rtm/matrix">
 
     <!-- Favicon and Touch Icons -->
     <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" \
+          href="/static/images/apple-touch-icon.png">
 
     <!-- Performance Optimizations -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -162,7 +172,8 @@ class RTMReportGenerator:
 
     <!-- Open Graph Meta Tags for Social Sharing -->
     <meta property="og:title" content="RTM Matrix - GoNoGo Project">
-    <meta property="og:description" content="Interactive Requirements Traceability Matrix dashboard">
+    <meta property="og:description" \
+          content="Interactive Requirements Traceability Matrix dashboard">
     <meta property="og:type" content="website">
     <meta property="og:url" content="/rtm/matrix">
 
@@ -193,7 +204,8 @@ class RTMReportGenerator:
             --component-testing: #F59E0B;      /* Orange - Testing */
             --component-ci-cd: #06B6D4;        /* Cyan - CI/CD */
             --component-documentation: #6B7280; /* Gray - Documentation */
-            --component-default: #9CA3AF;      /* Light Gray - Default/Unknown */
+            --component-default: #9CA3AF;      \
+/* Light Gray - Default/Unknown */
         }}
 
         /* Component Badge Styles */
@@ -223,7 +235,8 @@ class RTMReportGenerator:
         .component-badge.security {{ background: var(--component-security); }}
         .component-badge.testing {{ background: var(--component-testing); }}
         .component-badge.ci-cd {{ background: var(--component-ci-cd); }}
-        .component-badge.documentation {{ background: var(--component-documentation); }}
+        .component-badge.documentation {{ \
+background: var(--component-documentation); }}
         .component-badge.default {{ background: var(--component-default); }}
 
         .component-badges {{
@@ -431,11 +444,14 @@ class RTMReportGenerator:
     <!-- Enhanced Page Header -->
     <header class="page-header" role="banner">
         <div class="page-header__content">
-            <h1 class="page-header__title">Requirements Traceability Matrix</h1>
-            <p class="page-header__subtitle">Interactive dashboard for GoNoGo project requirements tracking</p>
+            <h1 class="page-header__title">\
+Requirements Traceability Matrix</h1>
+            <p class="page-header__subtitle">Interactive dashboard for GoNoGo \
+project requirements tracking</p>
             <div class="page-header__meta">
                 <div class="page-header__meta-item">
-                    <span>Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}</span>
+                    <span>Generated: \
+{datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")}</span>
                 </div>
                 <div class="page-header__meta-item">
                     <span>Total Epics: {len(epics)}</span>
@@ -451,7 +467,8 @@ class RTMReportGenerator:
         <div class="filter-toolbar" role="toolbar" aria-label="RTM Filters">
             <!-- TEMPORARILY DISABLED: Search feature needs proper implementation
             <div class="filter-group">
-                <label class="filter-group__label" for="rtm-search">Search:</label>
+                <label class="filter-group__label" \
+for="rtm-search">Search:</label>
                 <div class="search-box">
                     <span class="search-box__icon">🔍</span>
                     <input
@@ -461,7 +478,8 @@ class RTMReportGenerator:
                         placeholder="Search epics, user stories, tests, or defects..."
                         aria-label="Search RTM content"
                     >
-                    <button class="search-box__clear" id="clear-search" type="button" aria-label="Clear search">✕</button>
+                    <button class="search-box__clear" id="clear-search" \
+type="button" aria-label="Clear search">✕</button>
                 </div>
             </div>
             -->
@@ -469,40 +487,83 @@ class RTMReportGenerator:
             <div class="filter-group">
                 <span class="filter-group__label">Epic Status:</span>
                 <div class="filter-group__controls">
-                    <button class="filter-button filter-button--active" onclick="filterByStatus('all')" data-filter-group="epic-status" data-filter-value="all">All</button>
-                    <button class="filter-button" onclick="filterByStatus('planned')" data-filter-group="epic-status" data-filter-value="planned">Planned</button>
-                    <button class="filter-button" onclick="filterByStatus('in_progress')" data-filter-group="epic-status" data-filter-value="in_progress">In Progress</button>
-                    <button class="filter-button" onclick="filterByStatus('completed')" data-filter-group="epic-status" data-filter-value="completed">Completed</button>
-                    <button class="filter-button" onclick="filterByStatus('blocked')" data-filter-group="epic-status" data-filter-value="blocked">Blocked</button>
+                    <button class="filter-button filter-button--active" \
+                            onclick="filterByStatus('all')" \
+                            data-filter-group="epic-status" \
+                            data-filter-value="all">All</button>
+                    <button class="filter-button" \
+                            onclick="filterByStatus('planned')" \
+                            data-filter-group="epic-status" \
+                            data-filter-value="planned">Planned</button>
+                    <button class="filter-button" \
+                            onclick="filterByStatus('in_progress')" \
+                            data-filter-group="epic-status" \
+                            data-filter-value="in_progress">\
+In Progress</button>
+                    <button class="filter-button" \
+                            onclick="filterByStatus('completed')" \
+                            data-filter-group="epic-status" \
+                            data-filter-value="completed">Completed</button>
+                    <button class="filter-button" \
+                            onclick="filterByStatus('blocked')" \
+                            data-filter-group="epic-status" \
+                            data-filter-value="blocked">Blocked</button>
                 </div>
             </div>
 
             <div class="filter-group component-filter-group">
                 <span class="filter-group__label">Component:</span>
                 <div class="filter-group__controls">
-                    <button class="component-filter-button active" onclick="filterByComponent('all')" data-filter-group="component" data-filter-value="all">All</button>
-                    <button class="component-filter-button" onclick="filterByComponent('frontend')" data-filter-group="component" data-filter-value="frontend">Frontend</button>
-                    <button class="component-filter-button" onclick="filterByComponent('backend')" data-filter-group="component" data-filter-value="backend">Backend</button>
-                    <button class="component-filter-button" onclick="filterByComponent('database')" data-filter-group="component" data-filter-value="database">Database</button>
-                    <button class="component-filter-button" onclick="filterByComponent('security')" data-filter-group="component" data-filter-value="security">Security</button>
-                    <button class="component-filter-button" onclick="filterByComponent('testing')" data-filter-group="component" data-filter-value="testing">Testing</button>
-                    <button class="component-filter-button" onclick="filterByComponent('ci-cd')" data-filter-group="component" data-filter-value="ci-cd">CI/CD</button>
-                    <button class="component-filter-button" onclick="filterByComponent('documentation')" data-filter-group="component" data-filter-value="documentation">Documentation</button>
+                    <button class="component-filter-button active" \
+                            onclick="filterByComponent('all')" \
+                            data-filter-group="component" \
+                            data-filter-value="all">All</button>
+                    <button class="component-filter-button" \
+                            onclick="filterByComponent('frontend')" \
+                            data-filter-group="component" \
+                            data-filter-value="frontend">Frontend</button>
+                    <button class="component-filter-button" \
+                            onclick="filterByComponent('backend')" \
+                            data-filter-group="component" \
+                            data-filter-value="backend">Backend</button>
+                    <button class="component-filter-button" \
+                            onclick="filterByComponent('database')" \
+                            data-filter-group="component" \
+                            data-filter-value="database">Database</button>
+                    <button class="component-filter-button" \
+                            onclick="filterByComponent('security')" \
+                            data-filter-group="component" \
+                            data-filter-value="security">Security</button>
+                    <button class="component-filter-button" \
+                            onclick="filterByComponent('testing')" \
+                            data-filter-group="component" \
+                            data-filter-value="testing">Testing</button>
+                    <button class="component-filter-button" \
+                            onclick="filterByComponent('ci-cd')" \
+                            data-filter-group="component" \
+                            data-filter-value="ci-cd">CI/CD</button>
+                    <button class="component-filter-button" \
+                            onclick="filterByComponent('documentation')" \
+                            data-filter-group="component" \
+                            data-filter-value="documentation">Documentation</button>
                 </div>
             </div>
 
             <div class="export-toolbar">
-                <button class="export-button" data-export-format="csv" title="Export to CSV">
+                <button class="export-button" data-export-format="csv" \
+title="Export to CSV">
                     CSV
                 </button>
-                <button class="export-button" data-export-format="json" title="Export to JSON">
+                <button class="export-button" data-export-format="json" \
+title="Export to JSON">
                     JSON
                 </button>
             </div>
         </div>
 
         <!-- Search Results Count -->
-        <div class="search-results-count" style="display: none;" role="status" aria-live="polite"></div>
+        <div class="search-results-count" style="display: none;" \
+role="status" aria-live="polite"></div>
 
         <!-- Section Separator -->
         <div class="section-separator">
@@ -533,29 +594,43 @@ class RTMReportGenerator:
 
             # Generate component badges for the epic
             inherited_components = epic.get_inherited_components()
-            component_string = ','.join(inherited_components) if inherited_components else epic.component
+            component_string = (
+                ",".join(inherited_components)
+                if inherited_components
+                else epic.component
+            )
             component_badges = self._render_component_badges(component_string)
 
             html += f"""
         <!-- Epic Card with Enhanced Design -->
-        <article class="epic-card" data-status="{epic.status}" data-epic-id="{epic.epic_id}" data-components="{component_string or ''}" aria-labelledby="epic-{epic.epic_id}-title">
-            <header class="epic-header" role="button" tabindex="0" aria-expanded="false" aria-controls="epic-{epic.epic_id}">
+        <article class="epic-card" data-status="{epic.status}" \
+data-epic-id="{epic.epic_id}" data-components="{component_string or ""}" \
+aria-labelledby="epic-{epic.epic_id}-title">
+            <header class="epic-header" role="button" tabindex="0" \
+aria-expanded="false" aria-controls="epic-{epic.epic_id}">
                 <div class="epic-header__top">
                     <h2 id="epic-{epic.epic_id}-title" class="epic-title-link">
                         {epic_title_link}
                     </h2>
-                    <span class="badge badge--status badge--status-{epic.status.replace('_', '-')}" aria-label="Epic status: {epic.status.replace('_', ' ').title()}">
-                        {epic.status.replace('_', ' ').title()}
+                    <span class="badge badge--status \
+badge--status-{epic.status.replace("_", "-")}" \
+aria-label="Epic status: {epic.status.replace("_", " ").title()}">
+                        {epic.status.replace("_", " ").title()}
                     </span>
                 </div>
-                <!-- Epic Progress with Enhanced Visual Design (moved to header for visibility) -->
+                <!-- Epic Progress with Enhanced Visual Design \
+(moved to header for visibility) -->
                 <div class="epic-progress" aria-label="Epic Progress">
                     <div class="epic-progress__label">
                         <span>Progress</span>
                         <span><strong>{progress:.1f}% Complete</strong></span>
                     </div>
-                    <div class="epic-progress__bar" role="progressbar" aria-valuenow="{progress:.1f}" aria-valuemin="0" aria-valuemax="100" aria-label="Epic completion progress">
-                        <div class="epic-progress__fill" style="width: {progress}%"></div>
+                    <div class="epic-progress__bar" role="progressbar" \
+aria-valuenow="{progress:.1f}" aria-valuemin="0" aria-valuemax="100" \
+aria-label="Epic completion progress">
+                        <div class="epic-progress__fill" style="width: {
+                progress
+            }%"></div>
                     </div>
                 </div>
 
@@ -565,11 +640,12 @@ class RTMReportGenerator:
                 </div>
             </header>
 
-            <div class="epic-content" id="epic-{epic.epic_id}" aria-labelledby="epic-{epic.epic_id}-title" style="display: none;">
+            <div class="epic-content" id="epic-{epic.epic_id}" \
+aria-labelledby="epic-{epic.epic_id}-title" style="display: none;">
                 <!-- Epic Description -->
                 <section class="epic-description" aria-label="Epic Description">
                     <h3 class="sr-only">Description</h3>
-                    <p>{clean_description.replace(chr(10), '<br>')}</p>
+                    <p>{clean_description.replace(chr(10), "<br>")}</p>
                 </section>
 
 
@@ -577,86 +653,141 @@ class RTMReportGenerator:
                 <section class="metrics-dashboard" aria-label="Epic Metrics Overview">
                     <h3 class="metrics-dashboard__title">Overview Metrics</h3>
                     <div class="metrics-grid">
-                        <div class="metric-card metric-card--info" aria-label="User Stories count">
+                        <div class="metric-card metric-card--info" \
+aria-label="User Stories count">
                             <div class="metric-card__number">{user_stories_count}</div>
                             <div class="metric-card__label">User Stories</div>
-                            <div class="metric-card__description">Total stories in epic</div>
+                            <div class="metric-card__description">\
+Total stories in epic</div>
                         </div>
-                        <div class="metric-card metric-card--{('success' if completed_points == total_points else 'warning' if completed_points > 0 else 'info')}" aria-label="Story Points progress">
-                            <div class="metric-card__number">{completed_points}/{total_points}</div>
+                        <div class="metric-card \
+metric-card--{
+                (
+                    "success"
+                    if completed_points == total_points
+                    else "warning"
+                    if completed_points > 0
+                    else "info"
+                )
+            }" \
+aria-label="Story Points progress">
+                            <div class="metric-card__number">{completed_points}/{
+                total_points
+            }</div>
                             <div class="metric-card__label">Story Points</div>
-                            <div class="metric-card__description">Completed vs Total</div>
+                            <div class="metric-card__description">\
+Completed vs Total</div>
                         </div>
-                        <div class="metric-card metric-card--{('success' if tests_count > 0 else 'info')}" aria-label="Tests count">
+                        <div class="metric-card \
+metric-card--{("success" if tests_count > 0 else "info")}" \
+aria-label="Tests count">
                             <div class="metric-card__number">{tests_count}</div>
                             <div class="metric-card__label">Tests</div>
                             <div class="metric-card__description">Total test cases</div>
                         </div>
-                        <div class="metric-card metric-card--{('success' if test_pass_rate >= 80 else 'warning' if test_pass_rate >= 60 else 'danger')}" aria-label="Test pass rate">
+                        <div class="metric-card \
+metric-card--{
+                (
+                    "success"
+                    if test_pass_rate >= 80
+                    else "warning"
+                    if test_pass_rate >= 60
+                    else "danger"
+                )
+            }" aria-label="Test pass rate">
                             <div class="metric-card__number">{test_pass_rate:.1f}%</div>
                             <div class="metric-card__label">Pass Rate</div>
-                            <div class="metric-card__description">{tests_passed} passed, {tests_failed} failed, {tests_not_run} not run</div>
+                            <div class="metric-card__description">\
+{tests_passed} passed, {tests_failed} failed, {tests_not_run} not run</div>
                         </div>
-                        <div class="metric-card metric-card--{('danger' if defects_count > 0 else 'success')}" aria-label="Defects count">
+                        <div class="metric-card \
+metric-card--{("danger" if defects_count > 0 else "success")}" \
+aria-label="Defects count">
                             <div class="metric-card__number">{defects_count}</div>
                             <div class="metric-card__label">Defects</div>
-                            <div class="metric-card__description">Open issues to resolve</div>
+                            <div class="metric-card__description">\
+Open issues to resolve</div>
                         </div>
                     </div>
                 </section>
 
                 <!-- User Stories Collapsible Section -->
                 <section class="collapsible" aria-label="User Stories">
-                    <input type="checkbox" class="collapsible__toggle" id="toggle-user-stories-{epic.epic_id}">
-                    <label for="toggle-user-stories-{epic.epic_id}" class="collapsible__header">
-                        <h3 class="collapsible__title">User Stories ({user_stories_count})</h3>
+                    <input type="checkbox" class="collapsible__toggle" id="toggle-user-stories-{
+                epic.epic_id
+            }">
+                    <label for="toggle-user-stories-{epic.epic_id}" \
+class="collapsible__header">
+                        <h3 class="collapsible__title">User Stories \
+({user_stories_count})</h3>
                         <span class="collapsible__icon">▼</span>
                     </label>
-                    <div class="collapsible__content" id="user-stories-{epic.epic_id}">
+                    <div class="collapsible__content" \
+id="user-stories-{epic.epic_id}">
                         <div class="collapsible__body">
                             <!-- User Stories Filter Section -->
                             <div class="filter-section" role="group" aria-label="User Stories Filters">
                                 <h4 class="filter-section__title">Filter User Stories:</h4>
                                 <div class="filter-section__buttons">
-                                    <button class="filter-button filter-button--us filter-button--active"
+                                    <button class="filter-button \
+filter-button--us filter-button--active"
                                             data-us-status="all"
                                             data-filter-group="epic-{epic.epic_id}-us"
                                             data-filter-value="all"
-                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'all')"
+                                            onclick="filterUserStoriesByStatus('{
+                epic.epic_id
+            }', 'all')"
                                             aria-pressed="true">All</button>
-                                    <button class="filter-button filter-button--us"
+                                    <button class="filter-button \
+filter-button--us"
                                             data-us-status="planned"
                                             data-filter-group="epic-{epic.epic_id}-us"
                                             data-filter-value="planned"
-                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'planned')"
+                                            onclick="filterUserStoriesByStatus('{
+                epic.epic_id
+            }', 'planned')"
                                             aria-pressed="false">Planned</button>
-                                    <button class="filter-button filter-button--us"
+                                    <button class="filter-button \
+filter-button--us"
                                             data-us-status="in_progress"
                                             data-filter-group="epic-{epic.epic_id}-us"
                                             data-filter-value="in_progress"
-                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'in_progress')"
-                                            aria-pressed="false">In Progress</button>
-                                    <button class="filter-button filter-button--us"
+                                            onclick="filterUserStoriesByStatus('{
+                epic.epic_id
+            }', 'in_progress')"
+                                            aria-pressed="false">\
+In Progress</button>
+                                    <button class="filter-button \
+filter-button--us"
                                             data-us-status="completed"
                                             data-filter-group="epic-{epic.epic_id}-us"
                                             data-filter-value="completed"
-                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'completed')"
+                                            onclick="filterUserStoriesByStatus('{
+                epic.epic_id
+            }', 'completed')"
                                             aria-pressed="false">Completed</button>
-                                    <button class="filter-button filter-button--us"
+                                    <button class="filter-button \
+filter-button--us"
                                             data-us-status="blocked"
                                             data-filter-group="epic-{epic.epic_id}-us"
                                             data-filter-value="blocked"
-                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'blocked')"
+                                            onclick="filterUserStoriesByStatus('{
+                epic.epic_id
+            }', 'blocked')"
                                             aria-pressed="false">Blocked</button>
                                 </div>
-                                <div class="us-count-display filter-count" role="status" aria-live="polite">Showing all user stories</div>
+                                <div class="us-count-display filter-count" \
+role="status" aria-live="polite">Showing all user stories</div>
                             </div>
 
                             <!-- User Stories Table -->
                             <div class="rtm-table-container">
-                                <table class="rtm-table" role="table" aria-label="User Stories for {epic.epic_id}">
+                                <table class="rtm-table" role="table" \
+aria-label="User Stories for {epic.epic_id}">
                                 <thead class="rtm-table__header">
-                                    <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Component</th><th scope="col">Story Points</th><th scope="col">Status</th></tr>
+                                    <tr><th scope="col">ID</th>\
+<th scope="col">Title</th><th scope="col">Component</th>\
+<th scope="col">Story Points</th><th scope="col">Status</th></tr>
                                 </thead>
                                 <tbody class="rtm-table__body">
 """
@@ -666,12 +797,15 @@ class RTMReportGenerator:
                 )
                 status_normalized = us["implementation_status"].replace("_", "-")
                 html += f"""
-                                    <tr class="rtm-table__row us-row" data-us-status="{us['implementation_status']}">
+                                    <tr class="rtm-table__row us-row" \
+data-us-status="{us["implementation_status"]}">
                                         <td>{user_story_link}</td>
                                         <td>{us["title"]}</td>
                                         <td>{self._render_component_badges(us.get("component"))}</td>
                                         <td>{us["story_points"]}</td>
-                                        <td><span class="badge badge--status badge--status-{status_normalized}">{us["implementation_status"].replace('_', ' ').title()}</span></td>
+                                        <td><span class="badge badge--status \
+badge--status-{status_normalized}">\
+{us["implementation_status"].replace("_", " ").title()}</span></td>
                                     </tr>
 """
 
@@ -679,7 +813,9 @@ class RTMReportGenerator:
             html += """
                                     <!-- Empty state row for user stories (hidden by default, shown when filtered count = 0) -->
                                     <tr class="empty-state-row" style="display: none;">
-                                        <td colspan="5" style="text-align: center; color: #7f8c8d; font-style: italic;">No user stories match the current filter</td>
+                                        <td colspan="5" \
+style="text-align: center; color: #7f8c8d; font-style: italic;">\
+No user stories match the current filter</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -690,9 +826,13 @@ class RTMReportGenerator:
             html += f"""
                 <!-- Tests Collapsible Section -->
                 <section class="collapsible" aria-label="Tests">
-                    <input type="checkbox" class="collapsible__toggle" id="toggle-tests-{epic.epic_id}">
-                    <label for="toggle-tests-{epic.epic_id}" class="collapsible__header">
-                        <h3 class="collapsible__title">Test Coverage ({tests_count})</h3>
+                    <input type="checkbox" class="collapsible__toggle" id="toggle-tests-{
+                epic.epic_id
+            }">
+                    <label for="toggle-tests-{epic.epic_id}" \
+class="collapsible__header">
+                        <h3 class="collapsible__title">Test Coverage \
+({tests_count})</h3>
                         <span class="collapsible__icon">▼</span>
                     </label>
                     <div class="collapsible__content" id="tests-{epic.epic_id}">
@@ -702,27 +842,45 @@ class RTMReportGenerator:
                                 <h4 class="metrics-dashboard__title">Test Metrics</h4>
                                 <div class="metrics-grid">
                                     <div class="metric-card metric-card--info" aria-label="Total tests count">
-                                                    <div class="metric-card__number">{tests_count}</div>
+                                                    <div class="metric-card__number">{
+                tests_count
+            }</div>
                                         <div class="metric-card__label">Total Tests</div>
                                         <div class="metric-card__description">Across all test types</div>
                                     </div>
-                                    <div class="metric-card metric-card--{('success' if test_pass_rate >= 80 else 'warning' if test_pass_rate >= 60 else 'danger')}" aria-label="Test pass rate">
-                                                    <div class="metric-card__number">{test_pass_rate:.1f}%</div>
+                                    <div class="metric-card \
+metric-card--{
+                (
+                    "success"
+                    if test_pass_rate >= 80
+                    else "warning"
+                    if test_pass_rate >= 60
+                    else "danger"
+                )
+            }" aria-label="Test pass rate">
+                                                    <div class="metric-card__number">{
+                test_pass_rate:.1f}%</div>
                                         <div class="metric-card__label">Pass Rate</div>
                                         <div class="metric-card__description">Overall success rate</div>
                                     </div>
                                     <div class="metric-card metric-card--success" aria-label="Passed tests">
-                                        <div class="metric-card__number">{tests_passed}</div>
+                                        <div class="metric-card__number">{
+                tests_passed
+            }</div>
                                         <div class="metric-card__label">Passed</div>
                                         <div class="metric-card__description">Successfully executed</div>
                                     </div>
                                     <div class="metric-card metric-card--danger" aria-label="Failed tests">
-                                        <div class="metric-card__number">{tests_failed}</div>
+                                        <div class="metric-card__number">{
+                tests_failed
+            }</div>
                                         <div class="metric-card__label">Failed</div>
                                         <div class="metric-card__description">Need attention</div>
                                     </div>
                                     <div class="metric-card metric-card--warning" aria-label="Tests not run">
-                                        <div class="metric-card__number">{tests_not_run}</div>
+                                        <div class="metric-card__number">{
+                tests_not_run
+            }</div>
                                         <div class="metric-card__label">Not Run</div>
                                         <div class="metric-card__description">Pending execution</div>
                                     </div>
@@ -781,7 +939,10 @@ class RTMReportGenerator:
                             <div class="rtm-table-container">
                             <table class="rtm-table" role="table" aria-label="Test Traceability for {epic.epic_id}">
                                 <thead class="rtm-table__header">
-                                    <tr><th scope="col">Test Type</th><th scope="col">Function/Scenario</th><th scope="col">Component</th><th scope="col">Last Execution</th><th scope="col">Status</th><th scope="col">File Path</th></tr>
+                                    <tr>\
+<th scope="col">Test Type</th><th scope="col">Function/Scenario</th>\
+<th scope="col">Component</th><th scope="col">Last Execution</th>\
+<th scope="col">Status</th><th scope="col">File Path</th></tr>
                                 </thead>
                                 <tbody class="rtm-table__body">
 """
@@ -790,7 +951,6 @@ class RTMReportGenerator:
             tests_list = epic_data.get("tests", [])
 
             for test in tests_list:
-
                 # Format last execution time
                 last_execution = test.get("last_execution_time", "")
                 if last_execution:
@@ -817,7 +977,9 @@ class RTMReportGenerator:
                 status_class = (
                     "passed"
                     if status == "passed"
-                    else "failed" if status == "failed" else "skipped"
+                    else "failed"
+                    if status == "failed"
+                    else "skipped"
                 )
                 # Test status icons removed for accessibility
 
@@ -836,7 +998,7 @@ class RTMReportGenerator:
                                     <button class="copy-btn" onclick="copyToClipboard('{file_path.replace(chr(92), chr(92) + chr(92))}', this)" title="Copy full path" aria-label="Copy full file path">
                                         <span class="copy-btn__text">COPY</span>
                                     </button>
-                                    <span class="copy-feedback" id="feedback-{test.get('test_id', '')}" style="display: none;">Copied!</span>
+                                    <span class="copy-feedback" id="feedback-{test.get("test_id", "")}" style="display: none;">Copied!</span>
                                 </div>
                             </td>
                         </tr>
@@ -912,28 +1074,53 @@ class RTMReportGenerator:
             )
 
             html += f"""
-                                    <div class="metric-card metric-card--{('danger' if defects_count > 0 else 'success')}" aria-label="Total defects">
-                                                    <div class="metric-card__number">{defects_count}</div>
+                                    <div class="metric-card metric-card--{
+                ("danger" if defects_count > 0 else "success")
+            }" aria-label="Total defects">
+                                                    <div class="metric-card__number">{
+                defects_count
+            }</div>
                                         <div class="metric-card__label">Total Defects</div>
                                         <div class="metric-card__description">Across all priorities</div>
                                     </div>
-                                    <div class="metric-card metric-card--{('danger' if critical_count > 0 else 'success')}" aria-label="Critical defects">
-                                        <div class="metric-card__number">{critical_count}</div>
+                                    <div class="metric-card metric-card--{
+                ("danger" if critical_count > 0 else "success")
+            }" aria-label="Critical defects">
+                                        <div class="metric-card__number">{
+                critical_count
+            }</div>
                                         <div class="metric-card__label">Critical</div>
                                         <div class="metric-card__description">Highest priority issues</div>
                                     </div>
-                                    <div class="metric-card metric-card--{('warning' if high_count > 0 else 'success')}" aria-label="High priority defects">
-                                        <div class="metric-card__number">{high_count}</div>
+                                    <div class="metric-card metric-card--{
+                ("warning" if high_count > 0 else "success")
+            }" \
+                                        aria-label="High priority defects">
+                                        <div class="metric-card__number">{
+                high_count
+            }</div>
                                         <div class="metric-card__label">High Priority</div>
-                                        <div class="metric-card__description">Important issues</div>
+                                        <div class="metric-card__description">\
+                                            Important issues</div>
                                     </div>
-                                    <div class="metric-card metric-card--{('danger' if open_count > 0 else 'success')}" aria-label="Open defects">
-                                        <div class="metric-card__number">{open_count}</div>
+                                    <div class="metric-card metric-card--{
+                ("danger" if open_count > 0 else "success")
+            }" \
+                                        aria-label="Open defects">
+                                        <div class="metric-card__number">{
+                open_count
+            }</div>
                                         <div class="metric-card__label">Open</div>
-                                        <div class="metric-card__description">Need attention</div>
+                                        <div class="metric-card__description">\
+                                            Need attention</div>
                                     </div>
-                                    <div class="metric-card metric-card--{('danger' if security_count > 0 else 'success')}" aria-label="Security defects">
-                                        <div class="metric-card__number">{security_count}</div>
+                                    <div class="metric-card metric-card--{
+                ("danger" if security_count > 0 else "success")
+            }" \
+                                        aria-label="Security defects">
+                                        <div class="metric-card__number">{
+                security_count
+            }</div>
                                         <div class="metric-card__label">Security</div>
                                         <div class="metric-card__description">Security-related issues</div>
                                     </div>
@@ -946,43 +1133,69 @@ class RTMReportGenerator:
                                 <div class="filter-section__buttons">
                                     <button class="filter-button filter-button--defect filter-button--active"
                                             data-defect-filter="all"
-                                            data-filter-group="epic-{epic.epic_id}-defect"
+                                            data-filter-group="epic-{
+                epic.epic_id
+            }-defect"
                                             data-filter-value="all"
-                                            onclick="filterDefects('{epic.epic_id}', 'all', 'all')"
+                                            onclick="filterDefects('{
+                epic.epic_id
+            }', 'all', 'all')"
                                             aria-pressed="true">All</button>
                                     <button class="filter-button filter-button--defect"
                                             data-defect-filter="priority:critical"
-                                            data-filter-group="epic-{epic.epic_id}-defect"
+                                            data-filter-group="epic-{
+                epic.epic_id
+            }-defect"
                                             data-filter-value="critical"
-                                            onclick="filterDefects('{epic.epic_id}', 'priority', 'critical')"
+                                            onclick="filterDefects('{
+                epic.epic_id
+            }', 'priority', 'critical')"
                                             aria-pressed="false">Critical</button>
                                     <button class="filter-button filter-button--defect"
                                             data-defect-filter="priority:high"
-                                            data-filter-group="epic-{epic.epic_id}-defect"
+                                            data-filter-group="epic-{
+                epic.epic_id
+            }-defect"
                                             data-filter-value="high"
-                                            onclick="filterDefects('{epic.epic_id}', 'priority', 'high')"
+                                            onclick="filterDefects('{
+                epic.epic_id
+            }', 'priority', 'high')"
                                             aria-pressed="false">High Priority</button>
                                     <button class="filter-button filter-button--defect"
                                             data-defect-filter="status:open"
-                                            data-filter-group="epic-{epic.epic_id}-defect"
+                                            data-filter-group="epic-{
+                epic.epic_id
+            }-defect"
                                             data-filter-value="open"
-                                            onclick="filterDefects('{epic.epic_id}', 'status', 'open')"
+                                            onclick="filterDefects('{
+                epic.epic_id
+            }', 'status', 'open')"
                                             aria-pressed="false">Open</button>
                                     <button class="filter-button filter-button--defect"
                                             data-defect-filter="status:in_progress"
-                                            data-filter-group="epic-{epic.epic_id}-defect"
+                                            data-filter-group="epic-{
+                epic.epic_id
+            }-defect"
                                             data-filter-value="in_progress"
-                                            onclick="filterDefects('{epic.epic_id}', 'status', 'in_progress')"
-                                            aria-pressed="false">In Progress</button>
+                                            onclick="filterDefects('{
+                epic.epic_id
+            }', 'status', 'in_progress')"
+                                            aria-pressed="false">\
+In Progress</button>
                                 </div>
                                 <div class="defect-count-display filter-count" role="status" aria-live="polite">Showing all defects</div>
                             </div>
 
                             <!-- Defect Traceability Table -->
                             <div class="rtm-table-container">
-                                <table class="rtm-table" role="table" aria-label="Defect Traceability for {epic.epic_id}">
+                                <table class="rtm-table" role="table" aria-label="Defect Traceability for {
+                epic.epic_id
+            }">
                                     <thead class="rtm-table__header">
-                                        <tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Component</th><th scope="col">Priority</th><th scope="col">Status</th><th scope="col">Severity</th></tr>
+                                        <tr><th scope="col">ID</th>\
+<th scope="col">Title</th><th scope="col">Component</th>\
+<th scope="col">Priority</th><th scope="col">Status</th>\
+<th scope="col">Severity</th></tr>
                                     </thead>
                                     <tbody class="rtm-table__body">
 """
@@ -1013,7 +1226,9 @@ class RTMReportGenerator:
 
                 # Defect ID with GitHub link
                 defect_id_link = (
-                    f'<a href="https://github.com/QHuuT/gonogo/issues/{github_issue}" target="_blank" style="color: #3498db; text-decoration: none;" title="Open {defect_id} in GitHub"><strong>{defect_id}</strong></a>'
+                    f'<a href="https://github.com/QHuuT/gonogo/issues/{github_issue}" \
+target="_blank" style="color: #3498db; text-decoration: none;" \
+title="Open {defect_id} in GitHub"><strong>{defect_id}</strong></a>'
                     if github_issue
                     else f"<strong>{defect_id}</strong>"
                 )
@@ -1024,7 +1239,7 @@ class RTMReportGenerator:
                             <td>{title}</td>
                             <td>{self._render_component_badges(defect.get("component"))}</td>
                             <td><span class="badge badge--priority badge--priority-{priority}">{priority.title()}</span></td>
-                            <td><span class="badge badge--status badge--status-{status.replace('_', '-')}">{status.replace('_', ' ').title()}</span></td>
+                            <td><span class="badge badge--status badge--status-{status.replace("_", "-")}">{status.replace("_", " ").title()}</span></td>
                             <td><span class="badge badge--severity badge--severity-{severity}">{severity.title()}</span></td>
                         </tr>
 """
@@ -1113,16 +1328,24 @@ class RTMReportGenerator:
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, \
+initial-scale=1.0">
     <title>Epic Progress Report</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', \
+sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; \
+padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .chart-container { width: 100%; height: 400px; margin: 20px 0; }
-        .epic-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
-        .epic-card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; }
-        .progress-circle { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+        .epic-grid { display: grid; \
+grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); \
+gap: 20px; margin-top: 20px; }
+        .epic-card { border: 1px solid #ddd; border-radius: 8px; \
+padding: 20px; }
+        .progress-circle { width: 60px; height: 60px; border-radius: 50%; \
+display: flex; align-items: center; justify-content: center; \
+font-weight: bold; color: white; }
     </style>
 </head>
 <body>
@@ -1154,7 +1377,9 @@ class RTMReportGenerator:
             progress_color = (
                 "#27ae60"
                 if progress >= 80
-                else "#f39c12" if progress >= 50 else "#e74c3c"
+                else "#f39c12"
+                if progress >= 50
+                else "#e74c3c"
             )
 
             # Extract epic and metrics data for template
@@ -1239,7 +1464,7 @@ class RTMReportGenerator:
             document.querySelectorAll('.epic-card').forEach(card => {
                 const components = card.getAttribute('data-components');
                 if (components) {
-                    card.setAttribute('data-component-list', components.toLowerCase().replace(/\s+/g, ''));
+                    card.setAttribute('data-component-list', components.toLowerCase().replace(/\\s+/g, ''));
                 }
             });
         });
@@ -1583,7 +1808,9 @@ class RTMReportGenerator:
         """Render user story ID as clickable GitHub link if available."""
         if github_issue_number and github_issue_number > 0:
             github_url = self._get_github_issue_link(github_issue_number)
-            return f'<a href="{github_url}" target="_blank" style="color: #3498db; text-decoration: none;" title="Open {user_story_id} in GitHub"><strong>{user_story_id}</strong></a>'
+            return f'<a href="{github_url}" target="_blank" \
+style="color: #3498db; text-decoration: none;" \
+title="Open {user_story_id} in GitHub"><strong>{user_story_id}</strong></a>'
         return f"<strong>{user_story_id}</strong>"
 
     def _render_epic_title_link(
@@ -1595,7 +1822,9 @@ class RTMReportGenerator:
 
         if github_issue_number and github_issue_number > 0:
             github_url = self._get_github_issue_link(github_issue_number)
-            return f'<a href="{github_url}" target="_blank" class="epic-title-link" title="Click to open {epic_id} in GitHub">{epic_id}: {clean_title}</a>'
+            return f'<a href="{github_url}" target="_blank" \
+class="epic-title-link" title="Click to open {epic_id} in GitHub">\
+{epic_id}: {clean_title}</a>'
         return f"{epic_id}: {clean_title}"
 
     def _extract_epic_description(self, github_body: str) -> str:
@@ -1663,7 +1892,8 @@ class RTMReportGenerator:
         text = re.sub(r"^\s*[-*+]\s+", "", text, flags=re.MULTILINE)
 
         # Clean up extra whitespace
-        text = re.sub(r"\n\s*\n", "\n\n", text)  # Multiple blank lines to double
+        # Multiple blank lines to double
+        text = re.sub(r"\n\s*\n", "\n\n", text)
         text = text.strip()
 
         return text
@@ -1771,7 +2001,7 @@ class RTMReportGenerator:
         # Handle comma-separated components and inherited components
         components = []
         if isinstance(component_string, str):
-            components = [c.strip() for c in component_string.split(',') if c.strip()]
+            components = [c.strip() for c in component_string.split(",") if c.strip()]
 
         if not components:
             return ""
@@ -1780,7 +2010,7 @@ class RTMReportGenerator:
 
         for component in components:
             # Normalize component name for CSS class
-            normalized_component = component.lower().replace('/', '-').replace(' ', '-')
+            normalized_component = component.lower().replace("/", "-").replace(" ", "-")
 
             # Get display name and abbreviation
             display_name = self._get_component_display_name(component)
@@ -1794,35 +2024,35 @@ class RTMReportGenerator:
                 </span>
             '''
 
-        badges_html += '</div>'
+        badges_html += "</div>"
         return badges_html
 
     def _get_component_display_name(self, component: str) -> str:
         """Get user-friendly display name for component."""
         component_map = {
-            'frontend': 'Frontend/UI',
-            'backend': 'Backend/API',
-            'database': 'Database',
-            'security': 'Security/GDPR',
-            'testing': 'Testing',
-            'ci-cd': 'CI/CD',
-            'documentation': 'Documentation'
+            "frontend": "Frontend/UI",
+            "backend": "Backend/API",
+            "database": "Database",
+            "security": "Security/GDPR",
+            "testing": "Testing",
+            "ci-cd": "CI/CD",
+            "documentation": "Documentation",
         }
 
-        normalized = component.lower().replace('/', '-').replace(' ', '-')
+        normalized = component.lower().replace("/", "-").replace(" ", "-")
         return component_map.get(normalized, component.title())
 
     def _get_component_abbreviation(self, component: str) -> str:
         """Get abbreviated form for component badges."""
         abbreviation_map = {
-            'frontend': 'FE',
-            'backend': 'BE',
-            'database': 'DB',
-            'security': 'SEC',
-            'testing': 'TEST',
-            'ci-cd': 'CI',
-            'documentation': 'DOC'
+            "frontend": "FE",
+            "backend": "BE",
+            "database": "DB",
+            "security": "SEC",
+            "testing": "TEST",
+            "ci-cd": "CI",
+            "documentation": "DOC",
         }
 
-        normalized = component.lower().replace('/', '-').replace(' ', '-')
+        normalized = component.lower().replace("/", "-").replace(" ", "-")
         return abbreviation_map.get(normalized, component[:3].upper())

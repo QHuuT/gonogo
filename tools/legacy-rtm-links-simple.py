@@ -96,7 +96,8 @@ def main():
 
     # Export database to file if requested
     if args.export_db:
-        if HYBRID_MODE_AVAILABLE and hasattr(generator, "export_database_to_rtm_file"):
+        if HYBRID_MODE_AVAILABLE and \
+           hasattr(generator, "export_database_to_rtm_file"):
             print(f"Exporting database RTM to {args.rtm_file}...")
             success = generator.export_database_to_rtm_file(args.rtm_file)
             if success:

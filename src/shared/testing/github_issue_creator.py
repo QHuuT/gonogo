@@ -47,12 +47,11 @@ class TestFailureIssueCreator:
     """Service for creating GitHub issues from test failures."""
 
     def __init__(
-    self,
-    correlator: Optional[LogFailureCorrelator] = None,
-    owner: str = "QHuuT",
-    repo: str = "gonogo",
-    
-):
+        self,
+        correlator: Optional[LogFailureCorrelator] = None,
+        owner: str = "QHuuT",
+        repo: str = "gonogo",
+    ):
         """Initialize the issue creator."""
         self.correlator = correlator or LogFailureCorrelator()
         self.owner = owner
@@ -64,27 +63,16 @@ class TestFailureIssueCreator:
     def _validate_github_cli(self) -> bool:
         """Validate GitHub CLI is available and authenticated."""
         try:
-            result = subprocess.run(
-    ["gh",
-    "auth",
-    "status"],
-    capture_output=True,
-    text=True
-)
+            result = subprocess.run(["gh", "auth", "status"], capture_output=True, text=True)
             if result.returncode != 0:
                 raise RuntimeError("GitHub CLI not authenticated. Run 'gh auth login'")
             return True
         except FileNotFoundError:
-            raise RuntimeError(
-                "GitHub CLI not installed. Install from https://cli.github.com/"
-            )
+            raise RuntimeError("GitHub CLI not installed. Install from https://cli.github.com/")
 
     def create_issue_from_failure(
-    self,
-    failure_id: int,
-    auto_assign: bool = True,
-    dry_run: bool = False
-) -> IssueCreationResult:
+        self, failure_id: int, auto_assign: bool = True, dry_run: bool = False
+    ) -> IssueCreationResult:
         """
         Create a GitHub issue from a test failure.
 
@@ -100,14 +88,13 @@ class TestFailureIssueCreator:
         context = self.correlator.correlate_failure_with_logs(failure_id)
         if not context:
             return IssueCreationResult(
-    success=False,
-    issue_number=None,
-    issue_url=None,
-    error_message=f"No context found for failure ID {failure_id}",
-    labels_applied=[],
-    auto_assigned=False,
-    
-)
+                success=False,
+                issue_number=None,
+                issue_url=None,
+                error_message=f"No context found for failure ID {failure_id}",
+                labels_applied=[],
+                auto_assigned=False,
+            )
 
         # Generate issue template
         template = self._generate_issue_template(context)
@@ -125,10 +112,9 @@ class TestFailureIssueCreator:
                 f.write(f"**Body:**\n\n{template.body}")
 
             return IssueCreationResult(
-    success=True,
-    issue_number=None,
-    issue_url=str(output_path
-),
+                success=True,
+                issue_number=None,
+                issue_url=str(output_path),
                 error_message=None,
                 labels_applied=template.labels,
                 auto_assigned=auto_assign,
@@ -138,11 +124,8 @@ class TestFailureIssueCreator:
         return self._create_github_issue(template, auto_assign)
 
     def create_batch_issues_from_failures(
-    self,
-    failure_ids: List[int],
-    auto_assign: bool = True,
-    dry_run: bool = False
-) -> List[IssueCreationResult]:
+        self, failure_ids: List[int], auto_assign: bool = True, dry_run: bool = False
+    ) -> List[IssueCreationResult]:
         """
         Create GitHub issues for multiple failures.
 
@@ -158,9 +141,7 @@ class TestFailureIssueCreator:
 
         for failure_id in failure_ids:
             try:
-                result = self.create_issue_from_failure(
-                    failure_id, auto_assign, dry_run
-                )
+                result = self.create_issue_from_failure(failure_id, auto_assign, dry_run)
                 results.append(result)
 
                 # Brief pause between creations to avoid rate limiting
@@ -171,12 +152,11 @@ class TestFailureIssueCreator:
 
             except Exception as e:
                 results.append(
-    IssueCreationResult(
+                    IssueCreationResult(
                         success=False,
-    issue_number=None,
-    issue_url=None,
-    error_message=f"Exception creating issue for failure {failure_id}: {str(e
-)}",
+                        issue_number=None,
+                        issue_url=None,
+                        error_message=f"Exception creating issue for failure {failure_id}: {str(e)}",
                         labels_applied=[],
                         auto_assigned=False,
                     )
@@ -184,9 +164,7 @@ class TestFailureIssueCreator:
 
         return results
 
-    def get_recent_failure_candidates(
-        self, days: int = 7, min_occurrences: int = 2
-    ) -> List[Dict[str, Any]]:
+    def get_recent_failure_candidates(self, days: int = 7, min_occurrences: int = 2) -> List[Dict[str, Any]]:
         """
         Get recent failures that are candidates for GitHub issue creation.
 
@@ -207,28 +185,24 @@ class TestFailureIssueCreator:
                 # Check if already has a GitHub issue
                 if not self._has_existing_issue(failure):
                     candidates.append(
-    {
-    
+                        {
                             "failure_id": failure["id"],
-    "test_name": failure["test_name"],
-    "category": failure["category"],
-    "severity": failure["severity"],
-    "occurrence_count": failure["occurrence_count"],
-    "last_seen": failure["last_seen"],
-    "recommended_labels": self._get_recommended_labels(failure
-),
-                        
-}
+                            "test_name": failure["test_name"],
+                            "category": failure["category"],
+                            "severity": failure["severity"],
+                            "occurrence_count": failure["occurrence_count"],
+                            "last_seen": failure["last_seen"],
+                            "recommended_labels": self._get_recommended_labels(failure),
+                        }
                     )
 
         # Sort by severity and occurrence count
         candidates.sort(
-    key=lambda x: (
+            key=lambda x: (
                 x["severity"] == "critical",
-    x["severity"] == "high",
-    x["occurrence_count"],
-    
-),
+                x["severity"] == "high",
+                x["occurrence_count"],
+            ),
             reverse=True,
         )
 
@@ -250,13 +224,12 @@ class TestFailureIssueCreator:
         assignees = self._determine_assignees(context)
 
         return IssueTemplate(
-    title=title,
-    body=body,
-    labels=labels,
-    assignees=assignees,
-    template_type=template_type,
-    
-)
+            title=title,
+            body=body,
+            labels=labels,
+            assignees=assignees,
+            template_type=template_type,
+        )
 
     def _determine_labels(self, context: FailureContext) -> List[str]:
         """Determine appropriate labels based on failure context."""
@@ -264,7 +237,6 @@ class TestFailureIssueCreator:
 
         # Add category-based labels
         category_labels = {
-    
             "assertion_error": "test-failure",
             "import_error": "dependencies",
             "unicode_error": "encoding",
@@ -272,15 +244,11 @@ class TestFailureIssueCreator:
             "network_error": "infrastructure",
             "database_error": "database",
             "permission_error": "infrastructure",
-        
-}
+        }
 
         failure_message = context.failure_message.lower()
         for category, label in category_labels.items():
-            if (
-                category in failure_message
-                or category.replace("_", " ") in failure_message
-            ):
+            if category in failure_message or category.replace("_", " ") in failure_message:
                 labels.append(label)
                 break
 
@@ -310,10 +278,7 @@ class TestFailureIssueCreator:
         """Determine the type of issue template to use."""
         if len(context.related_failures) >= 3:
             return "flaky-test"
-        elif (
-            "timeout" in context.failure_message.lower()
-            or "network" in context.failure_message.lower()
-        ):
+        elif "timeout" in context.failure_message.lower() or "network" in context.failure_message.lower():
             return "infrastructure"
         else:
             return "defect"
@@ -336,11 +301,7 @@ class TestFailureIssueCreator:
             error_type = "Connection Error"
 
         # Create title with test name and error type
-        test_name_short = (
-            context.test_name.split("::")[-1]
-            if "::" in context.test_name
-            else context.test_name
-        )
+        test_name_short = context.test_name.split("::")[-1] if "::" in context.test_name else context.test_name
 
         return f"{error_type} in {test_name_short}"
 
@@ -375,12 +336,11 @@ class TestFailureIssueCreator:
             body_parts.extend(["", "No environment context available"])
 
         body_parts.extend(
-    [
+            [
                 "",
-    "## Log Analysis",
-    "",
-    f"**Setup logs:** {len(context.setup_logs
-)}",
+                "## Log Analysis",
+                "",
+                f"**Setup logs:** {len(context.setup_logs)}",
                 f"**Execution logs:** {len(context.execution_logs)}",
                 f"**Teardown logs:** {len(context.teardown_logs)}",
             ]
@@ -392,53 +352,44 @@ class TestFailureIssueCreator:
                 body_parts.append(f"- {hint}")
 
         body_parts.extend(
-    [
+            [
                 "",
-    "## Reproduction Guide",
-    "",
-    "```bash",
-    context.reproduction_guide.replace("\n## ",
-    "\n# "
-).replace(
-                    "\n### ", "\n## "
-                ),
+                "## Reproduction Guide",
+                "",
+                "```bash",
+                context.reproduction_guide.replace("\n## ", "\n# ").replace("\n### ", "\n## "),
                 "```",
             ]
         )
 
         if context.related_failures:
-            body_parts.extend(
-                ["", f"## Related Failures ({len(context.related_failures)})", ""]
-            )
+            body_parts.extend(["", f"## Related Failures ({len(context.related_failures)})", ""])
             for related in context.related_failures[:5]:  # Limit to top 5
                 body_parts.append(
                     (
-    f"- **{related.get('test_name', 'Unknown')}**: "
-    f"{related.get('failure_message', 'No message')[:100]}..."
-)
+                        f"- **{related.get('test_name', 'Unknown')}**: "
+                        f"{related.get('failure_message', 'No message')[:100]}..."
+                    )
                 )
 
         body_parts.extend(
-    [
+            [
                 "",
-    "## Next Steps",
-    "",
-    "- [ ] Review failure context and logs",
-    "- [ ] Run reproduction steps locally",
-    "- [ ] Identify root cause",
-    "- [ ] Implement fix",
-    "- [ ] Verify fix with test execution",
-    "",
-    "---",
-    "",
-    f"**Auto-generated from test failure tracking system**",
-    f"**View correlation report:** `quality/reports/log_correlation_report.json`",
-    (
-    f"**Reproduction "
-    f"script:** `quality/reports/reproduction_script_{context.failure_id}.py`"
-),
-    ]
-)
+                "## Next Steps",
+                "",
+                "- [ ] Review failure context and logs",
+                "- [ ] Run reproduction steps locally",
+                "- [ ] Identify root cause",
+                "- [ ] Implement fix",
+                "- [ ] Verify fix with test execution",
+                "",
+                "---",
+                "",
+                f"**Auto-generated from test failure tracking system**",
+                f"**View correlation report:** `quality/reports/log_correlation_report.json`",
+                (f"**Reproduction script:** `quality/reports/reproduction_script_{context.failure_id}.py`"),
+            ]
+        )
 
         return "\n".join(body_parts)
 
@@ -448,18 +399,11 @@ class TestFailureIssueCreator:
         # Future enhancement: could analyze code ownership, recent commits, etc.
         return []
 
-    def _create_github_issue(
-        self, template: IssueTemplate, auto_assign: bool
-    ) -> IssueCreationResult:
+    def _create_github_issue(self, template: IssueTemplate, auto_assign: bool) -> IssueCreationResult:
         """Create the actual GitHub issue."""
         try:
             # Create temporary file for issue body
-            with tempfile.NamedTemporaryFile(
-    mode="w",
-    suffix=".md",
-    delete=False,
-    encoding="utf-8"
-) as f:
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False, encoding="utf-8") as f:
                 f.write(template.body)
                 body_file = f.name
 
@@ -495,32 +439,29 @@ class TestFailureIssueCreator:
             Path(body_file).unlink()
 
             return IssueCreationResult(
-    success=True,
-    issue_number=issue_number,
-    issue_url=issue_url,
-    error_message=None,
-    labels_applied=template.labels,
-    auto_assigned=auto_assign and bool(template.assignees
-),
+                success=True,
+                issue_number=issue_number,
+                issue_url=issue_url,
+                error_message=None,
+                labels_applied=template.labels,
+                auto_assigned=auto_assign and bool(template.assignees),
             )
 
         except subprocess.CalledProcessError as e:
             return IssueCreationResult(
-    success=False,
-    issue_number=None,
-    issue_url=None,
-    error_message=f"GitHub CLI error: {e.stderr}",
-    labels_applied=[],
-    auto_assigned=False,
-    
-)
+                success=False,
+                issue_number=None,
+                issue_url=None,
+                error_message=f"GitHub CLI error: {e.stderr}",
+                labels_applied=[],
+                auto_assigned=False,
+            )
         except Exception as e:
             return IssueCreationResult(
-    success=False,
-    issue_number=None,
-    issue_url=None,
-    error_message=f"Unexpected error: {str(e
-)}",
+                success=False,
+                issue_number=None,
+                issue_url=None,
+                error_message=f"Unexpected error: {str(e)}",
                 labels_applied=[],
                 auto_assigned=False,
             )
@@ -540,20 +481,19 @@ class TestFailureIssueCreator:
             search_query = f"repo:{self.owner}/{self.repo} {test_name} in:title"
 
             result = subprocess.run(
-    [
+                [
                     "gh",
-    "issue",
-    "list",
-    "--search",
-    search_query,
-    "--json",
-    "number,title",
-    ],
-    capture_output=True,
-    text=True,
-    check=True,
-    
-)
+                    "issue",
+                    "list",
+                    "--search",
+                    search_query,
+                    "--json",
+                    "number,title",
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
 
             issues = json.loads(result.stdout)
             return len(issues) > 0
@@ -598,11 +538,7 @@ class TestFailureIssueCreator:
             f"- **Total failures processed:** {len(results)}",
             f"- **Issues created successfully:** {len(successful)}",
             f"- **Failed creations:** {len(failed)}",
-            (
-                f"- **Success rate:** {len(successful)/len(results)*100:.1f}%"
-                if results
-                else "0%"
-            ),
+            (f"- **Success rate:** {len(successful) / len(results) * 100:.1f}%" if results else "0%"),
             "",
         ]
 
@@ -610,10 +546,7 @@ class TestFailureIssueCreator:
             report_lines.extend(["## ✅ Successfully Created Issues", ""])
             for result in successful:
                 report_lines.append(
-                    (
-    f"- [#{result.issue_number}]({result.issue_url}) - "
-    f"Labels: {', '.join(result.labels_applied)}"
-)
+                    (f"- [#{result.issue_number}]({result.issue_url}) - Labels: {', '.join(result.labels_applied)}")
                 )
 
         if failed:

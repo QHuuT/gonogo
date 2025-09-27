@@ -90,8 +90,12 @@ def populate_sample_data():
         epic4 = Epic(
             epic_id="EP-00004",
             title="GitHub Workflow Integration",
-            description="Automated GitHub workflows for issue management and epic linking",
-            business_value="Streamlined development workflow and automated project management",
+            description=(
+                "Automated GitHub workflows for issue management and epic linking"
+            ),
+            business_value=(
+                "Streamlined development workflow and automated project management"
+            ),
             priority="high",
             status="in_progress",
             created_at=datetime.utcnow() - timedelta(days=18),
@@ -632,7 +636,8 @@ def show_sample_data_summary():
             if tests:
                 passed = sum(1 for t in tests if t.last_execution_status == "passed")
                 failed = sum(1 for t in tests if t.last_execution_status == "failed")
-                skipped = sum(1 for t in tests if t.last_execution_status == "skipped")
+                skipped = \
+                    sum(1 for t in tests if t.last_execution_status == "skipped")
                 print(
                     f"  Test Results: {passed} passed, {failed} failed, {skipped} skipped"
                 )

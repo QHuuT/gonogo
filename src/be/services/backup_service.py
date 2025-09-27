@@ -51,11 +51,7 @@ class BackupService:
     - 5-minute recovery time objective
     """
 
-    def __init__(
-    self,
-    backup_base_dir: str = "backups",
-    encryption_key: Optional[str] = None
-):
+    def __init__(self, backup_base_dir: str = "backups", encryption_key: Optional[str] = None):
         """
         Initialize backup service.
 
@@ -85,16 +81,13 @@ class BackupService:
             dest.mkdir(parents=True, exist_ok=True)
 
         logger.info(
-    "Backup service initialized with %d destinations",
-    len(self.backup_destinations
-),
+            "Backup service initialized with %d destinations",
+            len(self.backup_destinations),
         )
 
     def _generate_encryption_key(self) -> str:
         """Generate encryption key for GDPR data protection."""
-        password = os.getenv(
-            "BACKUP_ENCRYPTION_PASSWORD", "gonogo-backup-key-2025"
-        ).encode()
+        password = os.getenv("BACKUP_ENCRYPTION_PASSWORD", "gonogo-backup-key-2025").encode()
         salt = os.getenv("BACKUP_SALT", "gonogo-rtm-salt").encode()
 
         kdf = PBKDF2HMAC(
@@ -143,12 +136,10 @@ class BackupService:
                     logger.error("Backup failed to destination %s: %s", destination, e)
                     backup_results.append(
                         {
-    
                             "destination": str(destination),
                             "success": False,
                             "error": str(e),
-                        
-}
+                        }
                     )
 
             # Validate backup integrity
@@ -167,7 +158,6 @@ class BackupService:
             duration = (end_time - start_time).total_seconds()
 
             result = {
-    
                 "backup_id": backup_id,
                 "start_time": start_time.isoformat(),
                 "end_time": end_time.isoformat(),
@@ -177,8 +167,7 @@ class BackupService:
                 "backup_results": backup_results,
                 "integrity_validated": True,
                 "gdpr_compliant": True,
-            
-}
+            }
 
             logger.info("Daily backup completed successfully: %s", backup_id)
             return result
@@ -187,9 +176,7 @@ class BackupService:
             logger.error("Daily backup failed: %s", e)
             raise BackupError(f"Daily backup failed: {e}")
 
-    def _create_backup_to_destination(
-        self, backup_id: str, destination: Path
-    ) -> Dict[str, any]:
+    def _create_backup_to_destination(self, backup_id: str, destination: Path) -> Dict[str, any]:
         """Create backup to specific destination."""
         backup_filename = f"gonogo_backup_{backup_id}.db"
         backup_path = destination / backup_filename
@@ -198,9 +185,7 @@ class BackupService:
         if DATABASE_URL.startswith("sqlite:///"):
             source_db_path = DATABASE_URL.replace("sqlite:///", "")
         else:
-            raise BackupError(
-                "Only SQLite databases are currently supported for backup"
-            )
+            raise BackupError("Only SQLite databases are currently supported for backup")
 
         # Use SQLite backup API for atomic backup
         self._create_sqlite_backup(source_db_path, str(backup_path))
@@ -221,7 +206,6 @@ class BackupService:
             metadata["encrypted_file"] = str(encrypted_path)
 
         return {
-    
             "destination": str(destination),
             "success": True,
             "backup_id": backup_id,
@@ -229,8 +213,7 @@ class BackupService:
             "metadata_path": str(metadata_path),
             "file_size": backup_path.stat().st_size if backup_path.exists() else 0,
             "checksum": self._calculate_checksum(backup_path),
-        
-}
+        }
 
     def _create_sqlite_backup(self, source_path: str, backup_path: str) -> None:
         """Create SQLite backup using the backup API for atomic operation."""
@@ -254,24 +237,17 @@ class BackupService:
             logger.error("SQLite backup failed: %s", e)
             raise BackupError(f"SQLite backup failed: {e}")
 
-    def _create_backup_metadata(
-        self, backup_id: str, backup_path: Path
-    ) -> Dict[str, any]:
+    def _create_backup_metadata(self, backup_id: str, backup_path: Path) -> Dict[str, any]:
         """Create comprehensive backup metadata."""
         db = get_db_session()
         try:
             # Count RTM entities
             epic_count = db.execute(text("SELECT COUNT(*) FROM epics")).scalar()
-            user_story_count = db.execute(
-                text("SELECT COUNT(*) FROM user_stories")
-            ).scalar()
+            user_story_count = db.execute(text("SELECT COUNT(*) FROM user_stories")).scalar()
             defect_count = db.execute(text("SELECT COUNT(*) FROM defects")).scalar()
-            capability_count = db.execute(
-                text("SELECT COUNT(*) FROM capabilities")
-            ).scalar()
+            capability_count = db.execute(text("SELECT COUNT(*) FROM capabilities")).scalar()
 
             metadata = {
-    
                 "backup_id": backup_id,
                 "created_at": datetime.now(UTC).isoformat(),
                 "database_url": DATABASE_URL,
@@ -282,12 +258,8 @@ class BackupService:
                     "user_stories": user_story_count,
                     "defects": defect_count,
                     "capabilities": capability_count,
-                    "total": epic_count
-                    + user_story_count
-                    + defect_count
-                    + capability_count,
-                
-},
+                    "total": epic_count + user_story_count + defect_count + capability_count,
+                },
                 "backup_version": "1.0",
                 "gdpr_compliant": True,
                 "unicode_safe": True,
@@ -305,9 +277,7 @@ class BackupService:
 
         health = check_database_health()
         if health["status"] != "healthy":
-            raise BackupError(
-                f"Database unhealthy: {health.get('error', 'Unknown error')}"
-            )
+            raise BackupError(f"Database unhealthy: {health.get('error', 'Unknown error')}")
 
     def _validate_backup_integrity(self, backup_path: str) -> bool:
         """
@@ -356,9 +326,7 @@ class BackupService:
             try:
                 # Check for GDPR consent records table
                 result = db.execute(
-                    text(
-                        "SELECT name FROM sqlite_master WHERE type='table' AND name='consent_records'"
-                    )
+                    text("SELECT name FROM sqlite_master WHERE type='table' AND name='consent_records'")
                 ).fetchone()
                 return result is not None
             finally:
@@ -421,9 +389,7 @@ class BackupService:
             except Exception as e:
                 logger.error("Cleanup failed for destination %s: %s", destination, e)
 
-    def restore_from_backup(
-        self, backup_path: str, target_db_path: Optional[str] = None
-    ) -> Dict[str, any]:
+    def restore_from_backup(self, backup_path: str, target_db_path: Optional[str] = None) -> Dict[str, any]:
         """
         Restore database from backup with 5-minute recovery target.
 
@@ -443,9 +409,7 @@ class BackupService:
                 if DATABASE_URL.startswith("sqlite:///"):
                     target_db_path = DATABASE_URL.replace("sqlite:///", "")
                 else:
-                    raise BackupError(
-                        "Target database path required for non-SQLite databases"
-                    )
+                    raise BackupError("Target database path required for non-SQLite databases")
 
             # Validate backup file exists and is readable
             backup_file = Path(backup_path)
@@ -480,26 +444,23 @@ class BackupService:
             restoration_metadata = self._verify_restored_data(target_db_path)
 
             result = {
-    
                 "restored_at": end_time.isoformat(),
                 "duration_seconds": duration,
                 "source_backup": backup_path,
                 "target_database": target_db_path,
                 "integrity_verified": True,
                 "recovery_time_target_met": duration <= 300,
-     # 5 minutes = 300 seconds
+                # 5 minutes = 300 seconds
                 "restoration_metadata": restoration_metadata,
-            
-}
+            }
 
             logger.info("Database restoration completed in %.2f seconds", duration)
 
             if duration > 300:
                 logger.warning(
-    "Recovery time target exceeded: %.2f seconds > 300 seconds",
-    duration,
-    
-)
+                    "Recovery time target exceeded: %.2f seconds > 300 seconds",
+                    duration,
+                )
 
             return result
 
@@ -549,17 +510,12 @@ class BackupService:
             conn.close()
 
             return {
-    
                 "epics": epic_count,
                 "user_stories": user_story_count,
                 "defects": defect_count,
                 "capabilities": capability_count,
-                "total_entities": epic_count
-                + user_story_count
-                + defect_count
-                + capability_count,
-            
-}
+                "total_entities": epic_count + user_story_count + defect_count + capability_count,
+            }
 
         except Exception as e:
             logger.error("Data verification failed: %s", e)
@@ -568,26 +524,22 @@ class BackupService:
     def get_backup_status(self) -> Dict[str, any]:
         """Get comprehensive backup system status."""
         status = {
-    
             "service_status": "operational",
             "backup_destinations": [],
             "recent_backups": [],
             "retention_days": self.retention_days,
             "gdpr_compliance": True,
             "encryption_enabled": True,
-        
-}
+        }
 
         # Check each destination
         for destination in self.backup_destinations:
             dest_status = {
-    
                 "path": str(destination),
                 "accessible": destination.exists(),
                 "backup_count": len(list(destination.glob("gonogo_backup_*.db"))),
                 "latest_backup": None,
-            
-}
+            }
 
             # Find latest backup
             backups = sorted(
@@ -598,16 +550,10 @@ class BackupService:
             if backups:
                 latest = backups[0]
                 dest_status["latest_backup"] = {
-    
                     "file": latest.name,
-                    "created": datetime.fromtimestamp(
-                        latest.stat().st_mtime,
-    UTC
-                    ).isoformat(),
-                    "size_mb": round(latest.stat().st_size / (1024 * 1024),
-    2),
-                
-}
+                    "created": datetime.fromtimestamp(latest.stat().st_mtime, UTC).isoformat(),
+                    "size_mb": round(latest.stat().st_size / (1024 * 1024), 2),
+                }
 
             status["backup_destinations"].append(dest_status)
 

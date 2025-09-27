@@ -51,9 +51,7 @@ class ComponentInheritanceService:
             True if component was inherited, False otherwise
         """
         if not force and defect.component is not None:
-            logger.debug(
-                f"Defect {defect.defect_id} already has component: {defect.component}"
-            )
+            logger.debug(f"Defect {defect.defect_id} already has component: {defect.component}")
             return False
 
         if not defect.github_user_story_number:
@@ -68,28 +66,18 @@ class ComponentInheritanceService:
 
         if not user_story:
             logger.warning(
-                (
-    f"Defect {defect.defect_id} references "
-    f"non-existent User Story #{defect.github_user_story_number}"
-)
+                (f"Defect {defect.defect_id} references non-existent User Story #{defect.github_user_story_number}")
             )
             return False
 
         if not user_story.component:
-            logger.debug(
-                f"User Story {user_story.user_story_id} has no component to inherit"
-            )
+            logger.debug(f"User Story {user_story.user_story_id} has no component to inherit")
             return False
 
         old_component = defect.component
         defect.component = user_story.component
 
-        logger.info(
-            (
-    f"Inherited component for "
-    f"{defect.defect_id}: {old_component} → {defect.component}"
-)
-        )
+        logger.info((f"Inherited component for {defect.defect_id}: {old_component} → {defect.component}"))
         return True
 
     def inherit_test_component(self, test: Test, force: bool = False) -> bool:
@@ -112,32 +100,21 @@ class ComponentInheritanceService:
             return False
 
         user_story = (
-            self.session.query(UserStory)
-            .filter(UserStory.github_issue_number == test.github_user_story_number)
-            .first()
+            self.session.query(UserStory).filter(UserStory.github_issue_number == test.github_user_story_number).first()
         )
 
         if not user_story:
-            logger.warning(
-                (
-    f"Test {test.id} references "
-    f"non-existent User Story #{test.github_user_story_number}"
-)
-            )
+            logger.warning((f"Test {test.id} references non-existent User Story #{test.github_user_story_number}"))
             return False
 
         if not user_story.component:
-            logger.debug(
-                f"User Story {user_story.user_story_id} has no component to inherit"
-            )
+            logger.debug(f"User Story {user_story.user_story_id} has no component to inherit")
             return False
 
         old_component = test.component
         test.component = user_story.component
 
-        logger.info(
-            f"Inherited component for test {test.id}: {old_component} → {test.component}"
-        )
+        logger.info(f"Inherited component for test {test.id}: {old_component} → {test.component}")
         return True
 
     def update_epic_components(self, epic: Epic) -> bool:
@@ -154,9 +131,7 @@ class ComponentInheritanceService:
         epic.update_component_from_user_stories()
 
         if old_component != epic.component:
-            logger.info(
-                f"Updated Epic {epic.epic_id} components: {old_component} → {epic.component}"
-            )
+            logger.info(f"Updated Epic {epic.epic_id} components: {old_component} → {epic.component}")
             return True
 
         return False
@@ -174,14 +149,12 @@ class ComponentInheritanceService:
         logger.info(f"Processing defect component inheritance (force={force})")
 
         stats = {
-    
             "total_defects": 0,
             "defects_with_user_stories": 0,
             "inherited_successfully": 0,
             "inheritance_failures": 0,
             "already_had_component": 0,
-        
-}
+        }
 
         defects = self.session.query(Defect).all()
         stats["total_defects"] = len(defects)
@@ -200,9 +173,7 @@ class ComponentInheritanceService:
                     else:
                         stats["inheritance_failures"] += 1
                 except Exception as e:
-                    logger.error(
-                        f"Error inheriting component for {defect.defect_id}: {e}"
-                    )
+                    logger.error(f"Error inheriting component for {defect.defect_id}: {e}")
                     stats["inheritance_failures"] += 1
 
         return stats
@@ -220,14 +191,12 @@ class ComponentInheritanceService:
         logger.info(f"Processing test component inheritance (force={force})")
 
         stats = {
-    
             "total_tests": 0,
             "tests_with_user_stories": 0,
             "inherited_successfully": 0,
             "inheritance_failures": 0,
             "already_had_component": 0,
-        
-}
+        }
 
         tests = self.session.query(Test).all()
         stats["total_tests"] = len(tests)
@@ -313,14 +282,10 @@ class ComponentInheritanceService:
 
             if not dry_run:
                 self.session.commit()
-                logger.info(
-                    f"Committed {results['total_changes']} component inheritance changes"
-                )
+                logger.info(f"Committed {results['total_changes']} component inheritance changes")
             else:
                 self.session.rollback()
-                logger.info(
-                    f"DRY RUN: Would commit {results['total_changes']} component inheritance changes"
-                )
+                logger.info(f"DRY RUN: Would commit {results['total_changes']} component inheritance changes")
 
         except Exception as e:
             logger.error(f"Error during full inheritance processing: {e}")
@@ -339,13 +304,11 @@ class ComponentInheritanceService:
         logger.info("Validating component consistency")
 
         results = {
-    
             "total_inconsistencies": 0,
             "defect_inconsistencies": [],
             "test_inconsistencies": [],
             "epic_inconsistencies": [],
-        
-}
+        }
 
         # Check defects vs their User Stories
         defects = (
@@ -360,35 +323,23 @@ class ComponentInheritanceService:
         for defect in defects:
             user_story = (
                 self.session.query(UserStory)
-                .filter(
-                    UserStory.github_issue_number == defect.github_user_story_number
-                )
+                .filter(UserStory.github_issue_number == defect.github_user_story_number)
                 .first()
             )
 
-            if (
-                user_story
-                and user_story.component
-                and defect.component != user_story.component
-            ):
+            if user_story and user_story.component and defect.component != user_story.component:
                 inconsistency = {
-    
                     "defect_id": defect.defect_id,
                     "defect_component": defect.component,
                     "user_story_id": user_story.user_story_id,
                     "user_story_component": user_story.component,
-                
-}
+                }
                 results["defect_inconsistencies"].append(inconsistency)
                 results["total_inconsistencies"] += 1
 
         # Check tests vs their User Stories
         tests = (
-            self.session.query(Test)
-            .filter(
-                Test.github_user_story_number.isnot(None), Test.component.isnot(None)
-            )
-            .all()
+            self.session.query(Test).filter(Test.github_user_story_number.isnot(None), Test.component.isnot(None)).all()
         )
 
         for test in tests:
@@ -398,25 +349,17 @@ class ComponentInheritanceService:
                 .first()
             )
 
-            if (
-                user_story
-                and user_story.component
-                and test.component != user_story.component
-            ):
+            if user_story and user_story.component and test.component != user_story.component:
                 inconsistency = {
-    
                     "test_id": test.id,
                     "test_component": test.component,
                     "user_story_id": user_story.user_story_id,
                     "user_story_component": user_story.component,
-                
-}
+                }
                 results["test_inconsistencies"].append(inconsistency)
                 results["total_inconsistencies"] += 1
 
-        logger.info(
-            f"Found {results['total_inconsistencies']} component inconsistencies"
-        )
+        logger.info(f"Found {results['total_inconsistencies']} component inconsistencies")
         return results
 
 

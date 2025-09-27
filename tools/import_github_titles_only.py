@@ -84,7 +84,10 @@ def import_user_stories_from_titles(dry_run: bool = True):
                 ).first()
 
                 if existing:
-                    print(f"  {us_id}: Already exists (#{existing.github_issue_number})")
+                    print(
+                        f"  {us_id}:"
+                        f"Already exists (#{existing.github_issue_number})"
+                    )
                     processed_ids.add(us_id)
                     continue
 
@@ -197,7 +200,10 @@ def import_defects_from_titles(dry_run: bool = True):
                 ).first()
 
                 if existing:
-                    print(f"  {def_id}: Already exists (#{existing.github_issue_number})")
+                    print(
+                        f"  {def_id}:"
+                        f"Already exists (#{existing.github_issue_number})"
+                    )
                     continue
 
                 print(f"  {def_id}: {title[:50]}...")
@@ -232,7 +238,8 @@ def main():
     """Main entry point."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Import GitHub entities using title-based ID extraction')
+    parser = \
+        argparse.ArgumentParser(description='Import GitHub entities using title-based ID extraction')
     parser.add_argument('--dry-run', action='store_true', default=True,
                        help='Only analyze what would be imported (default: True)')
     parser.add_argument('--execute', action='store_true', default=False,

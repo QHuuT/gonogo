@@ -33,7 +33,8 @@ EXTERNAL_DEPENDENCIES = {
             "datetime.datetime.utcnow() is deprecated",
             "datetime.utcnow() is deprecated"
         ],
-        "test_command": ["python", "-c", "import sqlalchemy; from sqlalchemy import create_engine; engine = create_engine('sqlite:///:memory:'); print('Test complete')"]
+        "test_command": ["python", "-c", "import sqlalchemy; from sqlalchemy import create_engine; engine = \
+            create_engine('sqlite:///:memory:'); print('Test complete')"]
     },
     "pytest_asyncio": {
         "package": "pytest-asyncio",
@@ -247,7 +248,8 @@ class ExternalWarningMonitor:
             ])
         else:
             improvements = [c for c in changes if c.get("improvement", False)]
-            regressions = [c for c in changes if c.get("improvement", False) == False and c["type"] == "warning_count_change"]
+            regressions = \
+                [c for c in changes if c.get("improvement", False) == False and c["type"] == "warning_count_change"]
             version_changes = [c for c in changes if c["type"] == "version_change"]
 
             if improvements:
@@ -360,7 +362,8 @@ class ExternalWarningMonitor:
         self.create_baseline()
 
 def main():
-    parser = argparse.ArgumentParser(description="Monitor external dependency warnings")
+    parser = \
+        argparse.ArgumentParser(description="Monitor external dependency warnings")
     parser.add_argument("--baseline", action="store_true", help="Create/update baseline")
     parser.add_argument("--check", action="store_true", help="Check for changes")
     parser.add_argument("--report", action="store_true", help="Generate monitoring report")

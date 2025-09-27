@@ -255,7 +255,8 @@ class GitHubDataImporter:
                 continue
 
             # Check if epic already exists in database
-            existing_epic = self.db_session.query(Epic).filter(Epic.epic_id == epic_id).first()
+            existing_epic = \
+                self.db_session.query(Epic).filter(Epic.epic_id == epic_id).first()
 
             # Clean epic title by removing epic ID prefix (handle both ": " and " - " separators)
             cleaned_title = issue["title"]
@@ -267,8 +268,10 @@ class GitHubDataImporter:
             if existing_epic:
                 # Update existing epic
                 existing_epic.title = cleaned_title
-                existing_epic.description = issue.get("body", "")[:500] if issue.get("body") else ""
-                existing_epic.priority = self.get_priority_from_labels(issue.get("labels", []))
+                existing_epic.description = \
+                    issue.get("body", "")[:500] if issue.get("body") else ""
+                existing_epic.priority = \
+                    self.get_priority_from_labels(issue.get("labels", []))
                 existing_epic.status = self.get_status_from_state_and_labels(
                     issue["state"], issue.get("labels", [])
                 )
@@ -329,7 +332,10 @@ class GitHubDataImporter:
 
             # Skip if we've already processed this user story ID in this run
             if us_id in processed_us_ids:
-                print(f"[WARNING] Duplicate user story {us_id} in GitHub issues, skipping second occurrence")
+                print(
+                    f"[WARNING] Duplicate user"
+                    f"story {us_id} in GitHub issues, skipping second occurrence"
+                )
                 continue
             processed_us_ids.add(us_id)
 
@@ -375,7 +381,8 @@ class GitHubDataImporter:
                 continue
 
             # Check if user story already exists
-            existing_us = self.db_session.query(UserStory).filter(UserStory.user_story_id == us_id).first()
+            existing_us = \
+                self.db_session.query(UserStory).filter(UserStory.user_story_id == us_id).first()
 
             if existing_us:
                 # Update existing user story
@@ -384,9 +391,12 @@ class GitHubDataImporter:
                 existing_us.github_issue_state = issue["state"]
                 existing_us.github_labels = str(issue.get("labels", []))
                 existing_us.title = issue["title"].replace(f"{us_id}: ", "")
-                existing_us.description = issue.get("body", "")[:500] if issue.get("body") else ""
-                existing_us.story_points = self.extract_story_points(issue.get("body", ""))
-                existing_us.priority = self.get_priority_from_labels(issue.get("labels", []))
+                existing_us.description = \
+                    issue.get("body", "")[:500] if issue.get("body") else ""
+                existing_us.story_points = \
+                    self.extract_story_points(issue.get("body", ""))
+                existing_us.priority = \
+                    self.get_priority_from_labels(issue.get("labels", []))
                 existing_us.implementation_status = self.get_status_from_state_and_labels(
                     issue["state"], issue.get("labels", [])
                 )
@@ -441,7 +451,10 @@ class GitHubDataImporter:
         for issue in defect_issues:
             defect_id = self.extract_defect_id(issue["title"], issue.get("body", ""))
             if not defect_id:
-                print(f"[WARNING] Could not extract defect ID from: {issue['title']}")
+                print(
+                    f"[WARNING] Could"
+                    f"not extract defect ID from: {issue['title']}"
+                )
                 continue
 
             # Skip if defect already processed

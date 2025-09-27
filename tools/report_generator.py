@@ -797,7 +797,8 @@ def main():
     _analyze_and_report_log_quality(log_entries, report_data)
 
     print(f"Generating report with {len(report_data.test_results)} test results...")
-    output_path = generator.generate_report(report_data, args.template, args.filename)
+    output_path = \
+        generator.generate_report(report_data, args.template, args.filename)
 
     print(f"Report generation complete: {output_path}")
     print(
@@ -835,7 +836,8 @@ def _analyze_and_report_log_quality(
 
     elif conversion_rate < 50 and logs_with_test_id > 0:
         print(
-            f"\n[WARNING] Low conversion rate: {conversion_rate:.1f}% ({len(report_data.test_results)}/{logs_with_test_id})"
+            f"\n[WARNING] Low conversion rate: {conversion_rate:.1f}% "
+            f"({len(report_data.test_results)}/{logs_with_test_id})"
         )
         print("   Some log entries may be missing test_status fields.")
         print(
@@ -844,7 +846,8 @@ def _analyze_and_report_log_quality(
 
     elif len(report_data.test_results) > 0:
         print(
-            f"[SUCCESS] Good log quality: {len(report_data.test_results)} test results from {len(log_entries)} log entries"
+            f"[SUCCESS] Good log quality: {len(report_data.test_results)} test results "
+            f"from {len(log_entries)} log entries"
         )
         if logs_with_status < len(log_entries):
             incomplete_logs = len(log_entries) - logs_with_status

@@ -89,7 +89,8 @@ def create_sample_failures(tracker: FailureTracker, num_failures: int = 20):
     for i in range(num_failures):
         # Pick random test and error
         test_file = random.choice(test_files)
-        test_name = f"test_{random.choice(['function', 'method', 'scenario'])}_{i % 10}"
+        test_name = \
+            f"test_{random.choice(['function', 'method', 'scenario'])}_{i % 10}"
         error_msg, stack_trace, category = random.choice(sample_errors)
 
         # Create some variation in timing
@@ -132,7 +133,8 @@ def create_sample_failures(tracker: FailureTracker, num_failures: int = 20):
         # Create some duplicate failures (flaky tests)
         if i % 7 == 0:  # Every 7th test becomes flaky
             for _ in range(random.randint(2, 5)):
-                duplicate_time = failure_time + timedelta(hours=random.randint(1, 48))
+                duplicate_time = \
+                    failure_time + timedelta(hours=random.randint(1, 48))
                 duplicate_failure = TestFailure(
                     test_id=failure.test_id,
                     test_name=failure.test_name,

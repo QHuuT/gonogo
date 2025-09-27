@@ -33,9 +33,7 @@ if DATABASE_URL.startswith("sqlite"):
     )
 else:
     # PostgreSQL configuration for production
-    engine = create_engine(
-        DATABASE_URL, echo=os.getenv("SQL_DEBUG", "false").lower() == "true"
-    )
+    engine = create_engine(DATABASE_URL, echo=os.getenv("SQL_DEBUG", "false").lower() == "true")
 
 # Session configuration
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -98,16 +96,8 @@ def check_database_health() -> dict:
             db.execute(text("SELECT 1"))
             return {
                 "status": "healthy",
-                "database_url": (
-                    DATABASE_URL.split("@")[-1]
-                    if "@" in DATABASE_URL
-                    else DATABASE_URL
-                ),
-                "engine": (
-                    str(engine.url).split("@")[-1]
-                    if "@" in str(engine.url)
-                    else str(engine.url)
-                ),
+                "database_url": (DATABASE_URL.split("@")[-1] if "@" in DATABASE_URL else DATABASE_URL),
+                "engine": (str(engine.url).split("@")[-1] if "@" in str(engine.url) else str(engine.url)),
             }
         finally:
             db.close()
@@ -115,9 +105,5 @@ def check_database_health() -> dict:
         return {
             "status": "unhealthy",
             "error": str(e),
-            "database_url": (
-                DATABASE_URL.split("@")[-1]
-                if "@" in DATABASE_URL
-                else DATABASE_URL
-            ),
+            "database_url": (DATABASE_URL.split("@")[-1] if "@" in DATABASE_URL else DATABASE_URL),
         }

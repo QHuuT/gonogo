@@ -95,7 +95,8 @@ def tests(ctx, dry_run):
                 stats = sync.sync_tests_to_database()
 
             console.print(f"[green]Sync completed![/green]")
-            console.print(f"Created: {stats['created']}, Updated: {stats['updated']}")
+            console.print(
+                f"Created: {stats['created']}, Updated: {stats['updated']}")
             console.print(f"Linked to Epics: {stats['linked_to_epics']}")
 
             if stats["errors"] > 0:
@@ -527,7 +528,8 @@ def utils():
 @click.option(
     "--show-epic-refs", is_flag=True, help="Show Epic references found in tests"
 )
-@click.option("--show-orphaned", is_flag=True, help="Show tests not linked to any Epic")
+@click.option(
+    "--show-orphaned", is_flag=True, help="Show tests not linked to any Epic")
 @click.pass_context
 def analyze(ctx, show_epic_refs, show_orphaned):
     """Analyze test-database integration patterns."""
@@ -537,7 +539,8 @@ def analyze(ctx, show_epic_refs, show_orphaned):
         discovered_tests = discovery.discover_tests()
 
         if show_epic_refs:
-            console.print("\n[bold cyan]Epic References Found in Tests:[/bold cyan]")
+            console.print(
+                "\n[bold cyan]Epic References Found in Tests:[/bold cyan]")
             epic_refs = {}
             for test in discovered_tests:
                 for epic_ref in test["epic_references"]:
@@ -565,7 +568,8 @@ def analyze(ctx, show_epic_refs, show_orphaned):
             if ctx.obj["verbose"] and orphaned:
                 for test in orphaned[:10]:  # Show first 10
                     console.print(
-                        f"  - {test['test_file_path']}::{test['test_function_name']}"
+                        f"  - {test['test_file_path']}::"
+                        f"{test['test_function_name']}"
                     )
                 if len(orphaned) > 10:
                     console.print(f"  ... and {len(orphaned) - 10} more")

@@ -41,7 +41,7 @@ Brief description of changes and why they are needed.
 - [ ] No marketing-style language in technical docs
 
 ## ✅ Checklist
-- [ ] Code follows project style guidelines (`black`, `isort`, `flake8`)
+- [ ] Code follows project style guidelines (context-aware standards via `ruff` and `flake8`)
 - [ ] Self-review completed
 - [ ] Comments added for complex logic
 - [ ] Documentation updated (if applicable)

@@ -92,23 +92,16 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                     print("Warning: Database not available, falling back to file mode")
                     self._effective_mode = "file"
                 else:
-                    raise RuntimeError(
-                        "Database mode requested but database not available"
-                    )
+                    raise RuntimeError("Database mode requested but database not available")
         else:  # auto mode
-            if (
-                self.hybrid_config.prefer_database
-                and self._check_database_availability()
-            ):
+            if self.hybrid_config.prefer_database and self._check_database_availability():
                 self._effective_mode = "database"
             else:
                 self._effective_mode = "file"
 
         return self._effective_mode
 
-    def validate_rtm_links(
-        self, rtm_file_path: Optional[str] = None
-    ) -> RTMValidationResult:
+    def validate_rtm_links(self, rtm_file_path: Optional[str] = None) -> RTMValidationResult:
         """
         Validate RTM links using the appropriate mode.
 
@@ -128,9 +121,7 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                 rtm_file_path = self.hybrid_config.rtm_file_path
             return super().validate_rtm_links(rtm_file_path)
 
-    def _validate_database_rtm(
-        self, rtm_file_path: Optional[str] = None
-    ) -> RTMValidationResult:
+    def _validate_database_rtm(self, rtm_file_path: Optional[str] = None) -> RTMValidationResult:
         """Validate RTM using database as source of truth."""
         try:
             from be.database import get_db_session
@@ -152,11 +143,10 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                 for epic in epics:
                     github_link = self._generate_github_issue_link(epic.epic_id)
                     link = RTMLink(
-    text=epic.epic_id,
-    url=github_link,
-    type="epic",
-    valid=self._validate_github_issue_exists(epic.epic_id
-),
+                        text=epic.epic_id,
+                        url=github_link,
+                        type="epic",
+                        valid=self._validate_github_issue_exists(epic.epic_id),
                     )
                     result.total_links += 1
                     if link.valid:
@@ -169,19 +159,16 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                 for us in user_stories:
                     github_link = self._generate_github_issue_link(us.user_story_id)
                     link = RTMLink(
-    text=us.user_story_id,
-    url=github_link,
-    type="user_story",
-    valid=self._validate_github_issue_exists(us.user_story_id
-),
+                        text=us.user_story_id,
+                        url=github_link,
+                        type="user_story",
+                        valid=self._validate_github_issue_exists(us.user_story_id),
                     )
                     result.total_links += 1
                     if link.valid:
                         result.valid_links += 1
                     else:
-                        link.error_message = (
-                            f"GitHub issue {us.user_story_id} not found"
-                        )
+                        link.error_message = f"GitHub issue {us.user_story_id} not found"
                         result.invalid_links.append(link)
 
                 # Validate Test file links
@@ -189,25 +176,20 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
                     if test.test_file_path:
                         file_exists = Path(test.test_file_path).exists()
                         link = RTMLink(
-    text=test.test_file_path,
-    url=test.test_file_path,
-    type="file",
-    valid=file_exists,
-    
-)
+                            text=test.test_file_path,
+                            url=test.test_file_path,
+                            type="file",
+                            valid=file_exists,
+                        )
                         result.total_links += 1
                         if link.valid:
                             result.valid_links += 1
                         else:
-                            link.error_message = (
-                                f"Test file {test.test_file_path} not found"
-                            )
+                            link.error_message = f"Test file {test.test_file_path} not found"
                             result.invalid_links.append(link)
 
                 # Add success message
-                result.warnings.append(
-                    f"Database RTM validation complete - using database as source of truth"
-                )
+                result.warnings.append(f"Database RTM validation complete - using database as source of truth")
 
                 return result
 
@@ -249,14 +231,12 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
         database_available = self._check_database_availability()
 
         return {
-    
             "requested_mode": self.hybrid_config.mode,
             "effective_mode": effective_mode,
             "database_available": database_available,
             "fallback_enabled": self.hybrid_config.fallback_enabled,
             "prefer_database": self.hybrid_config.prefer_database,
-        
-}
+        }
 
     def export_database_to_rtm_file(self, output_path: str) -> bool:
         """
@@ -318,20 +298,20 @@ class HybridRTMLinkGenerator(BaseLinkGenerator):
         # Add epics
         epics = db.query(Epic).all()
         for epic in epics:
-            user_stories = (
-                db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
-            )
+            user_stories = db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
             us_list = ", ".join([us.user_story_id for us in user_stories])
             status = (
                 "✅ Done"
                 if epic.status == "done"
-                else "⏳ In Progress" if epic.status == "in_progress" else "📝 Planned"
+                else "⏳ In Progress"
+                if epic.status == "in_progress"
+                else "📝 Planned"
             )
 
             content += (
-    f"| [**{epic.epic_id}**](https://github.com/{self.github_owner}/{self.github_repo}/issues?q=is%3Aissue+{epic.epic_id}) | {epic.title} "
-    f"| {us_list} | {status} |\n"
-)
+                f"| [**{epic.epic_id}**](https://github.com/{self.github_owner}/{self.github_repo}/issues?q=is%3Aissue+{epic.epic_id}) | {epic.title} "
+                f"| {us_list} | {status} |\n"
+            )
 
         content += "\n## Database RTM Notice\n\n"
         content += "This file was auto-generated from the database RTM system.\n"

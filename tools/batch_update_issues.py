@@ -26,7 +26,8 @@ def get_all_issues():
 
 def get_issue_content(issue_number):
     """Get issue content."""
-    result = subprocess.run(['gh', 'issue', 'view', str(issue_number), '--json', 'title,body'],
+    result = \
+        subprocess.run(['gh', 'issue', 'view', str(issue_number), '--json', 'title,body'],
                           capture_output=True, text=True)
     if result.returncode == 0:
         return json.loads(result.stdout)
@@ -35,7 +36,8 @@ def get_issue_content(issue_number):
 def generate_user_story_template(title, body, db_data=None):
     """Generate user story template."""
     # Extract user story format from existing body
-    us_match = re.search(r'\*\*As a\*\* (.+?)\n\*\*I want\*\* (.+?)\n\*\*So that\*\* (.+?)(?:\n|$)', body)
+    us_match = \
+        re.search(r'\*\*As a\*\* (.+?)\n\*\*I want\*\* (.+?)\n\*\*So that\*\* (.+?)(?:\n|$)', body)
 
     if us_match:
         as_a = us_match.group(1).strip()
@@ -47,24 +49,31 @@ def generate_user_story_template(title, body, db_data=None):
         so_that = "[benefit to be defined]"
 
     # Extract business value
-    bv_match = re.search(r'## Business Value\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
-    business_value = bv_match.group(1).strip() if bv_match else "[Business value to be defined]"
+    bv_match = \
+        re.search(r'## Business Value\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
+    business_value = \
+        bv_match.group(1).strip() if bv_match else "[Business value to be defined]"
 
     # Extract story points
-    sp_match = re.search(r'(?:Story Points?|Points?|Estimate)[:\s]*(\d+)', body, re.IGNORECASE)
+    sp_match = \
+        re.search(r'(?:Story Points?|Points?|Estimate)[:\s]*(\d+)', body, re.IGNORECASE)
     story_points = sp_match.group(1) if sp_match else "0"
 
     # Extract priority
-    priority_match = re.search(r'Priority.*?([Hh]igh|[Mm]edium|[Ll]ow|[Cc]ritical)', body, re.IGNORECASE)
+    priority_match = \
+        re.search(r'Priority.*?([Hh]igh|[Mm]edium|[Ll]ow|[Cc]ritical)', body, re.IGNORECASE)
     priority = priority_match.group(1).lower() if priority_match else "medium"
 
     # Extract component
-    component_match = re.search(r'Component.*?([Ff]rontend|[Bb]ackend|[Dd]atabase|[Ss]ecurity|[Tt]esting|[Cc]i.?[Cc][Dd]|[Dd]ocumentation)', body, re.IGNORECASE)
+    component_match = \
+        re.search(r'Component.*?([Ff]rontend|[Bb]ackend|[Dd]atabase|[Ss]ecurity|[Tt]esting|[Cc]i.?[Cc][Dd]|[Dd]ocumentation)', body, re.IGNORECASE)
     component = component_match.group(1) if component_match else "backend"
 
     # Extract acceptance criteria
-    ac_match = re.search(r'## Acceptance Criteria[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
-    acceptance_criteria = ac_match.group(1).strip() if ac_match else "- [ ] **Given** [context], **When** [action], **Then** [expected result]"
+    ac_match = \
+        re.search(r'## Acceptance Criteria[^#]*?\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
+    acceptance_criteria = \
+        ac_match.group(1).strip() if ac_match else "- [ ] **Given** [context], **When** [action], **Then** [expected result]"
 
     template = f"""## User Story
 **As a** {as_a}
@@ -109,20 +118,28 @@ None
 def generate_defect_template(title, body, db_data=None):
     """Generate defect template."""
     # Extract steps to reproduce
-    steps_match = re.search(r'## Steps to Reproduce\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
-    steps = steps_match.group(1).strip() if steps_match else "1. [Step to reproduce the issue]"
+    steps_match = \
+        re.search(r'## Steps to Reproduce\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
+    steps = \
+        steps_match.group(1).strip() if steps_match else "1. [Step to reproduce the issue]"
 
     # Extract expected behavior
-    expected_match = re.search(r'## Expected Behavior\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
-    expected = expected_match.group(1).strip() if expected_match else "[What should happen]"
+    expected_match = \
+        re.search(r'## Expected Behavior\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
+    expected = \
+        expected_match.group(1).strip() if expected_match else "[What should happen]"
 
     # Extract actual behavior
-    actual_match = re.search(r'## Actual Behavior\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
-    actual = actual_match.group(1).strip() if actual_match else "[What actually happens]"
+    actual_match = \
+        re.search(r'## Actual Behavior\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
+    actual = \
+        actual_match.group(1).strip() if actual_match else "[What actually happens]"
 
     # Extract business impact
-    impact_match = re.search(r'## Business Impact\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
-    impact = impact_match.group(1).strip() if impact_match else "[Impact on users and business]"
+    impact_match = \
+        re.search(r'## Business Impact\s*\n(.*?)(?=\n##|\n---|$)', body, re.DOTALL | re.IGNORECASE)
+    impact = \
+        impact_match.group(1).strip() if impact_match else "[Impact on users and business]"
 
     template = f"""## Steps to Reproduce
 {steps}
@@ -165,7 +182,8 @@ def update_issue(issue_number, new_body):
     with open(f'temp_issue_{issue_number}.md', 'w', encoding='utf-8') as f:
         f.write(new_body)
 
-    result = subprocess.run(['gh', 'issue', 'edit', str(issue_number), '--body-file', f'temp_issue_{issue_number}.md'],
+    result = \
+        subprocess.run(['gh', 'issue', 'edit', str(issue_number), '--body-file', f'temp_issue_{issue_number}.md'],
                           capture_output=True, text=True)
 
     # Clean up temp file

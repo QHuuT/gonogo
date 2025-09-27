@@ -35,8 +35,10 @@ def fix_rtm_syntax():
         (' @router.get("/dependencies/analysis/critical-path")', '\n\n@router.get("/dependencies/analysis/critical-path")'),
 
         # Fix component filtering sections
-        ('if component: components = [c.strip() for c in component.split(",")]', 'if component:\n        components = [c.strip() for c in component.split(",")]'),
-        ('if exclude_component: exclude_components = [c.strip() for c in exclude_component.split(",")]', 'if exclude_component:\n        exclude_components = [c.strip() for c in exclude_component.split(",")]'),
+        ('if component: components = \
+            [c.strip() for c in component.split(",")]', 'if component:\n        components = [c.strip() for c in component.split(",")]'),
+        ('if exclude_component: exclude_components = \
+            [c.strip() for c in exclude_component.split(",")]', 'if exclude_component:\n        exclude_components = [c.strip() for c in exclude_component.split(",")]'),
 
         # Fix condition checking
         ('if not epic: raise HTTPException', 'if not epic:\n        raise HTTPException'),
@@ -53,11 +55,16 @@ def fix_rtm_syntax():
 
         # Fix elif/else statements
         ('return HTMLResponse(content=content) elif format =="markdown":', 'return HTMLResponse(content=content)\n    elif format == "markdown":'),
-        ('content = generator.generate_markdown_matrix(filters) return Response', 'content = generator.generate_markdown_matrix(filters)\n        return Response'),
-        ('content, media_type, filename = generator.export_full_matrix(format) elif report_type =="epic-progress":',
-         'content, media_type, filename = generator.export_full_matrix(format)\n    elif report_type == "epic-progress":'),
-        ('content, media_type, filename = generator.export_epic_progress(format) elif report_type =="test-summary":',
-         'content, media_type, filename = generator.export_epic_progress(format)\n    elif report_type == "test-summary":'),
+        ('content = \
+            generator.generate_markdown_matrix(filters) return Response', 'content = generator.generate_markdown_matrix(filters)\n        return Response'),
+        ('content, media_type, filename = \
+            generator.export_full_matrix(format) elif report_type =="epic-progress":',
+         'content, media_type, filename = \
+             generator.export_full_matrix(format)\n    elif report_type == "epic-progress":'),
+        ('content, media_type, filename = \
+            generator.export_epic_progress(format) elif report_type =="test-summary":',
+         'content, media_type, filename = \
+             generator.export_epic_progress(format)\n    elif report_type == "test-summary":'),
 
         # Fix function definition issues
         ('def calculate_dashboard_summary(epic_metrics: List[dict], persona: str) -> dict: """Calculate aggregated',
