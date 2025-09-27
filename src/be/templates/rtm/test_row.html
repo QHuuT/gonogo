@@ -1,0 +1,12 @@
+<tr class="test-row" data-test-type="{{ test_type_lower }}">
+    <td><span class="badge badge--test-type">{{ test_type.upper() }}</span></td>
+    <td class="function-cell">{{ test_name }}</td>
+    <td>{{ component_badges|safe }}</td>
+    <td>{{ formatted_time }}</td>
+    <td><span class="badge badge--status badge--status-{{ status_class }}">{{ status.title() }}</span></td>
+    <td>
+        <div class="file-path-container">
+            {{ copy_button|safe }}
+        </div>
+    </td>
+</tr>

@@ -11,6 +11,7 @@ Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
+from jinja2 import Environment, FileSystemLoader
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -22,6 +23,15 @@ class RTMReportGenerator:
 
     def __init__(self, db_session: Session):
         self.db = db_session
+        # Initialize Jinja2 template environment
+        import os
+        template_dir = os.path.join(os.path.dirname(__file__), '..', 'templates', 'rtm')
+        self.jinja_env = Environment(loader=FileSystemLoader(template_dir))
+
+    def _render_template(self, template_name: str, **kwargs) -> str:
+        """Render a Jinja2 template with given context."""
+        template = self.jinja_env.get_template(template_name)
+        return template.render(**kwargs)
 
     def generate_json_matrix(self, filters: Dict[str, Any]) -> Dict[str, Any]:
         """Generate RTM matrix in JSON format."""
@@ -911,7 +921,10 @@ metric-card--{
                             <td><span class="badge badge--status badge--status-{status_class}">{status.title()}</span></td>
                             <td>
                                 <div class="file-path-container">
-                                    <button class="copy-btn" onclick="copyToClipboard('{file_path.replace(chr(92), chr(92) + chr(92))}', this)" title="Copy full path" aria-label="Copy full file path">
+                                    <button class="copy-btn"
+                                            onclick="copyToClipboard('{file_path.replace(chr(92), chr(92) + chr(92))}', this)"
+                                            title="Copy full path"
+                                            aria-label="Copy full file path">
                                         <span class="copy-btn__text">COPY</span>
                                     </button>
                                     <span class="copy-feedback" id="feedback-{test.get("test_id", "")}" style="display: none;">Copied!</span>
@@ -1116,12 +1129,15 @@ title="Open {defect_id} in GitHub"><strong>{defect_id}</strong></a>'
                 )
 
                 html += f"""
-                        <tr class="defect-row" data-defect-priority="{priority}" data-defect-status="{status}" data-defect-severity="{severity}">
+                        <tr class="defect-row"
+                            data-defect-priority="{priority}"
+                            data-defect-status="{status}"
+                            data-defect-severity="{severity}">
                             <td>{defect_id_link}</td>
                             <td>{title}</td>
                             <td>{self._render_component_badges(defect.get("component"))}</td>
                             <td><span class="badge badge--priority badge--priority-{priority}">{priority.title()}</span></td>
-                            <td><span class="badge badge--status badge--status-{status.replace("_", "-")}">{status.replace("_", " ").title()}</span></td>
+                            <td><span class="badge badge--status badge--status-{status.replace('_', '-')}">{status.replace('_', ' ').title()}</span></td>
                             <td><span class="badge badge--severity badge--severity-{severity}">{severity.title()}</span></td>
                         </tr>
 """
@@ -1130,15 +1146,22 @@ title="Open {defect_id} in GitHub"><strong>{defect_id}</strong></a>'
             if not defects:
                 html += """
                         <tr>
-                            <td colspan="6" style="text-align: center; color: #7f8c8d; font-style: italic;">No defects tracked for this epic</td>
+                            <td colspan="6"
+                                style="text-align: center; color: #7f8c8d; font-style: italic;">
+                                No defects tracked for this epic
+                            </td>
                         </tr>
 """
 
             # Add dynamic empty state row for defects
             html += """
-                                    <!-- Empty state row for defects (hidden by default, shown when filtered count = 0) -->
+                                    <!-- Empty state row for defects
+                                         (hidden by default, shown when filtered count = 0) -->
                                     <tr class="empty-state-row" style="display: none;">
-                                        <td colspan="6" style="text-align: center; color: #7f8c8d; font-style: italic;">No defects match the current filter</td>
+                                        <td colspan="6"
+                                            style="text-align: center; color: #7f8c8d; font-style: italic;">
+                                            No defects match the current filter
+                                        </td>
                                     </tr>
                                     </tbody>
                                 </table>

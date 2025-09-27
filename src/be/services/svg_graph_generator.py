@@ -336,7 +336,9 @@ class SVGGraphGenerator:
         # SVG header with proper namespace and styling
         svg_parts.append(
             f"""<svg width="100%" height="100%" viewBox="0 0 {self.layout.width} {self.layout.height}"
-            xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="max-width: 100%; height: auto;">"""
+                 xmlns="http://www.w3.org/2000/svg"
+                 preserveAspectRatio="xMidYMid meet"
+                 style="max-width: 100%; height: auto;">"""
         )
 
         # Add CSS styling
@@ -366,9 +368,14 @@ class SVGGraphGenerator:
             .node { cursor: pointer; }
             .node:hover { filter: brightness(1.2); }
             .node-label {
-     font-family: Arial,
-    sans-serif; font-size: 10px; font-weight: bold; text-anchor: middle; dominant-baseline: central; fill: #333; pointer-events: none; 
-}
+                font-family: Arial, sans-serif;
+                font-size: 10px;
+                font-weight: bold;
+                text-anchor: middle;
+                dominant-baseline: central;
+                fill: #333;
+                pointer-events: none;
+            }
             .link { fill: none; stroke-width: 2; }
             .capability-cluster { fill-opacity: 0.1; stroke-width: 2; stroke-dasharray: 5,5; }
             .capability-label {
