@@ -15,18 +15,38 @@ from pydantic import BaseModel, Field, ConfigDict
 
 from ..database import get_db_session
 from ..models.traceability.epic import Epic
-from ..models.traceability.epic_dependency import EpicDependency, DependencyGraph, DependencyType
+from ..models.traceability.epic_dependency import (
+    EpicDependency,
+    DependencyGraph,
+    DependencyType,
+)
 
 
 # Pydantic models pour les requêtes/réponses API
 class DependencyCreate(BaseModel):
     """Modèle pour créer une dépendance Epic."""
-    parent_epic_id: int = Field(..., description="ID de l'Epic parent (qui bloque)")
-    dependent_epic_id: int = Field(..., description="ID de l'Epic dépendant (qui est bloqué)")
-    dependency_type: str = Field(..., description="Type de dépendance", pattern="^(blocking|prerequisite|informational|technical|business)$")
-    priority: str = Field("medium", description="Priorité de la dépendance", pattern="^(critical|high|medium|low)$")
-    reason: Optional[str] = Field(None, description="Raison/explication de la dépendance")
-    estimated_impact_days: Optional[int] = Field(None, description="Impact estimé en jours", ge=0, le=365)
+    parent_epic_id: int = Field(
+        ..., description="ID de l'Epic parent (qui bloque)"
+    )
+    dependent_epic_id: int = Field(
+        ..., description="ID de l'Epic dépendant (qui est bloqué)"
+    )
+    dependency_type: str = Field(
+        ...,
+        description="Type de dépendance",
+        pattern="^(blocking|prerequisite|informational|technical|business)$",
+    )
+    priority: str = Field(
+        "medium",
+        description="Priorité de la dépendance",
+        pattern="^(critical|high|medium|low)$",
+    )
+    reason: Optional[str] = Field(
+        None, description="Raison/explication de la dépendance"
+    )
+    estimated_impact_days: Optional[int] = Field(
+        None, description="Impact estimé en jours", ge=0, le=365
+    )
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -44,8 +64,13 @@ class DependencyCreate(BaseModel):
 
 class DependencyUpdate(BaseModel):
     """Modèle pour mettre à jour une dépendance Epic."""
-    dependency_type: Optional[str] = Field(None, pattern="^(blocking|prerequisite|informational|technical|business)$")
-    priority: Optional[str] = Field(None, pattern="^(critical|high|medium|low)$")
+    dependency_type: Optional[str] = Field(
+        None,
+        pattern="^(blocking|prerequisite|informational|technical|business)$"
+    )
+    priority: Optional[str] = Field(
+        None, pattern="^(critical|high|medium|low)$"
+    )
     reason: Optional[str] = None
     estimated_impact_days: Optional[int] = Field(None, ge=0, le=365)
     is_active: Optional[bool] = None
@@ -108,22 +133,38 @@ def get_db():
         db.close()
 
 
-@router.post("/", response_model=DependencyResponse, status_code=status.HTTP_201_CREATED)
-async def create_dependency(dependency: DependencyCreate, db: Session = Depends(get_db)):
+@router.post(
+    "/", response_model=DependencyResponse, status_code=status.HTTP_201_CREATED
+)
+async def create_dependency(
+    dependency: DependencyCreate, db: Session = Depends(get_db)
+):
     """Créer une nouvelle dépendance Epic avec validation anti-cycle."""
 
     # Vérifier que les Epics existent
-    parent_epic = db.query(Epic).filter(Epic.id == dependency.parent_epic_id).first()
+    parent_epic = (
+        db.query(Epic).filter(Epic.id == dependency.parent_epic_id).first()
+    )
     if not parent_epic:
-        raise HTTPException(status_code=404, detail=f"Parent Epic {dependency.parent_epic_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Parent Epic {dependency.parent_epic_id} not found"
+        )
 
-    dependent_epic = db.query(Epic).filter(Epic.id == dependency.dependent_epic_id).first()
+    dependent_epic = (
+        db.query(Epic).filter(Epic.id == dependency.dependent_epic_id).first()
+    )
     if not dependent_epic:
-        raise HTTPException(status_code=404, detail=f"Dependent Epic {dependency.dependent_epic_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Dependent Epic {dependency.dependent_epic_id} not found"
+        )
 
     # Vérifier les auto-dépendances
     if dependency.parent_epic_id == dependency.dependent_epic_id:
-        raise HTTPException(status_code=400, detail="Epic cannot depend on itself")
+        raise HTTPException(
+            status_code=400, detail="Epic cannot depend on itself"
+        )
 
     # Créer la dépendance temporairement pour tester les cycles
     test_dependency = EpicDependency(
@@ -136,17 +177,24 @@ async def create_dependency(dependency: DependencyCreate, db: Session = Depends(
     )
 
     # Tester la détection de cycles
-    existing_dependencies = db.query(EpicDependency).filter(EpicDependency.is_active == True).all()
+    existing_dependencies = (
+        db.query(EpicDependency).filter(EpicDependency.is_active == True).all()
+    )
     test_dependencies = existing_dependencies + [test_dependency]
 
     graph = DependencyGraph(db)
     cycles = graph.detect_cycles(test_dependencies)
 
     if cycles:
-        cycle_description = " -> ".join([str(epic_id) for epic_id in cycles[0]])
+        cycle_description = " -> ".join(
+            [str(epic_id) for epic_id in cycles[0]]
+        )
         raise HTTPException(
             status_code=400,
-            detail=f"Creating this dependency would create a cycle: {cycle_description}"
+            detail=(
+                f"Creating this dependency would create a cycle: "
+                f"{cycle_description}"
+            )
         )
 
     # Vérifier les doublons
@@ -159,7 +207,12 @@ async def create_dependency(dependency: DependencyCreate, db: Session = Depends(
     if existing:
         raise HTTPException(
             status_code=409,
-            detail=f"Dependency already exists between Epic {dependency.parent_epic_id} and {dependency.dependent_epic_id} with type '{dependency.dependency_type}'"
+            detail=(
+                f"Dependency already exists between Epic "
+                f"{dependency.parent_epic_id} and "
+                f"{dependency.dependent_epic_id} with type "
+                f"'{dependency.dependency_type}'"
+            )
         )
 
     # Créer la dépendance
@@ -179,7 +232,11 @@ async def create_dependency(dependency: DependencyCreate, db: Session = Depends(
         "estimated_impact_days": db_dependency.estimated_impact_days,
         "is_active": db_dependency.is_active,
         "is_resolved": db_dependency.is_resolved,
-        "resolution_date": db_dependency.resolution_date.isoformat() if db_dependency.resolution_date else None,
+        "resolution_date": (
+            db_dependency.resolution_date.isoformat()
+            if db_dependency.resolution_date
+            else None
+        ),
         "resolution_notes": db_dependency.resolution_notes,
         "created_by_system": db_dependency.created_by_system,
         "validation_status": db_dependency.validation_status,
@@ -193,12 +250,22 @@ async def create_dependency(dependency: DependencyCreate, db: Session = Depends(
 
 @router.get("/", response_model=List[DependencyResponse])
 async def list_dependencies(
-    parent_epic_id: Optional[int] = Query(None, description="Filtrer par Epic parent"),
-    dependent_epic_id: Optional[int] = Query(None, description="Filtrer par Epic dépendant"),
-    dependency_type: Optional[str] = Query(None, description="Filtrer par type de dépendance"),
+    parent_epic_id: Optional[int] = Query(
+        None, description="Filtrer par Epic parent"
+    ),
+    dependent_epic_id: Optional[int] = Query(
+        None, description="Filtrer par Epic dépendant"
+    ),
+    dependency_type: Optional[str] = Query(
+        None, description="Filtrer par type de dépendance"
+    ),
     priority: Optional[str] = Query(None, description="Filtrer par priorité"),
-    is_active: Optional[bool] = Query(None, description="Filtrer par statut actif"),
-    is_resolved: Optional[bool] = Query(None, description="Filtrer par statut résolu"),
+    is_active: Optional[bool] = Query(
+        None, description="Filtrer par statut actif"
+    ),
+    is_resolved: Optional[bool] = Query(
+        None, description="Filtrer par statut résolu"
+    ),
     db: Session = Depends(get_db)
 ):
     """Lister les dépendances Epic avec filtres optionnels."""
@@ -209,7 +276,9 @@ async def list_dependencies(
         query = query.filter(EpicDependency.parent_epic_id == parent_epic_id)
 
     if dependent_epic_id is not None:
-        query = query.filter(EpicDependency.dependent_epic_id == dependent_epic_id)
+        query = query.filter(
+            EpicDependency.dependent_epic_id == dependent_epic_id
+        )
 
     if dependency_type is not None:
         query = query.filter(EpicDependency.dependency_type == dependency_type)
@@ -238,7 +307,11 @@ async def list_dependencies(
             "estimated_impact_days": dep.estimated_impact_days,
             "is_active": dep.is_active,
             "is_resolved": dep.is_resolved,
-            "resolution_date": dep.resolution_date.isoformat() if dep.resolution_date else None,
+            "resolution_date": (
+                dep.resolution_date.isoformat()
+                if dep.resolution_date
+                else None
+            ),
             "resolution_notes": dep.resolution_notes,
             "created_by_system": dep.created_by_system,
             "validation_status": dep.validation_status,
@@ -256,9 +329,15 @@ async def list_dependencies(
 async def get_dependency(dependency_id: int, db: Session = Depends(get_db)):
     """Récupérer une dépendance Epic par ID."""
 
-    dependency = db.query(EpicDependency).filter(EpicDependency.id == dependency_id).first()
+    dependency = (
+        db.query(EpicDependency)
+        .filter(EpicDependency.id == dependency_id)
+        .first()
+    )
     if not dependency:
-        raise HTTPException(status_code=404, detail=f"Dependency {dependency_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Dependency {dependency_id} not found"
+        )
 
     # Convert to response format with computed fields
     dep_dict = {
@@ -271,7 +350,11 @@ async def get_dependency(dependency_id: int, db: Session = Depends(get_db)):
         "estimated_impact_days": dependency.estimated_impact_days,
         "is_active": dependency.is_active,
         "is_resolved": dependency.is_resolved,
-        "resolution_date": dependency.resolution_date.isoformat() if dependency.resolution_date else None,
+        "resolution_date": (
+            dependency.resolution_date.isoformat()
+            if dependency.resolution_date
+            else None
+        ),
         "resolution_notes": dependency.resolution_notes,
         "created_by_system": dependency.created_by_system,
         "validation_status": dependency.validation_status,
@@ -284,12 +367,20 @@ async def get_dependency(dependency_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{dependency_id}", response_model=DependencyResponse)
-async def update_dependency(dependency_id: int, update: DependencyUpdate, db: Session = Depends(get_db)):
+async def update_dependency(
+    dependency_id: int, update: DependencyUpdate, db: Session = Depends(get_db)
+):
     """Mettre à jour une dépendance Epic."""
 
-    dependency = db.query(EpicDependency).filter(EpicDependency.id == dependency_id).first()
+    dependency = (
+        db.query(EpicDependency)
+        .filter(EpicDependency.id == dependency_id)
+        .first()
+    )
     if not dependency:
-        raise HTTPException(status_code=404, detail=f"Dependency {dependency_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Dependency {dependency_id} not found"
+        )
 
     # Appliquer les mises à jour
     for field, value in update.dict(exclude_unset=True).items():
@@ -310,7 +401,11 @@ async def update_dependency(dependency_id: int, update: DependencyUpdate, db: Se
         "estimated_impact_days": dependency.estimated_impact_days,
         "is_active": dependency.is_active,
         "is_resolved": dependency.is_resolved,
-        "resolution_date": dependency.resolution_date.isoformat() if dependency.resolution_date else None,
+        "resolution_date": (
+            dependency.resolution_date.isoformat()
+            if dependency.resolution_date
+            else None
+        ),
         "resolution_notes": dependency.resolution_notes,
         "created_by_system": dependency.created_by_system,
         "validation_status": dependency.validation_status,
@@ -326,40 +421,72 @@ async def update_dependency(dependency_id: int, update: DependencyUpdate, db: Se
 async def delete_dependency(dependency_id: int, db: Session = Depends(get_db)):
     """Supprimer une dépendance Epic."""
 
-    dependency = db.query(EpicDependency).filter(EpicDependency.id == dependency_id).first()
+    dependency = (
+        db.query(EpicDependency)
+        .filter(EpicDependency.id == dependency_id)
+        .first()
+    )
     if not dependency:
-        raise HTTPException(status_code=404, detail=f"Dependency {dependency_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Dependency {dependency_id} not found"
+        )
 
     db.delete(dependency)
     db.commit()
 
 
 @router.post("/{dependency_id}/resolve")
-async def resolve_dependency(dependency_id: int, notes: Optional[str] = None, db: Session = Depends(get_db)):
+async def resolve_dependency(
+    dependency_id: int,
+    notes: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
     """Marquer une dépendance comme résolue."""
 
-    dependency = db.query(EpicDependency).filter(EpicDependency.id == dependency_id).first()
+    dependency = (
+        db.query(EpicDependency)
+        .filter(EpicDependency.id == dependency_id)
+        .first()
+    )
     if not dependency:
-        raise HTTPException(status_code=404, detail=f"Dependency {dependency_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Dependency {dependency_id} not found"
+        )
 
     dependency.mark_resolved(notes)
     db.commit()
 
-    return {"message": "Dependency resolved successfully", "dependency_id": dependency_id}
+    return {
+        "message": "Dependency resolved successfully",
+        "dependency_id": dependency_id
+    }
 
 
 @router.post("/{dependency_id}/reactivate")
-async def reactivate_dependency(dependency_id: int, reason: Optional[str] = None, db: Session = Depends(get_db)):
+async def reactivate_dependency(
+    dependency_id: int,
+    reason: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
     """Réactiver une dépendance."""
 
-    dependency = db.query(EpicDependency).filter(EpicDependency.id == dependency_id).first()
+    dependency = (
+        db.query(EpicDependency)
+        .filter(EpicDependency.id == dependency_id)
+        .first()
+    )
     if not dependency:
-        raise HTTPException(status_code=404, detail=f"Dependency {dependency_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Dependency {dependency_id} not found"
+        )
 
     dependency.reactivate(reason)
     db.commit()
 
-    return {"message": "Dependency reactivated successfully", "dependency_id": dependency_id}
+    return {
+        "message": "Dependency reactivated successfully",
+        "dependency_id": dependency_id
+    }
 
 
 @router.get("/analysis/cycles")
@@ -377,7 +504,12 @@ async def detect_cycles(db: Session = Depends(get_db)):
 
 
 @router.get("/analysis/critical-path", response_model=CriticalPathResponse)
-async def calculate_critical_path(epic_ids: Optional[str] = Query(None, description="IDs des Epics séparés par virgule"), db: Session = Depends(get_db)):
+async def calculate_critical_path(
+    epic_ids: Optional[str] = Query(
+        None, description="IDs des Epics séparés par virgule"
+    ),
+    db: Session = Depends(get_db)
+):
     """Calculer le chemin critique pour les Epics donnés."""
 
     if epic_ids:
@@ -400,7 +532,9 @@ async def analyze_epic_impact(epic_id: int, db: Session = Depends(get_db)):
 
     epic = db.query(Epic).filter(Epic.id == epic_id).first()
     if not epic:
-        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Epic {epic_id} not found"
+        )
 
     graph = DependencyGraph(db)
     analysis = graph.get_dependency_impact(epic_id)
@@ -409,7 +543,11 @@ async def analyze_epic_impact(epic_id: int, db: Session = Depends(get_db)):
     critical_deps = []
     for dep_dict in analysis['critical_dependencies']:
         # Récupérer l'objet dependency complet pour la conversion
-        dep_obj = db.query(EpicDependency).filter(EpicDependency.id == dep_dict['id']).first()
+        dep_obj = (
+            db.query(EpicDependency)
+            .filter(EpicDependency.id == dep_dict['id'])
+            .first()
+        )
         if dep_obj:
             critical_deps.append(DependencyResponse.from_orm(dep_obj))
 
@@ -423,8 +561,16 @@ async def get_dependency_statistics(db: Session = Depends(get_db)):
     """Obtenir des statistiques générales sur les dépendances."""
 
     total_dependencies = db.query(EpicDependency).count()
-    active_dependencies = db.query(EpicDependency).filter(EpicDependency.is_active == True).count()
-    resolved_dependencies = db.query(EpicDependency).filter(EpicDependency.is_resolved == True).count()
+    active_dependencies = (
+        db.query(EpicDependency)
+        .filter(EpicDependency.is_active == True)
+        .count()
+    )
+    resolved_dependencies = (
+        db.query(EpicDependency)
+        .filter(EpicDependency.is_resolved == True)
+        .count()
+    )
     blocking_dependencies = db.query(EpicDependency).filter(
         EpicDependency.dependency_type == DependencyType.BLOCKING.value,
         EpicDependency.is_active == True,
@@ -454,7 +600,11 @@ async def get_dependency_statistics(db: Session = Depends(get_db)):
         "active_dependencies": active_dependencies,
         "resolved_dependencies": resolved_dependencies,
         "blocking_dependencies": blocking_dependencies,
-        "resolution_rate": (resolved_dependencies / total_dependencies * 100) if total_dependencies > 0 else 0,
+        "resolution_rate": (
+            (resolved_dependencies / total_dependencies * 100)
+            if total_dependencies > 0
+            else 0
+        ),
         "type_distribution": type_stats,
         "priority_distribution": priority_stats
     }

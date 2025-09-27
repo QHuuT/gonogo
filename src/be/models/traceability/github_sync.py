@@ -75,7 +75,9 @@ class GitHubSync(TraceabilityBase):
         ),
         Index("idx_github_sync_status", "sync_status", "has_conflicts"),
         Index(
-            "idx_github_sync_epic", "referenced_epic_id", "referenced_epic_db_id"
+            "idx_github_sync_epic",
+            "referenced_epic_id",
+            "referenced_epic_db_id"
         ),
         Index("idx_github_sync_time", "last_sync_time"),
     )

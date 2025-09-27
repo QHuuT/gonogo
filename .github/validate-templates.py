@@ -44,13 +44,17 @@ def validate_template(template_path):
     required_inputs = {
         'epic': ['epic-id', 'epic-name', 'priority', 'epic-description'],
         'user-story': ['story-id', 'epic-link', 'priority', 'complexity'],
-        'defect-report': ['defect-id', 'related-epic', 'related-user-story', 'priority', 'severity']
+        'defect-report': [
+            'defect-id', 'related-epic', 'related-user-story',
+            'priority', 'severity'
+        ]
     }
 
     if template_name in required_inputs:
         body_ids = []
         for item in template['body']:
-            if item.get('type') in ['input', 'textarea', 'dropdown'] and 'id' in item:
+            if (item.get('type') in ['input', 'textarea', 'dropdown'] and
+                    'id' in item):
                 body_ids.append(item['id'])
 
         missing_inputs = []
@@ -59,7 +63,10 @@ def validate_template(template_path):
                 missing_inputs.append(required_input)
 
         if missing_inputs:
-            print(f"  ERROR: Missing required input fields: {', '.join(missing_inputs)}")
+            print(
+                f"  ERROR: Missing required input fields: "
+                f"{', '.join(missing_inputs)}"
+            )
             return False
 
     print(f"  OK: Valid template")
@@ -81,11 +88,17 @@ def validate_config(config_path):
 
     # Check if blank issues are properly configured
     if 'blank_issues_enabled' in config:
-        print(f"  OK: Blank issues configured: {config['blank_issues_enabled']}")
+        print(
+            f"  OK: Blank issues configured: "
+            f"{config['blank_issues_enabled']}"
+        )
 
     # Check contact links
     if 'contact_links' in config and isinstance(config['contact_links'], list):
-        print(f"  OK: Contact links configured: {len(config['contact_links'])} links")
+        print(
+            f"  OK: Contact links configured: "
+            f"{len(config['contact_links'])} links"
+        )
 
     print(f"  OK: Valid config")
     return True

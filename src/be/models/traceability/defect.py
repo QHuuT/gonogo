@@ -184,7 +184,8 @@ class Defect(TraceabilityBase):
             user_story = (
                 session.query(UserStory)
                 .filter(
-                    UserStory.github_issue_number == self.github_user_story_number
+                    UserStory.github_issue_number ==
+                    self.github_user_story_number
                 )
                 .first()
             )

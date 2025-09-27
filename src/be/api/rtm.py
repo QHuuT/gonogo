@@ -1,7 +1,8 @@
 """
 FastAPI routes for RTM (Requirements Traceability Matrix) operations.
 
-Provides CRUD operations for all traceability entities in the hybrid GitHub + Database architecture.
+Provides CRUD operations for all traceability entities in the hybrid GitHub +
+Database architecture.
 
 Related Issue: US-00054 - Database models and migration foundation
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
@@ -27,30 +28,49 @@ from ...shared.metrics.thresholds import get_threshold_service
 router = APIRouter(prefix="/api/rtm", tags=["RTM"])
 templates = Jinja2Templates(directory="src/be/templates")
 
-DEMO_DATASET_PATH = Path(__file__).resolve().parents[3] / "tests" / "demo" / "multipersona_dashboard_demo.json"
+DEMO_DATASET_PATH = (
+    Path(__file__).resolve().parents[3] / "tests" / "demo" /
+    "multipersona_dashboard_demo.json"
+)
 
 
 def load_demo_dataset() -> dict:
     """Load curated demo dashboard data."""
     if not DEMO_DATASET_PATH.exists():
-        raise HTTPException(status_code=500, detail="Demo dataset not available")
+        raise HTTPException(
+            status_code=500, detail="Demo dataset not available"
+        )
     with DEMO_DATASET_PATH.open('r', encoding='utf-8') as handle:
         return json.load(handle)
 
 
-def filter_demo_epics(epics: List[dict], epic_filter: Optional[str], status_filter: Optional[str], component_filter: Optional[str]) -> List[dict]:
+def filter_demo_epics(
+    epics: List[dict],
+    epic_filter: Optional[str],
+    status_filter: Optional[str],
+    component_filter: Optional[str]
+) -> List[dict]:
     """Apply basic filtering logic to the demo epics collection."""
     filtered = epics
 
     if epic_filter:
-        filtered = [epic for epic in filtered if epic.get('epic_id') == epic_filter]
+        filtered = [
+            epic for epic in filtered if epic.get('epic_id') == epic_filter
+        ]
 
     if status_filter:
         status_lower = status_filter.lower()
-        filtered = [epic for epic in filtered if str(epic.get('status', '')).lower() == status_lower]
+        filtered = [
+            epic for epic in filtered
+            if str(epic.get('status', '')).lower() == status_lower
+        ]
 
     if component_filter:
-        components = [component.strip().lower() for component in component_filter.split(',') if component.strip()]
+        components = [
+            component.strip().lower()
+            for component in component_filter.split(',')
+            if component.strip()
+        ]
         if components:
             filtered = [
                 epic
@@ -66,38 +86,51 @@ def filter_demo_epics(epics: List[dict], epic_filter: Optional[str], status_filt
 @router.get("/dashboard", response_class=HTMLResponse)
 def rtm_dashboard(request: Request):
     """Serve the RTM Dashboard web interface."""
-    return templates.TemplateResponse("rtm_dashboard.html", {"request": request})
+    return templates.TemplateResponse(
+        "rtm_dashboard.html", {"request": request}
+    )
 
 
 @router.get("/", response_class=HTMLResponse)
 def dashboard_home(request: Request):
     """Dashboard home page with navigation to different dashboards."""
-    return templates.TemplateResponse("multipersona_dashboard.html", {"request": request})
+    return templates.TemplateResponse(
+        "multipersona_dashboard.html", {"request": request}
+    )
 
 
 @router.get("/dashboard/multipersona", response_class=HTMLResponse)
 def multipersona_dashboard(request: Request):
     """Serve the Multi-Persona Dashboard web interface (US-00072)."""
-    return templates.TemplateResponse("multipersona_dashboard.html", {"request": request})
+    return templates.TemplateResponse(
+        "multipersona_dashboard.html", {"request": request}
+    )
 
 
 @router.get("/dashboard/multipersona/demo", response_class=HTMLResponse)
 def multipersona_dashboard_demo(request: Request):
     """Serve the Multi-Persona Dashboard in demo mode (uses curated data)."""
-    return templates.TemplateResponse("multipersona_dashboard.html", {"request": request})
+    return templates.TemplateResponse(
+        "multipersona_dashboard.html", {"request": request}
+    )
 
 
 @router.get("/dashboard/dependencies", response_class=HTMLResponse)
 def dependency_visualizer(request: Request):
-    """Serve the Epic Dependencies Visualizer web interface with D3.js (US-00030)."""
-    return templates.TemplateResponse("dependency_visualizer.html", {"request": request})
+    """Serve the Epic Dependencies Visualizer web interface with D3.js
+    (US-00030)."""
+    return templates.TemplateResponse(
+        "dependency_visualizer.html", {"request": request}
+    )
 
 
 
 @router.get("/dashboard/capabilities", response_class=HTMLResponse)
 def capability_portfolio_dashboard(request: Request):
     """Serve the Capability Portfolio Dashboard web interface (US-00063)."""
-    return templates.TemplateResponse("capability_portfolio.html", {"request": request})
+    return templates.TemplateResponse(
+        "capability_portfolio.html", {"request": request}
+    )
 
 
 # Epic CRUD Operations
@@ -128,8 +161,14 @@ def create_epic(
 def list_epics(
     status: Optional[str] = Query(None, description="Filter by status"),
     priority: Optional[str] = Query(None, description="Filter by priority"),
-    component: Optional[str] = Query(None, description="Filter by component (supports comma-separated values)"),
-    exclude_component: Optional[str] = Query(None, description="Exclude components (supports comma-separated values)"),
+    component: Optional[str] = Query(
+        None,
+        description="Filter by component (supports comma-separated values)"
+    ),
+    exclude_component: Optional[str] = Query(
+        None,
+        description="Exclude components (supports comma-separated values)"
+    ),
     limit: int = Query(50, le=100, description="Limit results"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
     db: Session = Depends(get_db),
@@ -146,7 +185,8 @@ def list_epics(
     if component:
         components = [c.strip() for c in component.split(',')]
         # For epics, component can contain multiple values separated by comma
-        # So we need to check if ANY of the requested components are in the epic's component field
+        # So we need to check if ANY of the requested components are in the
+        # epic's component field
         component_filters = []
         for comp in components:
             component_filters.append(Epic.component.like(f'%{comp}%'))
@@ -166,7 +206,9 @@ def get_epic(epic_id: str, db: Session = Depends(get_db)):
     """Get an Epic by epic_id."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Epic {epic_id} not found"
+        )
     return epic.to_dict()
 
 
@@ -183,7 +225,9 @@ def update_epic(
     """Update an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Epic {epic_id} not found"
+        )
 
     if title is not None:
         epic.title = title
@@ -206,7 +250,9 @@ def delete_epic(epic_id: str, db: Session = Depends(get_db)):
     """Delete an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Epic {epic_id} not found"
+        )
 
     db.delete(epic)
     db.commit()
@@ -244,9 +290,17 @@ def create_user_story(
 @router.get("/user-stories/", response_model=List[dict])
 def list_user_stories(
     epic_id: Optional[int] = Query(None, description="Filter by Epic ID"),
-    status: Optional[str] = Query(None, description="Filter by implementation status"),
-    component: Optional[str] = Query(None, description="Filter by component (supports comma-separated values)"),
-    exclude_component: Optional[str] = Query(None, description="Exclude components (supports comma-separated values)"),
+    status: Optional[str] = Query(
+        None, description="Filter by implementation status"
+    ),
+    component: Optional[str] = Query(
+        None,
+        description="Filter by component (supports comma-separated values)"
+    ),
+    exclude_component: Optional[str] = Query(
+        None,
+        description="Exclude components (supports comma-separated values)"
+    ),
     limit: int = Query(50, le=100, description="Limit results"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
     db: Session = Depends(get_db),
@@ -281,7 +335,8 @@ def get_user_story(user_story_id: str, db: Session = Depends(get_db)):
     )
     if not user_story:
         raise HTTPException(
-            status_code=404, detail=f"User Story {user_story_id} not found"
+            status_code=404,
+            detail=f"User Story {user_story_id} not found"
         )
     return user_story.to_dict()
 
@@ -319,8 +374,14 @@ def list_tests(
     execution_status: Optional[str] = Query(
         None, description="Filter by execution status"
     ),
-    component: Optional[str] = Query(None, description="Filter by component (supports comma-separated values)"),
-    exclude_component: Optional[str] = Query(None, description="Exclude components (supports comma-separated values)"),
+    component: Optional[str] = Query(
+        None,
+        description="Filter by component (supports comma-separated values)"
+    ),
+    exclude_component: Optional[str] = Query(
+        None,
+        description="Exclude components (supports comma-separated values)"
+    ),
     limit: int = Query(50, le=100, description="Limit results"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
     db: Session = Depends(get_db),
@@ -359,7 +420,9 @@ def update_test_execution(
     """Update test execution results."""
     test = db.query(Test).filter(Test.id == test_id).first()
     if not test:
-        raise HTTPException(status_code=404, detail=f"Test {test_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Test {test_id} not found"
+        )
 
     test.update_execution_result(status, duration_ms, error_message)
     db.commit()
@@ -402,8 +465,14 @@ def list_defects(
     is_security_issue: Optional[bool] = Query(
         None, description="Filter by security issues"
     ),
-    component: Optional[str] = Query(None, description="Filter by component (supports comma-separated values)"),
-    exclude_component: Optional[str] = Query(None, description="Exclude components (supports comma-separated values)"),
+    component: Optional[str] = Query(
+        None,
+        description="Filter by component (supports comma-separated values)"
+    ),
+    exclude_component: Optional[str] = Query(
+        None,
+        description="Exclude components (supports comma-separated values)"
+    ),
     limit: int = Query(50, le=100, description="Limit results"),
     offset: int = Query(0, ge=0, description="Offset for pagination"),
     db: Session = Depends(get_db),
@@ -591,7 +660,9 @@ def get_epic_progress(epic_id: str, db: Session = Depends(get_db)):
     """Get detailed progress analytics for an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Epic {epic_id} not found"
+        )
 
     user_stories = db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
     tests = db.query(Test).filter(Test.epic_id == epic.id).all()
@@ -920,7 +991,9 @@ def get_epic_metrics(
     """Get comprehensive metrics for an Epic, optionally filtered by persona."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Epic {epic_id} not found"
+        )
 
     if persona:
         metrics = epic.get_persona_specific_metrics(persona)
@@ -961,7 +1034,9 @@ def update_epic_metrics(
     """Update Epic metrics values and recalculate derived metrics."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Epic {epic_id} not found"
+        )
 
     # Update provided metrics
     if velocity_points_per_sprint is not None:
@@ -1027,7 +1102,9 @@ def get_epic_timeline_metrics(epic_id: str, db: Session = Depends(get_db)):
     """Get timeline and schedule metrics for an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Epic {epic_id} not found"
+        )
 
     timeline_metrics = epic.calculate_timeline_metrics()
     return {
@@ -1041,7 +1118,9 @@ def get_epic_velocity_metrics(epic_id: str, db: Session = Depends(get_db)):
     """Get velocity and productivity metrics for an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Epic {epic_id} not found"
+        )
 
     velocity_metrics = epic.calculate_velocity_metrics()
     return {
@@ -1055,7 +1134,9 @@ def get_epic_quality_metrics(epic_id: str, db: Session = Depends(get_db)):
     """Get quality and technical debt metrics for an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Epic {epic_id} not found"
+        )
 
     quality_metrics = epic.calculate_quality_metrics()
     return {
@@ -1069,7 +1150,9 @@ def get_epic_business_metrics(epic_id: str, db: Session = Depends(get_db)):
     """Get business value and stakeholder metrics for an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Epic {epic_id} not found"
+        )
 
     business_metrics = epic.calculate_business_metrics()
     return {
@@ -1083,7 +1166,9 @@ def get_epic_predictive_metrics(epic_id: str, db: Session = Depends(get_db)):
     """Get predictive analytics and risk assessment for an Epic."""
     epic = db.query(Epic).filter(Epic.epic_id == epic_id).first()
     if not epic:
-        raise HTTPException(status_code=404, detail=f"Epic {epic_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Epic {epic_id} not found"
+        )
 
     predictive_metrics = epic.calculate_predictive_metrics()
     return {

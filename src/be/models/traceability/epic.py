@@ -2,7 +2,8 @@
 Epic Model
 
 Database model for Epic entities in the hybrid RTM system.
-Epics are stored in database for advanced relationship management and progress calculation.
+Epics are stored in database for advanced relationship management and progress
+calculation.
 
 Related Issue: US-00052 - Database schema design for traceability relationships
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
@@ -11,7 +12,9 @@ Architecture Decision: ADR-003 - Hybrid GitHub + Database RTM Architecture
 
 import json
 
-from sqlalchemy import Boolean, Column, DateTime, Float, Index, Integer, String, Text, ForeignKey
+from sqlalchemy import (
+    Boolean, Column, DateTime, Float, Index, Integer, String, Text, ForeignKey
+)
 from sqlalchemy.orm import relationship
 from datetime import datetime, timedelta
 from typing import Optional, Dict, List
@@ -42,40 +45,68 @@ class Epic(TraceabilityBase):
     # Values: critical, high, medium, low
 
     # Risk assessment
-    risk_level = Column(String(20), default="medium", nullable=False)
+    risk_level = Column(
+        String(20), default="medium", nullable=False
+    )
     # Values: low, medium, high, critical
 
     # GDPR implications
-    gdpr_applicable = Column(Boolean, default=False, index=True, nullable=False)
+    gdpr_applicable = Column(
+        Boolean, default=False, index=True, nullable=False
+    )
     gdpr_considerations = Column(Text)
 
     # Component classification
-    component = Column(String(50), nullable=False, index=True, default='backend')
+    component = Column(
+        String(50), nullable=False, index=True, default='backend'
+    )
 
     # Advanced Metrics (US-00071) - Multi-persona dashboard metrics
     # Planning and timeline metrics
-    estimated_duration_days = Column(Integer, nullable=True)  # Estimated duration in days
-    actual_duration_days = Column(Integer, nullable=True)  # Actual duration (when completed)
+    estimated_duration_days = Column(
+        Integer, nullable=True
+    )  # Estimated duration
+    actual_duration_days = Column(Integer, nullable=True)  # Actual duration
     planned_start_date = Column(DateTime, nullable=True)  # Planned start date
-    actual_start_date = Column(DateTime, nullable=True)  # When work actually started
-    planned_end_date = Column(DateTime, nullable=True)  # Planned completion date
-    actual_end_date = Column(DateTime, nullable=True)  # When actually completed
+    actual_start_date = Column(DateTime, nullable=True)  # When work started
+    planned_end_date = Column(
+        DateTime, nullable=True
+    )  # Planned completion date
+    actual_end_date = Column(DateTime, nullable=True)  # When completed
 
     # Velocity and productivity metrics
-    initial_scope_estimate = Column(Integer, default=0, nullable=False)  # Original story points estimate
-    scope_creep_percentage = Column(Float, default=0.0, nullable=False)  # % of scope increase
-    velocity_points_per_sprint = Column(Float, default=0.0, nullable=False)  # Average velocity
-    team_size = Column(Integer, default=1, nullable=False)  # Team members working on epic
+    initial_scope_estimate = Column(
+        Integer, default=0, nullable=False
+    )  # Original estimate
+    scope_creep_percentage = Column(
+        Float, default=0.0, nullable=False
+    )  # % increase
+    velocity_points_per_sprint = Column(
+        Float, default=0.0, nullable=False
+    )  # Velocity
+    team_size = Column(Integer, default=1, nullable=False)  # Team members
 
     # Quality metrics
-    defect_density = Column(Float, default=0.0, nullable=False)  # Defects per story point
-    test_coverage_percentage = Column(Float, default=0.0, nullable=False)  # Test coverage %
-    code_review_score = Column(Float, default=0.0, nullable=False)  # Code quality score
-    technical_debt_hours = Column(Integer, default=0, nullable=False)  # Estimated tech debt
+    defect_density = Column(
+        Float, default=0.0, nullable=False
+    )  # Defects per story point
+    test_coverage_percentage = Column(
+        Float, default=0.0, nullable=False
+    )  # Test coverage %
+    code_review_score = Column(
+        Float, default=0.0, nullable=False
+    )  # Code quality score
+    technical_debt_hours = Column(
+        Integer, default=0, nullable=False
+    )  # Estimated tech debt
 
     # Stakeholder and business metrics
-    stakeholder_satisfaction_score = Column(Float, default=0.0, nullable=False)  # 0-10 score
-    business_impact_score = Column(Float, default=0.0, nullable=False)  # Estimated business impact
+    stakeholder_satisfaction_score = Column(
+        Float, default=0.0, nullable=False
+    )  # 0-10 score
+    business_impact_score = Column(
+        Float, default=0.0, nullable=False
+    )  # Estimated business impact
     roi_percentage = Column(Float, default=0.0, nullable=False)  # Return on investment
     user_adoption_rate = Column(Float, default=0.0, nullable=False)  # % user adoption (post-release)
 

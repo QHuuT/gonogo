@@ -89,7 +89,10 @@ class TestDiscovery:
             test_functions = []
 
             for node in ast.walk(tree):
-                if isinstance(node, ast.FunctionDef) and node.name.startswith("test_"):
+                if (
+                    isinstance(node, ast.FunctionDef)
+                    and node.name.startswith("test_")
+                ):
                     # Handle file path - for temp files, use absolute path
                     try:
                         file_path = str(test_file.relative_to(Path.cwd()))
@@ -102,13 +105,19 @@ class TestDiscovery:
                         "test_file_path": file_path,
                         "test_function_name": node.name,
                         "test_type": test_type,
-                        "title": self._generate_test_title(node.name),
+                        "title": self._generate_test_title(
+                            node.name
+                        ),
                         "line_number": node.lineno,
-                        "epic_references": self._extract_epic_references(content),
-                        "user_story_references": self._extract_user_story_references(
+                        "epic_references": self._extract_epic_references(
                             content
                         ),
-                        "defect_references": self._extract_defect_references(content),
+                        "user_story_references": (
+                            self._extract_user_story_references(content)
+                        ),
+                        "defect_references": self._extract_defect_references(
+                            content
+                        ),
                         "bdd_scenario_name": self._extract_bdd_scenario_name(
                             node,
     content
@@ -132,17 +141,30 @@ class TestDiscovery:
         title = function_name.replace("test_", "").replace("_", " ").title()
         return f"Test: {title}"
 
-    def _extract_epic_references(self, content: str) -> List[str]:
+    def _extract_epic_references(
+        self, content: str
+    ) -> List[str]:
         """Extract Epic references from test file content."""
-        return [f"EP-{match}" for match in self.epic_pattern.findall(content)]
+        return [
+            f"EP-{match}" for match in self.epic_pattern.findall(content)
+        ]
 
-    def _extract_user_story_references(self, content: str) -> List[str]:
+    def _extract_user_story_references(
+        self, content: str
+    ) -> List[str]:
         """Extract User Story references from test file content."""
-        return [f"US-{match}" for match in self.user_story_pattern.findall(content)]
+        return [
+            f"US-{match}"
+            for match in self.user_story_pattern.findall(content)
+        ]
 
-    def _extract_defect_references(self, content: str) -> List[str]:
+    def _extract_defect_references(
+        self, content: str
+    ) -> List[str]:
         """Extract Defect references from test file content."""
-        return [f"DEF-{match}" for match in self.defect_pattern.findall(content)]
+        return [
+            f"DEF-{match}" for match in self.defect_pattern.findall(content)
+        ]
 
     def _extract_bdd_scenario_name(
         self, node: ast.FunctionDef, content: str
@@ -151,9 +173,15 @@ class TestDiscovery:
         # Look for pytest-bdd scenario decorators
         for decorator in node.decorator_list:
             if isinstance(decorator, ast.Call):
-                if hasattr(decorator.func, "id") and decorator.func.id == "scenario":
+                if (
+                    hasattr(decorator.func, "id")
+                    and decorator.func.id == "scenario"
+                ):
                     # Extract scenario name from decorator
-                    if decorator.args and isinstance(decorator.args[-1], ast.Constant):
+                    if (
+                        decorator.args
+                        and isinstance(decorator.args[-1], ast.Constant)
+                    ):
                         return decorator.args[-1].value
         return None
 
@@ -193,7 +221,6 @@ class TestDatabaseSync:
             discovered_tests = self.discovery.discover_tests()
 
             stats = {
-    
                 "discovered": len(discovered_tests),
                 "created": 0,
                 "updated": 0,
@@ -212,11 +239,16 @@ class TestDatabaseSync:
 
                     # Link to Epic if references found
                     if test_data["epic_references"]:
-                        if self._link_test_to_epic(db, test_data):
+                        if self._link_test_to_epic(
+                            db, test_data
+                        ):
                             stats["linked_to_epics"] += 1
 
                 except Exception as e:
-                    print(f"Error syncing test {test_data['test_function_name']}: {e}")
+                    print(
+                        f"Error syncing test "
+                        f"{test_data['test_function_name']}: {e}"
+                    )
                     stats["errors"] += 1
 
             db.commit()
@@ -344,8 +376,7 @@ class TestExecutionTracker:
         if not self.db_session:
             return False
 
-        try:
-            # Parse test_id to extract file and function
+        try:  # Parse test_id to extract file and function
             parts = test_id.split("::")
             if len(parts) < 2:
                 return False
@@ -357,15 +388,16 @@ class TestExecutionTracker:
             test = (
                 self.db_session.query(Test)
                 .filter(
-    Test.test_file_path == test_file,
-    Test.test_function_name == test_function,
-    
-)
+                    Test.test_file_path == test_file,
+                    Test.test_function_name == test_function,
+                )
                 .first()
             )
 
             if test:
-                test.update_execution_result(status, duration_ms, error_message)
+                test.update_execution_result(
+                    status, duration_ms, error_message
+                )
                 return True
 
         except Exception as e:
@@ -416,7 +448,8 @@ class TestExecutionTracker:
             defect_count = self.db_session.query(Defect).count()
             defect_id = f"DEF-{defect_count + 1:05d}"
 
-            # Generate a placeholder GitHub issue number (will be updated when actual issue is created)
+            # Generate a placeholder GitHub issue number (will be updated when
+            # actual issue is created)
             github_issue_number = (
                 900000 + defect_count + 1
             )  # Start from 900001 for test failures
@@ -428,7 +461,8 @@ class TestExecutionTracker:
     title=f"Test Failure: {test_function}",
     description=(
     f"Test failure in "
-    f"{test_file}\n\nFailure Message:\n{failure_message}\n\nStack Trace:\n{stack_trace}"
+                    f"{test_file}\n\nFailure Message:\n{failure_message}\n\n"
+                    f"Stack Trace:\n{stack_trace}"
 ),
     severity=self._determine_failure_severity(failure_message
 ),
@@ -450,7 +484,9 @@ class TestExecutionTracker:
         """Determine defect severity based on failure message."""
         failure_lower = failure_message.lower()
 
-        if any(keyword in failure_lower for keyword in ["assertion", "assert"]):
+        if any(
+            keyword in failure_lower for keyword in ["assertion", "assert"]
+        ):
             return "medium"
         elif any(keyword in failure_lower for keyword in ["import", "module"]):
             return "high"
@@ -468,7 +504,9 @@ class BDDScenarioParser:
     """Parses BDD feature files and links scenarios to User Stories."""
 
     def __init__(self):
-        self.scenario_pattern = re.compile(r"^\s*Scenario:?\s*(.+)$", re.MULTILINE)
+        self.scenario_pattern = re.compile(
+            r"^\s*Scenario:?\s*(.+)$", re.MULTILINE
+        )
         self.user_story_pattern = re.compile(r"US-(\d{5})")
 
     def parse_feature_files(self, root_dir: Path = None) -> List[Dict]:
@@ -489,14 +527,18 @@ class BDDScenarioParser:
                 with open(feature_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
-                scenarios.extend(self._parse_feature_content(feature_file, content))
+                scenarios.extend(
+                    self._parse_feature_content(feature_file, content)
+                )
 
             except Exception as e:
                 print(f"Warning: Could not parse {feature_file}: {e}")
 
         return scenarios
 
-    def _parse_feature_content(self, feature_file: Path, content: str) -> List[Dict]:
+    def _parse_feature_content(
+        self, feature_file: Path, content: str
+    ) -> List[Dict]:
         """Parse content of a single feature file."""
         scenarios = []
         scenario_matches = self.scenario_pattern.finditer(content)
@@ -506,7 +548,9 @@ class BDDScenarioParser:
             scenario_line = content[: match.start()].count("\n") + 1
 
             # Extract User Story references from surrounding context
-            user_story_refs = self._extract_user_story_context(content, match.start())
+            user_story_refs = self._extract_user_story_context(
+                content, match.start()
+            )
 
             # Handle file path - for temp files, use absolute path
             try:
@@ -528,13 +572,17 @@ class BDDScenarioParser:
 
         return scenarios
 
-    def _extract_user_story_context(self, content: str, position: int) -> List[str]:
+    def _extract_user_story_context(
+        self, content: str, position: int
+    ) -> List[str]:
         """Extract User Story references from context around scenario."""
         # Look in the first 500 characters before the scenario
         context_start = max(0, position - 500)
         context = content[context_start : position + 200]
 
-        return [f"US-{match}" for match in self.user_story_pattern.findall(context)]
+        return [
+            f"US-{match}" for match in self.user_story_pattern.findall(context)
+        ]
 
     def link_scenarios_to_user_stories(self) -> Dict[str, int]:
         """
@@ -564,7 +612,10 @@ class BDDScenarioParser:
                             stats["user_stories_updated"] += 1
 
                 except Exception as e:
-                    print(f"Error linking scenario {scenario['scenario_name']}: {e}")
+                    print(
+                        f"Error linking scenario "
+                        f"{scenario['scenario_name']}: {e}"
+                    )
                     stats["errors"] += 1
 
             db.commit()
@@ -584,7 +635,9 @@ class BDDScenarioParser:
         # Use first User Story reference
         us_id = scenario["user_story_references"][0]
         user_story = (
-            db.query(UserStory).filter(UserStory.user_story_id == us_id).first()
+            db.query(UserStory)
+            .filter(UserStory.user_story_id == us_id)
+            .first()
         )
 
         if user_story:
@@ -604,9 +657,12 @@ class BDDScenarioParser:
     test_type="bdd",
     test_file_path=scenario["feature_file"],
     title=f"BDD: {scenario['scenario_name']}",
-    bdd_scenario_name=scenario["scenario_name"],
+                    bdd_scenario_name=scenario["scenario_name"],
     epic_id=user_story.epic_id,
-    description=f"BDD scenario from {scenario['feature_file']}:{scenario['line_number']}",
+                    description=(
+                        f"BDD scenario from "
+                        f"{scenario['feature_file']}:{scenario['line_number']}"
+                    ),
     
 )
                 db.add(test)

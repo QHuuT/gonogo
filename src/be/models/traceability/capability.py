@@ -2,9 +2,11 @@
 Capability/Program Area Model for Strategic Epic Grouping
 
 Provides strategic grouping of related Epics into Program Areas/Capabilities
-for portfolio management, resource allocation, and cross-Epic dependency tracking.
+for portfolio management, resource allocation, and cross-Epic dependency
+tracking.
 
-Related Issue: US-00062 - Program Areas/Capabilities - Epic Grouping and Strategic Management
+Related Issue: US-00062 - Program Areas/Capabilities - Epic Grouping and
+Strategic Management
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
 """
 
@@ -77,12 +79,16 @@ class Capability(Base):
     budget_consumed = Column(Float, default=0.0)
 
     # Risk Management
-    risk_level = Column(String(20), default="medium")  # critical, high, medium, low
+    risk_level = Column(
+        String(20), default="medium"
+    )  # critical, high, medium, low
     risk_notes = Column(Text)
 
     # Metadata
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
 
     # Relationships
     epics = relationship("Epic", back_populates="capability", lazy="dynamic")
@@ -147,7 +153,9 @@ class Capability(Base):
 }
 
         total_story_points = sum(epic.total_story_points for epic in epics)
-        roi_scores = [epic.roi_percentage for epic in epics if epic.roi_percentage > 0]
+        roi_scores = [
+            epic.roi_percentage for epic in epics if epic.roi_percentage > 0
+        ]
         impact_scores = [
             epic.business_impact_score
             for epic in epics
@@ -162,11 +170,17 @@ class Capability(Base):
         return {
     
             "total_story_points": total_story_points,
-            "average_roi": sum(roi_scores) / len(roi_scores) if roi_scores else 0.0,
-            "average_business_impact": (
-                sum(impact_scores) / len(impact_scores) if impact_scores else 0.0
+            "average_roi": (
+                sum(roi_scores) / len(roi_scores) if roi_scores else 0.0
             ),
-            "total_estimated_days": sum(duration_days) if duration_days else 0.0,
+            "average_business_impact": (
+                (sum(impact_scores) / len(impact_scores))
+                if impact_scores
+                else 0.0
+            ),
+            "total_estimated_days": (
+                sum(duration_days) if duration_days else 0.0
+            ),
         
 }
 
@@ -176,9 +190,15 @@ class Capability(Base):
         # For now, return basic structure
         return {
     
-            "has_critical_dependencies": len(list(self.dependencies_as_parent)) > 0,
-            "blocks_other_capabilities": len(list(self.dependencies_as_parent)) > 0,
-            "blocked_by_capabilities": len(list(self.dependencies_as_dependent)) > 0,
+            "has_critical_dependencies": (
+                len(list(self.dependencies_as_parent)) > 0
+            ),
+            "blocks_other_capabilities": (
+                len(list(self.dependencies_as_parent)) > 0
+            ),
+            "blocked_by_capabilities": (
+                len(list(self.dependencies_as_dependent)) > 0
+            ),
             "risk_score": self._calculate_dependency_risk(),
         
 }
@@ -197,7 +217,8 @@ class Capability(Base):
 
         base_risk = blocking_deps * 10  # Each blocking dependency adds 10 risk
         epic_risk = (
-            sum(epic_risk_scores) / len(epic_risk_scores) if epic_risk_scores else 0
+            (sum(epic_risk_scores) / len(epic_risk_scores)
+             if epic_risk_scores else 0)
         )
 
         return min(base_risk + epic_risk, 100.0)  # Cap at 100
@@ -215,13 +236,21 @@ class Capability(Base):
             "owner": self.owner,
             "status": self.status,
             "completion_percentage": self.completion_percentage,
-            "estimated_business_impact_score": self.estimated_business_impact_score,
+            "estimated_business_impact_score": (
+                self.estimated_business_impact_score
+            ),
             "roi_target_percentage": self.roi_target_percentage,
-            "strategic_alignment_score": self.strategic_alignment_score,
+            "strategic_alignment_score": (
+                self.strategic_alignment_score
+            ),
             "risk_level": self.risk_level,
             "epic_count": self.epics.count(),
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "created_at": (
+                self.created_at.isoformat() if self.created_at else None
+            ),
+            "updated_at": (
+                self.updated_at.isoformat() if self.updated_at else None
+            ),
         
 }
 
@@ -248,11 +277,15 @@ class CapabilityDependency(Base):
     dependency_type = Column(
         String(50), default="strategic"
     )  # strategic, technical, informational, resource
-    priority = Column(String(20), default="medium")  # critical, high, medium, low
+    priority = Column(
+        String(20), default="medium"
+    )  # critical, high, medium, low
     rationale = Column(Text)  # Why this dependency exists
 
     # Impact Assessment
-    estimated_impact_weeks = Column(Integer)  # Impact in weeks if dependency is delayed
+    estimated_impact_weeks = Column(
+        Integer
+    )  # Impact in weeks if dependency is delayed
     risk_mitigation_notes = Column(Text)
 
     # Status
@@ -263,7 +296,9 @@ class CapabilityDependency(Base):
 
     # Metadata
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
     created_by = Column(String(100))  # Who identified this dependency
 
     # Relationships
@@ -296,9 +331,13 @@ class CapabilityDependency(Base):
             "dependency_type": self.dependency_type,
             "priority": self.priority,
             "rationale": self.rationale,
-            "estimated_impact_weeks": self.estimated_impact_weeks,
+            "estimated_impact_weeks": (
+                self.estimated_impact_weeks
+            ),
             "is_active": self.is_active,
             "is_resolved": self.is_resolved,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "created_at": (
+                self.created_at.isoformat() if self.created_at else None
+            ),
         
 }
