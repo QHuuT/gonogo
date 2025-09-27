@@ -27,7 +27,10 @@ def query_empty_components():
         print("user_story_id | github_issue | title | epic_id | component")
         print("-" * 70)
         for row in results:
-            print(f"{row[0]:<12} | {row[1]:<12} | {row[2]:<20} | {row[3]:<7} | {row[4]}")
+            print(
+                f"{row[0]:<12} | {row[1]:<12} | {row[2]:<20} | "
+                f"{row[3]:<7} | {row[4]}"
+            )
         print(f"\nTotal: {len(results)} user stories with empty components")
     else:
         print("No user stories with empty components found.")
