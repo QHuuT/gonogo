@@ -19,23 +19,64 @@ for epic in session.query(Epic).all():
 
 # UNIQUE USER STORIES from JSON (no duplicates)
 all_user_stories = [
-    ('US-00001', 'Enhanced RTM filtering system with user story status, test metrics, and defect management', 65, 'EP-00005'),
+    (
+        'US-00001',
+        'Enhanced RTM filtering system with user story status, test metrics, '
+        'and defect management',
+        65,
+        'EP-00005'
+    ),
     ('US-00002', 'Enhanced RTM Report UX/UI Design', 66, 'EP-00001'),
-    ('US-00003', 'Implement Comprehensive RTM Search Functionality', 67, 'EP-00005'),
+    (
+        'US-00003',
+        'Implement Comprehensive RTM Search Functionality',
+        67,
+        'EP-00005'
+    ),
     ('US-00004', 'Enhanced CLI Test Specification Support', 68, 'EP-00007'),
-    ('US-00005', 'Implement RTM Component Data API and Filtering', 82, 'EP-00005'),
-    ('US-00006', 'Implement Automated Epic Label Management and Inheritance System', 87, 'EP-00005'),
+    (
+        'US-00005',
+        'Implement RTM Component Data API and Filtering',
+        82,
+        'EP-00005'
+    ),
+    (
+        'US-00006',
+        'Implement Automated Epic Label Management and Inheritance System',
+        87,
+        'EP-00005'
+    ),
     ('US-00007', 'Add Component Columns to RTM Subtables', 84, 'EP-00005'),
-    ('US-00008', 'Enable Horizontal Scrolling for RTM Matrix Tables', 85, 'EP-00005'),
+    (
+        'US-00008',
+        'Enable Horizontal Scrolling for RTM Matrix Tables',
+        85,
+        'EP-00005'
+    ),
     ('US-00009', 'GitHub Issue Template Integration', 2, 'EP-00004'),
     ('US-00010', 'Automated Component Label Management', 77, 'EP-00004'),
     ('US-00011', 'Fix Defect-User Story Relationship Links', 74, 'EP-00005'),
     ('US-00012', 'Bidirectional Status Synchronization', 78, 'EP-00005'),
-    ('US-00013', 'Auto-detect environment information for defect reports', 6, 'EP-00004'),
+    (
+        'US-00013',
+        'Auto-detect environment information for defect reports',
+        6,
+        'EP-00004'
+    ),
     ('US-00014', 'Document RTM link management process', 8, 'EP-00005'),
-    ('US-00015', 'Automated RTM link generation and validation', 9, 'EP-00005'),
+    (
+        'US-00015',
+        'Automated RTM link generation and validation',
+        9,
+        'EP-00005'
+    ),
     ('US-00016', 'GitHub Action for automated RTM validation', 10, 'EP-00004'),
-    ('US-00017', 'Comprehensive testing and extensibility framework', 11, 'EP-00007'),
+    (
+        'US-00017',
+        'Comprehensive testing and extensibility framework',
+        11,
+        'EP-00007'
+    ),
     ('US-00018', 'Enhanced CLAUDE.md GitHub-First Protocol', 14, 'EP-00004'),
     ('US-00019', 'Comprehensive GitHub Issue Creation Guide', 15, 'EP-00004'),
     ('US-00020', 'GitHub Project Management Automation Tool', 16, 'EP-00006'),
