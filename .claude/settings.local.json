@@ -10,7 +10,10 @@
       "WebSearch",
       "Bash(git checkout:*)",
       "Bash(ruff format:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: implement ADR-004 context-aware code standards and update documentation\n\n## ADR-004 Implementation Complete\n- ✅ Applied Ruff 120-char formatting to production code (src/be/)\n- ✅ Preserved context-appropriate violations in tests/, tools/, migrations/\n- ✅ Updated entire documentation network for consistency\n\n## Documentation Updates\n- docs/technical/quality-assurance.md: Updated with context-aware standards\n- quality/TESTING_GUIDE.md: Replaced Black/isort with Ruff commands\n- .github/workflows/ci.yml: Updated CI to use Ruff + context-aware flake8\n- .github/PULL_REQUEST_TEMPLATE.md: Updated checklist references\n- docs/context/decisions/README.md: Updated timestamp\n\n## Technical Debt Resolution\n- Applied automated Ruff formatting to 50+ production files\n- Validated syntax integrity and import functionality\n- Removed inappropriate manual E501 fixes from context-inappropriate code\n- Created comprehensive code standards implementation guide\n\n## Cross-Reference Validation\n- All ADR-004 links verified and working\n- Context-aware terminology consistent across documentation\n- Developer workflow guidance aligned with new standards\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(flake8:*)"
     ],
     "deny": [],
     "ask": []

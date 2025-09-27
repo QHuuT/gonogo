@@ -84,9 +84,7 @@ class GitHubSync(TraceabilityBase):
         **kwargs,
     ):
         """Initialize GitHub sync record."""
-        super().__init__(
-            title=f"Sync-{github_issue_type}-{github_issue_number}", **kwargs
-        )
+        super().__init__(title=f"Sync-{github_issue_type}-{github_issue_number}", **kwargs)
         self.github_issue_number = github_issue_number
         self.github_issue_type = github_issue_type
         self.github_issue_title = github_issue_title
@@ -132,15 +130,9 @@ class GitHubSync(TraceabilityBase):
                 "github_milestone": self.github_milestone,
                 "referenced_epic_id": self.referenced_epic_id,
                 "referenced_epic_db_id": self.referenced_epic_db_id,
-                "last_sync_time": (
-                    self.last_sync_time.isoformat() if self.last_sync_time else None
-                ),
+                "last_sync_time": (self.last_sync_time.isoformat() if self.last_sync_time else None),
                 "sync_status": self.sync_status,
-                "github_updated_at": (
-                    self.github_updated_at.isoformat()
-                    if self.github_updated_at
-                    else None
-                ),
+                "github_updated_at": (self.github_updated_at.isoformat() if self.github_updated_at else None),
                 "github_etag": self.github_etag,
                 "has_conflicts": self.has_conflicts,
                 "conflict_details": self.conflict_details,

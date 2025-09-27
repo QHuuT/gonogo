@@ -48,9 +48,7 @@ class RTMReportGenerator:
         epics = self._get_filtered_epics(filters)
 
         markdown = "# Dynamic Requirements Traceability Matrix\n\n"
-        markdown += (
-            f"**Generated**: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n"
-        )
+        markdown += f"**Generated**: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n"
         markdown += f"**Total Epics**: {len(epics)}\n\n"
 
         # Epic to User Story mapping table
@@ -59,35 +57,23 @@ class RTMReportGenerator:
         markdown += "|---------|-----------|--------------|--------------|--------|----------|\n"
 
         for epic in epics:
-            user_stories = (
-                self.db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
-            )
-            us_list = ", ".join(
-                [f"[{us.user_story_id}](#{us.user_story_id})" for us in user_stories]
-            )
+            user_stories = self.db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
+            us_list = ", ".join([f"[{us.user_story_id}](#{us.user_story_id})" for us in user_stories])
             total_points = sum(us.story_points for us in user_stories)
             completed_points = sum(
-                us.story_points
-                for us in user_stories
-                if us.implementation_status in ["done", "completed"]
+                us.story_points for us in user_stories if us.implementation_status in ["done", "completed"]
             )
-            progress = (
-                f"{(completed_points / total_points * 100):.1f}%"
-                if total_points > 0
-                else "0%"
-            )
+            progress = f"{(completed_points / total_points * 100):.1f}%" if total_points > 0 else "0%"
 
-            markdown += f"| **{epic.epic_id}** | {epic.title} | {us_list} | {total_points} | {epic.status} | {progress} |\n"
+            markdown += (
+                f"| **{epic.epic_id}** | {epic.title} | {us_list} | {total_points} | {epic.status} | {progress} |\n"
+            )
 
         # Test coverage section if requested
         if filters.get("include_tests", True):
             markdown += "\n## Test Coverage Summary\n\n"
-            markdown += (
-                "| Epic ID | Total Tests | Unit | Integration | BDD | Pass Rate |\n"
-            )
-            markdown += (
-                "|---------|-------------|------|-------------|-----|-----------|\n"
-            )
+            markdown += "| Epic ID | Total Tests | Unit | Integration | BDD | Pass Rate |\n"
+            markdown += "|---------|-------------|------|-------------|-----|-----------|\n"
 
             for epic in epics:
                 tests = self.db.query(Test).filter(Test.epic_id == epic.id).all()
@@ -104,12 +90,8 @@ class RTMReportGenerator:
         # Defect tracking section if requested
         if filters.get("include_defects", True):
             markdown += "\n## Defect Tracking\n\n"
-            markdown += (
-                "| Epic ID | Total Defects | Critical | High | Open | Security |\n"
-            )
-            markdown += (
-                "|---------|---------------|----------|------|------|----------|\n"
-            )
+            markdown += "| Epic ID | Total Defects | Critical | High | Open | Security |\n"
+            markdown += "|---------|---------------|----------|------|------|----------|\n"
 
             for epic in epics:
                 defects = self.db.query(Defect).filter(Defect.epic_id == epic.id).all()
@@ -130,9 +112,7 @@ class RTMReportGenerator:
         # Extract filter parameters
         epic_filter = filters.get("epic_filter", "all")
         us_status_filter = filters.get("us_status_filter", "all")
-        test_type_filter = filters.get(
-            "test_type_filter", "all"
-        )  # Default to all tests
+        test_type_filter = filters.get("test_type_filter", "all")  # Default to all tests
         defect_priority_filter = filters.get("defect_priority_filter", "all")
         defect_status_filter = filters.get("defect_status_filter", "all")
 
@@ -575,9 +555,7 @@ role="status" aria-live="polite"></div>
             epic_data = self._build_epic_data(epic, filters)
             progress = epic_data["metrics"]["completion_percentage"]
 
-            epic_title_link = self._render_epic_title_link(
-                epic.epic_id, epic.title, epic.github_issue_number
-            )
+            epic_title_link = self._render_epic_title_link(epic.epic_id, epic.title, epic.github_issue_number)
             clean_description = self._extract_epic_description(epic.description)
 
             # Extract metrics for easier use in template
@@ -594,11 +572,7 @@ role="status" aria-live="polite"></div>
 
             # Generate component badges for the epic
             inherited_components = epic.get_inherited_components()
-            component_string = (
-                ",".join(inherited_components)
-                if inherited_components
-                else epic.component
-            )
+            component_string = ",".join(inherited_components) if inherited_components else epic.component
             component_badges = self._render_component_badges(component_string)
 
             html += f"""
@@ -628,9 +602,7 @@ aria-label="Epic status: {epic.status.replace("_", " ").title()}">
                     <div class="epic-progress__bar" role="progressbar" \
 aria-valuenow="{progress:.1f}" aria-valuemin="0" aria-valuemax="100" \
 aria-label="Epic completion progress">
-                        <div class="epic-progress__fill" style="width: {
-                progress
-            }%"></div>
+                        <div class="epic-progress__fill" style="width: {progress}%"></div>
                     </div>
                 </div>
 
@@ -661,19 +633,9 @@ aria-label="User Stories count">
 Total stories in epic</div>
                         </div>
                         <div class="metric-card \
-metric-card--{
-                (
-                    "success"
-                    if completed_points == total_points
-                    else "warning"
-                    if completed_points > 0
-                    else "info"
-                )
-            }" \
+metric-card--{("success" if completed_points == total_points else "warning" if completed_points > 0 else "info")}" \
 aria-label="Story Points progress">
-                            <div class="metric-card__number">{completed_points}/{
-                total_points
-            }</div>
+                            <div class="metric-card__number">{completed_points}/{total_points}</div>
                             <div class="metric-card__label">Story Points</div>
                             <div class="metric-card__description">\
 Completed vs Total</div>
@@ -687,13 +649,7 @@ aria-label="Tests count">
                         </div>
                         <div class="metric-card \
 metric-card--{
-                (
-                    "success"
-                    if test_pass_rate >= 80
-                    else "warning"
-                    if test_pass_rate >= 60
-                    else "danger"
-                )
+                ("success" if test_pass_rate >= 80 else "warning" if test_pass_rate >= 60 else "danger")
             }" aria-label="Test pass rate">
                             <div class="metric-card__number">{test_pass_rate:.1f}%</div>
                             <div class="metric-card__label">Pass Rate</div>
@@ -713,9 +669,7 @@ Open issues to resolve</div>
 
                 <!-- User Stories Collapsible Section -->
                 <section class="collapsible" aria-label="User Stories">
-                    <input type="checkbox" class="collapsible__toggle" id="toggle-user-stories-{
-                epic.epic_id
-            }">
+                    <input type="checkbox" class="collapsible__toggle" id="toggle-user-stories-{epic.epic_id}">
                     <label for="toggle-user-stories-{epic.epic_id}" \
 class="collapsible__header">
                         <h3 class="collapsible__title">User Stories \
@@ -734,27 +688,21 @@ filter-button--us filter-button--active"
                                             data-us-status="all"
                                             data-filter-group="epic-{epic.epic_id}-us"
                                             data-filter-value="all"
-                                            onclick="filterUserStoriesByStatus('{
-                epic.epic_id
-            }', 'all')"
+                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'all')"
                                             aria-pressed="true">All</button>
                                     <button class="filter-button \
 filter-button--us"
                                             data-us-status="planned"
                                             data-filter-group="epic-{epic.epic_id}-us"
                                             data-filter-value="planned"
-                                            onclick="filterUserStoriesByStatus('{
-                epic.epic_id
-            }', 'planned')"
+                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'planned')"
                                             aria-pressed="false">Planned</button>
                                     <button class="filter-button \
 filter-button--us"
                                             data-us-status="in_progress"
                                             data-filter-group="epic-{epic.epic_id}-us"
                                             data-filter-value="in_progress"
-                                            onclick="filterUserStoriesByStatus('{
-                epic.epic_id
-            }', 'in_progress')"
+                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'in_progress')"
                                             aria-pressed="false">\
 In Progress</button>
                                     <button class="filter-button \
@@ -762,18 +710,14 @@ filter-button--us"
                                             data-us-status="completed"
                                             data-filter-group="epic-{epic.epic_id}-us"
                                             data-filter-value="completed"
-                                            onclick="filterUserStoriesByStatus('{
-                epic.epic_id
-            }', 'completed')"
+                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'completed')"
                                             aria-pressed="false">Completed</button>
                                     <button class="filter-button \
 filter-button--us"
                                             data-us-status="blocked"
                                             data-filter-group="epic-{epic.epic_id}-us"
                                             data-filter-value="blocked"
-                                            onclick="filterUserStoriesByStatus('{
-                epic.epic_id
-            }', 'blocked')"
+                                            onclick="filterUserStoriesByStatus('{epic.epic_id}', 'blocked')"
                                             aria-pressed="false">Blocked</button>
                                 </div>
                                 <div class="us-count-display filter-count" \
@@ -792,9 +736,7 @@ aria-label="User Stories for {epic.epic_id}">
                                 <tbody class="rtm-table__body">
 """
             for us in epic_data["user_stories"]:
-                user_story_link = self._render_user_story_id_link(
-                    us["user_story_id"], us.get("github_issue_number")
-                )
+                user_story_link = self._render_user_story_id_link(us["user_story_id"], us.get("github_issue_number"))
                 status_normalized = us["implementation_status"].replace("_", "-")
                 html += f"""
                                     <tr class="rtm-table__row us-row" \
@@ -811,7 +753,8 @@ badge--status-{status_normalized}">\
 
             # Add dynamic empty state row for user stories
             html += """
-                                    <!-- Empty state row for user stories (hidden by default, shown when filtered count = 0) -->
+                                    <!-- Empty state row for user stories
+                                         (hidden by default, shown when filtered count = 0) -->
                                     <tr class="empty-state-row" style="display: none;">
                                         <td colspan="5" \
 style="text-align: center; color: #7f8c8d; font-style: italic;">\
@@ -826,9 +769,7 @@ No user stories match the current filter</td>
             html += f"""
                 <!-- Tests Collapsible Section -->
                 <section class="collapsible" aria-label="Tests">
-                    <input type="checkbox" class="collapsible__toggle" id="toggle-tests-{
-                epic.epic_id
-            }">
+                    <input type="checkbox" class="collapsible__toggle" id="toggle-tests-{epic.epic_id}">
                     <label for="toggle-tests-{epic.epic_id}" \
 class="collapsible__header">
                         <h3 class="collapsible__title">Test Coverage \
@@ -842,45 +783,30 @@ class="collapsible__header">
                                 <h4 class="metrics-dashboard__title">Test Metrics</h4>
                                 <div class="metrics-grid">
                                     <div class="metric-card metric-card--info" aria-label="Total tests count">
-                                                    <div class="metric-card__number">{
-                tests_count
-            }</div>
+                                                    <div class="metric-card__number">{tests_count}</div>
                                         <div class="metric-card__label">Total Tests</div>
                                         <div class="metric-card__description">Across all test types</div>
                                     </div>
                                     <div class="metric-card \
 metric-card--{
-                (
-                    "success"
-                    if test_pass_rate >= 80
-                    else "warning"
-                    if test_pass_rate >= 60
-                    else "danger"
-                )
+                ("success" if test_pass_rate >= 80 else "warning" if test_pass_rate >= 60 else "danger")
             }" aria-label="Test pass rate">
-                                                    <div class="metric-card__number">{
-                test_pass_rate:.1f}%</div>
+                                                    <div class="metric-card__number">{test_pass_rate:.1f}%</div>
                                         <div class="metric-card__label">Pass Rate</div>
                                         <div class="metric-card__description">Overall success rate</div>
                                     </div>
                                     <div class="metric-card metric-card--success" aria-label="Passed tests">
-                                        <div class="metric-card__number">{
-                tests_passed
-            }</div>
+                                        <div class="metric-card__number">{tests_passed}</div>
                                         <div class="metric-card__label">Passed</div>
                                         <div class="metric-card__description">Successfully executed</div>
                                     </div>
                                     <div class="metric-card metric-card--danger" aria-label="Failed tests">
-                                        <div class="metric-card__number">{
-                tests_failed
-            }</div>
+                                        <div class="metric-card__number">{tests_failed}</div>
                                         <div class="metric-card__label">Failed</div>
                                         <div class="metric-card__description">Need attention</div>
                                     </div>
                                     <div class="metric-card metric-card--warning" aria-label="Tests not run">
-                                        <div class="metric-card__number">{
-                tests_not_run
-            }</div>
+                                        <div class="metric-card__number">{tests_not_run}</div>
                                         <div class="metric-card__label">Not Run</div>
                                         <div class="metric-card__description">Pending execution</div>
                                     </div>
@@ -956,9 +882,7 @@ metric-card--{
                 if last_execution:
                     try:
                         if isinstance(last_execution, str):
-                            exec_time = datetime.fromisoformat(
-                                last_execution.replace("Z", "+00:00")
-                            )
+                            exec_time = datetime.fromisoformat(last_execution.replace("Z", "+00:00"))
                         else:
                             exec_time = last_execution
                         formatted_time = exec_time.strftime("%Y-%m-%d %H:%M")
@@ -968,19 +892,11 @@ metric-card--{
                     formatted_time = "Never"
 
                 # Get test function or BDD scenario name
-                test_name = test.get("test_function_name") or test.get(
-                    "bdd_scenario_name", ""
-                )
+                test_name = test.get("test_function_name") or test.get("bdd_scenario_name", "")
 
                 # Status styling
                 status = test.get("last_execution_status", "unknown")
-                status_class = (
-                    "passed"
-                    if status == "passed"
-                    else "failed"
-                    if status == "failed"
-                    else "skipped"
-                )
+                status_class = "passed" if status == "passed" else "failed" if status == "failed" else "skipped"
                 # Test status icons removed for accessibility
 
                 test_type_lower = test.get("test_type", "").lower()
@@ -1066,29 +982,21 @@ metric-card--{
             defects = epic_data.get("defects", [])
             critical_count = sum(1 for d in defects if d.get("priority") == "critical")
             high_count = sum(1 for d in defects if d.get("priority") == "high")
-            open_count = sum(
-                1 for d in defects if d.get("status") in ["open", "in_progress"]
-            )
-            security_count = sum(
-                1 for d in defects if d.get("is_security_issue", False)
-            )
+            open_count = sum(1 for d in defects if d.get("status") in ["open", "in_progress"])
+            security_count = sum(1 for d in defects if d.get("is_security_issue", False))
 
             html += f"""
                                     <div class="metric-card metric-card--{
                 ("danger" if defects_count > 0 else "success")
             }" aria-label="Total defects">
-                                                    <div class="metric-card__number">{
-                defects_count
-            }</div>
+                                                    <div class="metric-card__number">{defects_count}</div>
                                         <div class="metric-card__label">Total Defects</div>
                                         <div class="metric-card__description">Across all priorities</div>
                                     </div>
                                     <div class="metric-card metric-card--{
                 ("danger" if critical_count > 0 else "success")
             }" aria-label="Critical defects">
-                                        <div class="metric-card__number">{
-                critical_count
-            }</div>
+                                        <div class="metric-card__number">{critical_count}</div>
                                         <div class="metric-card__label">Critical</div>
                                         <div class="metric-card__description">Highest priority issues</div>
                                     </div>
@@ -1096,9 +1004,7 @@ metric-card--{
                 ("warning" if high_count > 0 else "success")
             }" \
                                         aria-label="High priority defects">
-                                        <div class="metric-card__number">{
-                high_count
-            }</div>
+                                        <div class="metric-card__number">{high_count}</div>
                                         <div class="metric-card__label">High Priority</div>
                                         <div class="metric-card__description">\
                                             Important issues</div>
@@ -1107,9 +1013,7 @@ metric-card--{
                 ("danger" if open_count > 0 else "success")
             }" \
                                         aria-label="Open defects">
-                                        <div class="metric-card__number">{
-                open_count
-            }</div>
+                                        <div class="metric-card__number">{open_count}</div>
                                         <div class="metric-card__label">Open</div>
                                         <div class="metric-card__description">\
                                             Need attention</div>
@@ -1118,9 +1022,7 @@ metric-card--{
                 ("danger" if security_count > 0 else "success")
             }" \
                                         aria-label="Security defects">
-                                        <div class="metric-card__number">{
-                security_count
-            }</div>
+                                        <div class="metric-card__number">{security_count}</div>
                                         <div class="metric-card__label">Security</div>
                                         <div class="metric-card__description">Security-related issues</div>
                                     </div>
@@ -1133,53 +1035,33 @@ metric-card--{
                                 <div class="filter-section__buttons">
                                     <button class="filter-button filter-button--defect filter-button--active"
                                             data-defect-filter="all"
-                                            data-filter-group="epic-{
-                epic.epic_id
-            }-defect"
+                                            data-filter-group="epic-{epic.epic_id}-defect"
                                             data-filter-value="all"
-                                            onclick="filterDefects('{
-                epic.epic_id
-            }', 'all', 'all')"
+                                            onclick="filterDefects('{epic.epic_id}', 'all', 'all')"
                                             aria-pressed="true">All</button>
                                     <button class="filter-button filter-button--defect"
                                             data-defect-filter="priority:critical"
-                                            data-filter-group="epic-{
-                epic.epic_id
-            }-defect"
+                                            data-filter-group="epic-{epic.epic_id}-defect"
                                             data-filter-value="critical"
-                                            onclick="filterDefects('{
-                epic.epic_id
-            }', 'priority', 'critical')"
+                                            onclick="filterDefects('{epic.epic_id}', 'priority', 'critical')"
                                             aria-pressed="false">Critical</button>
                                     <button class="filter-button filter-button--defect"
                                             data-defect-filter="priority:high"
-                                            data-filter-group="epic-{
-                epic.epic_id
-            }-defect"
+                                            data-filter-group="epic-{epic.epic_id}-defect"
                                             data-filter-value="high"
-                                            onclick="filterDefects('{
-                epic.epic_id
-            }', 'priority', 'high')"
+                                            onclick="filterDefects('{epic.epic_id}', 'priority', 'high')"
                                             aria-pressed="false">High Priority</button>
                                     <button class="filter-button filter-button--defect"
                                             data-defect-filter="status:open"
-                                            data-filter-group="epic-{
-                epic.epic_id
-            }-defect"
+                                            data-filter-group="epic-{epic.epic_id}-defect"
                                             data-filter-value="open"
-                                            onclick="filterDefects('{
-                epic.epic_id
-            }', 'status', 'open')"
+                                            onclick="filterDefects('{epic.epic_id}', 'status', 'open')"
                                             aria-pressed="false">Open</button>
                                     <button class="filter-button filter-button--defect"
                                             data-defect-filter="status:in_progress"
-                                            data-filter-group="epic-{
-                epic.epic_id
-            }-defect"
+                                            data-filter-group="epic-{epic.epic_id}-defect"
                                             data-filter-value="in_progress"
-                                            onclick="filterDefects('{
-                epic.epic_id
-            }', 'status', 'in_progress')"
+                                            onclick="filterDefects('{epic.epic_id}', 'status', 'in_progress')"
                                             aria-pressed="false">\
 In Progress</button>
                                 </div>
@@ -1277,9 +1159,7 @@ title="Open {defect_id} in GitHub"><strong>{defect_id}</strong></a>'
 """
         return html
 
-    def generate_epic_progress_json(
-        self, include_charts: bool = True
-    ) -> Dict[str, Any]:
+    def generate_epic_progress_json(self, include_charts: bool = True) -> Dict[str, Any]:
         """Generate epic progress report in JSON format."""
         epics = self._get_filtered_epics({"include_demo_data": False})
 
@@ -1293,9 +1173,7 @@ title="Open {defect_id} in GitHub"><strong>{defect_id}</strong></a>'
         }
 
         for epic in epics:
-            epic_data = self._build_epic_data(
-                epic, {"include_tests": True, "include_defects": True}
-            )
+            epic_data = self._build_epic_data(epic, {"include_tests": True, "include_defects": True})
 
             # Add time-series data for charts if requested
             if include_charts:
@@ -1308,9 +1186,7 @@ title="Open {defect_id} in GitHub"><strong>{defect_id}</strong></a>'
         completed_points = sum(self._get_epic_completed_points(epic) for epic in epics)
 
         report["summary"] = {
-            "overall_completion": (
-                (completed_points / total_points * 100) if total_points > 0 else 0
-            ),
+            "overall_completion": ((completed_points / total_points * 100) if total_points > 0 else 0),
             "total_story_points": total_points,
             "completed_story_points": completed_points,
             "epics_by_status": self._get_epic_status_distribution(),
@@ -1374,13 +1250,7 @@ font-weight: bold; color: white; }
 
         for epic_data in json_data["epic_progress"]:
             progress = epic_data["metrics"]["completion_percentage"]
-            progress_color = (
-                "#27ae60"
-                if progress >= 80
-                else "#f39c12"
-                if progress >= 50
-                else "#e74c3c"
-            )
+            progress_color = "#27ae60" if progress >= 80 else "#f39c12" if progress >= 50 else "#e74c3c"
 
             # Extract epic and metrics data for template
             epic_id = epic_data["epic"]["epic_id"]
@@ -1428,10 +1298,7 @@ font-weight: bold; color: white; }
                     data: ["""
             + str(json_data["summary"]["completed_story_points"])
             + """, """
-            + str(
-                json_data["summary"]["total_story_points"]
-                - json_data["summary"]["completed_story_points"]
-            )
+            + str(json_data["summary"]["total_story_points"] - json_data["summary"]["completed_story_points"])
             + """],
                     backgroundColor: ['#27ae60', '#ecf0f1'],
                     borderWidth: 2,
@@ -1517,30 +1384,22 @@ font-weight: bold; color: white; }
 
     def _build_epic_data(self, epic: Epic, filters: Dict[str, Any]) -> Dict[str, Any]:
         """Build comprehensive epic data including metrics."""
-        user_stories = (
-            self.db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
-        )
+        user_stories = self.db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
         tests = self.db.query(Test).filter(Test.epic_id == epic.id).all()
         defects = self.db.query(Defect).filter(Defect.epic_id == epic.id).all()
 
         # Calculate metrics - Progress based on GitHub-derived status for user stories and defects
         total_story_points = sum(us.story_points for us in user_stories)
         completed_story_points = sum(
-            us.story_points
-            for us in user_stories
-            if us.get_github_derived_status() in ["done", "completed"]
+            us.story_points for us in user_stories if us.get_github_derived_status() in ["done", "completed"]
         )
 
         # Count total items (user stories + defects) and completed items for progress calculation
         total_items = len(user_stories) + len(defects)
         completed_user_stories = sum(
-            1
-            for us in user_stories
-            if us.get_github_derived_status() in ["done", "completed"]
+            1 for us in user_stories if us.get_github_derived_status() in ["done", "completed"]
         )
-        completed_defects = sum(
-            1 for d in defects if d.status in ["closed", "resolved", "done"]
-        )
+        completed_defects = sum(1 for d in defects if d.status in ["closed", "resolved", "done"])
         completed_items = completed_user_stories + completed_defects
 
         test_pass_rate = 0.0
@@ -1549,46 +1408,24 @@ font-weight: bold; color: white; }
         tests_skipped = 0
         tests_not_run = 0
         if tests:
-            tests_passed = sum(
-                1 for test in tests if test.last_execution_status == "passed"
-            )
-            tests_failed = sum(
-                1 for test in tests if test.last_execution_status == "failed"
-            )
-            tests_skipped = sum(
-                1 for test in tests if test.last_execution_status == "skipped"
-            )
-            tests_not_run = sum(
-                1
-                for test in tests
-                if test.last_execution_status in ["not_run", "pending", None]
-            )
+            tests_passed = sum(1 for test in tests if test.last_execution_status == "passed")
+            tests_failed = sum(1 for test in tests if test.last_execution_status == "failed")
+            tests_skipped = sum(1 for test in tests if test.last_execution_status == "skipped")
+            tests_not_run = sum(1 for test in tests if test.last_execution_status in ["not_run", "pending", None])
             # Only calculate pass rate for tests that have been executed
             executed_tests = tests_passed + tests_failed + tests_skipped
-            test_pass_rate = (
-                (tests_passed / executed_tests * 100) if executed_tests > 0 else 0
-            )
+            test_pass_rate = (tests_passed / executed_tests * 100) if executed_tests > 0 else 0
 
         # Build base data
         epic_data = {
             "epic": epic.to_dict(),
             "user_stories": [us.to_dict() for us in user_stories],
-            "tests": (
-                [test.to_dict() for test in tests]
-                if filters.get("include_tests", True)
-                else []
-            ),
-            "defects": (
-                [defect.to_dict() for defect in defects]
-                if filters.get("include_defects", True)
-                else []
-            ),
+            "tests": ([test.to_dict() for test in tests] if filters.get("include_tests", True) else []),
+            "defects": ([defect.to_dict() for defect in defects] if filters.get("include_defects", True) else []),
             "metrics": {
                 "total_story_points": total_story_points,
                 "completed_story_points": completed_story_points,
-                "completion_percentage": (
-                    (completed_items / total_items * 100) if total_items > 0 else 0
-                ),
+                "completion_percentage": ((completed_items / total_items * 100) if total_items > 0 else 0),
                 "total_items": total_items,
                 "completed_items": completed_items,
                 "completed_user_stories": completed_user_stories,
@@ -1602,9 +1439,7 @@ font-weight: bold; color: white; }
                 "test_pass_rate": test_pass_rate,
                 "defects_count": len(defects),
                 "critical_defects": sum(1 for d in defects if d.severity == "critical"),
-                "open_defects": sum(
-                    1 for d in defects if d.status in ["open", "in_progress"]
-                ),
+                "open_defects": sum(1 for d in defects if d.status in ["open", "in_progress"]),
             },
         }
 
@@ -1674,25 +1509,19 @@ font-weight: bold; color: white; }
 
         return html
 
-    def _get_us_filter_display_text(
-        self, epic_data: Dict[str, Any], us_status_filter: str
-    ) -> str:
+    def _get_us_filter_display_text(self, epic_data: Dict[str, Any], us_status_filter: str) -> str:
         """Generate display text for user story filter."""
         total_us = len(epic_data.get("user_stories", []))
         if us_status_filter == "all":
             return f"Showing all user stories ({total_us} total)"
         else:
             filtered_us = [
-                us
-                for us in epic_data.get("user_stories", [])
-                if us.get("implementation_status") == us_status_filter
+                us for us in epic_data.get("user_stories", []) if us.get("implementation_status") == us_status_filter
             ]
             status_display = us_status_filter.replace("_", " ").title()
             return f"Showing {len(filtered_us)} {status_display} user stories ({total_us} total)"
 
-    def _apply_server_side_filters(
-        self, epic_data: Dict[str, Any], filters: Dict[str, str]
-    ) -> Dict[str, Any]:
+    def _apply_server_side_filters(self, epic_data: Dict[str, Any], filters: Dict[str, str]) -> Dict[str, Any]:
         """Apply server-side filtering to epic data."""
         filtered_data = epic_data.copy()
 
@@ -1700,9 +1529,7 @@ font-weight: bold; color: white; }
         us_status_filter = filters.get("us_status_filter", "all")
         if us_status_filter != "all":
             filtered_data["user_stories"] = [
-                us
-                for us in epic_data.get("user_stories", [])
-                if us.get("implementation_status") == us_status_filter
+                us for us in epic_data.get("user_stories", []) if us.get("implementation_status") == us_status_filter
             ]
 
         # Filter tests
@@ -1759,9 +1586,7 @@ font-weight: bold; color: white; }
         active_filters = {
             k: v
             for k, v in filters.items()
-            if v is not None
-            and v != ""
-            and k not in ["include_tests", "include_defects"]
+            if v is not None and v != "" and k not in ["include_tests", "include_defects"]
         }
         if not active_filters:
             return "None"
@@ -1785,9 +1610,7 @@ font-weight: bold; color: white; }
         active_filters = {
             k: v
             for k, v in filters.items()
-            if v is not None
-            and v != ""
-            and k not in ["include_tests", "include_defects"]
+            if v is not None and v != "" and k not in ["include_tests", "include_defects"]
         }
         if not active_filters:
             return ""  # Remove "No filters applied" text
@@ -1802,9 +1625,7 @@ font-weight: bold; color: white; }
         # Using the gonogo repository
         return f"https://github.com/QHuuT/gonogo/issues/{github_issue_number}"
 
-    def _render_user_story_id_link(
-        self, user_story_id: str, github_issue_number: int
-    ) -> str:
+    def _render_user_story_id_link(self, user_story_id: str, github_issue_number: int) -> str:
         """Render user story ID as clickable GitHub link if available."""
         if github_issue_number and github_issue_number > 0:
             github_url = self._get_github_issue_link(github_issue_number)
@@ -1813,9 +1634,7 @@ style="color: #3498db; text-decoration: none;" \
 title="Open {user_story_id} in GitHub"><strong>{user_story_id}</strong></a>'
         return f"<strong>{user_story_id}</strong>"
 
-    def _render_epic_title_link(
-        self, epic_id: str, title: str, github_issue_number: int
-    ) -> str:
+    def _render_epic_title_link(self, epic_id: str, title: str, github_issue_number: int) -> str:
         """Render epic title as GitHub link if available."""
         # Clean title by stripping whitespace and normalizing spaces
         clean_title = " ".join(title.strip().split()) if title else "No title"
@@ -1856,13 +1675,9 @@ class="epic-title-link" title="Click to open {epic_id} in GitHub">\
 
         # If no Epic Description section found, return first paragraph or truncated text
         lines = github_body.split("\n")
-        clean_lines = [
-            line.strip() for line in lines if line.strip() and not line.startswith("#")
-        ]
+        clean_lines = [line.strip() for line in lines if line.strip() and not line.startswith("#")]
         if clean_lines:
-            description = "\n".join(
-                clean_lines[:5]
-            )  # First 5 non-empty, non-header lines
+            description = "\n".join(clean_lines[:5])  # First 5 non-empty, non-header lines
             description = self._clean_markdown(description)
             return description
 
@@ -1910,31 +1725,16 @@ class="epic-title-link" title="Click to open {epic_id} in GitHub">\
 
     def _get_epic_story_points(self, epic: Epic) -> int:
         """Get total story points for an epic."""
-        return sum(
-            us.story_points
-            for us in self.db.query(UserStory)
-            .filter(UserStory.epic_id == epic.id)
-            .all()
-        )
+        return sum(us.story_points for us in self.db.query(UserStory).filter(UserStory.epic_id == epic.id).all())
 
     def _get_epic_completed_points(self, epic: Epic) -> int:
         """Get completed story points for an epic."""
-        user_stories = (
-            self.db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
-        )
-        return sum(
-            us.story_points
-            for us in user_stories
-            if us.implementation_status in ["done", "completed"]
-        )
+        user_stories = self.db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
+        return sum(us.story_points for us in user_stories if us.implementation_status in ["done", "completed"])
 
     def _get_epic_status_distribution(self) -> Dict[str, int]:
         """Get distribution of epics by status."""
-        status_query = (
-            self.db.query(Epic.status, func.count(Epic.id).label("count"))
-            .group_by(Epic.status)
-            .all()
-        )
+        status_query = self.db.query(Epic.status, func.count(Epic.id).label("count")).group_by(Epic.status).all()
 
         return {status: count for status, count in status_query}
 
@@ -1963,9 +1763,7 @@ class="epic-title-link" title="Click to open {epic_id} in GitHub">\
         # Data
         epics = self._get_filtered_epics({"include_demo_data": False})
         for epic in epics:
-            user_stories = (
-                self.db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
-            )
+            user_stories = self.db.query(UserStory).filter(UserStory.epic_id == epic.id).all()
             tests = self.db.query(Test).filter(Test.epic_id == epic.id).all()
             defects = self.db.query(Defect).filter(Defect.epic_id == epic.id).all()
 

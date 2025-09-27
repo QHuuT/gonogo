@@ -47,9 +47,7 @@ class UserStory(TraceabilityBase):
     sprint = Column(String(50), index=True)
 
     # Progress tracking
-    implementation_status = Column(
-        String(20), default="todo", index=True, nullable=False
-    )
+    implementation_status = Column(String(20), default="todo", index=True, nullable=False)
     # Values: todo, in_progress, in_review, done, blocked
 
     # BDD Integration
@@ -78,9 +76,7 @@ class UserStory(TraceabilityBase):
 
     defects = relationship(
         "Defect",
-        primaryjoin=(
-            "UserStory.github_issue_number == Defect.github_user_story_number"
-        ),
+        primaryjoin=("UserStory.github_issue_number == Defect.github_user_story_number"),
         foreign_keys="Defect.github_user_story_number",
         viewonly=True,
     )
@@ -93,9 +89,7 @@ class UserStory(TraceabilityBase):
         Index("idx_us_github_state", "github_issue_state", "github_issue_number"),
     )
 
-    def __init__(
-        self, user_story_id: str, epic_id: int, github_issue_number: int, **kwargs
-    ):
+    def __init__(self, user_story_id: str, epic_id: int, github_issue_number: int, **kwargs):
         """Initialize User Story with required fields."""
         super().__init__(**kwargs)
         self.user_story_id = user_story_id
@@ -185,12 +179,8 @@ class UserStory(TraceabilityBase):
             return {"total_tests": 0, "passed_tests": 0, "coverage_percentage": 0.0}
 
         total_tests = len(self.tests)
-        passed_tests = sum(
-            1 for test in self.tests if test.last_execution_status == "passed"
-        )
-        coverage_percentage = (
-            (passed_tests / total_tests * 100.0) if total_tests > 0 else 0.0
-        )
+        passed_tests = sum(1 for test in self.tests if test.last_execution_status == "passed")
+        coverage_percentage = (passed_tests / total_tests * 100.0) if total_tests > 0 else 0.0
 
         return {
             "total_tests": total_tests,

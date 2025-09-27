@@ -42,12 +42,8 @@ class TraceabilityBase(Base):
     resolved_in_commit = Column(String(40), index=True)  # Resolution commit SHA
 
     # Release versions (customer-facing versions)
-    target_release_version = Column(
-        String(50), index=True
-    )  # Planned release (e.g., v1.2.0)
-    released_in_version = Column(
-        String(50), index=True
-    )  # Actual release (e.g., v1.1.5)
+    target_release_version = Column(String(50), index=True)  # Planned release (e.g., v1.2.0)
+    released_in_version = Column(String(50), index=True)  # Actual release (e.g., v1.1.5)
 
     # Version context
     affects_versions = Column(Text)  # JSON array of affected versions
@@ -55,9 +51,7 @@ class TraceabilityBase(Base):
 
     # Audit trail
     created_at = Column(DateTime, default=func.now(), nullable=False)
-    updated_at = Column(
-        DateTime, default=func.now(), onupdate=func.now(), nullable=False
-    )
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
     def __init__(self, **kwargs):
         """Initialize TraceabilityBase with default values."""
@@ -87,9 +81,7 @@ class TraceabilityBase(Base):
         import json
 
         try:
-            versions = (
-                json.loads(self.affects_versions) if self.affects_versions else []
-            )
+            versions = json.loads(self.affects_versions) if self.affects_versions else []
         except (json.JSONDecodeError, TypeError):
             versions = []
 
@@ -102,9 +94,7 @@ class TraceabilityBase(Base):
         import json
 
         try:
-            versions = (
-                json.loads(self.fixed_in_versions) if self.fixed_in_versions else []
-            )
+            versions = json.loads(self.fixed_in_versions) if self.fixed_in_versions else []
         except (json.JSONDecodeError, TypeError):
             versions = []
 
@@ -117,9 +107,7 @@ class TraceabilityBase(Base):
         import json
 
         try:
-            versions = (
-                json.loads(self.fixed_in_versions) if self.fixed_in_versions else []
-            )
+            versions = json.loads(self.fixed_in_versions) if self.fixed_in_versions else []
             return version in versions
         except (json.JSONDecodeError, TypeError):
             return False
