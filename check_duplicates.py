@@ -15,7 +15,13 @@ print('Duplicate blog_content_steps records:')
 for row in rows:
     print(f'ID {row[0]}: {row[3]} - {row[1]} :: {row[2]}')
 
-print(f'\nTotal: {len(rows)} records with same function name from different files')
-print('This is a BDD step definition naming collision - same function name in different step files')
+print(
+    f'\nTotal: {len(rows)} records with same function name '
+    f'from different files'
+)
+print(
+    'This is a BDD step definition naming collision - '
+    'same function name in different step files'
+)
 
 conn.close()
