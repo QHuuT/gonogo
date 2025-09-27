@@ -301,7 +301,13 @@ class Epic(TraceabilityBase):
         component_key = (
             self.component.lower().replace(' ', '/').replace('-', '/')
         )
-        default_key = (\n            f'component/{self.component.lower().replace("/", "-").replace(" ", "-")}'\n        )\n        return mapping.get(\n            component_key,\n            mapping.get(self.component.lower(), default_key)\n        )
+        default_key = (
+            f'component/{self.component.lower().replace("/", "-").replace(" ", "-")}'
+        )
+        return mapping.get(
+            component_key,
+            mapping.get(self.component.lower(), default_key)
+        )
 
     def validate_component(self) -> bool:
         """Validate component value against allowed options."""
