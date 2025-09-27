@@ -32,7 +32,9 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    refreshed = refresh_all_epic_metrics(force=args.force, record_history=not args.no_history)
+    refreshed = refresh_all_epic_metrics(
+        force=args.force, record_history=not args.no_history
+    )
     print(f"Refreshed metrics for {refreshed} epic(s)")
 
 
