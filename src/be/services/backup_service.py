@@ -1,8 +1,10 @@
 """
 Comprehensive Database Backup Service
 
-Implements automated backup and disaster recovery for the RTM database with GDPR compliance.
-Provides daily snapshots, integrity validation, and multiple destination support.
+Implements automated backup and disaster recovery for the RTM database with
+GDPR compliance.
+Provides daily snapshots, integrity validation, and multiple destination
+support.
 
 Related Issue: US-00036 - Comprehensive Database Backup Strategy
 Parent Epic: EP-00005 - Requirements Traceability Matrix Automation
@@ -38,7 +40,8 @@ class BackupError(Exception):
 
 class BackupService:
     """
-    Comprehensive backup service with GDPR compliance and multi-destination support.
+    Comprehensive backup service with GDPR compliance and multi-destination
+    support.
 
     Features:
     - Automated daily database snapshots
